@@ -674,7 +674,6 @@ Cada sugerencia se verifica a mano y no se incorpora código que no se entienda.
 | `shadow-sm` | `0 1px 2px rgba(20,19,43,.06), 0 1px 3px rgba(20,19,43,.08)` | Tarjetas |
 | `shadow-md` | `0 4px 12px rgba(20,19,43,.08), 0 2px 4px rgba(20,19,43,.05)` | Menús |
 | `shadow-lg` | `0 16px 40px rgba(20,19,43,.16), 0 4px 12px rgba(20,19,43,.08)` | Modales, hojas, panel de subidas |
-| `shadow-primary` | `0 8px 20px rgba(91,71,224,.35)` | Botón central de la barra inferior |
 
 En oscuro, solo `0 16px 40px rgba(0,0,0,.45)` en elementos flotantes.
 
@@ -801,7 +800,7 @@ El servidor pone `data-theme` en el HTML a partir de la cookie de preferencia (�
 
 | Grupo | Componentes | Diseño |
 | --- | --- | --- |
-| Estructura | `AppShell` (elige `BottomNav` < 1024 px o `Sidebar` ≥ 1024 px y reserva áreas seguras), `BottomNav`, `Sidebar`, `TopBar`, `CircleHeader`, `ThemeToggle`, `Logo` | todas |
+| Estructura | `AppShell` (elige `BottomNav` < 1024 px o `Sidebar` ≥ 1024 px y reserva áreas seguras), `BottomNav` (Círculos, Subir y Perfil alineados a la misma altura; Subir es un botón relleno de 52 px en color `primary`), `Sidebar`, `TopBar`, `CircleHeader`, `ThemeToggle`, `Logo` | todas |
 | `auth` | `LoginForm`, `RegisterForm`, `AuthLayout` (collage + panel) | 01 |
 | `circles` | `CircleCard` (destacada y compacta), `CircleList`, `CircleForm`, `CirclePermissions`, `DangerZone` | 03, D1, D4 |
 | `albums` | `AlbumCard`, `AlbumGrid`, `AlbumHeader`, `AlbumForm` | 04, 05, D2 |
