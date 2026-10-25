@@ -1,0 +1,14 @@
+node_modules
+dist
+.turbo
+.output
+.tanstack
+coverage
+assets
+docs
+.opencode
+AGENTS.md
+README.md
+CLAUDE.md
+pnpm-lock.yaml
+**/routeTree.gen.ts

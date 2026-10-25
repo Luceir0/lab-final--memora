@@ -1,0 +1,32 @@
+{
+  "name": "memora",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@10.34.8",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "dev": "turbo dev",
+    "build": "turbo build",
+    "lint": "pnpm lint:root && turbo lint",
+    "lint:root": "eslint scripts eslint.config.mjs",
+    "typecheck": "turbo typecheck",
+    "test": "turbo test",
+    "test:e2e": "turbo test:e2e",
+    "docs:check": "node scripts/check-docs.mjs",
+    "agents:check": "node scripts/validate-agents.mjs",
+    "db:migrate": "pnpm --filter @memora/api db:migrate",
+    "db:seed": "pnpm --filter @memora/api db:seed",
+    "format": "prettier --write \"**/*.{ts,tsx,mts,cts,mjs,cjs,json,jsonc,yml,yaml,css}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,mts,cts,mjs,cjs,json,jsonc,yml,yaml,css}\""
+  },
+  "devDependencies": {
+    "@memora/config": "workspace:*",
+    "eslint": "9.39.5",
+    "prettier": "3.9.10",
+    "turbo": "2.11.10",
+    "typescript": "6.0.3"
+  }
+}
