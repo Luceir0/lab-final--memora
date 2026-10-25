@@ -1,5 +1,5 @@
-# Finales de línea: LF en el repositorio y en el working tree, también en Windows.
-# Sin esto, core.autocrlf=true reescribe a CRLF y Prettier (endOfLine: lf) falla.
+# Finales de línea: LF en el repositorio. El working tree en Windows puede quedar
+# en CRLF por core.autocrlf; Prettier usa endOfLine "auto" para aceptarlo.
 * text=auto eol=lf
 
 # Binarios: no normalizar
