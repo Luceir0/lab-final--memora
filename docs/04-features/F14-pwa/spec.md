@@ -13,7 +13,9 @@ design_refs:
   - "assets/design/screens/perfil-movil.png"
 contracts:
   - "docs/01-product/scope.md"
-decisions: []
+  - "docs/03-architecture/adr/ADR-0013-pwa.md"
+decisions:
+  - "ADR-0013"
 ---
 
 # F14 — PWA e instalación
@@ -39,10 +41,11 @@ Hacer la app instalable en Android con manifest, iconos y experiencia de instala
 ### Contratos
 
 - [docs/01-product/scope.md](../../../docs/01-product/scope.md)
+- [ADR-0013](../../../docs/03-architecture/adr/ADR-0013-pwa.md)
 
 ### Decisiones
 
-- No aplica.
+- ADR-0013
 
 ## Alcance
 
@@ -105,7 +108,7 @@ Hacer la app instalable en Android con manifest, iconos y experiencia de instala
 
 ## Definition of Ready
 
-- [ ] Dependencias `done` o autorizadas.
+- [ ] Dependencias `done`. Excepción autorizada por el usuario y registrada en el tablero.
 - [ ] Decisiones resueltas.
 - [ ] Contratos congelados.
 - [ ] Diseño enlazado (si aplica).

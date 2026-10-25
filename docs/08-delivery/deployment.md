@@ -29,6 +29,10 @@ Web y API bajo el mismo origen en desarrollo mediante proxy `/api`.
 `.env.example` documentará:
 
 ```text
+NODE_ENV=development
+APP_URL=http://localhost:3000
+API_PORT=3001
+COOKIE_DOMAIN=localhost
 DATABASE_URL=
 SESSION_SECRET=
 S3_ENDPOINT=
@@ -48,7 +52,7 @@ GEOCODING_USER_AGENT=
 CONTENT_ISLAND_ACCESS_TOKEN=
 ```
 
-Nunca se commitea `.env`.
+`APP_URL` se usa para enlaces de invitación y Open Graph. `COOKIE_DOMAIN` debe ser el dominio común de web y API. Nunca se commitea `.env`.
 
 ## Producción opcional
 
@@ -66,6 +70,7 @@ Nunca se commitea `.env`.
 - Fotos en Cloudflare R2.
 - Email en Resend.
 - Content Island en build.
+- **La web y la API deben compartir origen** (proxy `/api`) o configurar `COOKIE_DOMAIN` y CORS con credenciales; con `SameSite=Lax` no sirve separar dominios sin proxy.
 
 ## Migraciones
 

@@ -104,7 +104,7 @@ Implementar los componentes base de formularios, acciones y datos.
 
 ## Definition of Ready
 
-- [ ] Dependencias `done` o autorizadas.
+- [ ] Dependencias `done`. Excepción autorizada por el usuario y registrada en el tablero.
 - [ ] Decisiones resueltas.
 - [ ] Contratos congelados.
 - [ ] Diseño enlazado (si aplica).

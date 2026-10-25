@@ -15,11 +15,37 @@ Base: `/api`. Auth por cookie `memora_session`. JSON salvo subidas y descargas.
 }
 ```
 
-- Códigos: `400 VALIDATION_ERROR`, `401 UNAUTHENTICATED`, `403 FORBIDDEN`, `404 NOT_FOUND`, `409 CONFLICT`, `413 PAYLOAD_TOO_LARGE`, `415 UNSUPPORTED_MEDIA_TYPE`, `422 UNPROCESSABLE_ENTITY`, `429 RATE_LIMITED`, `500 INTERNAL_ERROR`.
+- Registro único de errores. La tabla de abajo es la fuente canónica; `packages/shared` define `ErrorCode` y la API lo usa.
+- Códigos:
+
+| HTTP | `code` | Uso |
+| --- | --- | --- |
+| 400 | `VALIDATION_ERROR` | Entrada inválida |
+| 401 | `UNAUTHENTICATED` | Sin sesión o expirada |
+| 403 | `FORBIDDEN` | Sesión válida sin permiso |
+| 404 | `NOT_FOUND` | Recurso inexistente o de otro círculo (no revelar existencia) |
+| 409 | `CONFLICT` | Conflicto genérico |
+| 409 | `ALBUM_NOT_EMPTY` | Borrar álbum con fotos |
+| 413 | `FILE_TOO_LARGE` | Archivo por encima del límite |
+| 413 | `QUOTA_EXCEEDED` | Cuota del círculo superada |
+| 415 | `UNSUPPORTED_MEDIA_TYPE` | Formato no permitido |
+| 422 | `UNPROCESSABLE_ENTITY` | Imagen válida pero no procesable |
+| 422 | `INVALID_IMAGE` | Imagen corrupta o píxeles excesivos |
+| 422 | `PROCESSING_FAILED` | Fallo de procesamiento de imagen |
+| 429 | `RATE_LIMITED` | Límite de peticiones |
+| 500 | `INTERNAL_ERROR` | Error interno sin detalles sensibles |
+
+- `details` puede incluir `field`, `resource` o `limit`, nunca datos de otros círculos.
 - Paginación por cursor: `?cursor=<id>&limit=24`; respuesta `{ items, nextCursor }`.
 - Fechas ISO 8601 UTC.
 - No se exponen `objectKey`, `tokenHash`, `passwordHash` ni datos de otros círculos.
 - OpenAPI generado desde Zod.
+
+## Salud
+
+| Método | Ruta | Descripción |
+| --- | --- | --- |
+| GET | `/health` | `{ status, version, timestamp }`; sin datos sensibles ni sesión |
 
 ## Auth
 
@@ -30,7 +56,7 @@ Base: `/api`. Auth por cookie `memora_session`. JSON salvo subidas y descargas.
 | POST | `/auth/logout` | Cerrar sesión |
 | GET | `/auth/csrf` | Token CSRF |
 | GET | `/me` | Usuario actual |
-| PATCH | `/me` | Nombre, avatar, tema |
+| PATCH | `/me` | Nombre y tema; el email es inmutable y el avatar no se edita en el MVP |
 | GET | `/me/uploads` | Subidas recientes del usuario |
 
 ## Círculos
@@ -48,6 +74,8 @@ Base: `/api`. Auth por cookie `memora_session`. JSON salvo subidas y descargas.
 | GET | `/circles/:circleId/activity` | Actividad del círculo |
 | GET | `/activity` | Actividad global de mis círculos |
 
+`GET /circles/:circleId` incluye `stats: { membersCount, albumsCount, photosCount, storageBytes, lastUploadAt }`.
+
 ## Invitaciones
 
 | Método | Ruta | Descripción |
@@ -58,7 +86,7 @@ Base: `/api`. Auth por cookie `memora_session`. JSON salvo subidas y descargas.
 | GET | `/invitations/:token` | Datos mínimos para la preview |
 | POST | `/invitations/:token/accept` | Unirse |
 
-`GET /invitations/:token` solo devuelve `{ circleName, inviterName, expiresAt, state }`. Nunca miembros, fotos ni álbumes.
+`GET /invitations/:token` solo devuelve `{ circleName, inviterName, expiresAt, state }`, con `state: valid | expired | revoked | already_member`. Nunca miembros, fotos ni álbumes.
 
 ## Álbumes
 
@@ -68,7 +96,8 @@ Base: `/api`. Auth por cookie `memora_session`. JSON salvo subidas y descargas.
 | POST | `/circles/:circleId/albums` | Crear |
 | GET | `/albums/:albumId` | Detalle |
 | PATCH | `/albums/:albumId` | Editar |
-| DELETE | `/albums/:albumId` | Borrar (permiso) |
+| DELETE | `/albums/:albumId` | Borrar solo owner y solo si está vacío; si no, `409 ALBUM_NOT_EMPTY` |
+| DELETE | `/albums/:albumId/photos` | Vaciar álbum (owner, confirmación; borra fotos y objetos) |
 
 ## Fotos
 
@@ -78,11 +107,11 @@ Base: `/api`. Auth por cookie `memora_session`. JSON salvo subidas y descargas.
 | POST | `/albums/:albumId/photos` | Subida multipart |
 | GET | `/photos/:photoId` | Detalle |
 | PATCH | `/photos/:photoId` | Descripción, fecha, lugar |
-| DELETE | `/photos/:photoId` | Borrar con permiso |
+| DELETE | `/photos/:photoId` | Borrar: uploader o owner |
 | GET | `/photos/:photoId/image?size=thumb\|display\|original` | Imagen autenticada |
 | POST | `/photos/:photoId/tags` | Etiquetar miembro |
 | DELETE | `/photos/:photoId/tags/:userId` | Quitar etiqueta |
-| GET | `/circles/:circleId/members/:userId/photos` | Fotos de una persona |
+| GET | `/circles/:circleId/members/:userId/photos` | Fotos de esta persona |
 
 ## Descargas
 
@@ -136,7 +165,7 @@ La API puede agrupar eventos de subida por actor/álbum/intervalo; el contrato d
 - Cookie obligatoria; sin acceso anónimo.
 - `Cache-Control: private, max-age=3600`.
 - `ETag` y `Content-Type` correctos.
-- `original` solo para descarga o visor autorizado.
+- `original` solo si `membersCanDownload` está activo; `display` y `thumb` para miembros.
 - Nunca se sirve el bucket directamente.
 
 ## OpenAPI

@@ -3,7 +3,7 @@
 ## Antes de empezar
 
 - [ ] Leer `AGENTS.md` y `spec.md`.
-- [ ] Comprobar dependencias: F18, F19, F21.
+- [ ] Comprobar dependencias: F18, F19, F20, F21.
 - [ ] Comprobar Definition of Ready.
 - [ ] Proponer plan y esperar confirmación.
 
@@ -13,7 +13,7 @@
 - [ ] InvitePanel
 - [ ] PendingInvitationRow
 - [ ] Personas con contador
-- [ ] Fotos de una persona
+- [ ] Fotos de esta persona
 - [ ] Estados vacío/carga/error
 
 ## Criterios de aceptación
@@ -22,7 +22,7 @@
 - [ ] AC-02: Invitar comparte/copia.
 - [ ] AC-03: Pendientes visibles solo owner.
 - [ ] AC-04: Contadores correctos.
-- [ ] AC-05: Fotos de una persona solo del círculo.
+- [ ] AC-05: Fotos de esta persona solo del círculo.
 - [ ] AC-06: Estados vacíos.
 
 ## Verificación

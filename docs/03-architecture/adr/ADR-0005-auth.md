@@ -9,7 +9,7 @@ La app necesita sesión persistente, segura y compatible con SSR. Web y API comp
 
 ## Decisión
 
-Sesiones en PostgreSQL, token aleatorio en cookie `HttpOnly` y hash en BD. `SameSite=Lax`, `Secure` en producción, 30 días. CSRF de doble envío y comprobación de `Origin`. Rate limiting.
+Sesiones en PostgreSQL, token aleatorio en cookie `HttpOnly` y hash en BD. `SameSite=Lax`, `Secure` en producción, 30 días. CSRF de doble envío y comprobación de `Origin`. Rate limiting. Invitar, expulsar y cambiar permisos es solo del propietario; no hay flag de invitación.
 
 ## Alternativas
 

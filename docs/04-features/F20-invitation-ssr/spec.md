@@ -8,7 +8,8 @@ spec: complete
 depends_on:
   - "F16"
   - "F19"
-blocks: []
+blocks:
+  - "F22"
 design_refs:
   - "assets/design/screens/invitacion-movil.png"
   - "assets/design/screens/invitacion-escritorio.png"
@@ -23,7 +24,7 @@ decisions:
 # F20 — Invitación SSR + compartir
 
 > **Milestone:** M2 · **Talla:** M · **Estado:** draft · **Spec:** completa
-> **Depende de:** F16, F19 · **Bloquea:** —
+> **Depende de:** F16, F19 · **Bloquea:** F22
 
 ## Objetivo
 
@@ -113,7 +114,7 @@ Construir la página de invitación con SSR, Open Graph, compartir y round-trip 
 
 ## Definition of Ready
 
-- [ ] Dependencias `done` o autorizadas.
+- [ ] Dependencias `done`. Excepción autorizada por el usuario y registrada en el tablero.
 - [ ] Decisiones resueltas.
 - [ ] Contratos congelados.
 - [ ] Diseño enlazado (si aplica).

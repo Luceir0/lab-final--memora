@@ -19,6 +19,8 @@
 - [ ] .gitignore
 - [ ] GitHub Actions base
 - [ ] Scripts raíz
+- [ ] `scripts/check-docs.mjs`
+- [ ] `scripts/validate-agents.mjs`
 
 ## Criterios de aceptación
 
@@ -29,6 +31,8 @@
 - [ ] AC-05: .env.example documenta todas las variables.
 - [ ] AC-06: CI ejecuta install, lint, typecheck, test y build.
 - [ ] AC-07: Los límites de imports están documentados.
+- [ ] AC-08: `check-docs.mjs` devuelve 0 enlaces rotos.
+- [ ] AC-09: `validate-agents.mjs` valida agentes, comandos, skills y las 43 specs.
 
 ## Verificación
 
@@ -37,6 +41,8 @@
 - [ ] `pnpm typecheck`
 - [ ] `pnpm build`
 - [ ] `docker compose config`
+- [ ] `node scripts/check-docs.mjs`
+- [ ] `node scripts/validate-agents.mjs`
 
 ## Cierre
 

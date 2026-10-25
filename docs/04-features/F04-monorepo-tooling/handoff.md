@@ -1,6 +1,6 @@
 # Handoff — F04 Monorepo, tooling, Docker y CI
 
-- **Estado:** draft
+- **Estado:** ready
 - **Rama:** `feat/f04-monorepo-tooling`
 - **Fecha:** pendiente
 - **Implementado por:** pendiente

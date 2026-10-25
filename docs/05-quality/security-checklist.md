@@ -18,6 +18,8 @@
 - [ ] Cada acción comprueba permiso.
 - [ ] IDs de otro círculo no filtran datos.
 - [ ] Descargas y ZIP autorizados.
+- [ ] `original` requiere `membersCanDownload`.
+- [ ] Borrar álbum no vacío devuelve `ALBUM_NOT_EMPTY`.
 - [ ] Etiquetas solo a miembros.
 - [ ] Owner-only: invitar, expulsar, settings, borrar círculo.
 
@@ -41,6 +43,8 @@
 - [ ] CORS no abierto innecesariamente.
 - [ ] OpenAPI no expone secretos.
 - [ ] Logs con redacción de PII.
+- [ ] Redirect tras login solo a rutas internas allow-list (sin open redirect).
+- [ ] Jobs ZIP con timeout, abort y límite de concurrencia.
 
 ## Frontend
 

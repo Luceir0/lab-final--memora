@@ -34,7 +34,7 @@ No se registran eventos privados de invitaciones (crear/revocar) para no filtrar
 ## UI
 
 - Panel “Actividad reciente” en `/circles` (escritorio y móvil).
-- Página `/circles/:id/activity` con “Ver toda la actividad”.
+- Página `/circles/:circleId/activity` con “Ver toda la actividad”.
 - Avatar, acción, álbum, tiempo relativo y enlace.
 - Estados vacío, carga y error.
 - Accesible como lista; tiempos con `<time datetime>`.

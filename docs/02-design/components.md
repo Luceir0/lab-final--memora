@@ -4,7 +4,7 @@
 
 | Componente | Variantes / props | Estados | Accesibilidad |
 | --- | --- | --- | --- |
-| `Button` | primary, secondary, ghost, danger, soft; sm 36, md 44, lg 52; `icon`, `loading`, `fullWidth` | hover, active, focus-visible, disabled, loading | `<button>` real; `aria-busy` |
+| `Button` | primary, secondary, ghost, danger, soft; sm 36 visual con área táctil 44, md 44, lg 52; `icon`, `loading`, `fullWidth` | hover, active, focus-visible, disabled, loading | `<button>` real; `aria-busy`; hit area ≥ 44 px |
 | `IconButton` | solid, outline, ghost, onMedia; `label` obligatorio | igual | `aria-label` |
 | `LinkButton` | variantes de Button sobre `<a>` | — | enlace real |
 | `TextField` / `TextArea` | label, hint, error, type, autoComplete, leadingIcon | default, focus, error, disabled | label, `aria-describedby`, `aria-invalid` |
@@ -13,7 +13,7 @@
 | `Switch` | label, description | on, off, disabled | `role="switch"` |
 | `SegmentedControl` | options, value | seleccionado, foco | radiogroup, flechas |
 | `Tabs` | items, value | activa, hover, foco | tablist/tab/tabpanel |
-| `Avatar` / `AvatarGroup` | name, src?, size 24–64, accent; max | con imagen, iniciales | nombre como alt |
+| `Avatar` / `AvatarGroup` | name, src?, size 24–64, accent; max | con imagen, iniciales | nombre como alt; si es interactivo, hit area ≥ 44 px |
 | `Badge` | primary, success, warning, danger, neutral | — | texto, no solo color |
 | `Chip` | selected, avatar?, onRemove? | normal, seleccionado, discontinuo | `aria-pressed` |
 | `Card` | padding, interactive | hover, foco | un enlace por tarjeta |

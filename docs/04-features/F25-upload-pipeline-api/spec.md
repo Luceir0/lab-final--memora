@@ -113,7 +113,7 @@ Implementar el pipeline completo de subida y procesamiento de imágenes.
 
 ## Definition of Ready
 
-- [ ] Dependencias `done` o autorizadas.
+- [ ] Dependencias `done`. Excepción autorizada por el usuario y registrada en el tablero.
 - [ ] Decisiones resueltas.
 - [ ] Contratos congelados.
 - [ ] Diseño enlazado (si aplica).

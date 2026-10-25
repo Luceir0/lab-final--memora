@@ -1,6 +1,17 @@
 # Cobertura del temario
 
-Estado inicial: **planificado**. Se actualiza al cerrar cada feature con evidencias reales (código, test, ADR, captura).
+Estado: **F01–F03 cubren los temas transversales** (organización, documentación, IA agente, revisión y activos). El resto está planificado y se actualiza al cerrar cada feature con evidencias reales.
+
+**Fuente del temario:** `assets/design/temario-tecnologias.png` y la especificación histórica `docs/archive/spec-v1.md` §7. No hay una transcripción oficial en texto; este mapa es la referencia operativa.
+
+## Transversales (F01–F03)
+
+| Tema | Dónde se aplica | Evidencia | Estado |
+| --- | --- | --- | --- |
+| Organización y documentación | README, docs, ADRs, specs | `README.md`, `docs/` | Cubierto |
+| IA agente | Agentes, comandos, skills, workflow | `.opencode/`, `AGENTS.md` | Cubierto |
+| Revisión y calidad | Protocolo de revisión, DoD, auditoría | `docs/06-process/`, `docs/05-quality/` | Cubierto |
+| Diseño y activos | Normalización, manifest, screens | `assets/design/`, `docs/02-design/screens.md` | Cubierto |
 
 ## 1. Maquetación
 

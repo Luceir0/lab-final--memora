@@ -19,17 +19,17 @@
 
 ## Criterios de aceptación
 
-- [ ] AC-01: Lighthouse razonable.
-- [ ] AC-02: Sin saltos de layout.
-- [ ] AC-03: Imágenes adaptadas.
-- [ ] AC-04: Bundle por ruta.
-- [ ] AC-05: Scroll fluido.
-- [ ] AC-06: Informe con antes/después.
+- [ ] AC-01: Lighthouse móvil: Performance ≥ 85, Accessibility ≥ 95, Best Practices ≥ 95.
+- [ ] AC-02: LCP ≤ 2,5 s, CLS ≤ 0,1, INP ≤ 200 ms.
+- [ ] AC-03: JS inicial ≤ 250 KB gzip; visor ≤ 400 KB gzip.
+- [ ] AC-04: Thumb ≤ 80 KB; display ≤ 400 KB.
+- [ ] AC-05: Sin saltos de layout y scroll fluido.
+- [ ] AC-06: Informe con antes/después y presupuestos reales.
 
 ## Verificación
 
 - [ ] `pnpm build`
-- [ ] `Lighthouse`
+- [ ] Lighthouse manual documentado
 
 ## Cierre
 

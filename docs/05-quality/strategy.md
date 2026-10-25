@@ -44,7 +44,8 @@ GitHub Actions:
 5. build.
 6. Playwright.
 7. axe.
-8. cache de Turborepo.
+8. `pnpm docs:check` y `pnpm agents:check`.
+9. cache de Turborepo.
 
 Servicios: Postgres y MinIO.
 

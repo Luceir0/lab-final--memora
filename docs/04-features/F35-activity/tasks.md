@@ -3,7 +3,7 @@
 ## Antes de empezar
 
 - [ ] Leer `AGENTS.md` y `spec.md`.
-- [ ] Comprobar dependencias: F25, F28.
+- [ ] Comprobar dependencias: F21, F23, F25, F28.
 - [ ] Comprobar Definition of Ready.
 - [ ] Proponer plan y esperar confirmación.
 
@@ -25,6 +25,7 @@
 - [ ] AC-04: Paginación por cursor.
 - [ ] AC-05: Panel y página.
 - [ ] AC-06: No PII.
+- [ ] AC-07: El diseño inferido se documenta y se revisa con `design-auditor`.
 
 ## Verificación
 

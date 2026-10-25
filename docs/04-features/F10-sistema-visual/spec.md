@@ -121,7 +121,7 @@ Implementar tokens, Tailwind 4, temas claro/oscuro/sistema, fuente, iconos y aus
 
 ## Definition of Ready
 
-- [ ] Dependencias `done` o autorizadas.
+- [ ] Dependencias `done`. Excepción autorizada por el usuario y registrada en el tablero.
 - [ ] Decisiones resueltas.
 - [ ] Contratos congelados.
 - [ ] Diseño enlazado (si aplica).

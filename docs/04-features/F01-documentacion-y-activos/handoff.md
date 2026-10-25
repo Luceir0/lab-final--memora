@@ -1,6 +1,6 @@
 # Handoff — F01 Documentación, activos y alcance v2
 
-- **Estado:** review
+- **Estado:** done
 - **Rama:** `feat/f01-documentacion-y-activos`
 - **Fecha:** 2026-10-25
 - **Implementado por:** orquestador + docs-scribe
@@ -24,7 +24,7 @@ README v2 convertido en índice, especificación v1 archivada, diseños normaliz
 
 ## Verificación
 
-- `node` link checker ad-hoc → 213 archivos Markdown, 0 enlaces locales rotos.
+- `node` link checker ad-hoc → 216 archivos Markdown, 0 enlaces locales rotos (verificación final tras R1–R4).
 - `ls assets/design/screens | wc -l` → 54.
 - `ls assets/archive/design-v1 | wc -l` → 17.
 - `rg -n "assets/design/(m|d)[0-9]" README.md docs` → sin rutas antiguas en documentación viva.
@@ -58,4 +58,4 @@ README v2 convertido en índice, especificación v1 archivada, diseños normaliz
 
 ## Siguiente paso propuesto
 
-Aceptar F01 y continuar con F02 (ADRs) o F04 (monorepo), según el orden acordado.
+F01 aceptada. Continuar con F04 (monorepo y tooling) cuando el usuario lo pida.

@@ -15,6 +15,8 @@ Registro de decisiones de arquitectura. Formato: contexto, decisión, alternativ
 | [0009](ADR-0009-activity.md) | Tabla de eventos | Aceptado |
 | [0010](ADR-0010-content-island.md) | Content Island + snapshot SSG | Aceptado |
 | [0011](ADR-0011-accessibility.md) | AA obligatorio + AAA viable | Aceptado |
+| [0012](ADR-0012-privacy.md) | Privacidad y datos de imágenes | Aceptado |
+| [0013](ADR-0013-pwa.md) | PWA sin service worker en el MVP | Aceptado |
 
 ## Plantilla
 

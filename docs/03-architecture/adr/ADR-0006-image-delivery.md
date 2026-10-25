@@ -13,6 +13,7 @@ Servir las imágenes a través de la API con la cookie de sesión:
 
 - `GET /api/photos/:photoId/image?size=thumb|display|original`
 - La API comprueba identidad, pertenencia y permiso.
+- `display` y `thumb` para miembros; `original` solo con `membersCanDownload`.
 - Bucket privado; sin URLs públicas.
 - `Cache-Control: private, max-age=3600`, `ETag`.
 

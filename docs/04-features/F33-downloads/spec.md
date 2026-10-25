@@ -83,7 +83,7 @@ Implementar descarga individual, de selección y de álbum con job ZIP.
 
 ## Criterios de aceptación
 
-- **AC-01.** Autorización por foto/álbum.
+- **AC-01.** Autorización por foto/álbum; `original` y descargas requieren `membersCanDownload`.
 - **AC-02.** Límites 500/2 GB.
 - **AC-03.** Job expira 24 h.
 - **AC-04.** Polling y descarga.
@@ -111,7 +111,7 @@ Implementar descarga individual, de selección y de álbum con job ZIP.
 
 ## Definition of Ready
 
-- [ ] Dependencias `done` o autorizadas.
+- [ ] Dependencias `done`. Excepción autorizada por el usuario y registrada en el tablero.
 - [ ] Decisiones resueltas.
 - [ ] Contratos congelados.
 - [ ] Diseño enlazado (si aplica).

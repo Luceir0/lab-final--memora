@@ -31,13 +31,13 @@ No es una red social:
 | --- | --- | --- |
 | Durante o después de un viaje, boda o cumpleaños | Móvil | Subir desde galería o cámara, ver lo de los demás, invitar por enlace |
 | Organizar en casa | Escritorio | Subidas masivas, arrastrar y soltar, metadatos, etiquetas |
-| Recuperar un recuerdo | Ambos | Encontrar fotos de una persona, abrir a pantalla completa, descargar |
+| Recuperar un recuerdo | Ambos | Encontrar fotos de esta persona, abrir a pantalla completa, descargar |
 
 ## Perfiles
 
 - Quien crea un círculo familiar, de amistades, pareja o viaje.
 - Quien es invitado y aporta fotos desde el móvil.
-- Quien busca fotos de una persona o descarga un álbum.
+- Quien busca fotos de esta persona o descarga un álbum.
 
 ## Éxito
 

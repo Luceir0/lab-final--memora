@@ -10,7 +10,7 @@ Aplicación web real, con la misma calidad en **móvil** y **escritorio**, insta
 
 ## Estado del proyecto
 
-**Fase actual: definición y estructura agéntica (F01–F03) en revisión.**
+**Fase actual: definición y estructura agéntica cerradas (F01–F03). Siguiente: F04.**
 
 Todavía **no hay código de aplicación**. Este repositorio contiene la especificación viva, el sistema de diseño, los ADRs, las 43 features y la configuración de agentes que se usará para construirlo paso a paso.
 
@@ -23,7 +23,7 @@ Todavía **no hay código de aplicación**. Este repositorio contiene la especif
 | Agentes, comandos y skills | Configurados |
 | Monorepo y app | Pendiente (F04–F05) |
 
-El tablero de features está en [docs/04-features/README.md](docs/04-features/README.md). F01–F03 están en `review` hasta que las aceptes.
+El tablero de features está en [docs/04-features/README.md](docs/04-features/README.md). F01–F03 están `done`; F04 está `ready`.
 
 ---
 

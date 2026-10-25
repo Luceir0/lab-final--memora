@@ -3,7 +3,7 @@ id: F04
 title: "Monorepo, tooling, Docker y CI"
 milestone: M1
 size: M
-status: draft
+status: ready
 spec: complete
 depends_on:
   - "F03"
@@ -20,7 +20,7 @@ decisions:
 
 # F04 — Monorepo, tooling, Docker y CI
 
-> **Milestone:** M1 · **Talla:** M · **Estado:** draft · **Spec:** completa
+> **Milestone:** M1 · **Talla:** M · **Estado:** ready · **Spec:** completa
 > **Depende de:** F03 · **Bloquea:** F05
 
 ## Objetivo
@@ -62,6 +62,8 @@ Crear la base reproducible del monorepo: pnpm, Turborepo, paquetes, Docker local
 - .gitignore
 - GitHub Actions base
 - Scripts raíz
+- `scripts/check-docs.mjs` (enlaces y estructura documental)
+- `scripts/validate-agents.mjs` (agentes, comandos, skills y specs)
 
 ### No incluye
 
@@ -78,6 +80,8 @@ Crear la base reproducible del monorepo: pnpm, Turborepo, paquetes, Docker local
 - .github/workflows/ci.yml
 - tsconfig base
 - ESLint/Prettier
+- `scripts/check-docs.mjs`
+- `scripts/validate-agents.mjs`
 
 ## UX y estados
 
@@ -92,6 +96,8 @@ Crear la base reproducible del monorepo: pnpm, Turborepo, paquetes, Docker local
 - **AC-05.** .env.example documenta todas las variables.
 - **AC-06.** CI ejecuta install, lint, typecheck, test y build.
 - **AC-07.** Los límites de imports están documentados.
+- **AC-08.** `check-docs.mjs` devuelve 0 enlaces rotos.
+- **AC-09.** `validate-agents.mjs` valida agentes, comandos, skills y las 43 specs.
 
 ## Pruebas
 
@@ -99,6 +105,8 @@ Crear la base reproducible del monorepo: pnpm, Turborepo, paquetes, Docker local
 - Build de humo
 - Docker healthchecks
 - CI en rama
+- `node scripts/check-docs.mjs`
+- `node scripts/validate-agents.mjs`
 
 ## Archivos previstos
 
@@ -109,6 +117,8 @@ Crear la base reproducible del monorepo: pnpm, Turborepo, paquetes, Docker local
 - `apps/**`
 - `packages/**`
 - `.github/workflows/ci.yml`
+- `scripts/check-docs.mjs`
+- `scripts/validate-agents.mjs`
 
 ## Verificación
 
@@ -117,10 +127,12 @@ Crear la base reproducible del monorepo: pnpm, Turborepo, paquetes, Docker local
 - `pnpm typecheck`
 - `pnpm build`
 - `docker compose config`
+- `node scripts/check-docs.mjs`
+- `node scripts/validate-agents.mjs`
 
 ## Definition of Ready
 
-- [ ] Dependencias `done` o autorizadas.
+- [ ] Dependencias `done`. Excepción autorizada por el usuario y registrada en el tablero.
 - [ ] Decisiones resueltas.
 - [ ] Contratos congelados.
 - [ ] Diseño enlazado (si aplica).
@@ -131,6 +143,6 @@ Crear la base reproducible del monorepo: pnpm, Turborepo, paquetes, Docker local
 
 Al terminar, completa `handoff.md` y actualiza el tablero. No hagas commit ni push sin permiso.
 
-## Preguntas abiertas
+## Notas
 
-Fijar versiones exactas. No usar Prisma 8 RC.
+Versiones fijadas en el README y los ADRs. No usar Prisma 8 RC. Los scripts de validación documental son parte de esta feature.

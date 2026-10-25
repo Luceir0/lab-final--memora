@@ -14,7 +14,7 @@ Las fotos llegan desde móvil y escritorio, con redes inestables, formatos varia
 - `sharp` para orientación, thumb 400 y display 1600; original privado.
 - `heic-convert` para HEIC si el spike lo valida; si no, rechazo 415 claro.
 - EXIF: orientación y fecha; GPS solo en memoria para geocodificar.
-- **No se persisten coordenadas**; solo `placeName`.
+- **No se persisten coordenadas**; solo `placeName`. La caché de geocodificación es en memoria.
 - Idempotencia con `clientUploadId`.
 - Adaptador de almacenamiento y fakes en tests.
 

@@ -10,6 +10,8 @@
 ## Implementación
 
 - [ ] Listar/crear/detalle/editar/borrar
+- [ ] Borrar solo owner y solo si está vacío
+- [ ] Vaciar álbum owner con confirmación
 - [ ] Pertenencia al círculo
 - [ ] Portada
 - [ ] Fecha
@@ -21,9 +23,11 @@
 - [ ] AC-01: Álbum pertenece a un círculo.
 - [ ] AC-02: Solo miembros ven.
 - [ ] AC-03: Crear requiere permiso.
-- [ ] AC-04: Editar/borrar requiere owner o permiso.
+- [ ] AC-04: Editar requiere owner o permiso; borrar solo owner.
 - [ ] AC-05: Portada validada.
 - [ ] AC-06: No se filtra información.
+- [ ] AC-07: Borrar álbum con fotos devuelve `409 ALBUM_NOT_EMPTY`.
+- [ ] AC-08: Vaciar álbum elimina fotos, objetos y tags con confirmación.
 
 ## Verificación
 

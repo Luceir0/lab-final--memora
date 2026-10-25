@@ -41,9 +41,12 @@ Reglas:
 - Un recurso de otro círculo devuelve 404, no 403, cuando revelar existencia sería una fuga.
 - El propietario siempre puede.
 - Los flags de `Circle.settings` limitan a miembros.
-- Invitar, expulsar, cambiar permisos y borrar círculo: solo owner.
-- Etiquetar: solo miembros del círculo; si el flag está activo.
-- Descargar: si el flag está activo.
+- Invitar, expulsar, cambiar permisos y borrar círculo: solo owner. No existe flag `membersCanInvite`.
+- Etiquetar: solo miembros del círculo; si el flag `membersCanTag` está activo.
+- Descargar: si el flag `membersCanDownload` está activo. Ese mismo flag controla el acceso a `original`; `display` y `thumb` están disponibles para miembros.
+- Borrar foto: quien la subió o el owner. Ningún otro miembro.
+- Borrar álbum: solo owner y solo si está vacío; si tiene fotos, `409 ALBUM_NOT_EMPTY`.
+- Vaciar álbum: solo owner, con confirmación explícita; elimina todas las fotos y sus objetos.
 - No se confía en IDs del cliente.
 
 ## Permisos puros
@@ -69,7 +72,7 @@ type Action =
 function can(...): boolean
 ```
 
-Tests unitarios sin mocks para todas las combinaciones rol × flag × acción.
+Tests unitarios sin mocks para todas las combinaciones rol × flag × acción, incluidos `photo.delete`, `album.delete`, descarga de `original` y `member.invite` (siempre owner).
 
 ## Rutas protegidas
 

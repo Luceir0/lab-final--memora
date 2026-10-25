@@ -18,6 +18,7 @@ decisions:
   - "ADR-0003"
   - "ADR-0004"
   - "ADR-0007"
+  - "ADR-0010"
 ---
 
 # F05 — Spike técnico integrado
@@ -51,6 +52,7 @@ Validar juntas las piezas de riesgo antes de construir features: Start, Tailwind
 - ADR-0003
 - ADR-0004
 - ADR-0007
+- ADR-0010
 
 ## Alcance
 
@@ -114,7 +116,7 @@ Validar juntas las piezas de riesgo antes de construir features: Start, Tailwind
 
 ## Definition of Ready
 
-- [ ] Dependencias `done` o autorizadas.
+- [ ] Dependencias `done`. Excepción autorizada por el usuario y registrada en el tablero.
 - [ ] Decisiones resueltas.
 - [ ] Contratos congelados.
 - [ ] Diseño enlazado (si aplica).

@@ -7,7 +7,7 @@
 | 1 | Responsive móvil/escritorio, claro/oscuro/sistema | F10–F13 |
 | 2 | PWA instalable | F14 |
 | 3 | Registro, login, logout, sesión, rutas protegidas | F15–F16 |
-| 4 | Círculos privados: crear, listar, detalle | F17–F18 |
+| 4 | Círculos privados: crear, listar, detalle; miembros y personas | F17–F18, F21–F22 |
 | 5 | Invitación por enlace con Open Graph y email opcional | F19–F20 |
 | 6 | Álbumes: crear y consultar | F23–F24 |
 | 7 | Subida con progreso, validación, reintento y drag & drop | F25–F26 |
@@ -19,6 +19,7 @@
 | 13 | API REST, PostgreSQL y S3 reales | F06–F08, F25 |
 | 14 | Tests, estados y accesibilidad | F37–F41 |
 | 15 | Mapa de cobertura del temario | F43 |
+| 16 | Demo local reproducible y guía de despliegue opcional | F42–F43 |
 
 ## Extras acordados
 

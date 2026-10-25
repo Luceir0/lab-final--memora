@@ -8,6 +8,7 @@ spec: complete
 depends_on:
   - "F18"
   - "F19"
+  - "F20"
   - "F21"
 blocks:
   - "F32"
@@ -26,11 +27,11 @@ decisions: []
 # F22 — People web
 
 > **Milestone:** M2 · **Talla:** M · **Estado:** draft · **Spec:** completa
-> **Depende de:** F18, F19, F21 · **Bloquea:** F32
+> **Depende de:** F18, F19, F20, F21 · **Bloquea:** F32
 
 ## Objetivo
 
-Construir Personas, invitaciones pendientes y fotos de una persona.
+Construir Personas, invitaciones pendientes y fotos de esta persona.
 
 ## Contexto mínimo
 
@@ -64,7 +65,7 @@ Construir Personas, invitaciones pendientes y fotos de una persona.
 - InvitePanel
 - PendingInvitationRow
 - Personas con contador
-- Fotos de una persona
+- Fotos de esta persona
 - Estados vacío/carga/error
 
 ### No incluye
@@ -91,7 +92,7 @@ Construir Personas, invitaciones pendientes y fotos de una persona.
 - **AC-02.** Invitar comparte/copia.
 - **AC-03.** Pendientes visibles solo owner.
 - **AC-04.** Contadores correctos.
-- **AC-05.** Fotos de una persona solo del círculo.
+- **AC-05.** Fotos de esta persona solo del círculo.
 - **AC-06.** Estados vacíos.
 
 ## Pruebas
@@ -113,7 +114,7 @@ Construir Personas, invitaciones pendientes y fotos de una persona.
 
 ## Definition of Ready
 
-- [ ] Dependencias `done` o autorizadas.
+- [ ] Dependencias `done`. Excepción autorizada por el usuario y registrada en el tablero.
 - [ ] Decisiones resueltas.
 - [ ] Contratos congelados.
 - [ ] Diseño enlazado (si aplica).

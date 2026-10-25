@@ -74,6 +74,8 @@ Base 4 px: `space-1` 4 · `space-2` 8 · `space-3` 12 · `space-4` 16 · `space-
 | `radius-2xl` | 32 px | Hojas, modales |
 | `radius-full` | 999 px | Avatares, chips |
 
+Ancho de borde: `--border-width: 1px`. No se usan grosores arbitrarios.
+
 ## Sombras y movimiento
 
 | Token | Valor |

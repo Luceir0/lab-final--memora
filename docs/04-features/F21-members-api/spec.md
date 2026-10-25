@@ -9,6 +9,7 @@ depends_on:
   - "F17"
 blocks:
   - "F22"
+  - "F35"
 design_refs: []
 contracts:
   - "docs/03-architecture/api-contract.md"
@@ -20,7 +21,7 @@ decisions:
 # F21 — Members API
 
 > **Milestone:** M2 · **Talla:** M · **Estado:** draft · **Spec:** completa
-> **Depende de:** F17 · **Bloquea:** F22
+> **Depende de:** F17 · **Bloquea:** F22, F35
 
 ## Objetivo
 
@@ -54,7 +55,6 @@ Implementar listado de miembros, expulsión, salida y contadores de fotos etique
 - DELETE member
 - POST leave
 - Contadores
-- Invitaciones pendientes
 - Reglas de owner
 - Tests
 
@@ -99,7 +99,7 @@ Implementar listado de miembros, expulsión, salida y contadores de fotos etique
 
 ## Definition of Ready
 
-- [ ] Dependencias `done` o autorizadas.
+- [ ] Dependencias `done`. Excepción autorizada por el usuario y registrada en el tablero.
 - [ ] Decisiones resueltas.
 - [ ] Contratos congelados.
 - [ ] Diseño enlazado (si aplica).

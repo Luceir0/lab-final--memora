@@ -6,6 +6,8 @@ size: M
 status: draft
 spec: complete
 depends_on:
+  - "F21"
+  - "F23"
   - "F25"
   - "F28"
 blocks: []
@@ -20,7 +22,7 @@ decisions:
 # F35 — Actividad
 
 > **Milestone:** M4 · **Talla:** M · **Estado:** draft · **Spec:** completa
-> **Depende de:** F25, F28 · **Bloquea:** —
+> **Depende de:** F21, F23, F25, F28 · **Bloquea:** —
 
 ## Objetivo
 
@@ -36,6 +38,7 @@ Implementar la tabla de eventos, API global/por círculo y UI de actividad.
 ### Diseño
 
 - [assets/design/screens/mis-circulos-escritorio.png](../../../assets/design/screens/mis-circulos-escritorio.png)
+- No existe una pantalla específica de Actividad. Se infiere del panel de actividad de `Mis círculos · escritorio` y del patrón de lista/tarjetas; se valida con `design-auditor`.
 
 ### Contratos
 
@@ -82,6 +85,7 @@ Implementar la tabla de eventos, API global/por círculo y UI de actividad.
 - **AC-04.** Paginación por cursor.
 - **AC-05.** Panel y página.
 - **AC-06.** No PII.
+- **AC-07.** El diseño inferido se documenta y se revisa con `design-auditor`.
 
 ## Pruebas
 
@@ -102,7 +106,7 @@ Implementar la tabla de eventos, API global/por círculo y UI de actividad.
 
 ## Definition of Ready
 
-- [ ] Dependencias `done` o autorizadas.
+- [ ] Dependencias `done`. Excepción autorizada por el usuario y registrada en el tablero.
 - [ ] Decisiones resueltas.
 - [ ] Contratos congelados.
 - [ ] Diseño enlazado (si aplica).

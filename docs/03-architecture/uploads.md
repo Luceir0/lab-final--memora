@@ -43,7 +43,7 @@ Cliente selecciona archivos
 | --- | --- | --- | --- |
 | `thumb` | 400 × 400 cover | WebP | Galería |
 | `display` | máx. 1600 px lado mayor | WebP | Visor |
-| `original` | sin redimensionar | original | Descarga |
+| `original` | sin redimensionar | original | Descarga (requiere `membersCanDownload`) |
 
 Claves:
 
@@ -65,7 +65,7 @@ circles/{circleId}/photos/{photoId}/thumb.webp
 ## Geocodificación
 
 - Nominatim con `User-Agent` identificable.
-- Caché por coordenadas redondeadas (3 decimales) y límite de frecuencia.
+- Caché en memoria por coordenadas redondeadas (3 decimales) y límite de frecuencia. No se persiste.
 - Timeout 3 s; si falla, la foto se guarda sin lugar.
 - Se puede editar `placeName` manualmente.
 - Nunca se llama a Nominatim desde el navegador.
@@ -86,7 +86,7 @@ circles/{circleId}/photos/{photoId}/thumb.webp
 | `QUOTA_EXCEEDED` | Cuota del círculo |
 | `INVALID_IMAGE` | Corrupta o píxeles excesivos |
 | `FORBIDDEN` | Sin permiso de subida |
-| `ALBUM_NOT_FOUND` | Álbum inexistente o de otro círculo |
+| `NOT_FOUND` | Álbum inexistente o de otro círculo |
 | `PROCESSING_FAILED` | Fallo de sharp/S3; el archivo no queda publicado |
 
 ## Cola cliente

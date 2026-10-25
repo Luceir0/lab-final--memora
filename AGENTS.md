@@ -104,6 +104,10 @@ pnpm lint
 pnpm typecheck
 pnpm test
 pnpm test:e2e
+pnpm test:a11y
+pnpm docs:check
+pnpm agents:check
+pnpm audit
 pnpm db:migrate
 pnpm db:seed
 ```

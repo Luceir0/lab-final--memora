@@ -15,6 +15,7 @@
 - [ ] Estados vacío/carga/error
 - [ ] Guardando
 - [ ] Validación
+- [ ] Acción “Vaciar álbum” para owner, con confirmación
 
 ## Criterios de aceptación
 
@@ -24,6 +25,8 @@
 - [ ] AC-04: Estado vacío guía a subir.
 - [ ] AC-05: Errores comprensibles.
 - [ ] AC-06: Teclado y foco.
+- [ ] AC-07: Borrar álbum no vacío muestra `ALBUM_NOT_EMPTY` y guía a vaciarlo.
+- [ ] AC-08: “Vaciar álbum” pide confirmación y actualiza la galería.
 
 ## Verificación
 

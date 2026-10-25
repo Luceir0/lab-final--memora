@@ -3,7 +3,7 @@
 ## Foto individual
 
 - `GET /api/photos/:photoId/download`
-- Autoriza sesión, pertenencia y permiso de descarga.
+- Autoriza sesión, pertenencia y permiso de descarga (`membersCanDownload`).
 - Sirve el original con `Content-Disposition: attachment`.
 - Nombre seguro: `memora-{album}-{fecha}-{id}.{ext}`.
 - `Cache-Control: private, no-store`.

@@ -3,7 +3,7 @@ id: F03
 title: "Scaffold agéntico"
 milestone: M0
 size: M
-status: review
+status: done
 spec: complete
 depends_on:
   - "F02"
@@ -18,7 +18,7 @@ decisions: []
 
 # F03 — Scaffold agéntico
 
-> **Milestone:** M0 · **Talla:** M · **Estado:** review · **Spec:** completa
+> **Milestone:** M0 · **Talla:** M · **Estado:** done · **Spec:** completa
 > **Depende de:** F02 · **Bloquea:** F04
 
 ## Objetivo
@@ -103,13 +103,13 @@ Crear la estructura de agentes, comandos, skills y specs para que cada feature s
 
 ## Verificación
 
-- `node scripts/validate-agents.mjs (se creará en F04)`
+- `node scripts/validate-agents.mjs` (se implementa en F04)
 - `find docs/04-features -name spec.md | wc -l`
 - `rg -n "TODO" AGENTS.md .opencode docs/04-features`
 
 ## Definition of Ready
 
-- [ ] Dependencias `done` o autorizadas.
+- [ ] Dependencias `done`. Excepción autorizada por el usuario y registrada en el tablero.
 - [ ] Decisiones resueltas.
 - [ ] Contratos congelados.
 - [ ] Diseño enlazado (si aplica).

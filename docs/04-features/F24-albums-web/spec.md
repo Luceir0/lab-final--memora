@@ -64,6 +64,7 @@ Construir creación, detalle y cabecera de álbum con estados.
 - Estados vacío/carga/error
 - Guardando
 - Validación
+- Acción “Vaciar álbum” para owner, con confirmación
 
 ### No incluye
 
@@ -91,6 +92,8 @@ Construir creación, detalle y cabecera de álbum con estados.
 - **AC-04.** Estado vacío guía a subir.
 - **AC-05.** Errores comprensibles.
 - **AC-06.** Teclado y foco.
+- **AC-07.** Borrar álbum no vacío muestra `ALBUM_NOT_EMPTY` y guía a vaciarlo.
+- **AC-08.** “Vaciar álbum” pide confirmación y actualiza la galería.
 
 ## Pruebas
 
@@ -110,7 +113,7 @@ Construir creación, detalle y cabecera de álbum con estados.
 
 ## Definition of Ready
 
-- [ ] Dependencias `done` o autorizadas.
+- [ ] Dependencias `done`. Excepción autorizada por el usuario y registrada en el tablero.
 - [ ] Decisiones resueltas.
 - [ ] Contratos congelados.
 - [ ] Diseño enlazado (si aplica).

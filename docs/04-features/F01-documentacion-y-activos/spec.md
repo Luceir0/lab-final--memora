@@ -3,7 +3,7 @@ id: F01
 title: "Documentación, activos y alcance v2"
 milestone: M0
 size: M
-status: review
+status: done
 spec: complete
 depends_on: []
 blocks:
@@ -18,7 +18,7 @@ decisions: []
 
 # F01 — Documentación, activos y alcance v2
 
-> **Milestone:** M0 · **Talla:** M · **Estado:** review · **Spec:** completa
+> **Milestone:** M0 · **Talla:** M · **Estado:** done · **Spec:** completa
 > **Depende de:** — · **Bloquea:** F02
 
 ## Objetivo
@@ -108,13 +108,13 @@ Cerrar la verdad documental del proyecto: README v2, activos de diseño normaliz
 
 ## Verificación
 
-- `node scripts/check-docs.mjs (se creará en F04)`
+- `node scripts/check-docs.mjs` (se implementa en F04)
 - `rg -n "assets/design/(m|d)[0-9]" README.md docs`
 - `ls assets/design/screens | wc -l`
 
 ## Definition of Ready
 
-- [ ] Dependencias `done` o autorizadas.
+- [ ] Dependencias `done`. Excepción autorizada por el usuario y registrada en el tablero.
 - [ ] Decisiones resueltas.
 - [ ] Contratos congelados.
 - [ ] Diseño enlazado (si aplica).

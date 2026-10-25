@@ -25,6 +25,7 @@ memora/
 │   └── config/
 ├── docs/
 ├── assets/
+├── scripts/                  # check-docs, validate-agents
 ├── turbo.json
 ├── pnpm-workspace.yaml
 └── package.json
@@ -44,7 +45,7 @@ config    → (nada interno)
 - `shared` no importa React, Fastify ni Prisma.
 - `ui` no importa API ni dominio.
 - `api-client` no importa UI.
-- `apps/api` no importa `ui` ni `api-client` (salvo tipos compartidos).
+- `apps/api` no importa `ui` ni `api-client`. Los tipos compartidos viven en `shared`.
 - Evitar dependencias circulares.
 
 ## Scripts previstos
@@ -57,6 +58,8 @@ config    → (nada interno)
   "typecheck": "turbo typecheck",
   "test": "turbo test",
   "test:e2e": "turbo test:e2e",
+  "docs:check": "node scripts/check-docs.mjs",
+  "agents:check": "node scripts/validate-agents.mjs",
   "db:migrate": "pnpm --filter @memora/api db:migrate",
   "db:seed": "pnpm --filter @memora/api db:seed"
 }

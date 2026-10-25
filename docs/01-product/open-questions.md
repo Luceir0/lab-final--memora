@@ -32,6 +32,12 @@
 | 26 | Subidas globales | Cola en memoria + `/uploads`; sin background |
 | 27 | Privacidad EXIF | Sin GPS; solo placeName |
 | 28 | Fuera de MVP | Documentado en `scope.md` |
+| 29 | `membersCanInvite` | Eliminado; invitar es solo owner |
+| 30 | Borrado | Foto: uploader/owner; álbum: owner y solo si está vacío (`ALBUM_NOT_EMPTY`) |
+| 31 | Email/avatar | Email inmutable; avatar con iniciales; subida posterior |
+| 32 | Errores | Registro único con `ErrorCode` Zod |
+| 33 | Rendimiento | Presupuestos de `performance.md` |
+| 34 | Diseño faltante | Vistas base/oscuro/actividad inferidas y documentadas |
 
 ## Operativas pendientes
 

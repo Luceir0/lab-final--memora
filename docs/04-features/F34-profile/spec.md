@@ -13,6 +13,7 @@ design_refs:
   - "assets/design/screens/perfil-escritorio-edicion-con-error.png"
 contracts:
   - "docs/03-architecture/auth.md"
+  - "docs/03-architecture/api-contract.md"
 decisions:
   - "ADR-0005"
 ---
@@ -24,7 +25,7 @@ decisions:
 
 ## Objetivo
 
-Construir perfil, edición, tema, instalación, almacenamiento demo y logout.
+Construir perfil, edición de nombre, tema, instalación, almacenamiento demo y logout.
 
 ## Contexto mínimo
 
@@ -37,10 +38,12 @@ Construir perfil, edición, tema, instalación, almacenamiento demo y logout.
 
 - [assets/design/screens/perfil-movil.png](../../../assets/design/screens/perfil-movil.png)
 - [assets/design/screens/perfil-escritorio-edicion-con-error.png](../../../assets/design/screens/perfil-escritorio-edicion-con-error.png)
+- El diseño muestra “Cambiar foto”; en el MVP se sustituye por iniciales. La subida de avatar queda como feature posterior.
 
 ### Contratos
 
 - [docs/03-architecture/auth.md](../../../docs/03-architecture/auth.md)
+- [docs/03-architecture/api-contract.md](../../../docs/03-architecture/api-contract.md)
 
 ### Decisiones
 
@@ -51,7 +54,7 @@ Construir perfil, edición, tema, instalación, almacenamiento demo y logout.
 ### Incluye
 
 - ProfileCard
-- Edición nombre/email/avatar
+- Edición de nombre (email inmutable; avatar con iniciales)
 - ThemeToggle
 - InstallAppRow
 - StorageMeter demo
@@ -77,18 +80,19 @@ Construir perfil, edición, tema, instalación, almacenamiento demo y logout.
 
 ## Criterios de aceptación
 
-- **AC-01.** Editar valida y guarda.
-- **AC-02.** Email duplicado con error claro.
-- **AC-03.** Tema persiste.
-- **AC-04.** Instalar explica iOS/Android.
-- **AC-05.** Almacenamiento marcado demo.
-- **AC-06.** Logout redirige.
+- **AC-01.** Editar nombre valida y guarda.
+- **AC-02.** El email se muestra pero no se edita en el MVP.
+- **AC-03.** El avatar usa iniciales; no hay subida en el MVP.
+- **AC-04.** Tema persiste.
+- **AC-05.** Instalar explica iOS/Android.
+- **AC-06.** Almacenamiento marcado demo.
+- **AC-07.** Logout redirige.
 
 ## Pruebas
 
 - RTL perfil
 - Tema
-- Error email
+- Nombre inválido
 - Logout
 
 ## Archivos previstos
@@ -102,7 +106,7 @@ Construir perfil, edición, tema, instalación, almacenamiento demo y logout.
 
 ## Definition of Ready
 
-- [ ] Dependencias `done` o autorizadas.
+- [ ] Dependencias `done`. Excepción autorizada por el usuario y registrada en el tablero.
 - [ ] Decisiones resueltas.
 - [ ] Contratos congelados.
 - [ ] Diseño enlazado (si aplica).
@@ -115,4 +119,4 @@ Al terminar, completa `handoff.md` y actualiza el tablero. No hagas commit ni pu
 
 ## Preguntas abiertas
 
-No prometer plan de pago.
+No prometer plan de pago. Email inmutable y avatar con iniciales; la subida de avatar queda como feature posterior.

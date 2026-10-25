@@ -17,6 +17,7 @@ Objetivo: **WCAG 2.2 AA obligatorio** y **AAA donde sea viable**, con excepcione
 - Orden lógico; sin trampas.
 - Modales y hojas: `aria-modal`, foco inicial, trampa, `Esc`, retorno al disparador.
 - Cambio de ruta: foco al título principal o región anunciada.
+- 2.4.11: barras fijas, paneles y toasts no ocultan el elemento con foco.
 - Atajos documentados y desactivables.
 
 ## Contraste

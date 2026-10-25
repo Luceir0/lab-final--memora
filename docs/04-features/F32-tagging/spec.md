@@ -18,7 +18,7 @@ contracts:
   - "docs/03-architecture/api-contract.md"
   - "docs/03-architecture/data-model.md"
 decisions:
-  - "ADR-0009"
+  - "ADR-0005"
 ---
 
 # F32 — Etiquetado
@@ -51,7 +51,7 @@ Etiquetar miembros en fotos y filtrar “fotos de esta persona”.
 
 ### Decisiones
 
-- ADR-0009
+- ADR-0005
 
 ## Alcance
 
@@ -111,7 +111,7 @@ Etiquetar miembros en fotos y filtrar “fotos de esta persona”.
 
 ## Definition of Ready
 
-- [ ] Dependencias `done` o autorizadas.
+- [ ] Dependencias `done`. Excepción autorizada por el usuario y registrada en el tablero.
 - [ ] Decisiones resueltas.
 - [ ] Contratos congelados.
 - [ ] Diseño enlazado (si aplica).

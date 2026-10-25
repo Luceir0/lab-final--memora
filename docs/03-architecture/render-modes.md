@@ -15,7 +15,7 @@
 | `/circles/:circleId/albums/:albumId` | `ssr: false` | Galería |
 | `/circles/:circleId/albums/:albumId/photos/:photoId` | `ssr: false` | Visor |
 | `/circles/:circleId/people` | `ssr: false` | Personas |
-| `/circles/:circleId/people/:memberId/photos` | `ssr: false` | Fotos de persona |
+| `/circles/:circleId/people/:userId/photos` | `ssr: false` | Fotos de esta persona |
 | `/circles/:circleId/settings` | `ssr: false` | Ajustes |
 | `/circles/:circleId/activity` | `ssr: false` | Actividad |
 | `/uploads` | `ssr: false` | Cola global |

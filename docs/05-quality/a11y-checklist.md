@@ -25,6 +25,7 @@
 - [ ] Diálogos con foco inicial, trampa y retorno.
 - [ ] `Esc` cierra; flechas en visor/menús.
 - [ ] Foco al cambiar de ruta.
+- [ ] **2.4.11 Focus not obscured**: la barra inferior, el panel de subidas y los toasts no tapan el elemento con foco.
 
 ## Contraste y color
 

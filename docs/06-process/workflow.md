@@ -53,7 +53,7 @@ draft → ready → in-progress → review → accepted → done
 
 ## Definition of Ready
 
-- [ ] Dependencias `done`.
+- [ ] Dependencias `done`. Excepción: el usuario autoriza explícitamente y se registra en el tablero.
 - [ ] Decisiones resueltas.
 - [ ] Spec con AC numerados.
 - [ ] Contratos congelados.

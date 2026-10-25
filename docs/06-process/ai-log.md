@@ -43,3 +43,12 @@ Registro de usos relevantes de IA. No es un chat completo: es evidencia para el 
 - **Decisión final:** F01–F03 quedan en `review`; no se crea código de aplicación hasta F04.
 - **Tema del temario:** organización, documentación, IA agente, revisión.
 - **Evidencia:** `README.md`, `AGENTS.md`, `.opencode/`, `docs/04-features/`.
+
+### 2026-10-25 — Correcciones de auditoría (R1–R4)
+
+- **Prompt representativo:** aplicar las correcciones de la auditoría sin empezar el desarrollo.
+- **Propuesta de la IA:** commit de protección, ADR-0012/0013, contrato único de errores, reglas de borrado, F34 sin email/avatar, diseño inferido y presupuestos de rendimiento.
+- **Qué se corrigió:** `membersCanInvite`, códigos duplicados, borrado de álbum, health endpoint, `:circleId`, F22→F20, F32 ADR, F35 diseño, terminología y documentación de calidad.
+- **Decisión final:** se mantiene el alcance; se documentan las vistas inferidas y los presupuestos.
+- **Tema del temario:** organización, documentación, IA agente, revisión.
+- **Evidencia:** `docs/05-quality/audits/2026-10-25-audit.md`, ADR-0012, ADR-0013, `docs/03-architecture/api-contract.md`.

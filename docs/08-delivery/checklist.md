@@ -21,8 +21,10 @@
 - [ ] Responsive 320–1440.
 - [ ] Claro y oscuro.
 - [ ] Sin errores de consola/hidratación.
-- [ ] Lighthouse razonable.
+- [ ] Lighthouse móvil dentro del presupuesto (Perf ≥ 85, A11y ≥ 95, BP ≥ 95).
+- [ ] LCP ≤ 2,5 s, CLS ≤ 0,1, INP ≤ 200 ms.
 - [ ] Seguridad revisada.
+- [ ] Privacidad EXIF/GPS verificada: no se persisten coordenadas y se eliminan metadatos.
 
 ## Documentación
 

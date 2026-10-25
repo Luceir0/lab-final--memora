@@ -10,7 +10,7 @@
 ## Implementación
 
 - [ ] GET/POST /circles
-- [ ] GET/PATCH/DELETE /circles/:id
+- [ ] GET/PATCH/DELETE /circles/:circleId
 - [ ] Membership owner
 - [ ] Settings flags
 - [ ] Stats

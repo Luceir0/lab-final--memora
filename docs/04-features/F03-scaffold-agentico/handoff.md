@@ -1,6 +1,6 @@
 # Handoff — F03 Scaffold agéntico
 
-- **Estado:** review
+- **Estado:** done
 - **Rama:** `feat/f03-scaffold-agentico`
 - **Fecha:** 2026-10-25
 - **Implementado por:** orquestador + docs-scribe
@@ -35,13 +35,13 @@ Estructura completa para trabajar con agentes: constitución, configuración de 
 
 | AC | Resultado |
 | --- | --- |
-| JSONC válido | Pasa |
-| Agentes con descripción/modo/permisos | Pasa |
-| Comandos con plantilla | Pasa |
-| Skills accionables | Pasa |
-| Cada feature con 3 archivos | Pasa |
-| Tablero enlaza 43 | Pasa |
-| Contexto suficiente para subagente | Pasa en revisión de plantilla |
+| AC-01 JSONC válido | Pasa |
+| AC-02 Agentes con descripción/modo/permisos | Pasa |
+| AC-03 Comandos con plantilla | Pasa |
+| AC-04 Skills accionables | Pasa |
+| AC-05 Cada feature con 3 archivos | Pasa |
+| AC-06 Tablero enlaza 43 | Pasa |
+| AC-07 Contexto suficiente para subagente | Pasa en revisión de plantilla |
 
 ## Riesgos y limitaciones
 
@@ -61,4 +61,4 @@ Estructura completa para trabajar con agentes: constitución, configuración de 
 
 ## Siguiente paso propuesto
 
-Aceptar F03 y empezar F04 (monorepo, tooling, Docker y CI). No implementar producto todavía.
+F03 aceptada. F04 está ready; empezar cuando el usuario lo pida.

@@ -20,6 +20,8 @@
 - [ ] ADR de actividad
 - [ ] ADR de Content Island
 - [ ] ADR de accesibilidad
+- [ ] ADR de privacidad y EXIF
+- [ ] ADR de PWA y service worker
 
 ## Criterios de aceptación
 

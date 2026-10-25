@@ -12,7 +12,7 @@ PostgreSQL + Prisma 7.10.1. Nombres de tablas en PascalCase vía Prisma; columna
 | name | String | 1–80 |
 | email | String @unique | normalizado a minúsculas |
 | passwordHash | String | argon2id |
-| avatarUrl | String? | URL gestionada o null |
+| avatarUrl | String? | reservado; no editable en el MVP (se usan iniciales) |
 | themePreference | ThemePreference | light/dark/system |
 | createdAt | DateTime | |
 | updatedAt | DateTime | |
@@ -50,10 +50,11 @@ PostgreSQL + Prisma 7.10.1. Nombres de tablas en PascalCase vía Prisma; columna
   "membersCanCreateAlbums": true,
   "membersCanUpload": true,
   "membersCanDownload": true,
-  "membersCanTag": true,
-  "membersCanInvite": false
+  "membersCanTag": true
 }
 ```
+
+Invitar, expulsar, cambiar permisos y borrar el círculo es **siempre solo del propietario**. No existe `membersCanInvite`.
 
 ### Membership
 
@@ -145,7 +146,7 @@ PostgreSQL + Prisma 7.10.1. Nombres de tablas en PascalCase vía Prisma; columna
 | circleId | String | FK Circle |
 | albumId | String? | FK Album |
 | requestedBy | String | FK User |
-| kind | DownloadKind | album/selection/single? |
+| kind | DownloadKind | album/selection |
 | photoIds | Json? | selección |
 | status | DownloadStatus | pending/processing/ready/error/expired |
 | objectKey | String? | ZIP privado |
@@ -186,11 +187,14 @@ ActivityType: photo.uploaded | album.created | member.joined
 - `Photo.circleId` coincide con `Album.circleId`.
 - Un usuario no puede tener dos memberships en el mismo círculo.
 - Solo se etiqueta a miembros del círculo.
+- Si un miembro es expulsado o sale, sus fotos permanecen y conservan la autoría; sus etiquetas (`PhotoTag.taggedUserId`) se eliminan.
 - Un propietario no puede eliminarse a sí mismo del círculo sin borrarlo o transferir (transfer fuera del MVP).
 - `Invitation.tokenHash` nunca se expone.
 - `Photo.originalKey` nunca se expone al cliente.
 - No se persisten coordenadas GPS.
-- Borrar una foto elimina sus tags y su actividad asociada (o deja `photoId` null según la operación).
+- Borrar una foto elimina sus tags y sus objetos. En `Activity`, el evento histórico se conserva con `photoId = null` (`SetNull`).
+- Borrar un álbum está permitido solo al propietario y **solo si está vacío**. Si tiene fotos, la API devuelve `409 ALBUM_NOT_EMPTY`; el cliente ofrece vaciarlo primero.
+- Vaciar un álbum elimina todas sus fotos (y objetos/tags/actividad asociada) con confirmación explícita.
 - Borrar un círculo elimina memberships, invitaciones, álbumes, fotos, tags, jobs y actividad.
 
 ## Índices y rendimiento

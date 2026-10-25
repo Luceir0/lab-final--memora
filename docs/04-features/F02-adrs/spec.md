@@ -3,7 +3,7 @@ id: F02
 title: "ADRs y decisiones técnicas"
 milestone: M0
 size: M
-status: review
+status: done
 spec: complete
 depends_on:
   - "F01"
@@ -24,11 +24,13 @@ decisions:
   - "ADR-0009"
   - "ADR-0010"
   - "ADR-0011"
+  - "ADR-0012"
+  - "ADR-0013"
 ---
 
 # F02 — ADRs y decisiones técnicas
 
-> **Milestone:** M0 · **Talla:** M · **Estado:** review · **Spec:** completa
+> **Milestone:** M0 · **Talla:** M · **Estado:** done · **Spec:** completa
 > **Depende de:** F01 · **Bloquea:** F03
 
 ## Objetivo
@@ -63,6 +65,8 @@ Registrar las decisiones que condicionan la arquitectura para que ningún agente
 - ADR-0009
 - ADR-0010
 - ADR-0011
+- ADR-0012
+- ADR-0013
 
 ## Alcance
 
@@ -79,6 +83,8 @@ Registrar las decisiones que condicionan la arquitectura para que ningún agente
 - ADR de actividad
 - ADR de Content Island
 - ADR de accesibilidad
+- ADR de privacidad y EXIF
+- ADR de PWA y service worker
 
 ### No incluye
 
@@ -88,7 +94,7 @@ Registrar las decisiones que condicionan la arquitectura para que ningún agente
 ## Entregables
 
 - docs/03-architecture/adr/README.md
-- 11 ADRs aceptados
+- 13 ADRs aceptados
 
 ## UX y estados
 
@@ -119,7 +125,7 @@ Registrar las decisiones que condicionan la arquitectura para que ningún agente
 
 ## Definition of Ready
 
-- [ ] Dependencias `done` o autorizadas.
+- [ ] Dependencias `done`. Excepción autorizada por el usuario y registrada en el tablero.
 - [ ] Decisiones resueltas.
 - [ ] Contratos congelados.
 - [ ] Diseño enlazado (si aplica).

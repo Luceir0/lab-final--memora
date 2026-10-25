@@ -55,7 +55,7 @@ Implementar CRUD de círculos, membresía, settings y permisos reales.
 ### Incluye
 
 - GET/POST /circles
-- GET/PATCH/DELETE /circles/:id
+- GET/PATCH/DELETE /circles/:circleId
 - Membership owner
 - Settings flags
 - Stats
@@ -104,7 +104,7 @@ Implementar CRUD de círculos, membresía, settings y permisos reales.
 
 ## Definition of Ready
 
-- [ ] Dependencias `done` o autorizadas.
+- [ ] Dependencias `done`. Excepción autorizada por el usuario y registrada en el tablero.
 - [ ] Decisiones resueltas.
 - [ ] Contratos congelados.
 - [ ] Diseño enlazado (si aplica).

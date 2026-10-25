@@ -62,6 +62,8 @@ apps/api (Fastify)
 - [ADR-0009 Activity](adr/ADR-0009-activity.md)
 - [ADR-0010 Content Island](adr/ADR-0010-content-island.md)
 - [ADR-0011 Accessibility](adr/ADR-0011-accessibility.md)
+- [ADR-0012 Privacy](adr/ADR-0012-privacy.md)
+- [ADR-0013 PWA](adr/ADR-0013-pwa.md)
 
 ## Riesgos
 

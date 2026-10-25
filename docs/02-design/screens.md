@@ -1,6 +1,6 @@
 # Pantallas
 
-Inventario de la segunda iteración. Las imágenes están en `assets/design/screens/` y los nombres originales se conservan en el manifest.
+Inventario de la segunda iteración. Las imágenes están en `assets/design/screens/` y los nombres originales se conservan en el manifest. La etiqueta canónica de producto es **“Fotos de esta persona”**; algunos nombres de archivo conservan “Fotos de una persona”.
 
 - Índice visual: [indice-de-pantallas.png](../../assets/design/indice-de-pantallas.png)
 - Sistema de diseño: [design-system-v0.1.png](../../assets/design/design-system-v0.1.png)
@@ -14,7 +14,7 @@ Inventario de la segunda iteración. Las imágenes están en `assets/design/scre
 | Invitación | `/invite/:token` | 3 |
 | Círculos | `/circles` · `/circles/new` · `/circles/:circleId` | 13 |
 | Álbumes y subidas | `/circles/:circleId/albums/...` · `/uploads` | 7 |
-| Fotos y etiquetas | `.../photos/:photoId` · `.../people/:memberId/photos` | 10 |
+| Fotos y etiquetas | `.../photos/:photoId` · `.../people/:userId/photos` | 10 |
 | Personas | `/circles/:circleId/people` | 3 |
 | Ajustes y perfil | `/circles/:circleId/settings` · `/profile` | 7 |
 | Ayuda, privacidad y 404 | `/help` · `/privacy` · `*` | 6 |
@@ -175,3 +175,22 @@ Inventario de la segunda iteración. Las imágenes están en `assets/design/scre
 
 <img src="../../assets/design/screens/cola-de-subida-movil.png" alt="Cola de subida · móvil" width="520" />
 
+
+## Diseño inferido
+
+La segunda iteración no incluye algunas vistas base o variantes. Se construirán con los tokens y patrones existentes, y se marcarán como **inferidas** hasta que exista un PNG canónico:
+
+| Vista | Referencia de partida |
+| --- | --- |
+| Registro · estado base | `Acceso · móvil` + `Registro · móvil · teclado abierto` + `Registro · escritorio · errores` |
+| Crear círculo · estado base | `Crear círculo · móvil · validación` + formularios de Ajustes |
+| Crear álbum · estado base | `Crear álbum · móvil · guardando` + formularios de Ajustes |
+| Álbum · móvil · estado normal | `Álbum · móvil · vacío` + `Álbum · móvil · subiendo` + `Álbum · escritorio · selección múltiple` |
+| Acceso · escritorio · estado base | `Acceso · escritorio · enviando` |
+| Etiquetar · escritorio · estado base | `Etiquetar · escritorio · guardando` + `Etiquetar · móvil` |
+| Ajustes · escritorio · estado base | `Ajustes · escritorio · guardando` + `Ajustes · móvil` |
+| Perfil · escritorio · éxito | `Perfil · escritorio · edición con error` + `Perfil · móvil` |
+| Actividad · panel y página | Panel de `Mis círculos · escritorio` + lista/tarjetas del sistema |
+| Variantes oscuras | `Álbum · escritorio · oscuro · subidas y soltar` + tokens oscuros |
+
+Regla: toda vista inferida se revisa con `design-auditor` y se anota en la spec de su feature. No se presenta como diseño canónico.

@@ -4,7 +4,7 @@
 
 - **La fotografía manda.** Interfaz neutra (grises fríos, blanco, azul-negro). El violeta se reserva para la acción principal y la selección.
 - **Una sola familia tipográfica:** Plus Jakarta Sans, jerarquía por tamaño y peso.
-- **Superficies redondeadas y ligeras:** tarjetas de 20–24 px, bordes de 1 px, sombras suaves.
+- **Superficies redondeadas y ligeras:** tarjetas de 24 px (`radius-xl`), bordes de 1 px (`--border-width`), sombras suaves.
 - **Oscuro ≠ negro:** fondos azul-negro, elevación por superficies más claras y bordes.
 - **Nunca un hex en un componente:** siempre token semántico.
 - **Movimiento discreto:** nunca necesario para entender; se desactiva con `prefers-reduced-motion`.
