@@ -10,7 +10,7 @@ Aplicación web real, con la misma calidad en **móvil** y **escritorio**, insta
 
 ## Estado del proyecto
 
-**Fase actual: definición, scaffold agéntico y monorepo cerrados (F01–F04). F04 aceptada; falta la ejecución real de CI en GitHub para cerrarla como `done`.**
+**Fase actual: definición, scaffold agéntico y monorepo cerrados (F01–F04). F05, el spike técnico integrado, es el siguiente paso.**
 
 Todavía **no hay lógica de producto**: F04 deja listos el monorepo, el tooling, Docker y CI; las features de aplicación empiezan en F05. Este repositorio contiene la especificación viva, el sistema de diseño, los ADRs, las 43 features y la configuración de agentes que se usará para construirlo paso a paso.
 
@@ -21,9 +21,9 @@ Todavía **no hay lógica de producto**: F04 deja listos el monorepo, el tooling
 | Arquitectura y ADRs | Definidos |
 | Features | 43 specs con criterios de aceptación |
 | Agentes, comandos y skills | Configurados |
-| Monorepo y app | F04 aceptada (CI pendiente de ejecutar) |
+| Monorepo y app | F04 `done`, CI en verde |
 
-El tablero de features está en [docs/04-features/README.md](docs/04-features/README.md). F01–F03 están `done`; F04 está `accepted`, pendiente de CI para pasar a `done`.
+El tablero de features está en [docs/04-features/README.md](docs/04-features/README.md). F01–F04 están `done`; F05 es el siguiente paso.
 
 ---
 
@@ -218,13 +218,12 @@ Herramientas:
 
 ## Próximos pasos
 
-1. **F04** — ejecutar CI en el PR y cerrarla como `done`.
-2. **F05** — spike de TanStack Start + Tailwind 4 + Fastify + Zod 4 + Prisma 7.
-3. **F06–F14** — contratos, datos, API/web core, sistema visual y UI kit.
-4. **F15–F22** — auth, círculos, invitaciones y personas.
-5. **F23–F28** — álbumes, subidas y ajustes.
-6. **F29–F35** — galería, visor, metadatos, etiquetas, descargas, perfil y actividad.
-7. **F36–F43** — Content Island, tests, accesibilidad, rendimiento, seguridad, despliegue y defensa.
+1. **F05** — spike de TanStack Start + Tailwind 4 + Fastify + Zod 4 + Prisma 7.
+2. **F06–F14** — contratos, datos, API/web core, sistema visual y UI kit.
+3. **F15–F22** — auth, círculos, invitaciones y personas.
+4. **F23–F28** — álbumes, subidas y ajustes.
+5. **F29–F35** — galería, visor, metadatos, etiquetas, descargas, perfil y actividad.
+6. **F36–F43** — Content Island, tests, accesibilidad, rendimiento, seguridad, despliegue y defensa.
 
 ---
 

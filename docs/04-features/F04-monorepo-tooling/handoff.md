@@ -1,7 +1,7 @@
 # Handoff — F04 Monorepo, tooling, Docker y CI
 
-- **Estado:** accepted (pendiente de CI para `done`)
-- **Rama:** `feat/F04-monorepo-tooling`, subida a `origin`; `main` sin tocar
+- **Estado:** done
+- **Rama:** `feat/F04-monorepo-tooling` mergeada en `main` (`ff6c6d7`)
 - **Fecha:** 2026-10-25
 - **Implementado por:** orquestador + subagentes de implementación
 - **Revisado por:** reviewer independiente
@@ -13,7 +13,7 @@ Monorepo reproducible con pnpm 10.34.8 y Turborepo: apps `web` y `api`, paquetes
 
 La revisión independiente dio **«apto con correcciones», sin bloqueantes**. Las seis correcciones solicitadas están resueltas: I1 permisos de `.env`, I2 `displayPath` del checker, I3 `lint:root` para `scripts/`, I4 Prettier limitado a código, I5 CI ejecuta `docs:check` y `agents:check`, e I6 MinIO fijado por digest y documentado.
 
-La feature queda en `accepted`: el usuario dio su conformidad. Para pasar a `done` falta una cosa: que el workflow de CI se ejecute de verdad en GitHub Actions (el push a una rama no lo dispara; se activa con un PR o un push a `main`).
+La feature está `done`: el usuario dio su conformidad, el trabajo se mergeó en `main` y CI pasó en verde sobre ese merge ([run 40220950230](https://github.com/Luceir0/lab-final--memora/actions/runs/40220950230), job único con install, docs, agents, lint, typecheck, test y build).
 
 ## Cambios (archivos)
 
@@ -54,6 +54,7 @@ Ejecución real del orquestador y del reviewer, sin caché cuando se indica:
 | `pnpm --filter @memora/api dev` | `Server listening at http://127.0.0.1:3001`; `GET /` → 404 JSON (correcto: sin rutas hasta F05) |
 | Humo web (`pnpm --filter @memora/web dev`) | Vite 8.3.5; `GET http://localhost:3000/` → 200; `<html lang="es">`, `<title>Memora</title>`, `main` + `h1` con `SITE_NAME` |
 | Pruebas negativas de validadores (`--root` sobre copia temporal) | enlace roto, `status: bogus`, `default_agent` inexistente y `subagent+allow` en `api-dev` → exit 1 en cada caso |
+| CI en GitHub Actions (`main`, merge `ff6c6d7`) | [run 40220950230](https://github.com/Luceir0/lab-final--memora/actions/runs/40220950230): completed/success; ningún paso fallido |
 | `git status` | limpio; artefactos y secretos ignorados; trabajo en 4 commits sobre `feat/F04-monorepo-tooling` |
 
 ## Criterios de aceptación
@@ -65,14 +66,13 @@ Ejecución real del orquestador y del reviewer, sin caché cuando se indica:
 | AC-03 | pnpm build construye paquetes vacíos | Pasa | build 5/5; web `dist/client` + `dist/server` |
 | AC-04 | docker compose up levanta Postgres, MinIO y Mailpit | Pasa | tres servicios `healthy`; `pg_isready`, MinIO y Mailpit responden |
 | AC-05 | .env.example documenta todas las variables | Pasa | aplicación, base de datos, sesión, S3, email, geocodificación, Content Island e infraestructura local |
-| AC-06 | CI ejecuta install, lint, typecheck, test y build | Pasa con limitación | `.github/workflows/ci.yml` incluye además `docs:check` y `agents:check`; validado por inspección y ejecución local equivalente, no en GitHub Actions |
+| AC-06 | CI ejecuta install, lint, typecheck, test y build | Pasa | [Run 40220950230](https://github.com/Luceir0/lab-final--memora/actions/runs/40220950230) en `main`: completed/success, ningún paso fallido; incluye además `docs:check` y `agents:check` |
 | AC-07 | Los límites de imports están documentados | Pasa con limitación | `docs/03-architecture/monorepo.md`; sin enforcement automático hasta F05/F09 |
 | AC-08 | `check-docs.mjs` devuelve 0 enlaces rotos | Pasa | 189 archivos, 399 enlaces, 0 rotos, estructura OK |
 | AC-09 | `validate-agents.mjs` valida agentes, comandos, skills y las 43 specs | Pasa | 10 agentes, 10 comandos, 6 skills, 43 specs, 43 filas de tablero |
 
 ## Pendiente
 
-- **Ejecución real de CI en GitHub Actions.** Al día de hoy `total_count = 0`: el workflow solo se dispara en `push`/`pull_request` a `main` y el trabajo vive en `feat/F04-monorepo-tooling`. Se resuelve abriendo PR o mergeando a `main`; hasta entonces AC-06 es «pasa con limitación».
 - **Enforcement de fronteras de imports.** Documentadas en `monorepo.md`, sin regla automática. Previsto en F05/F09.
 - **`onlyBuiltDependencies` para `esbuild@0.28.2`.** pnpm 10 sigue ignorando su postinstall; no rompe el build (Vite 8 usa rolldown). Se decide en F05.
 - **Tests reales de `apps/web` y `test:e2e`.** Hoy son placeholders que salen 0; llegan con F05 y F37/F38.
@@ -87,13 +87,13 @@ Ejecución real del orquestador y del reviewer, sin caché cuando se indica:
 4. **Cobertura de tests incompleta.** `apps/web` no tiene tests reales (placeholder que sale 0) y `test:e2e` no ejecuta nada todavía; `db:migrate` y `db:seed` fallarán hasta F07.
 5. **`routeTree.gen.ts`.** Se versiona a propósito; si se ignora, un clon limpio no pasa typecheck.
 6. **Fronteras sin enforcement.** Los límites de imports están documentados, pero no hay comprobación automática; se abordará en F05/F09.
-7. **CI sin ejecutar en GitHub.** El workflow está validado por inspección y por la ejecución local de todos sus pasos, pero no ha corrido en Actions: un push a rama no dispara `push`/`pull_request` limitados a `main`. Ver «Pendiente».
+7. **CI.** Ejecutada en `main` sobre el merge `ff6c6d7`: [run 40220950230](https://github.com/Luceir0/lab-final--memora/actions/runs/40220950230), completed/success, sin pasos fallidos.
 
 ## Documentación actualizada
 
 - [x] `docs/04-features/F04-monorepo-tooling/handoff.md`
-- [x] `docs/04-features/README.md` (F04 → `accepted` y situación actual)
-- [x] `docs/04-features/F04-monorepo-tooling/spec.md` (`status: accepted`)
+- [x] `docs/04-features/README.md` (F04 → `done` y situación actual)
+- [x] `docs/04-features/F04-monorepo-tooling/spec.md` (`status: done`)
 - [x] `docs/06-process/ai-log.md`
 - [x] `docs/07-curriculum/coverage-map.md` (sección «Entorno, tooling y entrega (F04)»)
 - [x] `README.md` (estado, árbol, versiones fijadas)
@@ -102,5 +102,4 @@ Ejecución real del orquestador y del reviewer, sin caché cuando se indica:
 
 ## Siguiente paso propuesto
 
-1. Abrir PR de `feat/F04-monorepo-tooling` a `main` (o mergear) para que CI corra; con el run en verde, F04 pasa a `done`.
-2. Abrir F05 (spike técnico integrado), que añadirá tests reales, enforcement de fronteras y valorará `onlyBuiltDependencies` para esbuild.
+1. Abrir F05 (spike técnico integrado), que añadirá tests reales, enforcement de fronteras y valorará `onlyBuiltDependencies` para esbuild.
