@@ -1,0 +1,372 @@
+[
+  {
+    "source": "segunda-iteracion",
+    "original": "Acceso · escritorio · enviando.png",
+    "path": "assets/design/screens/acceso-escritorio-enviando.png"
+  },
+  {
+    "source": "segunda-iteracion",
+    "original": "Acceso · móvil · errores.png",
+    "path": "assets/design/screens/acceso-movil-errores.png"
+  },
+  {
+    "source": "segunda-iteracion",
+    "original": "Acceso · móvil.png",
+    "path": "assets/design/screens/acceso-movil.png"
+  },
+  {
+    "source": "segunda-iteracion",
+    "original": "Ajustes · escritorio · eliminar.png",
+    "path": "assets/design/screens/ajustes-escritorio-eliminar.png"
+  },
+  {
+    "source": "segunda-iteracion",
+    "original": "Ajustes · escritorio · guardando.png",
+    "path": "assets/design/screens/ajustes-escritorio-guardando.png"
+  },
+  {
+    "source": "segunda-iteracion",
+    "original": "Ajustes · móvil · eliminar.png",
+    "path": "assets/design/screens/ajustes-movil-eliminar.png"
+  },
+  {
+    "source": "segunda-iteracion",
+    "original": "Ajustes · móvil · sin permisos.png",
+    "path": "assets/design/screens/ajustes-movil-sin-permisos.png"
+  },
+  {
+    "source": "segunda-iteracion",
+    "original": "Ajustes · móvil.png",
+    "path": "assets/design/screens/ajustes-movil.png"
+  },
+  {
+    "source": "segunda-iteracion",
+    "original": "Ayuda · escritorio.png",
+    "path": "assets/design/screens/ayuda-escritorio.png"
+  },
+  {
+    "source": "segunda-iteracion",
+    "original": "Ayuda · móvil.png",
+    "path": "assets/design/screens/ayuda-movil.png"
+  },
+  {
+    "source": "segunda-iteracion",
+    "original": "Cola de subida · móvil.png",
+    "path": "assets/design/screens/cola-de-subida-movil.png"
+  },
+  {
+    "source": "segunda-iteracion",
+    "original": "Crear círculo · escritorio · error.png",
+    "path": "assets/design/screens/crear-circulo-escritorio-error.png"
+  },
+  {
+    "source": "segunda-iteracion",
+    "original": "Crear círculo · escritorio · guardando.png",
+    "path": "assets/design/screens/crear-circulo-escritorio-guardando.png"
+  },
+  {
+    "source": "segunda-iteracion",
+    "original": "Crear círculo · móvil · validación.png",
+    "path": "assets/design/screens/crear-circulo-movil-validacion.png"
+  },
+  {
+    "source": "segunda-iteracion",
+    "original": "Crear álbum · escritorio · validación y error.png",
+    "path": "assets/design/screens/crear-album-escritorio-validacion-y-error.png"
+  },
+  {
+    "source": "segunda-iteracion",
+    "original": "Crear álbum · móvil · guardando.png",
+    "path": "assets/design/screens/crear-album-movil-guardando.png"
+  },
+  {
+    "source": "segunda-iteracion",
+    "original": "Círculo · escritorio · sin acceso.png",
+    "path": "assets/design/screens/circulo-escritorio-sin-acceso.png"
+  },
+  {
+    "source": "segunda-iteracion",
+    "original": "Círculo · escritorio.png",
+    "path": "assets/design/screens/circulo-escritorio.png"
+  },
+  {
+    "source": "segunda-iteracion",
+    "original": "Círculo · móvil · cabecera compacta.png",
+    "path": "assets/design/screens/circulo-movil-cabecera-compacta.png"
+  },
+  {
+    "source": "segunda-iteracion",
+    "original": "Círculo · móvil · sin álbumes, recién creado.png",
+    "path": "assets/design/screens/circulo-movil-sin-albumes-recien-creado.png"
+  },
+  {
+    "source": "segunda-iteracion",
+    "original": "Círculo · móvil.png",
+    "path": "assets/design/screens/circulo-movil.png"
+  },
+  {
+    "source": "segunda-iteracion",
+    "original": "Etiquetar · escritorio · guardando.png",
+    "path": "assets/design/screens/etiquetar-escritorio-guardando.png"
+  },
+  {
+    "source": "segunda-iteracion",
+    "original": "Etiquetar · móvil · sin resultados.png",
+    "path": "assets/design/screens/etiquetar-movil-sin-resultados.png"
+  },
+  {
+    "source": "segunda-iteracion",
+    "original": "Etiquetar · móvil.png",
+    "path": "assets/design/screens/etiquetar-movil.png"
+  },
+  {
+    "source": "segunda-iteracion",
+    "original": "Foto · escritorio · modal.png",
+    "path": "assets/design/screens/foto-escritorio-modal.png"
+  },
+  {
+    "source": "segunda-iteracion",
+    "original": "Foto · móvil · cargando.png",
+    "path": "assets/design/screens/foto-movil-cargando.png"
+  },
+  {
+    "source": "segunda-iteracion",
+    "original": "Foto · móvil · no disponible.png",
+    "path": "assets/design/screens/foto-movil-no-disponible.png"
+  },
+  {
+    "source": "segunda-iteracion",
+    "original": "Foto · móvil.png",
+    "path": "assets/design/screens/foto-movil.png"
+  },
+  {
+    "source": "segunda-iteracion",
+    "original": "Fotos de una persona · escritorio.png",
+    "path": "assets/design/screens/fotos-de-una-persona-escritorio.png"
+  },
+  {
+    "source": "segunda-iteracion",
+    "original": "Fotos de una persona · móvil · vacío.png",
+    "path": "assets/design/screens/fotos-de-una-persona-movil-vacio.png"
+  },
+  {
+    "source": "segunda-iteracion",
+    "original": "Fotos de una persona · móvil.png",
+    "path": "assets/design/screens/fotos-de-una-persona-movil.png"
+  },
+  {
+    "source": "segunda-iteracion",
+    "original": "Invitación · caducada, inválida, ya eres miembro.png",
+    "path": "assets/design/screens/invitacion-caducada-invalida-ya-eres-miembro.png"
+  },
+  {
+    "source": "segunda-iteracion",
+    "original": "Invitación · escritorio.png",
+    "path": "assets/design/screens/invitacion-escritorio.png"
+  },
+  {
+    "source": "segunda-iteracion",
+    "original": "Invitación · móvil.png",
+    "path": "assets/design/screens/invitacion-movil.png"
+  },
+  {
+    "source": "segunda-iteracion",
+    "original": "Mis círculos · escritorio · error.png",
+    "path": "assets/design/screens/mis-circulos-escritorio-error.png"
+  },
+  {
+    "source": "segunda-iteracion",
+    "original": "Mis círculos · escritorio.png",
+    "path": "assets/design/screens/mis-circulos-escritorio.png"
+  },
+  {
+    "source": "segunda-iteracion",
+    "original": "Mis círculos · móvil · cargando.png",
+    "path": "assets/design/screens/mis-circulos-movil-cargando.png"
+  },
+  {
+    "source": "segunda-iteracion",
+    "original": "Mis círculos · móvil · vacío.png",
+    "path": "assets/design/screens/mis-circulos-movil-vacio.png"
+  },
+  {
+    "source": "segunda-iteracion",
+    "original": "Mis círculos · móvil.png",
+    "path": "assets/design/screens/mis-circulos-movil.png"
+  },
+  {
+    "source": "segunda-iteracion",
+    "original": "No encontrada · escritorio.png",
+    "path": "assets/design/screens/no-encontrada-escritorio.png"
+  },
+  {
+    "source": "segunda-iteracion",
+    "original": "No encontrada · móvil.png",
+    "path": "assets/design/screens/no-encontrada-movil.png"
+  },
+  {
+    "source": "segunda-iteracion",
+    "original": "Perfil · escritorio · edición con error.png",
+    "path": "assets/design/screens/perfil-escritorio-edicion-con-error.png"
+  },
+  {
+    "source": "segunda-iteracion",
+    "original": "Perfil · móvil.png",
+    "path": "assets/design/screens/perfil-movil.png"
+  },
+  {
+    "source": "segunda-iteracion",
+    "original": "Personas · escritorio.png",
+    "path": "assets/design/screens/personas-escritorio.png"
+  },
+  {
+    "source": "segunda-iteracion",
+    "original": "Personas · móvil · sin etiquetas.png",
+    "path": "assets/design/screens/personas-movil-sin-etiquetas.png"
+  },
+  {
+    "source": "segunda-iteracion",
+    "original": "Personas · móvil.png",
+    "path": "assets/design/screens/personas-movil.png"
+  },
+  {
+    "source": "segunda-iteracion",
+    "original": "Privacidad · escritorio.png",
+    "path": "assets/design/screens/privacidad-escritorio.png"
+  },
+  {
+    "source": "segunda-iteracion",
+    "original": "Privacidad · móvil.png",
+    "path": "assets/design/screens/privacidad-movil.png"
+  },
+  {
+    "source": "segunda-iteracion",
+    "original": "Registro · escritorio · errores.png",
+    "path": "assets/design/screens/registro-escritorio-errores.png"
+  },
+  {
+    "source": "segunda-iteracion",
+    "original": "Registro · móvil · teclado abierto.png",
+    "path": "assets/design/screens/registro-movil-teclado-abierto.png"
+  },
+  {
+    "source": "segunda-iteracion",
+    "original": "temario-tecnologias.png",
+    "path": "assets/design/temario-tecnologias.png"
+  },
+  {
+    "source": "segunda-iteracion",
+    "original": "Álbum · escritorio · oscuro · subidas y soltar.png",
+    "path": "assets/design/screens/album-escritorio-oscuro-subidas-y-soltar.png"
+  },
+  {
+    "source": "segunda-iteracion",
+    "original": "Álbum · escritorio · selección múltiple.png",
+    "path": "assets/design/screens/album-escritorio-seleccion-multiple.png"
+  },
+  {
+    "source": "segunda-iteracion",
+    "original": "Álbum · móvil · subiendo.png",
+    "path": "assets/design/screens/album-movil-subiendo.png"
+  },
+  {
+    "source": "segunda-iteracion",
+    "original": "Álbum · móvil · vacío.png",
+    "path": "assets/design/screens/album-movil-vacio.png"
+  },
+  {
+    "source": "segunda-iteracion",
+    "original": "Índice de pantallas.png",
+    "path": "assets/design/indice-de-pantallas.png"
+  },
+  {
+    "source": "primera-iteracion",
+    "original": "d01-circulos.png",
+    "path": "assets/archive/design-v1/d01-circulos.png"
+  },
+  {
+    "source": "primera-iteracion",
+    "original": "d02-album.png",
+    "path": "assets/archive/design-v1/d02-album.png"
+  },
+  {
+    "source": "primera-iteracion",
+    "original": "d03-foto.png",
+    "path": "assets/archive/design-v1/d03-foto.png"
+  },
+  {
+    "source": "primera-iteracion",
+    "original": "d04-ajustes.png",
+    "path": "assets/archive/design-v1/d04-ajustes.png"
+  },
+  {
+    "source": "primera-iteracion",
+    "original": "d05-album-oscuro.png",
+    "path": "assets/archive/design-v1/d05-album-oscuro.png"
+  },
+  {
+    "source": "primera-iteracion",
+    "original": "m01-login.png",
+    "path": "assets/archive/design-v1/m01-login.png"
+  },
+  {
+    "source": "primera-iteracion",
+    "original": "m02-invitacion.png",
+    "path": "assets/archive/design-v1/m02-invitacion.png"
+  },
+  {
+    "source": "primera-iteracion",
+    "original": "m03-circulos.png",
+    "path": "assets/archive/design-v1/m03-circulos.png"
+  },
+  {
+    "source": "primera-iteracion",
+    "original": "m04-circulo.png",
+    "path": "assets/archive/design-v1/m04-circulo.png"
+  },
+  {
+    "source": "primera-iteracion",
+    "original": "m05-album.png",
+    "path": "assets/archive/design-v1/m05-album.png"
+  },
+  {
+    "source": "primera-iteracion",
+    "original": "m06-subida.png",
+    "path": "assets/archive/design-v1/m06-subida.png"
+  },
+  {
+    "source": "primera-iteracion",
+    "original": "m07-foto.png",
+    "path": "assets/archive/design-v1/m07-foto.png"
+  },
+  {
+    "source": "primera-iteracion",
+    "original": "m08-personas.png",
+    "path": "assets/archive/design-v1/m08-personas.png"
+  },
+  {
+    "source": "primera-iteracion",
+    "original": "m09-perfil.png",
+    "path": "assets/archive/design-v1/m09-perfil.png"
+  },
+  {
+    "source": "primera-iteracion",
+    "original": "m10-circulos-oscuro.png",
+    "path": "assets/archive/design-v1/m10-circulos-oscuro.png"
+  },
+  {
+    "source": "primera-iteracion",
+    "original": "m11-album-oscuro.png",
+    "path": "assets/archive/design-v1/m11-album-oscuro.png"
+  },
+  {
+    "source": "primera-iteracion",
+    "original": "m12-foto-oscuro.png",
+    "path": "assets/archive/design-v1/m12-foto-oscuro.png"
+  },
+  {
+    "source": "primera-iteracion",
+    "original": "sistema-de-diseno.png",
+    "path": "assets/design/design-system-v0.1.png"
+  }
+]

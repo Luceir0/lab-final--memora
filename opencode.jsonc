@@ -1,0 +1,41 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+
+  // El orquestador planifica y delega; los agentes concretos implementan.
+  "default_agent": "orchestrator",
+
+  // Contexto permanente. Las specs se cargan por feature, no aquí.
+  "instructions": [
+    "AGENTS.md",
+    "docs/06-process/workflow.md",
+    "docs/06-process/subagent-protocol.md"
+  ],
+
+  // Reglas globales. Las reglas de cada agente añaden restricciones.
+  "permissions": [
+    { "action": "read", "resource": ".env*", "effect": "deny" },
+    { "action": "edit", "resource": ".env*", "effect": "deny" },
+    { "action": "edit", "resource": "assets/design/**/*.png", "effect": "deny" },
+    { "action": "edit", "resource": "assets/archive/**/*.png", "effect": "deny" },
+    { "action": "shell", "resource": "git push *", "effect": "ask" },
+    { "action": "shell", "resource": "git commit *", "effect": "ask" },
+    { "action": "shell", "resource": "pnpm install*", "effect": "ask" },
+    { "action": "shell", "resource": "pnpm add*", "effect": "ask" },
+    { "action": "shell", "resource": "npx prisma migrate*", "effect": "ask" },
+    { "action": "shell", "resource": "rm -rf *", "effect": "ask" }
+  ],
+
+  "experimental": {
+    "todo": true
+  },
+
+  "watcher": {
+    "ignore": [
+      "assets/design/**",
+      "assets/archive/**",
+      "coverage/**",
+      "dist/**",
+      "node_modules/**"
+    ]
+  }
+}

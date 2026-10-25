@@ -1,0 +1,31 @@
+# Dependencias
+node_modules/
+.pnpm-store/
+
+# Build y caché
+dist/
+build/
+.turbo/
+coverage/
+.playwright/
+playwright-report/
+test-results/
+*.tsbuildinfo
+
+# Entorno
+.env
+.env.*
+!.env.example
+
+# Logs y sistema
+*.log
+.DS_Store
+Thumbs.db
+
+# Editores
+.idea/
+.vscode/
+
+# Base de datos local
+*.sqlite
+*.sqlite3
