@@ -10,9 +10,9 @@ Aplicación web real, con la misma calidad en **móvil** y **escritorio**, insta
 
 ## Estado del proyecto
 
-**Fase actual: definición y estructura agéntica cerradas (F01–F03). Siguiente: F04.**
+**Fase actual: definición y estructura agéntica cerradas (F01–F03). F04 (monorepo, tooling, Docker y CI) en review.**
 
-Todavía **no hay código de aplicación**. Este repositorio contiene la especificación viva, el sistema de diseño, los ADRs, las 43 features y la configuración de agentes que se usará para construirlo paso a paso.
+Todavía **no hay lógica de producto**: F04 deja listos el monorepo, el tooling, Docker y CI; las features de aplicación empiezan en F05. Este repositorio contiene la especificación viva, el sistema de diseño, los ADRs, las 43 features y la configuración de agentes que se usará para construirlo paso a paso.
 
 | Elemento | Estado |
 | --- | --- |
@@ -21,9 +21,9 @@ Todavía **no hay código de aplicación**. Este repositorio contiene la especif
 | Arquitectura y ADRs | Definidos |
 | Features | 43 specs con criterios de aceptación |
 | Agentes, comandos y skills | Configurados |
-| Monorepo y app | Pendiente (F04–F05) |
+| Monorepo y app | F04 en review |
 
-El tablero de features está en [docs/04-features/README.md](docs/04-features/README.md). F01–F03 están `done`; F04 está `ready`.
+El tablero de features está en [docs/04-features/README.md](docs/04-features/README.md). F01–F03 están `done`; F04 está `review`, pendiente de aceptación.
 
 ---
 
@@ -45,7 +45,28 @@ El tablero de features está en [docs/04-features/README.md](docs/04-features/RE
 | Testing | Vitest, React Testing Library, MSW, Playwright, axe |
 | Calidad | ESLint, Prettier, `tsc --noEmit`, GitHub Actions |
 
-Las versiones se fijan en F04. Prisma 8 está en RC y no se usa.
+**Versiones fijadas (F04):**
+
+| Herramienta | Versión |
+| --- | --- |
+| Node.js | 24.21.0 (`engines >=24`) |
+| pnpm | 10.34.8 (corepack) |
+| TypeScript | 6.0.3 |
+| Turborepo | 2.11.10 |
+| Vitest | 3.2.7 |
+| ESLint | 9.39.5 |
+| typescript-eslint | 8.72.0 |
+| Prettier | 3.9.10 |
+| React / React DOM | 19.3.1 |
+| TanStack Start | 1.169.4 |
+| TanStack Router | 1.170.46 |
+| Vite | 8.3.5 |
+| `@vitejs/plugin-react` | 6.1.2 |
+| `@types/react` / `@types/react-dom` | 19.3.0 |
+| Fastify | 5.12.7 |
+| `@types/node` | 24.19.2 |
+
+Imágenes locales: `postgres:17.11-alpine`, `alpine/minio` por tag y digest (solo local) y `axllent/mailpit:v1.32.0`. Prisma 8 está en RC y no se usa; Prisma 7.10.1 se incorporará con el modelo de datos (F07).
 
 ---
 
@@ -57,22 +78,36 @@ memora/
 ├── opencode.jsonc             # configuración de OpenCode V2
 ├── CLAUDE.md                  # puente para Claude Code
 ├── .opencode/                 # agentes, comandos y skills
+├── .github/
+│   └── workflows/             # CI: install, docs, agents, lint, typecheck, test y build
+├── apps/
+│   ├── web/                   # TanStack Start sobre Vite
+│   └── api/                   # Fastify
+├── packages/
+│   ├── shared/
+│   ├── api-client/
+│   ├── ui/
+│   └── config/
+├── scripts/                   # check-docs, validate-agents
+├── docker-compose.yml         # Postgres, MinIO y Mailpit locales
+├── package.json
+├── pnpm-workspace.yaml
+├── turbo.json
 ├── assets/
 │   ├── design/                # diseños canónicos normalizados
 │   ├── archive/design-v1/     # primera iteración (histórico)
 │   └── demo/                  # fotos de demostración con licencia
-├── docs/
-│   ├── 00-index.md
-│   ├── 01-product/
-│   ├── 02-design/
-│   ├── 03-architecture/
-│   ├── 04-features/
-│   ├── 05-quality/
-│   ├── 06-process/
-│   ├── 07-curriculum/
-│   ├── 08-delivery/
-│   └── archive/
-└── (apps/ y packages/ en F04)
+└── docs/
+    ├── 00-index.md
+    ├── 01-product/
+    ├── 02-design/
+    ├── 03-architecture/
+    ├── 04-features/
+    ├── 05-quality/
+    ├── 06-process/
+    ├── 07-curriculum/
+    ├── 08-delivery/
+    └── archive/
 ```
 
 ---
@@ -183,7 +218,7 @@ Herramientas:
 
 ## Próximos pasos
 
-1. **F04** — monorepo, tooling, Docker y CI base.
+1. **F04** — aceptación del monorepo, tooling, Docker y CI (en review).
 2. **F05** — spike de TanStack Start + Tailwind 4 + Fastify + Zod 4 + Prisma 7.
 3. **F06–F14** — contratos, datos, API/web core, sistema visual y UI kit.
 4. **F15–F22** — auth, círculos, invitaciones y personas.
@@ -195,6 +230,6 @@ Herramientas:
 
 ## Licencia y datos
 
-- Código: licencia pendiente de decidir en F04.
+- Código: licencia pendiente de decidir.
 - Fotografías de demostración: Unsplash/Pexels, con créditos en [assets/demo/README.md](assets/demo/README.md). Nunca fotos privadas reales sin consentimiento.
 - Los datos de la demo son ficticios.
