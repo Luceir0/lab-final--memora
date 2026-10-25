@@ -47,7 +47,7 @@
 ## Cierre
 
 - [x] Revisión independiente.
-- [ ] Aceptación del usuario.
+- [x] Aceptación del usuario.
 - [x] `handoff.md` completo.
 - [x] Tablero actualizado.
 - [x] Bitácora y cobertura actualizadas.

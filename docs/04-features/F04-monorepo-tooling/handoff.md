@@ -1,10 +1,11 @@
 # Handoff — F04 Monorepo, tooling, Docker y CI
 
-- **Estado:** review
-- **Rama propuesta:** `feat/F04-monorepo-tooling` (el trabajo está sin commitear sobre `main`)
+- **Estado:** accepted (pendiente de CI para `done`)
+- **Rama:** `feat/F04-monorepo-tooling`, subida a `origin`; `main` sin tocar
 - **Fecha:** 2026-10-25
 - **Implementado por:** orquestador + subagentes de implementación
 - **Revisado por:** reviewer independiente
+- **Aceptado por:** usuario (2026-10-25)
 
 ## Resultado
 
@@ -12,7 +13,7 @@ Monorepo reproducible con pnpm 10.34.8 y Turborepo: apps `web` y `api`, paquetes
 
 La revisión independiente dio **«apto con correcciones», sin bloqueantes**. Las seis correcciones solicitadas están resueltas: I1 permisos de `.env`, I2 `displayPath` del checker, I3 `lint:root` para `scripts/`, I4 Prettier limitado a código, I5 CI ejecuta `docs:check` y `agents:check`, e I6 MinIO fijado por digest y documentado.
 
-La feature queda en `review`: falta la aceptación del usuario en móvil/escritorio y la ejecución real de CI en GitHub Actions.
+La feature queda en `accepted`: el usuario dio su conformidad. Para pasar a `done` falta una cosa: que el workflow de CI se ejecute de verdad en GitHub Actions (el push a una rama no lo dispara; se activa con un PR o un push a `main`).
 
 ## Cambios (archivos)
 
@@ -53,7 +54,7 @@ Ejecución real del orquestador y del reviewer, sin caché cuando se indica:
 | `pnpm --filter @memora/api dev` | `Server listening at http://127.0.0.1:3001`; `GET /` → 404 JSON (correcto: sin rutas hasta F05) |
 | Humo web (`pnpm --filter @memora/web dev`) | Vite 8.3.5; `GET http://localhost:3000/` → 200; `<html lang="es">`, `<title>Memora</title>`, `main` + `h1` con `SITE_NAME` |
 | Pruebas negativas de validadores (`--root` sobre copia temporal) | enlace roto, `status: bogus`, `default_agent` inexistente y `subagent+allow` en `api-dev` → exit 1 en cada caso |
-| `git status` | sin `dist/`, `.turbo/`, `node_modules/` ni secretos; todo sin commitear |
+| `git status` | limpio; artefactos y secretos ignorados; trabajo en 4 commits sobre `feat/F04-monorepo-tooling` |
 
 ## Criterios de aceptación
 
@@ -69,6 +70,15 @@ Ejecución real del orquestador y del reviewer, sin caché cuando se indica:
 | AC-08 | `check-docs.mjs` devuelve 0 enlaces rotos | Pasa | 189 archivos, 399 enlaces, 0 rotos, estructura OK |
 | AC-09 | `validate-agents.mjs` valida agentes, comandos, skills y las 43 specs | Pasa | 10 agentes, 10 comandos, 6 skills, 43 specs, 43 filas de tablero |
 
+## Pendiente
+
+- **Ejecución real de CI en GitHub Actions.** Al día de hoy `total_count = 0`: el workflow solo se dispara en `push`/`pull_request` a `main` y el trabajo vive en `feat/F04-monorepo-tooling`. Se resuelve abriendo PR o mergeando a `main`; hasta entonces AC-06 es «pasa con limitación».
+- **Enforcement de fronteras de imports.** Documentadas en `monorepo.md`, sin regla automática. Previsto en F05/F09.
+- **`onlyBuiltDependencies` para `esbuild@0.28.2`.** pnpm 10 sigue ignorando su postinstall; no rompe el build (Vite 8 usa rolldown). Se decide en F05.
+- **Tests reales de `apps/web` y `test:e2e`.** Hoy son placeholders que salen 0; llegan con F05 y F37/F38.
+- **`db:migrate` / `db:seed`.** Apuntan a scripts de `@memora/api` que existen a partir de F07.
+- **Lectura de `.env` por shell.** Limitación de `opencode.jsonc`; no se puede cerrar por configuración.
+
 ## Riesgos y limitaciones
 
 1. **Lectura de `.env` por shell.** La regla de `opencode.jsonc` no puede impedir `cat .env` desde una shell; es una limitación de la herramienta, aceptada y no ocultada.
@@ -77,13 +87,13 @@ Ejecución real del orquestador y del reviewer, sin caché cuando se indica:
 4. **Cobertura de tests incompleta.** `apps/web` no tiene tests reales (placeholder que sale 0) y `test:e2e` no ejecuta nada todavía; `db:migrate` y `db:seed` fallarán hasta F07.
 5. **`routeTree.gen.ts`.** Se versiona a propósito; si se ignora, un clon limpio no pasa typecheck.
 6. **Fronteras sin enforcement.** Los límites de imports están documentados, pero no hay comprobación automática; se abordará en F05/F09.
-7. **CI no ejecutada en GitHub Actions.** Se ha validado por inspección y con la ejecución local equivalente de todos sus pasos.
+7. **CI sin ejecutar en GitHub.** El workflow está validado por inspección y por la ejecución local de todos sus pasos, pero no ha corrido en Actions: un push a rama no dispara `push`/`pull_request` limitados a `main`. Ver «Pendiente».
 
 ## Documentación actualizada
 
 - [x] `docs/04-features/F04-monorepo-tooling/handoff.md`
-- [x] `docs/04-features/README.md` (F04 → `review` y situación actual)
-- [x] `docs/04-features/F04-monorepo-tooling/spec.md` (`status: review`)
+- [x] `docs/04-features/README.md` (F04 → `accepted` y situación actual)
+- [x] `docs/04-features/F04-monorepo-tooling/spec.md` (`status: accepted`)
 - [x] `docs/06-process/ai-log.md`
 - [x] `docs/07-curriculum/coverage-map.md` (sección «Entorno, tooling y entrega (F04)»)
 - [x] `README.md` (estado, árbol, versiones fijadas)
@@ -92,6 +102,5 @@ Ejecución real del orquestador y del reviewer, sin caché cuando se indica:
 
 ## Siguiente paso propuesto
 
-1. Aceptación del usuario (G4): revisar `pnpm dev`, web y API en local, y los estados claro/oscuro en móvil y escritorio cuando exista UI real.
-2. Si se acepta, pasar F04 a `accepted` y después a `done`, y commitear en `feat/F04-monorepo-tooling` con permiso.
-3. Abrir F05 (spike técnico integrado), que añadirá tests reales y valorará `onlyBuiltDependencies` para esbuild.
+1. Abrir PR de `feat/F04-monorepo-tooling` a `main` (o mergear) para que CI corra; con el run en verde, F04 pasa a `done`.
+2. Abrir F05 (spike técnico integrado), que añadirá tests reales, enforcement de fronteras y valorará `onlyBuiltDependencies` para esbuild.

@@ -10,7 +10,7 @@ Aplicación web real, con la misma calidad en **móvil** y **escritorio**, insta
 
 ## Estado del proyecto
 
-**Fase actual: definición y estructura agéntica cerradas (F01–F03). F04 (monorepo, tooling, Docker y CI) en review.**
+**Fase actual: definición, scaffold agéntico y monorepo cerrados (F01–F04). F04 aceptada; falta la ejecución real de CI en GitHub para cerrarla como `done`.**
 
 Todavía **no hay lógica de producto**: F04 deja listos el monorepo, el tooling, Docker y CI; las features de aplicación empiezan en F05. Este repositorio contiene la especificación viva, el sistema de diseño, los ADRs, las 43 features y la configuración de agentes que se usará para construirlo paso a paso.
 
@@ -21,9 +21,9 @@ Todavía **no hay lógica de producto**: F04 deja listos el monorepo, el tooling
 | Arquitectura y ADRs | Definidos |
 | Features | 43 specs con criterios de aceptación |
 | Agentes, comandos y skills | Configurados |
-| Monorepo y app | F04 en review |
+| Monorepo y app | F04 aceptada (CI pendiente de ejecutar) |
 
-El tablero de features está en [docs/04-features/README.md](docs/04-features/README.md). F01–F03 están `done`; F04 está `review`, pendiente de aceptación.
+El tablero de features está en [docs/04-features/README.md](docs/04-features/README.md). F01–F03 están `done`; F04 está `accepted`, pendiente de CI para pasar a `done`.
 
 ---
 
@@ -218,7 +218,7 @@ Herramientas:
 
 ## Próximos pasos
 
-1. **F04** — aceptación del monorepo, tooling, Docker y CI (en review).
+1. **F04** — ejecutar CI en el PR y cerrarla como `done`.
 2. **F05** — spike de TanStack Start + Tailwind 4 + Fastify + Zod 4 + Prisma 7.
 3. **F06–F14** — contratos, datos, API/web core, sistema visual y UI kit.
 4. **F15–F22** — auth, círculos, invitaciones y personas.

@@ -3,7 +3,7 @@ id: F04
 title: "Monorepo, tooling, Docker y CI"
 milestone: M1
 size: M
-status: review
+status: accepted
 spec: complete
 depends_on:
   - "F03"
@@ -20,7 +20,7 @@ decisions:
 
 # F04 — Monorepo, tooling, Docker y CI
 
-> **Milestone:** M1 · **Talla:** M · **Estado:** review · **Spec:** completa
+> **Milestone:** M1 · **Talla:** M · **Estado:** accepted · **Spec:** completa
 > **Depende de:** F03 · **Bloquea:** F05
 
 ## Objetivo
