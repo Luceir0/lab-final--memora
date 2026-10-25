@@ -2,53 +2,53 @@
 
 ## Antes de empezar
 
-- [ ] Leer `AGENTS.md` y `spec.md`.
-- [ ] Comprobar dependencias: F03.
-- [ ] Comprobar Definition of Ready.
-- [ ] Proponer plan y esperar confirmación.
+- [x] Leer `AGENTS.md` y `spec.md`.
+- [x] Comprobar dependencias: F03.
+- [x] Comprobar Definition of Ready.
+- [x] Proponer plan y esperar confirmación.
 
 ## Implementación
 
-- [ ] pnpm + corepack
-- [ ] Turborepo
-- [ ] apps/web, apps/api, packages/shared, api-client, ui, config
-- [ ] tsconfig estricto
-- [ ] ESLint y Prettier
-- [ ] Docker Compose: Postgres, MinIO, Mailpit
-- [ ] .env.example
-- [ ] .gitignore
-- [ ] GitHub Actions base
-- [ ] Scripts raíz
-- [ ] `scripts/check-docs.mjs`
-- [ ] `scripts/validate-agents.mjs`
+- [x] pnpm + corepack
+- [x] Turborepo
+- [x] apps/web, apps/api, packages/shared, api-client, ui, config
+- [x] tsconfig estricto
+- [x] ESLint y Prettier
+- [x] Docker Compose: Postgres, MinIO, Mailpit
+- [x] .env.example
+- [x] .gitignore
+- [x] GitHub Actions base
+- [x] Scripts raíz
+- [x] `scripts/check-docs.mjs`
+- [x] `scripts/validate-agents.mjs`
 
 ## Criterios de aceptación
 
-- [ ] AC-01: pnpm install funciona desde cero.
-- [ ] AC-02: pnpm lint y pnpm typecheck pasan.
-- [ ] AC-03: pnpm build construye paquetes vacíos.
-- [ ] AC-04: docker compose up levanta Postgres, MinIO y Mailpit.
-- [ ] AC-05: .env.example documenta todas las variables.
-- [ ] AC-06: CI ejecuta install, lint, typecheck, test y build.
-- [ ] AC-07: Los límites de imports están documentados.
-- [ ] AC-08: `check-docs.mjs` devuelve 0 enlaces rotos.
-- [ ] AC-09: `validate-agents.mjs` valida agentes, comandos, skills y las 43 specs.
+- [x] AC-01: pnpm install funciona desde cero.
+- [x] AC-02: pnpm lint y pnpm typecheck pasan.
+- [x] AC-03: pnpm build construye paquetes vacíos.
+- [x] AC-04: docker compose up levanta Postgres, MinIO y Mailpit.
+- [x] AC-05: .env.example documenta todas las variables.
+- [x] AC-06: CI ejecuta install, lint, typecheck, test y build.
+- [x] AC-07: Los límites de imports están documentados.
+- [x] AC-08: `check-docs.mjs` devuelve 0 enlaces rotos.
+- [x] AC-09: `validate-agents.mjs` valida agentes, comandos, skills y las 43 specs.
 
 ## Verificación
 
-- [ ] `pnpm install`
-- [ ] `pnpm lint`
-- [ ] `pnpm typecheck`
-- [ ] `pnpm build`
-- [ ] `docker compose config`
-- [ ] `node scripts/check-docs.mjs`
-- [ ] `node scripts/validate-agents.mjs`
+- [x] `pnpm install`
+- [x] `pnpm lint`
+- [x] `pnpm typecheck`
+- [x] `pnpm build`
+- [x] `docker compose config`
+- [x] `node scripts/check-docs.mjs`
+- [x] `node scripts/validate-agents.mjs`
 
 ## Cierre
 
-- [ ] Revisión independiente.
-- [ ] Aceptación del usuario.
-- [ ] `handoff.md` completo.
-- [ ] Tablero actualizado.
-- [ ] Bitácora y cobertura actualizadas.
-- [ ] Commit propuesto (sin ejecutar).
+- [x] Revisión independiente.
+- [x] Aceptación del usuario.
+- [x] `handoff.md` completo.
+- [x] Tablero actualizado.
+- [x] Bitácora y cobertura actualizadas.
+- [x] Commit propuesto (sin ejecutar).

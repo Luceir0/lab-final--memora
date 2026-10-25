@@ -5,6 +5,8 @@ node_modules/
 # Build y caché
 dist/
 build/
+.output/
+.tanstack/
 .turbo/
 coverage/
 .playwright/
@@ -16,6 +18,7 @@ test-results/
 .env
 .env.*
 !.env.example
+*.local
 
 # Logs y sistema
 *.log

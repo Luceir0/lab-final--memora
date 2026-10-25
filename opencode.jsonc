@@ -8,13 +8,28 @@
   "instructions": [
     "AGENTS.md",
     "docs/06-process/workflow.md",
-    "docs/06-process/subagent-protocol.md"
+    "docs/06-process/subagent-protocol.md",
   ],
 
   // Reglas globales. Las reglas de cada agente añaden restricciones.
   "permissions": [
-    { "action": "read", "resource": ".env*", "effect": "deny" },
-    { "action": "edit", "resource": ".env*", "effect": "deny" },
+    // Secretos reales: nunca se leen ni se editan. `.env.example` sí es documentación.
+    { "action": "read", "resource": ".env", "effect": "deny" },
+    { "action": "read", "resource": ".env.local", "effect": "deny" },
+    { "action": "read", "resource": ".env.*.local", "effect": "deny" },
+    { "action": "read", "resource": ".env.production", "effect": "deny" },
+    { "action": "read", "resource": ".env.development", "effect": "deny" },
+    { "action": "read", "resource": ".env.staging", "effect": "deny" },
+    { "action": "read", "resource": ".env.test", "effect": "deny" },
+    { "action": "read", "resource": ".env.preview", "effect": "deny" },
+    { "action": "edit", "resource": ".env", "effect": "deny" },
+    { "action": "edit", "resource": ".env.local", "effect": "deny" },
+    { "action": "edit", "resource": ".env.*.local", "effect": "deny" },
+    { "action": "edit", "resource": ".env.production", "effect": "deny" },
+    { "action": "edit", "resource": ".env.development", "effect": "deny" },
+    { "action": "edit", "resource": ".env.staging", "effect": "deny" },
+    { "action": "edit", "resource": ".env.test", "effect": "deny" },
+    { "action": "edit", "resource": ".env.preview", "effect": "deny" },
     { "action": "edit", "resource": "assets/design/**/*.png", "effect": "deny" },
     { "action": "edit", "resource": "assets/archive/**/*.png", "effect": "deny" },
     { "action": "shell", "resource": "git push *", "effect": "ask" },
@@ -22,11 +37,11 @@
     { "action": "shell", "resource": "pnpm install*", "effect": "ask" },
     { "action": "shell", "resource": "pnpm add*", "effect": "ask" },
     { "action": "shell", "resource": "npx prisma migrate*", "effect": "ask" },
-    { "action": "shell", "resource": "rm -rf *", "effect": "ask" }
+    { "action": "shell", "resource": "rm -rf *", "effect": "ask" },
   ],
 
   "experimental": {
-    "todo": true
+    "todo": true,
   },
 
   "watcher": {
@@ -35,7 +50,7 @@
       "assets/archive/**",
       "coverage/**",
       "dist/**",
-      "node_modules/**"
-    ]
-  }
+      "node_modules/**",
+    ],
+  },
 }

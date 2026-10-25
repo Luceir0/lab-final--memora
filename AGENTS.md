@@ -149,6 +149,7 @@ Al terminar, devuelve:
 ## Cambios (archivos)
 ## Verificación (comandos y resultado)
 ## Criterios de aceptación
+## Pendiente
 ## Riesgos y limitaciones
 ## Documentación actualizada
 ## Siguiente paso propuesto

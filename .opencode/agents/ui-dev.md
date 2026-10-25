@@ -2,7 +2,7 @@
 description: Implementa una feature de interfaz web con React, Tailwind y accesibilidad.
 mode: subagent
 color: "#E8457E"
-steps: 35
+steps: 50
 permissions:
   - action: edit
     resource: "apps/web/**"

@@ -24,9 +24,13 @@ Servicios:
 
 Web y API bajo el mismo origen en desarrollo mediante proxy `/api`.
 
+### MinIO en local
+
+Las imágenes oficiales de MinIO dejaron de publicarse, así que la infraestructura local usa el mirror `alpine/minio`, fijado por **tag y digest** (`RELEASE.2025-10-15T17-29-55Z@sha256:cf23643a…`) para que `docker compose up -d` sea reproducible y no dependa de un tag movido. Ese contenedor es **solo para local**: el volumen lo crea Docker como root y la imagen no ajusta permisos, por lo que arranca con `user: '0:0'`. En producción **no** se usa: el almacenamiento es R2/S3 gestionado.
+
 ## Variables
 
-`.env.example` documentará:
+`.env.example` es la **fuente de verdad**: copia el archivo a `.env`, rellena los secretos y no commitees nunca `.env`. Las variables son:
 
 ```text
 NODE_ENV=development
@@ -50,9 +54,22 @@ GEOCODING_PROVIDER=nominatim
 GEOCODING_BASE_URL=
 GEOCODING_USER_AGENT=
 CONTENT_ISLAND_ACCESS_TOKEN=
+# Opcional, solo si el proyecto de Content Island lo requiere.
+CONTENT_ISLAND_PROJECT_ID=
+
+# Infraestructura local (solo docker compose; la aplicación no las lee)
+POSTGRES_USER=
+POSTGRES_PASSWORD=
+POSTGRES_DB=
+POSTGRES_PORT=
+MINIO_ROOT_USER=
+MINIO_ROOT_PASSWORD=
+MINIO_PORT=
+MINIO_CONSOLE_PORT=
+MAILPIT_UI_PORT=
 ```
 
-`APP_URL` se usa para enlaces de invitación y Open Graph. `COOKIE_DOMAIN` debe ser el dominio común de web y API. Nunca se commitea `.env`.
+`APP_URL` se usa para enlaces de invitación y Open Graph. `COOKIE_DOMAIN` debe ser el dominio común de web y API. `SESSION_SECRET`, `RESEND_API_KEY` y `CONTENT_ISLAND_ACCESS_TOKEN` van vacíos a propósito. `CONTENT_ISLAND_PROJECT_ID` es opcional. Cambiar las variables de infraestructura local obliga a actualizar `DATABASE_URL` y `S3_*` en consecuencia.
 
 ## Producción opcional
 

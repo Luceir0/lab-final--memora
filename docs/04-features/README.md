@@ -13,7 +13,7 @@ Tablero de las 43 features. Cada carpeta contiene `spec.md`, `tasks.md` y `hando
 - `accepted`: aceptada por el usuario.
 - `done`: documentación y evidencias cerradas.
 
-**Situación actual:** F01–F03 están `done`. F04 está `ready`. F05–F43 están en `draft` con la spec completa y las dependencias definidas.
+**Situación actual:** F01–F03 están `done`. F04 está `accepted`, pendiente de ejecutar CI para pasar a `done`. F05–F43 están en `draft` con la spec completa y las dependencias definidas.
 
 ## Tablero
 
@@ -22,7 +22,7 @@ Tablero de las 43 features. Cada carpeta contiene `spec.md`, `tasks.md` y `hando
 | F01 | [Documentación, activos y alcance v2](F01-documentacion-y-activos/spec.md) | M0 | M | `done` | — |
 | F02 | [ADRs y decisiones técnicas](F02-adrs/spec.md) | M0 | M | `done` | F01 |
 | F03 | [Scaffold agéntico](F03-scaffold-agentico/spec.md) | M0 | M | `done` | F02 |
-| F04 | [Monorepo, tooling, Docker y CI](F04-monorepo-tooling/spec.md) | M1 | M | `ready` | F03 |
+| F04 | [Monorepo, tooling, Docker y CI](F04-monorepo-tooling/spec.md) | M1 | M | `accepted` | F03 |
 | F05 | [Spike técnico integrado](F05-spike-tecnico/spec.md) | M1 | M | `draft` | F04 |
 | F06 | [Contratos compartidos y permisos](F06-contratos-compartidos/spec.md) | M1 | M | `draft` | F05 |
 | F07 | [Modelo de datos, migraciones y seed](F07-modelo-datos/spec.md) | M1 | M | `draft` | F06 |

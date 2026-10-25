@@ -59,6 +59,8 @@ El prompt de delegación debe incluir:
 ## Reglas
 
 - Una feature a la vez por subagente.
+- Si un handoff trae `Pendiente`, reanuda esa misma sesión hija con su `sessionID` antes de relanzar el agente: el mensaje nuevo reinicia el presupuesto de pasos y conserva el contexto.
+- Si un subagente avisa de que no cabe en su presupuesto, divide la feature; no le pidas que acelere.
 - No encadenes features sin permiso del usuario.
 - No aceptes un handoff sin verificar que los comandos se ejecutaron.
 - No apruebes tú mismo el trabajo.

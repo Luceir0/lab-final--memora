@@ -1,6 +1,6 @@
 # Cobertura del temario
 
-Estado: **F01–F03 cubren los temas transversales** (organización, documentación, IA agente, revisión y activos). El resto está planificado y se actualiza al cerrar cada feature con evidencias reales.
+Estado: **F01–F03 cubren los temas transversales y F04 cubre el entorno, tooling y entrega** (organización, documentación, IA agente, revisión, activos, TypeScript estricto, monorepo, Docker y CI). El resto está planificado y se actualiza al cerrar cada feature con evidencias reales.
 
 **Fuente del temario:** `assets/design/temario-tecnologias.png` y la especificación histórica `docs/archive/spec-v1.md` §7. No hay una transcripción oficial en texto; este mapa es la referencia operativa.
 
@@ -12,6 +12,18 @@ Estado: **F01–F03 cubren los temas transversales** (organización, documentaci
 | IA agente | Agentes, comandos, skills, workflow | `.opencode/`, `AGENTS.md` | Cubierto |
 | Revisión y calidad | Protocolo de revisión, DoD, auditoría | `docs/06-process/`, `docs/05-quality/` | Cubierto |
 | Diseño y activos | Normalización, manifest, screens | `assets/design/`, `docs/02-design/screens.md` | Cubierto |
+
+## Entorno, tooling y entrega (F04)
+
+| Tema | Dónde se aplica | Evidencia | Estado |
+| --- | --- | --- | --- |
+| TypeScript estricto | `tsconfig` base y variantes; CI | `packages/config/tsconfig/base.json`, `pnpm typecheck` | Cubierto |
+| pnpm workspaces + Turborepo | 7 proyectos de workspace; pipeline y caché de tareas | `pnpm-workspace.yaml`, `turbo.json` | Cubierto |
+| ESLint y Prettier | Configuración compartida, lint raíz y formato solo de código | `eslint.config.mjs`, `packages/config/eslint/base.mjs`, `.prettierrc.json`, `pnpm lint`, `pnpm format:check` | Cubierto |
+| Docker Compose local | Postgres, MinIO y Mailpit con healthchecks | `docker-compose.yml`, `.env.example` | Cubierto |
+| GitHub Actions | Install, docs, agents, lint, typecheck, test y build | `.github/workflows/ci.yml` | Cubierto (validado por inspección y ejecución local) |
+| Validadores documentales | Enlaces, estructura, agentes, comandos, skills y 43 specs | `scripts/check-docs.mjs`, `scripts/validate-agents.mjs` | Cubierto |
+| Node 24 | `engines >=24` y CI con Node 24 | `package.json`, `.github/workflows/ci.yml` | Cubierto |
 
 ## 1. Maquetación
 
@@ -31,7 +43,7 @@ Estado: **F01–F03 cubren los temas transversales** (organización, documentaci
 
 | Contenido | Dónde se aplica | Evidencia | Estado |
 | --- | --- | --- | --- |
-| TypeScript core | `strict`, sin `any` | `tsc` CI | Pendiente |
+| TypeScript core | `strict`, sin `any` | `packages/config/tsconfig/base.json`, `pnpm typecheck` | Parcial (config y CI listos; se aplica al código en F05+) |
 | Union types y narrowing | Upload state, roles, tema, ApiResult | `useUploadQueue`, api-client | Pendiente |
 | Genéricos | `Paginated<T>`, `ApiResult<T>`, `request<T>` | `shared`, `api-client` | Pendiente |
 | Utility types | `Omit`, `Partial`, `Pick`, `Record` | DTOs | Pendiente |
@@ -49,8 +61,8 @@ Estado: **F01–F03 cubren los temas transversales** (organización, documentaci
 | SSR | Login, registro, invitación | Preview real | Pendiente |
 | SSG | Ayuda y privacidad | HTML de build | Pendiente |
 | MPA | No se fuerza; ADR | ADR-0002 | Pendiente |
-| Turborepo | Monorepo, caché, CI | `turbo.json` | Pendiente |
-| Paquetes compartidos | `shared`, `api-client`, `ui`, `config` | Imports | Pendiente |
+| Turborepo | Monorepo, caché, CI | `turbo.json`, `.github/workflows/ci.yml` | Cubierto |
+| Paquetes compartidos | `shared`, `api-client`, `ui`, `config` | `pnpm-workspace.yaml`, `packages/*/package.json` | Parcial (paquetes creados; contenido en F05+) |
 
 ## 4. Frameworks
 

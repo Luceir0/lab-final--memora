@@ -44,6 +44,9 @@ Resumen en 2–4 líneas.
 ## Criterios de aceptación
 - AC-01: pasa / falla / no aplica
 
+## Pendiente
+- ...
+
 ## Riesgos y limitaciones
 - ...
 
@@ -53,6 +56,16 @@ Resumen en 2–4 líneas.
 ## Siguiente paso propuesto
 - ...
 ```
+
+## Presupuesto de pasos
+
+Cada agente tiene un máximo de pasos de modelo por turno. Al agotarse, OpenCode retira las herramientas y obliga a resumir: no es un fallo visible, pero convierte un trabajo inacabado en un handoff que parece completo.
+
+- Reserva los últimos 5 pasos para verificar y entregar.
+- Si quedan ≤5 pasos y hay frentes abiertos, no abras archivos ni tareas nuevas: cierra lo que esté en curso y declara el resto en `Pendiente`.
+- `Pendiente` se escribe siempre; "ninguno" solo si de verdad lo está.
+- No marques un AC como cumplido sin haber ejecutado el comando que lo demuestra.
+- Si el trabajo no cabe, pide al orquestador dividir la feature antes que entregar a medias.
 
 ## Reglas
 
