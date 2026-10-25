@@ -1,0 +1,15 @@
+# Finales de línea: LF en el repositorio y en el working tree, también en Windows.
+# Sin esto, core.autocrlf=true reescribe a CRLF y Prettier (endOfLine: lf) falla.
+* text=auto eol=lf
+
+# Binarios: no normalizar
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.avif binary
+*.gif binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+*.pdf binary
