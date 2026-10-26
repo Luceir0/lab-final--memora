@@ -1,0 +1,19 @@
+// F05 spike schema. The datasource URL is provided by prisma7.config.ts.
+
+generator client {
+  provider            = "prisma-client"
+  output              = "../src/generated/prisma"
+  moduleFormat        = "esm"
+  importFileExtension = "ts"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+/// TODO(F07): temporary model for the F05 spike. Replace with the final memory model.
+model SpikeNote {
+  id        String   @id @default(cuid())
+  message   String
+  createdAt DateTime @default(now())
+}

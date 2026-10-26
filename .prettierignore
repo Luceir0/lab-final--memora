@@ -11,4 +11,6 @@ AGENTS.md
 README.md
 CLAUDE.md
 pnpm-lock.yaml
+content-island-snapshot.json
 **/routeTree.gen.ts
+apps/api/src/generated

@@ -1,5 +1,7 @@
 import { HeadContent, Outlet, Scripts, createRootRoute } from '@tanstack/react-router';
 
+import '../styles/app.css';
+
 export const Route = createRootRoute({
   head: () => ({
     meta: [
@@ -13,7 +15,7 @@ export const Route = createRootRoute({
 
 function RootDocument() {
   return (
-    <html lang="es">
+    <html lang="es" data-theme="light">
       <head>
         <HeadContent />
       </head>

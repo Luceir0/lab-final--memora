@@ -4,6 +4,6 @@
     "types": ["node"],
     "allowImportingTsExtensions": true
   },
-  "include": ["src/**/*.ts"],
+  "include": ["src/**/*.ts", "prisma7.config.ts", "vitest.config.ts"],
   "exclude": ["dist"]
 }

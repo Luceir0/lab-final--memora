@@ -10,9 +10,9 @@ Aplicación web real, con la misma calidad en **móvil** y **escritorio**, insta
 
 ## Estado del proyecto
 
-**Fase actual: definición, scaffold agéntico y monorepo cerrados (F01–F04). F05, el spike técnico integrado, es el siguiente paso.**
+**Fase actual: definición, scaffold agéntico, monorepo y spike técnico completados (F01–F05). F05 está `accepted` desde el 2026-10-26; `done` queda pendiente de merge/CI. El siguiente paso es F06.**
 
-Todavía **no hay lógica de producto**: F04 deja listos el monorepo, el tooling, Docker y CI; las features de aplicación empiezan en F05. Este repositorio contiene la especificación viva, el sistema de diseño, los ADRs, las 43 features y la configuración de agentes que se usará para construirlo paso a paso.
+Todavía **no hay lógica de producto**: F04 deja listos el monorepo, el tooling, Docker y CI; F05 valida las piezas de riesgo (render modes, Tailwind 4, Fastify + Zod, Prisma 7, sharp y el snapshot de Content Island). Las features de aplicación empiezan en F06. Este repositorio contiene la especificación viva, el sistema de diseño, los ADRs, las 43 features y la configuración de agentes que se usará para construirlo paso a paso.
 
 | Elemento | Estado |
 | --- | --- |
@@ -22,8 +22,9 @@ Todavía **no hay lógica de producto**: F04 deja listos el monorepo, el tooling
 | Features | 43 specs con criterios de aceptación |
 | Agentes, comandos y skills | Configurados |
 | Monorepo y app | F04 `done`, CI en verde |
+| Spike técnico | F05 `accepted`; `done` pendiente de merge/CI |
 
-El tablero de features está en [docs/04-features/README.md](docs/04-features/README.md). F01–F04 están `done`; F05 es el siguiente paso.
+El tablero de features está en [docs/04-features/README.md](docs/04-features/README.md). F01–F04 están `done`; F05 está `accepted` y F06 es el siguiente paso. Los resultados del spike están en [docs/03-architecture/spike-results.md](docs/03-architecture/spike-results.md).
 
 ---
 
@@ -45,7 +46,7 @@ El tablero de features está en [docs/04-features/README.md](docs/04-features/RE
 | Testing | Vitest, React Testing Library, MSW, Playwright, axe |
 | Calidad | ESLint, Prettier, `tsc --noEmit`, GitHub Actions |
 
-**Versiones fijadas (F04):**
+**Versiones fijadas (F04–F05):**
 
 | Herramienta | Versión |
 | --- | --- |
@@ -53,7 +54,7 @@ El tablero de features está en [docs/04-features/README.md](docs/04-features/RE
 | pnpm | 10.34.8 (corepack) |
 | TypeScript | 6.0.3 |
 | Turborepo | 2.11.10 |
-| Vitest | 3.2.7 |
+| Vitest | 5.0.5 |
 | ESLint | 9.39.5 |
 | typescript-eslint | 8.72.0 |
 | Prettier | 3.9.10 |
@@ -63,10 +64,19 @@ El tablero de features está en [docs/04-features/README.md](docs/04-features/RE
 | Vite | 8.3.5 |
 | `@vitejs/plugin-react` | 6.1.2 |
 | `@types/react` / `@types/react-dom` | 19.3.0 |
+| Tailwind CSS / `@tailwindcss/vite` | 4.3.3 |
 | Fastify | 5.12.7 |
+| Zod | 4.6.7 |
+| `fastify-type-provider-zod` | 7.0.0 |
+| Prisma CLI / Client / `@prisma/adapter-pg` | 7.10.1 |
+| `pg` | 8.23.1 |
+| `sharp` | 0.35.5 |
+| `@content-island/api-client` | 0.26.0 |
 | `@types/node` | 24.19.2 |
 
-Imágenes locales: `postgres:17.11-alpine`, `pgsty/silo` por tag y digest (solo local) y `axllent/mailpit:v1.32.0`. Prisma 8 está en RC y no se usa; Prisma 7.10.1 se incorporará con el modelo de datos (F07).
+Imágenes locales: `postgres:17.11-alpine`, `pgsty/silo` por tag y digest (solo local) y `axllent/mailpit:v1.32.0`. Prisma 8 sigue en RC y no se usa. F05 fija Prisma 7.10.1 y crea una migración de spike con el modelo temporal `SpikeNote`; F07 la sustituirá por el modelo definitivo.
+
+**Snapshot de Content Island:** `content-island-snapshot.json` en la raíz, exportado el 2026-10-26 (`schemaVersion: 1`; 6 artículos de ayuda, 8 FAQs y 1 página legal en `es`). El build lo lee sin token; si falta, falla con un mensaje que incluye la ruta esperada. Regenerarlo requiere un token que no se versiona.
 
 ---
 
@@ -90,6 +100,7 @@ memora/
 │   └── config/
 ├── scripts/                   # check-docs, validate-agents
 ├── docker-compose.yml         # Postgres, Silo (S3) y Mailpit locales
+├── content-island-snapshot.json # contenido editorial para SSG
 ├── package.json
 ├── pnpm-workspace.yaml
 ├── turbo.json
@@ -120,6 +131,7 @@ memora/
 | [docs/01-product/scope.md](docs/01-product/scope.md) | Qué entra y qué no |
 | [docs/02-design/screens.md](docs/02-design/screens.md) | Inventario de las 54 vistas y enlaces |
 | [docs/03-architecture/overview.md](docs/03-architecture/overview.md) | Arquitectura, render modes y límites |
+| [docs/03-architecture/spike-results.md](docs/03-architecture/spike-results.md) | Resultados y deudas del spike F05 |
 | [docs/03-architecture/api-contract.md](docs/03-architecture/api-contract.md) | Contrato REST |
 | [docs/04-features/README.md](docs/04-features/README.md) | Tablero de las 43 features |
 | [docs/05-quality/definition-of-done.md](docs/05-quality/definition-of-done.md) | Cuándo se considera terminada una feature |
@@ -218,12 +230,14 @@ Herramientas:
 
 ## Próximos pasos
 
-1. **F05** — spike de TanStack Start + Tailwind 4 + Fastify + Zod 4 + Prisma 7.
-2. **F06–F14** — contratos, datos, API/web core, sistema visual y UI kit.
+1. **F06** — contratos compartidos y permisos.
+2. **F07–F14** — datos, API/web core, sistema visual y UI kit.
 3. **F15–F22** — auth, círculos, invitaciones y personas.
 4. **F23–F28** — álbumes, subidas y ajustes.
 5. **F29–F35** — galería, visor, metadatos, etiquetas, descargas, perfil y actividad.
 6. **F36–F43** — Content Island, tests, accesibilidad, rendimiento, seguridad, despliegue y defensa.
+
+F05 queda `accepted`; su paso a `done` se decidirá tras el merge y el CI, como en F04.
 
 ---
 

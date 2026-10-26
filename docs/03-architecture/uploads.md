@@ -27,13 +27,14 @@ Cliente selecciona archivos
 | Concurrencia cliente | 3 |
 | Reintentos | 2 con backoff |
 | Formatos | JPEG, PNG, WebP |
-| HEIC | Convertir si el spike lo valida; si no, 415 con mensaje claro |
+| HEIC | No asumido: `sharp@0.35.5` no anuncia `.heic`; ver nota de HEIC en Validación |
 
 ## Validación
 
 - `Content-Type` no es suficiente: usar `file-type` sobre los bytes.
 - Rechazar SVG, GIF animado y archivos corruptos.
 - `sharp` con límite de píxeles y timeout.
+- **HEIC:** `sharp@0.35.5` anuncia soporte HEIF pero solo lista `.avif`; no anuncia `.heic`. No se ha probado un `.heic` real. F25 debe rechazarlo con `415 UNSUPPORTED_MEDIA_TYPE` o añadir una conversión validada con muestras reales; no se asume soporte.
 - Nombre original solo para mostrar; nunca para la clave S3.
 - Cuota comprobada antes de aceptar; si se supera, 413 con código `QUOTA_EXCEEDED`.
 
