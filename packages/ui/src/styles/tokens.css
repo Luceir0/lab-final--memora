@@ -1,0 +1,205 @@
+/**
+ * Tokens de Memora (F05).
+ *
+ * Fuente: docs/02-design/tokens.md. Los valores de runtime viven como variables
+ * `--memora-*` en `:root` y `[data-theme='dark']`; `@theme inline` los mapea a
+ * los nombres de Tailwind 4 para que existan utilidades como `bg-bg`,
+ * `text-text` o `rounded-xl` sin que una variable se referencie a sí misma.
+ *
+ * Regla: ningún componente usa hex sueltos. Todo sale de aquí.
+ */
+
+:root {
+  color-scheme: light;
+
+  /* Colores semánticos */
+  --memora-bg: #f6f6fa;
+  --memora-surface: #ffffff;
+  --memora-surface-2: #f0eff7;
+  --memora-border: #e4e3ee;
+  --memora-border-strong: #b9b7cc;
+  --memora-text: #14132b;
+  --memora-muted: #5e5d78;
+  --memora-primary: #5b47e0;
+  --memora-primary-hover: #4a37c9;
+  --memora-primary-text: #4a37c9;
+  --memora-primary-soft: #eeebfe;
+  --memora-on-primary-soft: #2e2390;
+  --memora-on-primary: #ffffff;
+  --memora-focus: #7c6cf2;
+  --memora-overlay: rgba(11, 15, 30, 0.5);
+  --memora-viewer-bg: #070a14;
+  --memora-inverse: #14132b;
+  --memora-on-inverse: #ffffff;
+
+  /* Estados */
+  --memora-success: #1e8a5a;
+  --memora-success-soft: #d3f0e2;
+  --memora-warning: #b4610a;
+  --memora-warning-soft: #fce3cc;
+  --memora-danger: #c8283c;
+  --memora-danger-soft: #fdecee;
+  --memora-danger-text: #a61f31;
+  --memora-info: #2f6fd6;
+  --memora-info-soft: #dce9fb;
+
+  /* Acentos de identidad */
+  --memora-accent-violet: #e6e1fe;
+  --memora-accent-violet-text: #3f2db5;
+  --memora-accent-pink: #fad4e1;
+  --memora-accent-pink-text: #8a1c46;
+  --memora-accent-green: #d3f0e2;
+  --memora-accent-green-text: #145c3d;
+  --memora-accent-orange: #fce3cc;
+  --memora-accent-orange-text: #8a4510;
+  --memora-accent-sky: #dce9fb;
+  --memora-accent-sky-text: #1c4f8a;
+
+  /* Tipografía */
+  --memora-font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --memora-text-display: 2.5rem;
+  --memora-text-display--line-height: 2.75rem;
+  --memora-text-display--letter-spacing: -0.03em;
+  --memora-text-h1: 2rem;
+  --memora-text-h1--line-height: 2.375rem;
+  --memora-text-h1--letter-spacing: -0.02em;
+  --memora-text-h2: 1.5rem;
+  --memora-text-h2--line-height: 1.875rem;
+  --memora-text-h2--letter-spacing: -0.01em;
+  --memora-text-h3: 1.125rem;
+  --memora-text-h3--line-height: 1.5rem;
+  --memora-text-body: 1rem;
+  --memora-text-body--line-height: 1.5rem;
+  --memora-text-body-sm: 0.875rem;
+  --memora-text-body-sm--line-height: 1.25rem;
+  --memora-text-caption: 0.75rem;
+  --memora-text-caption--line-height: 1rem;
+  --memora-text-caption--letter-spacing: 0.02em;
+
+  /* Radios */
+  --memora-radius-sm: 8px;
+  --memora-radius-md: 12px;
+  --memora-radius-lg: 16px;
+  --memora-radius-xl: 24px;
+  --memora-radius-2xl: 32px;
+  --memora-radius-full: 999px;
+
+  /* Bordes */
+  --memora-border-width: 1px;
+
+  /* Sombras */
+  --memora-shadow-sm: 0 1px 2px rgba(20, 19, 43, 0.06), 0 1px 3px rgba(20, 19, 43, 0.08);
+  --memora-shadow-md: 0 4px 12px rgba(20, 19, 43, 0.08), 0 2px 4px rgba(20, 19, 43, 0.05);
+  --memora-shadow-lg: 0 16px 40px rgba(20, 19, 43, 0.16), 0 4px 12px rgba(20, 19, 43, 0.08);
+
+  /* Movimiento */
+  --memora-duration-fast: 150ms;
+  --memora-duration-base: 250ms;
+  --memora-duration-slow: 350ms;
+  --memora-ease-standard: cubic-bezier(0.2, 0, 0, 1);
+}
+
+[data-theme='dark'] {
+  color-scheme: dark;
+
+  --memora-bg: #0b0f1e;
+  --memora-surface: #131a2c;
+  --memora-surface-2: #1b2338;
+  --memora-border: #263049;
+  --memora-border-strong: #3a4563;
+  --memora-text: #eef0fa;
+  --memora-muted: #a3a9c2;
+  --memora-primary: #6a58f0;
+  --memora-primary-hover: #7a69f5;
+  --memora-primary-text: #a99cff;
+  --memora-primary-soft: #241f4d;
+  --memora-on-primary-soft: #c9c0ff;
+  --memora-on-primary: #ffffff;
+  --memora-focus: #a99cff;
+  --memora-overlay: rgba(0, 0, 0, 0.6);
+  --memora-viewer-bg: #070a14;
+  --memora-inverse: #eef0fa;
+  --memora-on-inverse: #0b0f1e;
+
+  --memora-success: #4cc38a;
+  --memora-success-soft: #12332a;
+  --memora-warning: #f0a04b;
+  --memora-warning-soft: #3a2814;
+  --memora-danger: #ff6b7d;
+  --memora-danger-soft: #3a1820;
+  --memora-danger-text: #ff8a98;
+  --memora-info: #6fa4ff;
+  --memora-info-soft: #14284a;
+
+  /* Solo el flotante cambia en oscuro (docs/02-design/tokens.md). */
+  --memora-shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.45);
+}
+
+/**
+ * Expone los tokens de runtime como utilidades de Tailwind 4 sin preset JS.
+ * `inline` hace que las utilidades referencien la variable en vez de congelar
+ * el valor, que es lo que permite el cambio de tema con `data-theme`.
+ */
+@theme inline {
+  --color-bg: var(--memora-bg);
+  --color-surface: var(--memora-surface);
+  --color-surface-2: var(--memora-surface-2);
+  --color-border: var(--memora-border);
+  --color-border-strong: var(--memora-border-strong);
+  --color-text: var(--memora-text);
+  --color-muted: var(--memora-muted);
+  --color-primary: var(--memora-primary);
+  --color-primary-hover: var(--memora-primary-hover);
+  --color-primary-text: var(--memora-primary-text);
+  --color-primary-soft: var(--memora-primary-soft);
+  --color-on-primary-soft: var(--memora-on-primary-soft);
+  --color-on-primary: var(--memora-on-primary);
+  --color-focus: var(--memora-focus);
+  --color-overlay: var(--memora-overlay);
+  --color-viewer-bg: var(--memora-viewer-bg);
+  --color-inverse: var(--memora-inverse);
+  --color-on-inverse: var(--memora-on-inverse);
+  --color-success: var(--memora-success);
+  --color-success-soft: var(--memora-success-soft);
+  --color-warning: var(--memora-warning);
+  --color-warning-soft: var(--memora-warning-soft);
+  --color-danger: var(--memora-danger);
+  --color-danger-soft: var(--memora-danger-soft);
+  --color-danger-text: var(--memora-danger-text);
+  --color-info: var(--memora-info);
+  --color-info-soft: var(--memora-info-soft);
+
+  --font-sans: var(--memora-font-sans);
+
+  --text-display: var(--memora-text-display);
+  --text-display--line-height: var(--memora-text-display--line-height);
+  --text-display--letter-spacing: var(--memora-text-display--letter-spacing);
+  --text-h1: var(--memora-text-h1);
+  --text-h1--line-height: var(--memora-text-h1--line-height);
+  --text-h1--letter-spacing: var(--memora-text-h1--letter-spacing);
+  --text-h2: var(--memora-text-h2);
+  --text-h2--line-height: var(--memora-text-h2--line-height);
+  --text-h2--letter-spacing: var(--memora-text-h2--letter-spacing);
+  --text-h3: var(--memora-text-h3);
+  --text-h3--line-height: var(--memora-text-h3--line-height);
+  --text-body: var(--memora-text-body);
+  --text-body--line-height: var(--memora-text-body--line-height);
+  --text-body-sm: var(--memora-text-body-sm);
+  --text-body-sm--line-height: var(--memora-text-body-sm--line-height);
+  --text-caption: var(--memora-text-caption);
+  --text-caption--line-height: var(--memora-text-caption--line-height);
+  --text-caption--letter-spacing: var(--memora-text-caption--letter-spacing);
+
+  --radius-sm: var(--memora-radius-sm);
+  --radius-md: var(--memora-radius-md);
+  --radius-lg: var(--memora-radius-lg);
+  --radius-xl: var(--memora-radius-xl);
+  --radius-2xl: var(--memora-radius-2xl);
+  --radius-full: var(--memora-radius-full);
+
+  --shadow-sm: var(--memora-shadow-sm);
+  --shadow-md: var(--memora-shadow-md);
+  --shadow-lg: var(--memora-shadow-lg);
+
+  --ease-standard: var(--memora-ease-standard);
+}

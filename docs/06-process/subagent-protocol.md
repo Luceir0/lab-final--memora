@@ -61,11 +61,13 @@ Resumen en 2–4 líneas.
 
 Cada agente tiene un máximo de pasos de modelo por turno. Al agotarse, OpenCode retira las herramientas y obliga a resumir: no es un fallo visible, pero convierte un trabajo inacabado en un handoff que parece completo.
 
-- Reserva los últimos 5 pasos para verificar y entregar.
-- Si quedan ≤5 pasos y hay frentes abiertos, no abras archivos ni tareas nuevas: cierra lo que esté en curso y declara el resto en `Pendiente`.
+- **Checkpoint al 50 %**: si el entregable principal no está implementado a mitad de presupuesto, para y reporta. No sigas explorando ni abras frentes nuevos.
+- **Reserva el último 10 % del presupuesto (mínimo 8 pasos)** para verificar y entregar. Con presupuestos altos, cinco pasos no bastan.
+- Si queda ≤10 % y hay frentes abiertos, no abras archivos ni tareas nuevas: cierra lo que esté en curso y declara el resto en `Pendiente`.
 - `Pendiente` se escribe siempre; "ninguno" solo si de verdad lo está.
 - No marques un AC como cumplido sin haber ejecutado el comando que lo demuestra.
 - Si el trabajo no cabe, pide al orquestador dividir la feature antes que entregar a medias.
+- Un presupuesto alto es un techo, no una cuota: no rellenes pasos con trabajo fuera de alcance.
 
 ## Reglas
 

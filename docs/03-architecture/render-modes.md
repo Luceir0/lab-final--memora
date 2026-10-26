@@ -47,6 +47,20 @@ Consecuencias:
 - Reenvía cookie a la API si existe.
 - La página de login/registro se renderiza en servidor para carga rápida.
 
+## Validación en F05
+
+El spike F05 comprobó los tres modos con rutas reales:
+
+| Ruta | Modo | Evidencia |
+| --- | --- | --- |
+| `/login` | SSR | `200`; el HTML inicial contiene el `h1` y el formulario |
+| `/circles` | `ssr: false` | `200`; el HTML inicial no contiene «Tus círculos» |
+| `/help` | Prerender | `200`; `dist/client/help/index.html` contiene «Primeros pasos en Memora» |
+
+- El smoke fue HTTP y de build, no una prueba en navegador real.
+- La navegación SPA a `/help` sigue sin probarse en navegador. Para que el `loader` funcione también en cliente, la ruta usa `createServerFn({ method: 'GET' })` y el contenido se pide por RPC sin meter `node:fs` en el bundle.
+- Resultados completos y deudas: [spike-results.md](spike-results.md).
+
 ## Hidratación
 
 - Nada de `window`, `localStorage` o `Date.now()` en el primer render.

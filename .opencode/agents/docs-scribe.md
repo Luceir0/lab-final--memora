@@ -2,7 +2,7 @@
 description: Mantiene README, ADRs, bitácora de IA, cobertura del temario y estado.
 mode: subagent
 color: "#5E5D78"
-steps: 40
+steps: 200
 permissions:
   - action: edit
     resource: "docs/**"

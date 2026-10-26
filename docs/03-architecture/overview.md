@@ -66,11 +66,15 @@ apps/api (Fastify)
 - [ADR-0013 PWA](adr/ADR-0013-pwa.md)
 - [ADR-0014 Almacenamiento local](adr/ADR-0014-local-storage.md)
 
+## Spike F05
+
+El spike técnico integrado validó los tres modos de render, Tailwind 4, Fastify + Zod, Prisma 7, `sharp` y la lectura del snapshot de Content Island en build. Resultados, deudas y plan de salida: [spike-results.md](spike-results.md).
+
 ## Riesgos
 
 | Riesgo | Mitigación |
 | --- | --- |
-| TanStack Start joven | Spike F05, docs oficiales, ADR y plan de salida |
+| TanStack Start joven | Spike F05, docs oficiales, ADR y plan de salida; ver [spike-results.md](spike-results.md) |
 | Procesamiento de imágenes | Adaptador y tests con S3 fake |
 | ZIP grandes | Límites y job |
 | Content Island en build | Snapshot versionado |

@@ -2,7 +2,7 @@
 description: Implementa una feature de API, contratos compartidos o persistencia.
 mode: subagent
 color: "#1E8A5A"
-steps: 50
+steps: 250
 permissions:
   - action: edit
     resource: "apps/api/**"

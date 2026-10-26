@@ -14,6 +14,7 @@ const ignores = [
   '**/routeTree.gen.ts',
   '**/assets/**',
   '**/docs/**',
+  'apps/api/src/generated/**',
 ];
 
 /** Shared flat config for every workspace. `any` is banned explicitly. */

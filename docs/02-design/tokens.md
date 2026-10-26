@@ -101,6 +101,7 @@ Oscuro: solo `0 16px 40px rgba(0,0,0,.45)` en flotantes. Duraciones 150/250/350 
 ## Implementación
 
 - Variables en `packages/ui/src/styles/tokens.css`.
+- `packages/ui/src/styles/tokens.css` usa variables de runtime `--memora-*`; `@theme inline` las mapea a `--color-*`, `--radius-*`, `--shadow-*`, `--text-*` y `--font-sans`. Los nombres de la tabla siguen siendo los públicos.
 - Tailwind 4 con `@theme` apuntando a las variables.
 - `data-theme="light|dark"` en `<html>`; el servidor lo resuelve con cookie y `prefers-color-scheme`.
 - Sin destello: script mínimo en el documento o HTML generado en servidor.

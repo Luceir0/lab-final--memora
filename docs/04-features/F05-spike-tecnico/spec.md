@@ -3,7 +3,7 @@ id: F05
 title: "Spike técnico integrado"
 milestone: M1
 size: M
-status: draft
+status: accepted
 spec: complete
 depends_on:
   - "F04"
@@ -23,7 +23,7 @@ decisions:
 
 # F05 — Spike técnico integrado
 
-> **Milestone:** M1 · **Talla:** M · **Estado:** draft · **Spec:** completa
+> **Milestone:** M1 · **Talla:** M · **Estado:** accepted · **Spec:** completa
 > **Depende de:** F04 · **Bloquea:** F06
 
 ## Objetivo

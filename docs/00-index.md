@@ -40,4 +40,4 @@ Memora se documenta en capas pequeñas para que un agente pueda cargar solo lo n
 
 ## Estado
 
-F01–F03 cerradas: documentación, ADRs y estructura agéntica. F04 está lista para empezar.
+F01–F04 están `done`. F05 está `accepted` desde el 2026-10-26; `done` queda pendiente de merge/CI. F06 es el siguiente paso y está en `draft`; F07–F43 también están en `draft`.

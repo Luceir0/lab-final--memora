@@ -32,3 +32,6 @@ Thumbs.db
 # Base de datos local
 *.sqlite
 *.sqlite3
+
+# Cliente Prisma generado
+apps/api/src/generated/

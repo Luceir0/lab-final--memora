@@ -2,7 +2,7 @@
 description: Audita accesibilidad con axe, teclado, foco, contraste y lector de pantalla.
 mode: subagent
 color: "#6A58F0"
-steps: 25
+steps: 125
 permissions:
   - action: edit
     resource: "*"
