@@ -2,7 +2,7 @@
 description: Compara la implementación con los diseños canónicos y el sistema de diseño.
 mode: subagent
 color: "#F0A04B"
-steps: 20
+steps: 100
 permissions:
   - action: edit
     resource: "*"

@@ -2,7 +2,7 @@
 description: Orquesta el proyecto, planifica features y delega en subagentes. No implementa código de producción.
 mode: primary
 color: "#5B47E0"
-steps: 40
+steps: 200
 permissions:
   - action: edit
     resource: "apps/**"

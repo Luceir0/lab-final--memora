@@ -2,7 +2,7 @@
 description: Revisa arquitectura y redacta ADRs. Solo lectura y documentación.
 mode: subagent
 color: "#2F6FD6"
-steps: 25
+steps: 125
 permissions:
   - action: edit
     resource: "*"

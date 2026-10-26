@@ -2,7 +2,7 @@
 description: Prepara CI, Docker, build y despliegue. No cambia producto.
 mode: subagent
 color: "#2F6FD6"
-steps: 40
+steps: 200
 permissions:
   - action: edit
     resource: ".github/**"

@@ -2,7 +2,7 @@
 description: Revisa cambios de forma independiente. Solo lectura; informa hallazgos.
 mode: subagent
 color: "#C8283C"
-steps: 25
+steps: 125
 permissions:
   - action: edit
     resource: "*"

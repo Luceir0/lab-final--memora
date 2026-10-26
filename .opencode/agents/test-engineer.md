@@ -2,7 +2,7 @@
 description: Escribe y ejecuta tests unitarios, de componentes, API y E2E.
 mode: subagent
 color: "#B4610A"
-steps: 45
+steps: 225
 permissions:
   - action: edit
     resource: "*"
