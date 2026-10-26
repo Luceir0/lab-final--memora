@@ -10,7 +10,7 @@ Aplicación web real, con la misma calidad en **móvil** y **escritorio**, insta
 
 ## Estado del proyecto
 
-**Fase actual: definición, scaffold agéntico, monorepo y spike técnico completados (F01–F05). F05 está `accepted` desde el 2026-10-26; `done` queda pendiente de merge/CI. El siguiente paso es F06.**
+**Fase actual: definición, scaffold agéntico, monorepo y spike técnico completados (F01–F05). F05 está `done` tras merge y CI en verde. El siguiente paso es F06, todavía en `draft` y sin abrir.**
 
 Todavía **no hay lógica de producto**: F04 deja listos el monorepo, el tooling, Docker y CI; F05 valida las piezas de riesgo (render modes, Tailwind 4, Fastify + Zod, Prisma 7, sharp y el snapshot de Content Island). Las features de aplicación empiezan en F06. Este repositorio contiene la especificación viva, el sistema de diseño, los ADRs, las 43 features y la configuración de agentes que se usará para construirlo paso a paso.
 
@@ -22,9 +22,9 @@ Todavía **no hay lógica de producto**: F04 deja listos el monorepo, el tooling
 | Features | 43 specs con criterios de aceptación |
 | Agentes, comandos y skills | Configurados |
 | Monorepo y app | F04 `done`, CI en verde |
-| Spike técnico | F05 `accepted`; `done` pendiente de merge/CI |
+| Spike técnico | F05 `done`, CI en verde en `main` |
 
-El tablero de features está en [docs/04-features/README.md](docs/04-features/README.md). F01–F04 están `done`; F05 está `accepted` y F06 es el siguiente paso. Los resultados del spike están en [docs/03-architecture/spike-results.md](docs/03-architecture/spike-results.md).
+El tablero de features está en [docs/04-features/README.md](docs/04-features/README.md). F01–F05 están `done`; F06 es el siguiente paso y sigue en `draft`. Los resultados del spike están en [docs/03-architecture/spike-results.md](docs/03-architecture/spike-results.md).
 
 ---
 
@@ -237,7 +237,7 @@ Herramientas:
 5. **F29–F35** — galería, visor, metadatos, etiquetas, descargas, perfil y actividad.
 6. **F36–F43** — Content Island, tests, accesibilidad, rendimiento, seguridad, despliegue y defensa.
 
-F05 queda `accepted`; su paso a `done` se decidirá tras el merge y el CI, como en F04.
+F05 queda `done` tras el merge `8dfae5f` y el CI en verde ([run 40371999132](https://github.com/Luceir0/lab-final--memora/actions/runs/40371999132)). F06 no se abre sin permiso del usuario.
 
 ---
 

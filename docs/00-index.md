@@ -40,4 +40,4 @@ Memora se documenta en capas pequeñas para que un agente pueda cargar solo lo n
 
 ## Estado
 
-F01–F04 están `done`. F05 está `accepted` desde el 2026-10-26; `done` queda pendiente de merge/CI. F06 es el siguiente paso y está en `draft`; F07–F43 también están en `draft`.
+F01–F05 están `done`. F05 se cerró el 2026-10-26 con el merge `8dfae5f` y CI en verde; F06 es el siguiente paso y está en `draft`, sin abrir. F07–F43 también están en `draft`.

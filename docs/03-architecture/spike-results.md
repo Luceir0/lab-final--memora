@@ -3,8 +3,9 @@
 - **Feature:** F05 — Spike técnico integrado
 - **Rama:** `feat/F05-spike-tecnico`
 - **Fecha:** 2026-10-26
-- **Estado:** `accepted` (usuario, 2026-10-26); `done` pendiente de merge/CI
-- **Aceptación:** servidores de prueba cerrados; sin commit todavía.
+- **Estado:** `done`; PR #1 mergeada en `main` (`8dfae5f`) y CI en verde
+- **Merge:** PR #1, merge commit `8dfae5f`; commits `6730ddc` y `596e516`
+- **CI:** [run 40371999132](https://github.com/Luceir0/lab-final--memora/actions/runs/40371999132), completed/success, 2026-10-26
 - **Spec:** [spec.md](../04-features/F05-spike-tecnico/spec.md)
 - **Handoff:** [handoff.md](../04-features/F05-spike-tecnico/handoff.md)
 
@@ -136,7 +137,7 @@ Prisma 7 se configuró con `apps/api/prisma7.config.ts`, generador `prisma-clien
 
 - Este documento recoge resultados, limitaciones, deudas y plan de salida.
 - [render-modes.md](render-modes.md) deja constancia de la validación de los tres modos.
-- La revisión independiente fue «apto con correcciones», sin bloqueantes; la re-revisión fue «apto con correcciones menores», sin bloqueantes ni hallazgos mayores nuevos. Las correcciones están aplicadas y verificadas. F05 fue aceptada por el usuario el 2026-10-26; `done` queda pendiente de merge/CI.
+- La revisión independiente fue «apto con correcciones», sin bloqueantes; la re-revisión fue «apto con correcciones menores», sin bloqueantes ni hallazgos mayores nuevos. Las correcciones están aplicadas y verificadas. F05 fue aceptada por el usuario el 2026-10-26 y cerrada como `done` tras el merge `8dfae5f` y CI en verde.
 - El [handoff](../04-features/F05-spike-tecnico/handoff.md) detalla ambas revisiones, las correcciones y el cierre.
 
 ### Resumen de pruebas y build
@@ -171,7 +172,7 @@ Prisma 7 se configuró con `apps/api/prisma7.config.ts`, generador `prisma-clien
 | Test de base de datos | Se salta sin `DATABASE_URL`; CI no levanta PostgreSQL en F05 | F37/F42 |
 | Tests de navegador | Sin E2E ni prueba real de hidratación en F05 | F37/F38 |
 | Tokens de Content Island | Se compartieron por chat para crear contenido; deben rotarse | Seguridad |
-| Sin commit | Commit local pendiente de ejecución inmediata; nada en `main` ni validado por CI | Cierre de F05 |
+| Commit, merge y CI | Cerrados: commits `6730ddc` y `596e516`, merge `8dfae5f` y CI en verde | Cerrado |
 
 ## Plan de salida si TanStack Start bloqueara
 

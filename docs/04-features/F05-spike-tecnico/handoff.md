@@ -1,19 +1,21 @@
 # Handoff — F05 Spike técnico integrado
 
-- **Estado:** `accepted` (aceptada por el usuario; `done` pendiente de merge/CI)
-- **Rama:** `feat/F05-spike-tecnico`
+- **Estado:** `done` (cerrada tras merge y CI en verde)
+- **Rama:** `feat/F05-spike-tecnico`, mergeada en `main`
 - **Fecha:** 2026-10-26
 - **Implementado por:** orquestador y subagentes de implementación de F05
-- **Revisado por:** reviewer independiente — revisión inicial y re-revisión: apto con correcciones; correcciones aplicadas y verificadas; verificación final completada
+- **Revisado por:** reviewer independiente — revisión inicial y re-revisión: apto con correcciones; correcciones aplicadas
 - **Aceptado por:** usuario (2026-10-26)
+- **Merge:** PR #1, merge commit `8dfae5f` (`Merge pull request #1 from Luceir0/feat/F05-spike-tecnico`)
+- **CI:** [run 40371999132](https://github.com/Luceir0/lab-final--memora/actions/runs/40371999132), completed/success, 2026-10-26
 
 ## Resultado
 
 Spike integrado terminado y revisado. Quedan validadas las piezas de riesgo del stack: TanStack Start 1.169.4 sobre Vite 8.3.5 con los tres modos de render (`/login` SSR, `/circles` `ssr: false`, `/help` prerender), Tailwind 4.3.3 CSS-first con tokens de `packages/ui`, Fastify 5.12.7 + Zod 4.6.7 con errores uniformes, Prisma 7.10.1 con migración real sobre PostgreSQL 17.11, `sharp` 0.35.5 para thumb y display WebP sin metadatos, y lectura del snapshot de Content Island en build sin token.
 
-La revisión independiente dio **«apto con correcciones», sin bloqueantes**, y la re-revisión **«apto con correcciones menores»**, sin bloqueantes ni hallazgos mayores nuevos. Se aplicaron las correcciones mayores (mapeo real de 4xx y 413, `globalDependencies`/`globalEnv` de Turbo y pruebas nuevas) y las menores (tareas, tests de contenido y tokens, servidor de contenido, rutas de spike, mensaje genérico de error y documentación de tokens). El usuario aceptó F05 el 2026-10-26. `done` queda pendiente de merge y CI. No se ha hecho commit ni push; el commit local es el paso inmediato.
+La revisión independiente dio **«apto con correcciones», sin bloqueantes**, y la re-revisión **«apto con correcciones menores»**, sin bloqueantes ni hallazgos mayores nuevos. Se aplicaron las correcciones mayores (mapeo real de 4xx y 413, `globalDependencies`/`globalEnv` de Turbo y pruebas nuevas) y las menores (tareas, tests de contenido y tokens, servidor de contenido, rutas de spike, mensaje genérico de error y documentación de tokens). El usuario aceptó F05 el 2026-10-26. **F05 está cerrada**: PR #1 mergeado en `main` (`8dfae5f`) y CI en verde. F06 es el siguiente paso, pero no se abre sin permiso del usuario.
 
-**Aceptación:** F05 aceptada el 2026-10-26. Los servidores de prueba (API en 3001 y web en 3000/3100) se cerraron al terminar la verificación. `done` se decidirá tras el merge y el CI, como en F04.
+**Cierre:** merge commit `8dfae5f` con los commits `6730ddc` (`feat: add F05 integrated technical spike`) y `596e516` (`chore: raise agent step budgets and document checkpoints`). CI de `main`: [run 40371999132](https://github.com/Luceir0/lab-final--memora/actions/runs/40371999132), completed/success. Los servidores de prueba (API en 3001 y web en 3000/3100) se cerraron al terminar la verificación.
 
 ## Cambios (archivos)
 
@@ -66,11 +68,11 @@ La revisión independiente dio **«apto con correcciones», sin bloqueantes**, y
 - `docs/03-architecture/monorepo.md`: dependencias reales de `apps/web` tras F05.
 - `docs/03-architecture/uploads.md`: estado real de HEIC tras la sonda de `sharp`.
 - `docs/02-design/tokens.md`: nota de variables runtime `--memora-*` y mapeo `@theme inline`.
-- `docs/00-index.md`: estado del proyecto actualizado, F05 en `accepted`.
+- `docs/00-index.md`: estado del proyecto actualizado, F05 en `done`.
 - `docs/04-features/F05-spike-tecnico/tasks.md`: tareas y evidencias marcadas.
 - `docs/04-features/F05-spike-tecnico/handoff.md`: este documento.
-- `docs/04-features/F05-spike-tecnico/spec.md`: `status: accepted`.
-- `docs/04-features/README.md`: F05 → `accepted`.
+- `docs/04-features/F05-spike-tecnico/spec.md`: `status: done`.
+- `docs/04-features/README.md`: F05 → `done`.
 - `docs/06-process/ai-log.md`: entradas de F05, revisión y cambio de presupuesto.
 - `docs/07-curriculum/coverage-map.md`: sección del spike y evidencias.
 - `README.md`: estado, versiones fijadas y nota del snapshot.
@@ -80,7 +82,7 @@ La revisión independiente dio **«apto con correcciones», sin bloqueantes**, y
 
 - `.opencode/agents/**` (10 agentes) y `docs/06-process/subagent-protocol.md`: presupuesto de pasos multiplicado por 5 y protocolo de checkpoint/reserva actualizado.
 - Es una decisión de proceso autorizada por el usuario, no un cambio funcional del spike.
-- Debe ir en un commit separado, propuesto como `chore(agents): raise step budget and document checkpoint protocol`.
+- Ya está incluida en el commit `596e516` (`chore: raise agent step budgets and document checkpoints`); no debe mezclarse con commits de producto futuros.
 
 ## Revisión y correcciones aplicadas
 
@@ -110,7 +112,7 @@ La revisión independiente dio **«apto con correcciones», sin bloqueantes**, y
 - **Error de Content Island:** el mensaje que cruza la server function es genérico («No se pudo leer el snapshot de Content Island. Revisa CONTENT_ISLAND_SNAPSHOT_PATH o regenera el snapshot.»); la ruta y el error original quedan en el log del servidor. El test comprueba ambos.
 - **Conteos:** web pasa a 15 tests; total 30 passed + 1 skipped sin DB y 31 passed con DB.
 - **Smoke web:** el smoke propio se hizo en `127.0.0.1` porque el puerto 3000 estaba ocupado por un proceso ajeno; el reviewer usó el puerto 3100 en su prueba. Son entornos distintos, no una contradicción.
-- **Cierre:** verificación final completada y aceptación del usuario el 2026-10-26; servidores de prueba cerrados. `done` queda pendiente de merge/CI.
+- **Cierre:** verificación final completada, aceptación del usuario el 2026-10-26 y servidores de prueba cerrados. F05 cerrada como `done` con el merge `8dfae5f` y CI en verde.
 
 ### Observaciones no corregidas
 
@@ -154,7 +156,7 @@ Ejecución real del 2026-10-26 desde la raíz. En esta máquina `pnpm` no está 
 | JS cliente | Sin cuerpo del snapshot ni `node:fs` |
 | `corepack pnpm docs:check` | OK; 191 archivos, 423 enlaces, 0 rotos |
 | `corepack pnpm agents:check` | OK; 10 agentes, 10 comandos, 6 skills, 43 specs, 43 filas |
-| `git status` | Rama `feat/F05-spike-tecnico`; cambios sin commitear; sin push |
+| `git status` | `main` en `8dfae5f`; cierre documental de F05 sin commitear; sin push |
 
 **Histórico de la implementación inicial:** `lint` 6/6, `typecheck` 8/8 y `build` 5/5. Los conteos de tests anteriores quedaron sustituidos por los de arriba tras las correcciones. `lint` y `typecheck` se repitieron con el shim temporal.
 
@@ -176,8 +178,6 @@ Ejecución real del 2026-10-26 desde la raíz. En esta máquina `pnpm` no está 
 
 ## Pendiente
 
-- **Commits.** No ejecutados todavía. Prever commits separados: F05 y `chore(agents)` del cambio de presupuesto; sin `push` sin permiso.
-- **`done`.** Pendiente de merge y CI, como en F04; no marcar `done` antes.
 - **Códigos de spike.** `PAYLOAD_TOO_LARGE` y `CLIENT_ERROR` se alinean con el contrato en F06.
 - **Cobertura parcial de 4xx.** 401/403/409/415/422/429 están implementados, pero ninguna ruta de prueba los produce.
 - **Rutas de spike.** `/api/spike/echo` debe retirarse antes de producto; `/api/spike/boom` ya es solo de test.
@@ -195,7 +195,6 @@ Ejecución real del 2026-10-26 desde la raíz. En esta máquina `pnpm` no está 
 - **Tests de base de datos en CI.** F37/F42 deciden si CI levanta PostgreSQL.
 - **E2E y accesibilidad.** F37–F39.
 - **Rotar tokens de Content Island.** Se compartieron por chat para crear contenido; el build no usa token.
-- **CI de la rama.** No se ha ejecutado; el trabajo no está en `main`.
 
 ## Riesgos y limitaciones
 
@@ -211,8 +210,8 @@ Ejecución real del 2026-10-26 desde la raíz. En esta máquina `pnpm` no está 
 10. **Puerto 3000 ocupado.** El smoke propio se hizo en `127.0.0.1`; el reviewer usó el puerto 3100. No se investigó el proceso ajeno.
 11. **Cobertura de tests limitada.** Son smoke tests del spike: 30 passed + 1 skipped sin DB y 31 passed con DB. No hay E2E ni prueba real de hidratación.
 12. **Cliente Prisma generado.** `apps/api/src/generated/` está ignorado. Un clon limpio depende de `prisma generate`, ya incluido en `build`, `typecheck` y `test`.
-13. **Cambio de proceso x5.** El aumento de presupuesto y el protocolo nuevo no forman parte de F05; deben ir en un commit `chore(agents)` separado para no mezclar proceso y funcionalidad.
-14. **Commit local pendiente.** Nada de este trabajo está en `main`; CI no lo ha validado. El commit se ejecutará justo después de cerrar la documentación y sin `push`.
+13. **Cambio de proceso x5.** Ya está incluido en el commit `596e516`; no debe mezclarse con commits de producto futuros.
+14. **Cierre documental.** F05 ya está en `main` con CI verde; este cierre documental será commiteado por el orquestador después.
 
 ## Documentación actualizada
 
@@ -222,11 +221,11 @@ Ejecución real del 2026-10-26 desde la raíz. En esta máquina `pnpm` no está 
 - [x] `docs/03-architecture/monorepo.md`
 - [x] `docs/03-architecture/uploads.md` (nota HEIC de F05)
 - [x] `docs/02-design/tokens.md` (variables `--memora-*` y `@theme inline`)
-- [x] `docs/00-index.md` (estado F01–F05, F05 en `accepted`)
+- [x] `docs/00-index.md` (estado F01–F05, F05 en `done`)
 - [x] `docs/04-features/F05-spike-tecnico/tasks.md`
 - [x] `docs/04-features/F05-spike-tecnico/handoff.md`
-- [x] `docs/04-features/F05-spike-tecnico/spec.md` (`status: accepted`)
-- [x] `docs/04-features/README.md` (F05 → `accepted`)
+- [x] `docs/04-features/F05-spike-tecnico/spec.md` (`status: done`)
+- [x] `docs/04-features/README.md` (F05 → `done`)
 - [x] `docs/06-process/ai-log.md`
 - [x] `docs/07-curriculum/coverage-map.md`
 - [x] `README.md`
@@ -235,7 +234,6 @@ Ejecución real del 2026-10-26 desde la raíz. En esta máquina `pnpm` no está 
 
 ## Siguiente paso propuesto
 
-1. Ejecutar el commit local de F05 y el commit separado `chore(agents)`; no hacer `push` sin permiso.
-2. Merge y CI de la rama. Si CI queda en verde, pasar F05 a `done`.
-3. Abrir F06 (contratos compartidos y permisos) después del cierre de F05.
-4. Mantener las deudas documentadas en sus features: F06/F07/F10/F11/F25/F36/F37/F42.
+1. El orquestador commiteará y pusheará este cierre documental; no hay push pendiente de F05.
+2. F06 (contratos compartidos y permisos) es el siguiente paso, pero no se abre sin permiso del usuario.
+3. Mantener las deudas documentadas en sus features: F06/F07/F10/F11/F25/F36/F37/F42.

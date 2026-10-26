@@ -1,6 +1,6 @@
 # Cobertura del temario
 
-Estado: **F01–F03 cubren los temas transversales, F04 el entorno y tooling, y F05 valida el stack de aplicación** (organización, documentación, IA agente, revisión, activos, TypeScript estricto, monorepo, Docker, CI, render modes, Tailwind 4, Fastify + Zod, Prisma 7, sharp y Content Island). F05 está `accepted` desde el 2026-10-26; `done` queda pendiente de merge/CI. El resto está planificado y se actualiza al cerrar cada feature con evidencias reales.
+Estado: **F01–F03 cubren los temas transversales, F04 el entorno y tooling, y F05 valida el stack de aplicación** (organización, documentación, IA agente, revisión, activos, TypeScript estricto, monorepo, Docker, CI, render modes, Tailwind 4, Fastify + Zod, Prisma 7, sharp y Content Island). F05 está `done` tras el merge `8dfae5f` y CI en verde. El resto está planificado y se actualiza al cerrar cada feature con evidencias reales.
 
 **Fuente del temario:** `assets/design/temario-tecnologias.png` y la especificación histórica `docs/archive/spec-v1.md` §7. No hay una transcripción oficial en texto; este mapa es la referencia operativa.
 
@@ -25,7 +25,7 @@ Estado: **F01–F03 cubren los temas transversales, F04 el entorno y tooling, y 
 | Validadores documentales | Enlaces, estructura, agentes, comandos, skills y 43 specs | `scripts/check-docs.mjs`, `scripts/validate-agents.mjs` | Cubierto |
 | Node 24 | `engines >=24` y CI con Node 24 | `package.json`, `.github/workflows/ci.yml` | Cubierto |
 
-## Stack de aplicación (F05, accepted)
+## Stack de aplicación (F05, done)
 
 | Tema | Dónde se aplica | Evidencia | Estado |
 | --- | --- | --- | --- |

@@ -49,7 +49,9 @@
 - [x] Verificación final del orquestador/reviewer — completada.
 - [x] Aceptación del usuario — 2026-10-26.
 - [x] `handoff.md` completo — cerrado con aceptación.
-- [x] Tablero actualizado — F05 en `accepted`.
+- [x] Tablero actualizado — F05 en `done`.
 - [x] Bitácora y cobertura actualizadas — `docs/06-process/ai-log.md`, `docs/07-curriculum/coverage-map.md`.
-- [ ] Commit — pendiente de ejecución inmediata; prever commit de F05 y `chore(agents)` separado.
-- [ ] `done` — pendiente de merge y CI, como en F04.
+- [x] Commit — `6730ddc` y `596e516`.
+- [x] Merge — PR #1, merge commit `8dfae5f`.
+- [x] CI de `main` — [run 40371999132](https://github.com/Luceir0/lab-final--memora/actions/runs/40371999132), success.
+- [x] `done` — F05 cerrada.

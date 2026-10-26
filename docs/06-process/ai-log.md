@@ -103,15 +103,24 @@ Registro de usos relevantes de IA. No es un chat completo: es evidencia para el 
 - **Prompt representativo:** el usuario acepta F05 tras la re-revisión y pide cerrar la documentación en `accepted`, sin marcar `done` hasta el merge/CI.
 - **Propuesta de la IA:** actualizar tablero, spec, handoff, resultados, cobertura y bitácora; mantener `nul` como eliminado; dejar el commit como paso inmediato y `done` a la espera de merge/CI.
 - **Qué se corrigió:** F05 pasa de `review` a `accepted`; el handoff registra la aceptación del 2026-10-26 y la verificación final completada; los servidores de prueba se cerraron; `tasks.md` marca revisión, verificación, aceptación y handoff, y deja commit y `done` pendientes; `nul` figura como eliminado; no se inventa ningún commit.
-- **Decisión final:** F05 `accepted`; `done` se decidirá después del merge y CI, como en F04. El commit local está pendiente de ejecución inmediata y no se ha hecho `push`.
+- **Decisión final:** F05 `accepted`; `done` se decidirá después del merge y CI, como en F04. El commit local está pendiente de ejecución inmediata y no se ha hecho `push`. *(Actualización: merge y CI completados; ver la entrada siguiente.)*
 - **Tema del temario:** cierre de features, trazabilidad documental, control de estado, verificación y trabajo agéntico.
 - **Evidencia:** `docs/04-features/F05-spike-tecnico/spec.md`, `docs/04-features/README.md`, `docs/04-features/F05-spike-tecnico/handoff.md`, `docs/00-index.md`, `README.md`.
+
+### 2026-10-26 — Cierre de F05: merge y CI
+
+- **Prompt representativo:** F05 ya está mergeada en `main` y el CI está en verde; cerrar la feature como `done` sin abrir F06.
+- **Propuesta de la IA:** actualizar tablero, spec, handoff, tareas, resultados, cobertura y bitácora con el PR, el merge commit y el run de CI; mantener F06 en `draft`.
+- **Qué se corrigió:** F05 pasa de `accepted` a `done`; se registran PR #1, merge commit `8dfae5f`, commits `6730ddc` y `596e516`, y CI [run 40371999132](https://github.com/Luceir0/lab-final--memora/actions/runs/40371999132) `completed/success`; se cierran las casillas de commit, merge, CI y `done`; el cierre documental queda pendiente de commit por el orquestador.
+- **Decisión final:** F05 `done`; F06 sigue en `draft` y no se abre sin permiso del usuario. No hay push pendiente de F05; este cierre documental se commiteará y pusheará después.
+- **Tema del temario:** cierre de features, trazabilidad de PR/merge/CI, documentación viva y control de alcance.
+- **Evidencia:** `docs/04-features/F05-spike-tecnico/handoff.md`, `docs/04-features/F05-spike-tecnico/tasks.md`, `docs/04-features/README.md`, `README.md`, `docs/03-architecture/spike-results.md`, `docs/07-curriculum/coverage-map.md`.
 
 ### 2026-10-26 — Proceso: presupuesto de pasos x5
 
 - **Prompt representativo:** el presupuesto de pasos se agotaba antes de cerrar tareas con documentación y verificación; valorar un cambio de proceso.
 - **Propuesta de la IA:** multiplicar por 5 el presupuesto de los 10 agentes y sustituir la reserva fija de 5 pasos por un checkpoint al 50 % y una reserva del 10 % (mínimo 8 pasos).
 - **Qué se corrigió:** `.opencode/agents/**` pasa de 20–50 a 100–250 pasos según el rol; `docs/06-process/subagent-protocol.md` documenta el checkpoint, la reserva y que un presupuesto alto es un techo, no una cuota.
-- **Decisión final:** cambio de proceso autorizado por el usuario, **fuera del alcance funcional de F05**. Debe ir en un commit separado, propuesto como `chore(agents): raise step budget and document checkpoint protocol`; no se mezcla con el commit de F05.
+- **Decisión final:** cambio de proceso autorizado por el usuario, **fuera del alcance funcional de F05**. Quedó incluido en el commit separado `596e516` (`chore: raise agent step budgets and document checkpoints`), sin mezclarse con el commit funcional de F05.
 - **Tema del temario:** IA agente, protocolo de subagentes, planificación y control de alcance.
 - **Evidencia:** `.opencode/agents/*.md`, `docs/06-process/subagent-protocol.md`, `docs/04-features/F05-spike-tecnico/handoff.md`.
