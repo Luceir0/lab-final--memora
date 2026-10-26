@@ -6,9 +6,9 @@ Todos se acceden desde el servidor o desde el build, nunca desde el navegador. C
 
 | Entorno | Implementación |
 | --- | --- |
-| Local | MinIO en Docker |
+| Local | Silo (fork mantenido de MinIO) en Docker |
 | Producción | Cloudflare R2 o AWS S3 |
-| Tests | Fake en memoria o MinIO de test |
+| Tests | Fake en memoria o Silo de test |
 
 Variables: `S3_ENDPOINT`, `S3_REGION`, `S3_BUCKET`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY`, `S3_FORCE_PATH_STYLE`.
 
@@ -16,6 +16,8 @@ Variables: `S3_ENDPOINT`, `S3_REGION`, `S3_BUCKET`, `S3_ACCESS_KEY_ID`, `S3_SECR
 - La API sirve las imágenes; no hay URLs públicas.
 - Claves generadas por el servidor.
 - Borrado de objetos al borrar fotos.
+
+En local se usa **Silo** (`pgsty/silo`), fork mantenido de MinIO tras el cierre de la edición comunitaria upstream. Conserva la API S3, las variables `MINIO_*` y el formato de datos; la imagen va fijada por tag y digest (ver [ADR-0014](adr/ADR-0014-local-storage.md) y `docs/08-delivery/deployment.md`). En producción no se usa: el bucket es R2/S3 gestionado.
 
 ## Email
 

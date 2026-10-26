@@ -13,7 +13,7 @@ apps/web (TanStack Start + Node)
   ▼
 apps/api (Fastify)
   ├── PostgreSQL (Prisma)
-  ├── S3-compatible (MinIO/R2/S3)
+  ├── S3-compatible (Silo/R2/S3)
   ├── Email (Mailpit/Resend)
   ├── Geocoding (Nominatim)
   └── Content Island (build de web)
@@ -64,6 +64,7 @@ apps/api (Fastify)
 - [ADR-0011 Accessibility](adr/ADR-0011-accessibility.md)
 - [ADR-0012 Privacy](adr/ADR-0012-privacy.md)
 - [ADR-0013 PWA](adr/ADR-0013-pwa.md)
+- [ADR-0014 Almacenamiento local](adr/ADR-0014-local-storage.md)
 
 ## Riesgos
 

@@ -25,7 +25,7 @@
 | 19 | Permisos | Crear álbum, subir, descargar y etiquetar: sí; invitar: owner |
 | 20 | ZIP | Job asíncrono, 500 fotos/2 GB, 24 h, proceso interno |
 | 21 | Content Island | Ayuda, FAQ y Privacidad; snapshot SSG |
-| 22 | Servicios | MinIO/Mailpit/Nominatim local; R2/Resend opcionales |
+| 22 | Servicios | Silo (MinIO)/Mailpit/Nominatim local; R2/Resend opcionales |
 | 23 | Tests | GitHub Actions; 80/75/60; Android manual |
 | 24 | Accesibilidad | AA obligatorio; AAA viable |
 | 25 | Actividad | Tabla de eventos |

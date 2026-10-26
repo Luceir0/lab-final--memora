@@ -29,7 +29,7 @@ La cobertura no sustituye casos negativos ni revisión.
 - Postgres de test real.
 - Migraciones antes de la suite.
 - Seed determinista y factories.
-- Bucket MinIO de test o fake.
+- Bucket S3 local (Silo) de test o fake.
 - MSW con contratos compartidos.
 - E2E con base de datos limpia y usuarios únicos.
 
@@ -47,7 +47,7 @@ GitHub Actions:
 8. `pnpm docs:check` y `pnpm agents:check`.
 9. cache de Turborepo.
 
-Servicios: Postgres y MinIO.
+Servicios: Postgres y Silo (S3).
 
 ## Reglas
 

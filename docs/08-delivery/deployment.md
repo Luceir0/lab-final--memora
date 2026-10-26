@@ -19,14 +19,16 @@ Servicios:
 | Web | 3000 | TanStack Start |
 | API | 3001 | Fastify |
 | PostgreSQL | 5432 | Datos |
-| MinIO | 9000/9001 | Fotos |
+| Silo (S3) | 9000/9001 | Fotos |
 | Mailpit | 8025 | Email capturado |
 
 Web y API bajo el mismo origen en desarrollo mediante proxy `/api`.
 
-### MinIO en local
+### Silo en local
 
-Las imágenes oficiales de MinIO dejaron de publicarse, así que la infraestructura local usa el mirror `alpine/minio`, fijado por **tag y digest** (`RELEASE.2025-10-15T17-29-55Z@sha256:cf23643a…`) para que `docker compose up -d` sea reproducible y no dependa de un tag movido. Ese contenedor es **solo para local**: el volumen lo crea Docker como root y la imagen no ajusta permisos, por lo que arranca con `user: '0:0'`. En producción **no** se usa: el almacenamiento es R2/S3 gestionado.
+MinIO dejó de publicar su edición comunitaria: la última release abierta es `RELEASE.2025-10-15T17-29-55Z` y el repositorio upstream está archivado. La infraestructura local usa **Silo** (`pgsty/silo`), un fork comunitario mantenido que conserva la API S3, las variables `MINIO_*`, las rutas `/minio/*`, la consola web y el formato de datos.
+
+La imagen está fijada por **tag y digest** (`RELEASE.2026-10-18T00-00-00Z@sha256:2636fc41…`) para que `docker compose up -d` sea reproducible y no dependa de un tag movido. Es **solo para local**: no se despliega en producción, donde el almacenamiento es R2/S3 gestionado. El contenedor arranca como root porque Docker crea el volumen como root; por eso Compose no fija `user`. Al actualizar la imagen, revisa las notas de release y vuelve a fijar el digest.
 
 ## Variables
 
@@ -75,7 +77,7 @@ MAILPIT_UI_PORT=
 
 ### Opción A — VPS único
 
-- Docker Compose: web, api, postgres, minio/r2, caddy.
+- Docker Compose: web, api, postgres, silo (S3) o R2, caddy.
 - Caddy para TLS y proxy.
 - Volúmenes persistentes.
 - Backup documentado como fuera de MVP.

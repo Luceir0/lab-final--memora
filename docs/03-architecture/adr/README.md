@@ -17,6 +17,7 @@ Registro de decisiones de arquitectura. Formato: contexto, decisión, alternativ
 | [0011](ADR-0011-accessibility.md) | AA obligatorio + AAA viable | Aceptado |
 | [0012](ADR-0012-privacy.md) | Privacidad y datos de imágenes | Aceptado |
 | [0013](ADR-0013-pwa.md) | PWA sin service worker en el MVP | Aceptado |
+| [0014](ADR-0014-local-storage.md) | Almacenamiento S3 local con Silo | Aceptado |
 
 ## Plantilla
 

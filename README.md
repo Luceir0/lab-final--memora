@@ -38,7 +38,7 @@ El tablero de features está en [docs/04-features/README.md](docs/04-features/RE
 | Formularios | React Hook Form + Zod 4 |
 | API | Node.js 24 + **Fastify 5** |
 | Base de datos | PostgreSQL + **Prisma 7.10.1** |
-| Archivos | S3-compatible (MinIO local, R2/S3 en producción) + `sharp` |
+| Archivos | S3-compatible (Silo, fork de MinIO, en local; R2/S3 en producción) + `sharp` |
 | Email | Mailpit local / Resend opcional |
 | Geocodificación | Nominatim (OpenStreetMap) |
 | Contenido editorial | **Content Island** (Ayuda, FAQ y Privacidad) |
@@ -66,7 +66,7 @@ El tablero de features está en [docs/04-features/README.md](docs/04-features/RE
 | Fastify | 5.12.7 |
 | `@types/node` | 24.19.2 |
 
-Imágenes locales: `postgres:17.11-alpine`, `alpine/minio` por tag y digest (solo local) y `axllent/mailpit:v1.32.0`. Prisma 8 está en RC y no se usa; Prisma 7.10.1 se incorporará con el modelo de datos (F07).
+Imágenes locales: `postgres:17.11-alpine`, `pgsty/silo` por tag y digest (solo local) y `axllent/mailpit:v1.32.0`. Prisma 8 está en RC y no se usa; Prisma 7.10.1 se incorporará con el modelo de datos (F07).
 
 ---
 
@@ -89,7 +89,7 @@ memora/
 │   ├── ui/
 │   └── config/
 ├── scripts/                   # check-docs, validate-agents
-├── docker-compose.yml         # Postgres, MinIO y Mailpit locales
+├── docker-compose.yml         # Postgres, Silo (S3) y Mailpit locales
 ├── package.json
 ├── pnpm-workspace.yaml
 ├── turbo.json

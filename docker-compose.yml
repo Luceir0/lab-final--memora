@@ -1,4 +1,4 @@
-# Infraestructura local de Memora: PostgreSQL, MinIO y Mailpit.
+# Infraestructura local de Memora: PostgreSQL, Silo (S3) y Mailpit.
 # Uso: docker compose up -d
 # Las credenciales y puertos salen de variables de entorno con defaults locales.
 # No se versiona ningún .env real: copia .env.example a .env si necesitas cambiarlos.
@@ -27,15 +27,16 @@ services:
       - memora
 
   minio:
-    # Las imágenes oficiales de MinIO dejaron de publicarse; se usa el mirror
-    # `alpine/minio` (solo local), fijado por tag + digest multi-arch para que
-    # `docker compose up` sea reproducible y no arrastre un tag movido.
-    image: alpine/minio:RELEASE.2025-10-15T17-29-55Z@sha256:cf23643a6cf9ce159c57643ceb88279e431262282428c9e0bf3a7ef1a97e84b4
+    # MinIO dejó de publicar su edición comunitaria y archivó el repositorio;
+    # se usa Silo (`pgsty/silo`), el fork mantenido que conserva la API S3, las
+    # variables MINIO_*, las rutas /minio/* y el formato de datos. Solo local,
+    # fijado por tag + digest multi-arch para que `docker compose up` sea
+    # reproducible y no arrastre un tag movido.
+    image: pgsty/silo:RELEASE.2026-10-18T00-00-00Z@sha256:2636fc4155d9a7e41ff58cdb65ddd13ba9304e67184e13c25bc5cb34016269d7
     restart: unless-stopped
-    # La imagen declara `USER minio` (uid 100) pero no ajusta permisos del volumen,
-    # que Docker crea como root. En local arrancamos como root para que /data sea escribible.
-    # Solo local: en producción el almacenamiento es R2/S3 gestionado, no este contenedor.
-    user: '0:0'
+    # La imagen arranca como root y Docker crea el volumen como root, así que
+    # /data es escribible sin overrides. Solo local: en producción el
+    # almacenamiento es R2/S3 gestionado, no este contenedor.
     command: server /data --console-address ":9001"
     environment:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER:-memora}
@@ -46,7 +47,7 @@ services:
     volumes:
       - minio-data:/data
     healthcheck:
-      test: ['CMD-SHELL', 'wget -q -O /dev/null http://127.0.0.1:9000/minio/health/live || exit 1']
+      test: ['CMD-SHELL', 'curl -fsS http://127.0.0.1:9000/minio/health/live || exit 1']
       interval: 5s
       timeout: 5s
       retries: 12

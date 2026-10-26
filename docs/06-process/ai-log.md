@@ -61,3 +61,12 @@ Registro de usos relevantes de IA. No es un chat completo: es evidencia para el 
 - **Decisión final:** F04 queda en `done`. Aceptación del usuario el 2026-10-25, revisión independiente «apto con correcciones» sin bloqueantes, seis correcciones aplicadas, merge en `main` (`ff6c6d7`) y CI en verde ([run 40220950230](https://github.com/Luceir0/lab-final--memora/actions/runs/40220950230)).
 - **Tema del temario:** entorno y tooling, TypeScript, monorepo, Docker, CI, validación documental, IA agente.
 - **Evidencia:** `package.json`, `turbo.json`, `docker-compose.yml`, `.github/workflows/ci.yml`, `scripts/check-docs.mjs`, `scripts/validate-agents.mjs`, `docs/04-features/F04-monorepo-tooling/handoff.md`.
+
+### 2026-10-26 — Mantenimiento de infraestructura: MinIO → Silo
+
+- **Prompt representativo:** comprobar si MinIO sigue teniendo soporte y valorar el fork `pgsty/minio` para el almacenamiento local.
+- **Propuesta de la IA:** verificar el estado upstream, comparar el espejo actual con el fork mantenido y proponer el cambio de imagen con verificación real.
+- **Qué se corrigió:** se confirmó que `minio/minio` está archivado y que `alpine/minio` es un espejo sin parches; se detectó que `pgsty/minio` se renombró a `pgsty/silo`; se sustituyó la imagen por `pgsty/silo:RELEASE.2026-10-18T00-00-00Z` fijada por digest, se cambió el healthcheck a `curl` y se eliminó el `user: '0:0'` innecesario.
+- **Decisión final:** Silo solo para local, manteniendo servicio `minio`, volumen `minio-data` y variables `MINIO_ROOT_*`; producción sigue en R2/S3. Registrado en ADR-0014.
+- **Tema del temario:** entorno y tooling, Docker, seguridad de dependencias, documentación.
+- **Evidencia:** `docker-compose.yml`, `docs/08-delivery/deployment.md`, `docs/03-architecture/adr/ADR-0014-local-storage.md`, `docs/04-features/F04-monorepo-tooling/handoff.md`.

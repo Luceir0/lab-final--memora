@@ -82,7 +82,7 @@ Ejecución real del orquestador y del reviewer, sin caché cuando se indica:
 ## Riesgos y limitaciones
 
 1. **Lectura de `.env` por shell.** La regla de `opencode.jsonc` no puede impedir `cat .env` desde una shell; es una limitación de la herramienta, aceptada y no ocultada.
-2. **MinIO de terceros.** `alpine/minio` es un mirror (las imágenes oficiales dejaron de ser públicas), fijado por digest, solo para local y ejecutado como root por permisos del volumen. En producción se usa R2/S3 gestionado.
+2. **Almacenamiento local de terceros.** `alpine/minio` era un espejo sin parches de la última release upstream; desde el 2026-10-26 se usa `pgsty/silo`, un fork mantenido, fijado por tag y digest y solo para local. En producción se usa R2/S3 gestionado. Ver ADR-0014.
 3. **`esbuild@0.28.2`.** pnpm 10 ignora su postinstall; hoy no afecta porque Vite 8 usa rolldown. Se valorará `onlyBuiltDependencies` en F05.
 4. **Cobertura de tests incompleta.** `apps/web` no tiene tests reales (placeholder que sale 0) y `test:e2e` no ejecuta nada todavía; `db:migrate` y `db:seed` fallarán hasta F07.
 5. **`routeTree.gen.ts`.** Se versiona a propósito; si se ignora, un clon limpio no pasa typecheck.
@@ -99,6 +99,29 @@ Ejecución real del orquestador y del reviewer, sin caché cuando se indica:
 - [x] `README.md` (estado, árbol, versiones fijadas)
 - [x] `docs/08-delivery/deployment.md` (`.env.example` como fuente de verdad)
 - [x] `docs/03-architecture/monorepo.md` (tabla de dependencias como máximo permitido)
+
+## Actualización posterior (2026-10-26)
+
+- **MinIO → Silo.** La imagen local pasa de `alpine/minio:RELEASE.2025-10-15T17-29-55Z` a `pgsty/silo:RELEASE.2026-10-18T00-00-00Z`, fijada por tag y digest. Motivo: upstream archivado y espejo sin parches; Silo conserva API S3, variables `MINIO_*`, rutas `/minio/*` y formato de datos.
+- Se mantienen el servicio `minio`, el volumen `minio-data` y las variables `MINIO_ROOT_*`.
+- Verificación y detalle: `docs/08-delivery/deployment.md`, `docs/03-architecture/adr/ADR-0014-local-storage.md` y `docs/06-process/ai-log.md`.
+
+### Verificación de la actualización
+
+| Comprobación | Resultado |
+| --- | --- |
+| `docker compose config -q` | OK |
+| Servicios | `minio`, `postgres` y `mailpit` `healthy` |
+| Versión de Silo | `RELEASE.2026-10-18T00-00-00Z`, Go 1.27.2, linux/amd64 |
+| `/minio/health/live` y consola `:9001` | `200` y `200` |
+| Volumen previo | `format.json` con `format: xl-single`; lectura sin migración destructiva |
+| S3 básico | bucket creado, objeto subido/listado/leído/borrado y bucket eliminado |
+| URL prefirmada SigV4 | Generada y descargada correctamente |
+| Persistencia | Objeto conservado tras `docker compose up -d --force-recreate minio` |
+| Logs | Sin errores ni warnings recientes |
+| Postgres y Mailpit | `pg_isready` correcto y Mailpit `200` |
+| `pnpm docs:check` / `agents:check` / `format:check` | OK |
+| Límites | Multipart y ARM64 pendientes para F25; el volumen previo no contenía fotos |
 
 ## Siguiente paso propuesto
 
