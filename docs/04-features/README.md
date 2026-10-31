@@ -13,7 +13,7 @@ Tablero de las 43 features. Cada carpeta contiene `spec.md`, `tasks.md` y `hando
 - `accepted`: aceptada por el usuario.
 - `done`: documentación y evidencias cerradas.
 
-**Situación actual:** F01–F05 están `done`. F05 se cerró el 2026-10-26 tras el merge de la PR #1 (`8dfae5f`) y CI en verde. F06 es el siguiente paso y sigue en `draft`; no se abre sin permiso del usuario. F07–F43 están en `draft` con la spec completa y las dependencias definidas.
+**Situación actual:** F01–F05 están `done`. F05 se cerró el 2026-10-26 tras el merge de la PR #1 (`8dfae5f`) y CI en verde. **F06 fue aceptada por el usuario el 2026-10-31**, después de la re-revisión y de cerrar los hallazgos menores. La aceptación no la cierra: faltan el commit en `feat/F06-contratos-compartidos`, el merge con CI en verde y el paso a `done`, igual que en F04 y F05. F07–F43 están en `draft` con la spec completa y las dependencias definidas.
 
 ## Tablero
 
@@ -24,7 +24,7 @@ Tablero de las 43 features. Cada carpeta contiene `spec.md`, `tasks.md` y `hando
 | F03 | [Scaffold agéntico](F03-scaffold-agentico/spec.md) | M0 | M | `done` | F02 |
 | F04 | [Monorepo, tooling, Docker y CI](F04-monorepo-tooling/spec.md) | M1 | M | `done` | F03 |
 | F05 | [Spike técnico integrado](F05-spike-tecnico/spec.md) | M1 | M | `done` | F04 |
-| F06 | [Contratos compartidos y permisos](F06-contratos-compartidos/spec.md) | M1 | M | `draft` | F05 |
+| F06 | [Contratos compartidos y permisos](F06-contratos-compartidos/spec.md) | M1 | M | `accepted` | F05 |
 | F07 | [Modelo de datos, migraciones y seed](F07-modelo-datos/spec.md) | M1 | M | `draft` | F06 |
 | F08 | [API core](F08-api-core/spec.md) | M1 | M | `draft` | F06, F07 |
 | F09 | [Web core](F09-web-core/spec.md) | M1 | M | `draft` | F06 |

@@ -40,4 +40,4 @@ Memora se documenta en capas pequeñas para que un agente pueda cargar solo lo n
 
 ## Estado
 
-F01–F05 están `done`. F05 se cerró el 2026-10-26 con el merge `8dfae5f` y CI en verde; F06 es el siguiente paso y está en `draft`, sin abrir. F07–F43 también están en `draft`.
+F01–F05 están `done`. F05 se cerró el 2026-10-26 con el merge `8dfae5f` y CI en verde. F06 fue aceptada por el usuario el 2026-10-31: `packages/shared` contiene contratos Zod, errores, paginación y permisos con tests en verde, y la revisión independiente está cerrada. La aceptación no la cierra: faltan commit, merge/CI y el paso a `done`. F07–F43 están en `draft`.

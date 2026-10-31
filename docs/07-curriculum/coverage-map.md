@@ -1,6 +1,6 @@
 # Cobertura del temario
 
-Estado: **F01–F03 cubren los temas transversales, F04 el entorno y tooling, y F05 valida el stack de aplicación** (organización, documentación, IA agente, revisión, activos, TypeScript estricto, monorepo, Docker, CI, render modes, Tailwind 4, Fastify + Zod, Prisma 7, sharp y Content Island). F05 está `done` tras el merge `8dfae5f` y CI en verde. El resto está planificado y se actualiza al cerrar cada feature con evidencias reales.
+Estado: **F01–F03 cubren los temas transversales, F04 el entorno y tooling, F05 el stack de aplicación y F06 los contratos y permisos compartidos** (organización, documentación, IA agente, revisión, activos, TypeScript estricto, monorepo, Docker, CI, render modes, Tailwind 4, Fastify + Zod, Prisma 7, sharp, Content Island, Zod como fuente única, errores, paginación y autorización pura). F05 está `done` tras el merge `8dfae5f` y CI en verde; F06 está `accepted` desde el 2026-10-31, con implementación y tests en verde, pendiente de commit, merge/CI y `done`. El resto está planificado y se actualiza al cerrar cada feature con evidencias reales.
 
 **Fuente del temario:** `assets/design/temario-tecnologias.png` y la especificación histórica `docs/archive/spec-v1.md` §7. No hay una transcripción oficial en texto; este mapa es la referencia operativa.
 
@@ -44,6 +44,18 @@ Estado: **F01–F03 cubren los temas transversales, F04 el entorno y tooling, y 
 | Secretos fuera del build | El build no usa token; el JS cliente no contiene el snapshot ni `node:fs` | Inspección de `apps/web/dist/client/assets/*.js` | Cubierto |
 | Documentación de resultados | Informe, handoff y plan de salida | `docs/03-architecture/spike-results.md`, `docs/04-features/F05-spike-tecnico/handoff.md` | Cubierto |
 
+## Contratos y permisos compartidos (F06, accepted)
+
+| Tema | Dónde se aplica | Evidencia | Estado |
+| --- | --- | --- | --- |
+| Zod como fuente única | Requests, responses y DTOs de los dominios del contrato | `packages/shared/src/schemas/**`, `packages/shared/src/schemas/contracts.test.ts` | Cubierto (F06) |
+| DTOs inferidos y privacidad | `z.infer`; sin `objectKey`, tokens ni GPS | `packages/shared/src/schemas/dto.ts`, tests de privacidad de DTOs | Cubierto (F06) |
+| Errores uniformes | `code`/`message`/`details`; `details` no vacío o `null` | `packages/shared/src/errors.ts`, `packages/shared/src/errors.test.ts` | Cubierto (F06) |
+| Paginación por cursor | Default 24, 1–100, `Page<T>`, `createPageSchema`, `buildPageQuery` | `packages/shared/src/pagination.ts`, `packages/shared/src/pagination.test.ts` | Cubierto (F06) |
+| Permisos puros | Owner/member × flags × acciones; owner por `ownerId`; falla cerrado ante acciones desconocidas y recursos de otro círculo | `packages/shared/src/permissions.ts`, `packages/shared/src/permissions.test.ts` | Cubierto (F06) |
+| Validación en español | Mensajes de constraints y rango de `limit` | `packages/shared/src/validation-messages.ts`, `contracts.test.ts` | Cubierto (F06) |
+| Testing unitario | 5 archivos, 138 tests; sin mocks en permisos | `packages/shared/src/*.test.ts`; `pnpm --filter @memora/shared test` | Cubierto (F06) |
+
 ## 1. Maquetación
 
 | Contenido | Dónde se aplica | Evidencia | Estado |
@@ -63,12 +75,12 @@ Estado: **F01–F03 cubren los temas transversales, F04 el entorno y tooling, y 
 | Contenido | Dónde se aplica | Evidencia | Estado |
 | --- | --- | --- | --- |
 | TypeScript core | `strict`, sin `any` | `packages/config/tsconfig/base.json`, `pnpm typecheck` 8/8 | Cubierto (F05: aplicado a código real) |
-| Union types y narrowing | Upload state, roles, tema, ApiResult | `useUploadQueue`, api-client | Pendiente |
-| Genéricos | `Paginated<T>`, `ApiResult<T>`, `request<T>` | `shared`, `api-client` | Pendiente |
+| Union types y narrowing | Roles, acciones, tema y `ApiResult` | `packages/shared/src/permissions.ts`, `packages/shared/src/errors.ts`, `packages/shared/src/schemas/common.ts` | Cubierto (F06: roles, acciones, tema y resultado; estados de subida en F26) |
+| Genéricos | `Page<T>`, `ApiResult<T>`, `createPageSchema<T>`, `request<T>` | `packages/shared/src/pagination.ts`, `packages/shared/src/errors.ts` | Parcial (F06: `Page<T>` y `ApiResult<T>`; `request<T>` en F09) |
 | Utility types | `Omit`, `Partial`, `Pick`, `Record` | DTOs | Pendiente |
-| Tipos inferidos de Zod | `z.infer` como fuente | `apps/api/src/spike/schemas.ts` | Parcial (F05: health y echo; contratos completos en F06) |
-| Inmutabilidad | Reducer y caché | Upload reducer | Pendiente |
-| Funciones puras | Permisos, filtros, formatos | Tests unitarios | Pendiente |
+| Tipos inferidos de Zod | `z.infer` como fuente | `packages/shared/src/schemas/dto.ts`, resto de `schemas/**` | Cubierto (F06) |
+| Inmutabilidad | `Readonly`/`Object.freeze` en settings; reducer y caché pendientes | `packages/shared/src/permissions.ts` | Parcial (F06: settings; upload reducer en F26) |
+| Funciones puras | Permisos, paginación y mensajes por defecto | `permissions.ts`, `pagination.ts`, `errors.ts`; tests unitarios | Cubierto (F06) |
 | IA para tipados | Revisión de contratos | Bitácora | Pendiente |
 
 ## 3. Bundlers
@@ -81,7 +93,7 @@ Estado: **F01–F03 cubren los temas transversales, F04 el entorno y tooling, y 
 | SSG | Ayuda y privacidad | `apps/web/dist/client/help/index.html` | Cubierto (F05: `/help`; `/privacy` en F36) |
 | MPA | No se fuerza; ADR | ADR-0002 | Pendiente |
 | Turborepo | Monorepo, caché, CI y entorno global | `turbo.json` (`globalDependencies`/`globalEnv`), `.github/workflows/ci.yml`; test forzado 15/15 | Cubierto |
-| Paquetes compartidos | `shared`, `api-client`, `ui`, `config` | `pnpm-workspace.yaml`, `packages/*/package.json` | Parcial (F05: web consume `shared` y `ui`; `api-client` sin uso real) |
+| Paquetes compartidos | `shared`, `api-client`, `ui`, `config` | `pnpm-workspace.yaml`, `packages/*/package.json`, `packages/shared/src/**` | Parcial (F06: `shared` con contratos y permisos; `api-client` sin uso real) |
 
 ## 4. Frameworks
 
@@ -111,7 +123,7 @@ Estado: **F01–F03 cubren los temas transversales, F04 el entorno y tooling, y 
 | Contenido | Dónde se aplica | Evidencia | Estado |
 | --- | --- | --- | --- |
 | API REST I y II | Recursos, verbos, códigos, paginación, subida, cookie | `apps/api/src/build-server.ts`, `apps/api/src/spike/routes.ts` | Parcial (F05: health, eco/boom, 4xx/413/500; recursos reales en F08+) |
-| Consumo de APIs | Cliente tipado en web y SSR | `api-client`; proxy `/api` validado | Parcial (F05: proxy; cliente tipado en F06/F09) |
+| Consumo de APIs | Cliente tipado en web y SSR | `api-client`; proxy `/api` validado; contratos en `shared` | Parcial (F06: contratos; cliente tipado en F09) |
 | Servicios externos | S3, email, geocoding, Content Island | `apps/web/src/features/spike/content.server.ts`, `content-island-snapshot.json` | Parcial (F05: Content Island snapshot; S3, email y geocoding pendientes) |
 
 ## Evidencias de entrega

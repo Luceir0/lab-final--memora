@@ -39,14 +39,17 @@ Cada endpoint:
 Reglas:
 
 - Un recurso de otro círculo devuelve 404, no 403, cuando revelar existencia sería una fuga.
-- El propietario siempre puede.
-- Los flags de `Circle.settings` limitan a miembros.
+- El propietario se decide por `Circle.ownerId`, nunca por el `role` de la fila de membresía: un `role: 'owner'` que no coincide con `ownerId` no eleva permisos.
+- El propietario puede todo, salvo borrar un álbum que todavía tiene fotos (ver abajo).
+- Los flags de `Circle.settings` limitan a miembros; al owner no le afectan.
 - Invitar, expulsar, cambiar permisos y borrar círculo: solo owner. No existe flag `membersCanInvite`.
+- Editar álbum: owner, o el miembro que lo creó mientras `membersCanCreateAlbums` esté activo.
 - Etiquetar: solo miembros del círculo; si el flag `membersCanTag` está activo.
 - Descargar: si el flag `membersCanDownload` está activo. Ese mismo flag controla el acceso a `original`; `display` y `thumb` están disponibles para miembros.
+- Editar foto: quien la subió o el owner. Ningún otro miembro.
 - Borrar foto: quien la subió o el owner. Ningún otro miembro.
 - Borrar álbum: solo owner y solo si está vacío; si tiene fotos, `409 ALBUM_NOT_EMPTY`.
-- Vaciar álbum: solo owner, con confirmación explícita; elimina todas las fotos y sus objetos.
+- Vaciar álbum: solo owner y sin condición de fotos, con confirmación explícita; elimina todas las fotos y sus objetos. Es distinto de borrar el álbum: `album.empty` no exige que esté vacío y devuelve cuántas fotos borró; `album.delete` exige que ya esté vacío.
 - No se confía en IDs del cliente.
 
 ## Permisos puros
@@ -63,6 +66,7 @@ type Action =
   | 'album.create'
   | 'album.update'
   | 'album.delete'
+  | 'album.empty'
   | 'photo.upload'
   | 'photo.update'
   | 'photo.delete'
@@ -72,7 +76,14 @@ type Action =
 function can(...): boolean
 ```
 
-Tests unitarios sin mocks para todas las combinaciones rol × flag × acción, incluidos `photo.delete`, `album.delete`, descarga de `original` y `member.invite` (siempre owner).
+`can()` es pura: no consulta sesión, base de datos ni HTTP; el llamador resuelve actor, círculo y recurso. Falla cerrado:
+
+- Deniega acciones desconocidas (aunque el actor sea owner) y entradas ausentes.
+- Deniega recursos cuyo `circleId` no coincide con el círculo, incluso para el owner.
+- `album.delete` es la única excepción a «el owner puede todo»: exige un recurso de tipo álbum con `photosCount` 0.
+- `photo.download` cubre también la imagen `original`; `thumb` y `display` no pasan por esta acción.
+
+Tests unitarios sin mocks para todas las combinaciones rol × flag × acción, incluidos `photo.update`, `photo.delete`, `album.update`, `album.delete`, `album.empty` (owner siempre; member nunca, con o sin fotos), descarga de `original`, `member.invite` (siempre owner), acciones desconocidas y recursos de otro círculo. Evidencia: `packages/shared/src/permissions.test.ts`.
 
 ## Rutas protegidas
 

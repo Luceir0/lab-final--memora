@@ -27,7 +27,8 @@ ready → expired (24 h)
 - Worker en proceso con concurrencia limitada (1–2 ZIP a la vez).
 - Genera ZIP con `archiver` en streaming a un archivo temporal/S3.
 - Nombres de archivo saneados; incluye `README.txt` con álbum y fecha.
-- `GET /downloads/:jobId` devuelve estado y progreso.
+- `GET /downloads/:jobId` devuelve estado y `progress`.
+- `progress` es un entero 0–100 o `null`. Es **derivado**: la API lo calcula al leer el job y no se persiste en `DownloadJob`. Es `null` mientras el job no ha empezado (`pending`) y cuando ya ha terminado (`ready`, `error`, `expired`); solo aporta información mientras está `processing`.
 - `GET /downloads/:jobId/file` sirve el ZIP si `ready` y no expirado.
 - Expiración 24 h; limpieza de objetos y registros.
 - Si falla, `errorMessage` sin PII y se puede reintentar creando otro job.

@@ -71,6 +71,12 @@ circles/{circleId}/photos/{photoId}/thumb.webp
 - Se puede editar `placeName` manualmente.
 - Nunca se llama a Nominatim desde el navegador.
 
+## Contrato
+
+- Los campos de texto (`clientUploadId`, `takenAt?`, `description?`) se validan con Zod en `packages/shared` (`uploadPhotoFieldsSchema`).
+- El binario `file` queda fuera del contrato Zod: no se puede representar como JSON. Lo valida el pipeline (MIME por magic bytes, tamaño y píxeles), según [api-contract.md](api-contract.md#subidas).
+- La respuesta `PhotoDto` devuelve `clientUploadId` para que la cola del cliente reconcilie el archivo tras un reintento. Es `null` en fotos subidas fuera de la cola.
+
 ## Idempotencia
 
 - `clientUploadId` generado en cliente.
