@@ -1,38 +1,106 @@
 # Handoff — F06 Contratos compartidos y permisos
 
-- **Estado:** draft
-- **Rama:** `feat/f06-contratos-compartidos`
-- **Fecha:** pendiente
-- **Implementado por:** pendiente
-- **Revisado por:** pendiente
+- **Estado:** `accepted` (aceptada por el usuario el 2026-10-31; `done` pendiente de commit, merge y CI)
+- **Rama:** `main`, sin commits de F06
+- **Fecha:** 2026-10-31
+- **Implementado por:** orquestador y subagentes de implementación de F06
+- **Revisado por:** reviewer independiente — primera iteración no apto; segunda iteración apto con correcciones menores; menores cerrados y re-verificados
+- **Dependencia añadida:** `zod@4.6.7` en `packages/shared`, con autorización del usuario
+- **Aceptado por:** usuario (2026-10-31)
 
 ## Resultado
 
-Pendiente.
+`packages/shared` es la fuente única de contratos: esquemas Zod 4 de auth, círculos, álbumes, fotos, tags, invitaciones, descargas y actividad; DTOs con `z.infer`; `ErrorResponse`/`ApiResult`; paginación por cursor; mensajes de validación en español y `can()` pura con `album.empty`, `photo.update` y `album.update`.
 
-## Cambios
+La verificación real está en verde: 5 archivos y 138 tests en el paquete, `typecheck`/`lint`/`build` del paquete en exit 0, Turbo `typecheck` 8/8 y `lint` 6/6 sin caché, y validadores documentales OK. La revisión independiente necesitó dos iteraciones: la primera fue **no apto** (2 bloqueantes en `can()`/`isCircleOwner()`, 4 mayores y 7 menores); la segunda fue **apto con correcciones menores**, sin bloqueantes ni mayores abiertos. F06 está **`accepted`**.
 
-Pendiente.
+**Cierre:** el usuario aceptó F06 el 2026-10-31, después de la re-revisión y de cerrar los hallazgos menores. La aceptación no cierra la feature: quedan el commit en `feat/F06-contratos-compartidos`, la PR con merge y CI en verde, y el paso a `done`. Todavía no existen hash de commit, número de PR ni URL de CI de F06.
+
+## Cambios (archivos)
+
+### Código implementado (fuera de este encargo documental)
+
+- `packages/shared/src/errors.ts`: catálogo `ErrorCode`, estado HTTP por código, mensajes por defecto, `ErrorDetail`/`ErrorResponse` y `ApiResult`.
+- `packages/shared/src/pagination.ts`: `pageQuerySchema` (default 24, 1–100, cursor 512), `Page<T>`, `createPageSchema` y `buildPageQuery`.
+- `packages/shared/src/permissions.ts`: `Action`, `CircleSettings`, `DEFAULT_CIRCLE_SETTINGS`, `isCircleOwner` por `ownerId` y `can()` pura que falla cerrado.
+- `packages/shared/src/validation-messages.ts`: mensajes de validación en español y mensaje de rango de `limit`.
+- `packages/shared/src/schemas/**`: `auth`, `circles`, `albums`, `photos`, `tags`, `invitations`, `downloads`, `activity`, `health`, `dto`, `common` e `index`.
+- `packages/shared/src/index.ts`: exporta errores, paginación, permisos y esquemas.
+- `packages/shared/package.json`: `zod@4.6.7` como dependencia (más `pnpm-lock.yaml`).
+- Tests: `packages/shared/src/errors.test.ts`, `pagination.test.ts`, `permissions.test.ts`, `index.test.ts` y `schemas/contracts.test.ts`.
+
+### Documentación actualizada por este encargo
+
+- `docs/03-architecture/auth.md`: `album.empty`, diferencia con `album.delete`, `photo.update` y `album.update`, owner por `ownerId` y fallo cerrado de `can()`.
+- `docs/03-architecture/api-contract.md`: `details`, aceptación de invitación `{ circle, state }`, `clientUploadId`, `progress`, límites de entrada y binario fuera de Zod.
+- `docs/03-architecture/downloads.md`: `progress` derivado y cuándo es `null`.
+- `docs/03-architecture/uploads.md`: contrato de subida y `clientUploadId` en `PhotoDto`.
+- `docs/04-features/F06-contratos-compartidos/spec.md`: `status: accepted` y encabezado visible.
+- `docs/04-features/F06-contratos-compartidos/tasks.md`: implementación, AC, verificación y revisión marcadas con evidencias.
+- `docs/04-features/F06-contratos-compartidos/handoff.md`: este documento.
+- `docs/04-features/README.md`: F06 → `accepted` y «Situación actual».
+- `docs/00-index.md` y `README.md`: estado real y `packages/shared` con contratos y permisos.
+- `docs/06-process/ai-log.md`: entrada de F06.
+- `docs/07-curriculum/coverage-map.md`: sección de F06 y evidencias.
+
+Este agente no ha escrito en `apps/**` ni en `packages/shared/src/**`. `packages/shared/README.md` no necesita cambios: solo describe el paquete y sus comandos, y el intento de ampliarlo fue rechazado por los permisos del rol documental.
 
 ## Verificación
 
-Pendiente. Incluye comandos y resultado real.
+| Comando | Resultado real |
+| --- | --- |
+| `corepack pnpm --filter @memora/shared test` | 5 archivos, 138 tests passed |
+| `typecheck`, `lint` y `build` del paquete `@memora/shared` | exit 0 |
+| `pnpm exec turbo run typecheck --force` | 8/8 tareas, 0 cached |
+| `pnpm exec turbo run lint --force` | 6/6 tareas, 0 cached |
+| `corepack pnpm docs:check` | 191 archivos, 426 enlaces, 0 rotos (tras esta actualización) |
+| `corepack pnpm agents:check` | OK (10 agentes, 10 comandos, 6 skills, 43 specs, 43 filas de tablero) |
+| `rg` de `any`/`@ts-ignore` en `packages/shared/src` | sin coincidencias |
+
+No se ha ejecutado ningún comando de aceptación, commit ni push.
 
 ## Criterios de aceptación
 
-Pendiente. Copia la tabla de AC y marca pasa/falla/no aplica.
+| AC | Estado | Evidencia |
+| --- | --- | --- |
+| AC-01: cada endpoint del contrato tiene request/response Zod | Pasa | `packages/shared/src/schemas/contracts.test.ts` (registro de endpoints y sus partes); los tres binarios quedan sin respuesta JSON por diseño |
+| AC-02: los DTOs no exponen `objectKey` ni tokens | Pasa | Tests de privacidad de DTOs en `contracts.test.ts`; `schemas/dto.ts` |
+| AC-03: `can()` cubre owner/member × flags × acciones | Pasa | `packages/shared/src/permissions.test.ts` (incluye `album.empty`, `album.delete`, `album.update`, `photo.update`, acciones desconocidas y otro círculo) |
+| AC-04: los errores tienen `code`/`message`/`details` | Pasa | `packages/shared/src/errors.test.ts` |
+| AC-05: la paginación es genérica y testeada | Pasa | `packages/shared/src/pagination.test.ts` |
+| AC-06: no hay `any` | Pasa | `typecheck` y `lint` en exit 0; `rg` sin `any`, `as any`, `@ts-ignore` ni `@ts-expect-error` |
+
+## Pendiente
+
+- Commit en `feat/F06-contratos-compartidos` y push, ambos sin ejecutar. No hay commits de F06 en `main`.
+- PR con merge y CI en verde.
+- Pasar F06 a `done` después del merge y del CI; hoy no se afirma `done`.
+- Deuda trasladada:
+  - **F08:** sustituir los códigos del spike `PAYLOAD_TOO_LARGE` y `CLIENT_ERROR` por los del contrato compartido (`FILE_TOO_LARGE`, `VALIDATION_ERROR`…); dejar de emitir `details: []`; no enviar cuerpo en `204`.
+  - **F25:** validar el binario de subida (MIME por magic bytes, tamaño y píxeles); el `file` no está en Zod.
+  - **F33:** garantizar que `errorMessage` de los jobs de descarga no contenga PII.
 
 ## Riesgos y limitaciones
 
-Pendiente.
+- Los contratos se congelan antes de API/UI; cualquier cambio posterior exige aviso y revisión.
+- La aceptación no cierra F06: antes de `done` hacen falta commit, merge y CI en verde.
+- `progress` es derivado y no persistido; F33 debe calcularlo al leer el job, no añadirlo al modelo.
+- `details` rechaza `[]`; el mapeo de errores de F08 debe ajustarse o los tests fallarán.
+- Los DTOs de respuesta son deliberadamente laxos en longitudes para serializar datos ya persistidos; los límites duros se aplican a la entrada.
+- `zod` pasa a ser dependencia de runtime de `packages/shared`; web y API deben consumir los mismos esquemas para no duplicar contratos.
 
 ## Documentación actualizada
 
-- [ ] `docs/04-features/README.md`
-- [ ] `docs/06-process/ai-log.md`
-- [ ] `docs/07-curriculum/coverage-map.md`
-- [ ] README si aplica
+- [x] `docs/03-architecture/auth.md`, `api-contract.md`, `downloads.md`, `uploads.md`
+- [x] `docs/04-features/F06-contratos-compartidos/spec.md`, `tasks.md`, `handoff.md`
+- [x] `docs/04-features/README.md`
+- [x] `docs/00-index.md` y `README.md`
+- [x] `docs/06-process/ai-log.md`
+- [x] `docs/07-curriculum/coverage-map.md`
 
 ## Siguiente paso propuesto
 
-Pendiente.
+1. Crear la rama `feat/F06-contratos-compartidos`, proponer el commit (`feat: add F06 shared contracts and permissions`) y hacer push con permiso.
+2. Abrir la PR, mergear y comprobar el CI en verde.
+3. Con el merge y el CI confirmados, cerrar F06 como `done` y registrar en el handoff el hash, la PR y el run reales.
+4. Abrir F07 solo con permiso del usuario.

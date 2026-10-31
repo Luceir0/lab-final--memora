@@ -10,9 +10,9 @@ Aplicación web real, con la misma calidad en **móvil** y **escritorio**, insta
 
 ## Estado del proyecto
 
-**Fase actual: definición, scaffold agéntico, monorepo y spike técnico completados (F01–F05). F05 está `done` tras merge y CI en verde. El siguiente paso es F06, todavía en `draft` y sin abrir.**
+**Fase actual: definición, scaffold agéntico, monorepo y spike técnico completados (F01–F05). F05 está `done` tras merge y CI en verde. F06 (contratos compartidos y permisos) fue aceptada por el usuario el 2026-10-31; queda pendiente de commit, merge/CI y `done`.**
 
-Todavía **no hay lógica de producto**: F04 deja listos el monorepo, el tooling, Docker y CI; F05 valida las piezas de riesgo (render modes, Tailwind 4, Fastify + Zod, Prisma 7, sharp y el snapshot de Content Island). Las features de aplicación empiezan en F06. Este repositorio contiene la especificación viva, el sistema de diseño, los ADRs, las 43 features y la configuración de agentes que se usará para construirlo paso a paso.
+Todavía **no hay lógica de producto**: F04 deja listos el monorepo, el tooling, Docker y CI; F05 valida las piezas de riesgo (render modes, Tailwind 4, Fastify + Zod, Prisma 7, sharp y el snapshot de Content Island); F06 fija en `packages/shared` los contratos Zod, los errores, la paginación y los permisos puros, con 138 tests. Las features de aplicación empiezan en F07. Este repositorio contiene la especificación viva, el sistema de diseño, los ADRs, las 43 features y la configuración de agentes que se usará para construirlo paso a paso.
 
 | Elemento | Estado |
 | --- | --- |
@@ -23,8 +23,9 @@ Todavía **no hay lógica de producto**: F04 deja listos el monorepo, el tooling
 | Agentes, comandos y skills | Configurados |
 | Monorepo y app | F04 `done`, CI en verde |
 | Spike técnico | F05 `done`, CI en verde en `main` |
+| Contratos compartidos | F06 `accepted`; `@memora/shared` con Zod 4.6.7, 138 tests en verde; pendiente de merge/CI |
 
-El tablero de features está en [docs/04-features/README.md](docs/04-features/README.md). F01–F05 están `done`; F06 es el siguiente paso y sigue en `draft`. Los resultados del spike están en [docs/03-architecture/spike-results.md](docs/03-architecture/spike-results.md).
+El tablero de features está en [docs/04-features/README.md](docs/04-features/README.md). F01–F05 están `done`; F06 está `accepted`, pendiente de commit, merge/CI y `done`. Los resultados del spike están en [docs/03-architecture/spike-results.md](docs/03-architecture/spike-results.md) y el handoff de F06 en [docs/04-features/F06-contratos-compartidos/handoff.md](docs/04-features/F06-contratos-compartidos/handoff.md).
 
 ---
 
@@ -37,6 +38,7 @@ El tablero de features está en [docs/04-features/README.md](docs/04-features/RE
 | Estilos | **Tailwind CSS 4** (CSS-first, `@theme`) + tokens en variables CSS |
 | Datos remotos | TanStack Query |
 | Formularios | React Hook Form + Zod 4 |
+| Contratos compartidos | `@memora/shared`: Zod 4, errores, paginación y permisos puros |
 | API | Node.js 24 + **Fastify 5** |
 | Base de datos | PostgreSQL + **Prisma 7.10.1** |
 | Archivos | S3-compatible (Silo, fork de MinIO, en local; R2/S3 en producción) + `sharp` |
@@ -230,14 +232,14 @@ Herramientas:
 
 ## Próximos pasos
 
-1. **F06** — contratos compartidos y permisos.
+1. **F06** — cierre de contratos compartidos y permisos (`accepted`; pendiente de commit, merge/CI y `done`).
 2. **F07–F14** — datos, API/web core, sistema visual y UI kit.
 3. **F15–F22** — auth, círculos, invitaciones y personas.
 4. **F23–F28** — álbumes, subidas y ajustes.
 5. **F29–F35** — galería, visor, metadatos, etiquetas, descargas, perfil y actividad.
 6. **F36–F43** — Content Island, tests, accesibilidad, rendimiento, seguridad, despliegue y defensa.
 
-F05 queda `done` tras el merge `8dfae5f` y el CI en verde ([run 40371999132](https://github.com/Luceir0/lab-final--memora/actions/runs/40371999132)). F06 no se abre sin permiso del usuario.
+F05 queda `done` tras el merge `8dfae5f` y el CI en verde ([run 40371999132](https://github.com/Luceir0/lab-final--memora/actions/runs/40371999132)). F06 fue aceptada por el usuario el 2026-10-31 y está pendiente de commit, merge/CI y `done`; F07 no se abre sin permiso del usuario.
 
 ---
 

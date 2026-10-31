@@ -35,11 +35,30 @@ Base: `/api`. Auth por cookie `memora_session`. JSON salvo subidas y descargas.
 | 429 | `RATE_LIMITED` | Límite de peticiones |
 | 500 | `INTERNAL_ERROR` | Error interno sin detalles sensibles |
 
-- `details` puede incluir `field`, `resource` o `limit`, nunca datos de otros círculos.
-- Paginación por cursor: `?cursor=<id>&limit=24`; respuesta `{ items, nextCursor }`.
+- `details` es un array **no vacío** o `null`; `[]` se rechaza. Cada elemento incluye al menos uno de `field`, `message`, `resource` o `limit`, nunca datos de otros círculos. `null` significa «sin detalles».
+- Paginación por cursor: `?cursor=<opaco>&limit=24`; respuesta `{ items, nextCursor }`. `limit` por defecto 24, mínimo 1 y máximo 100; fuera de rango se rechaza con `400`, no se recorta.
 - Fechas ISO 8601 UTC.
 - No se exponen `objectKey`, `tokenHash`, `passwordHash` ni datos de otros círculos.
 - OpenAPI generado desde Zod.
+- Fuente única: `packages/shared/src/schemas/**` (requests, respuestas y DTOs); la API no redefine estos contratos.
+- `packages/shared` es la referencia de los tipos; este documento explica la semántica y no duplica cada esquema.
+
+### Límites de entrada
+
+Longitudes en caracteres. Fuente: `packages/shared/src/schemas/**`. Los valores por encima se rechazan con `400 VALIDATION_ERROR`.
+
+| Campo | Límite |
+| --- | --- |
+| `name` (usuario y círculo) | 1–80 |
+| `title` (álbum) | 1–120 |
+| Descripción de círculo | 500 |
+| Descripción de álbum y de foto | 1000 |
+| `placeName` | 200 |
+| `clientUploadId` | 128 |
+| `cursor` | 512 |
+| `id` (params y referencias) | 64 |
+| Token de invitación | 256 |
+| `password` | 8–128, sin reglas de composición |
 
 ## Salud
 
@@ -88,6 +107,8 @@ Base: `/api`. Auth por cookie `memora_session`. JSON salvo subidas y descargas.
 
 `GET /invitations/:token` solo devuelve `{ circleName, inviterName, expiresAt, state }`, con `state: valid | expired | revoked | already_member`. Nunca miembros, fotos ni álbumes.
 
+`POST /invitations/:token/accept` devuelve `{ circle, state }`: el `CircleDto` ya con el rol del usuario y `state: valid` al unirse o `already_member` si ya lo era. Es idempotente y no añade un booleano paralelo.
+
 ## Álbumes
 
 | Método | Ruta | Descripción |
@@ -113,13 +134,15 @@ Base: `/api`. Auth por cookie `memora_session`. JSON salvo subidas y descargas.
 | DELETE | `/photos/:photoId/tags/:userId` | Quitar etiqueta |
 | GET | `/circles/:circleId/members/:userId/photos` | Fotos de esta persona |
 
+`PhotoDto` incluye `clientUploadId` (string o `null`) para que el cliente reconcilie su cola tras un reintento. No incluye claves de almacenamiento ni coordenadas: solo `placeName`.
+
 ## Descargas
 
 | Método | Ruta | Descripción |
 | --- | --- | --- |
 | GET | `/photos/:photoId/download` | Original como adjunto |
 | POST | `/albums/:albumId/downloads` | Crear job de álbum o selección |
-| GET | `/downloads/:jobId` | Estado |
+| GET | `/downloads/:jobId` | Estado y `progress` |
 | GET | `/downloads/:jobId/file` | Descargar ZIP listo |
 
 Body de creación:
@@ -129,6 +152,8 @@ Body de creación:
 ```
 
 Si `photoIds` no viene, se descarga el álbum completo. Límite 500 fotos / 2 GB.
+
+`DownloadJobDto.progress` es un entero 0–100 o `null`. Es derivado: la API lo calcula al leer el job y no se persiste. Detalle en [downloads.md](downloads.md).
 
 ## Actividad
 
@@ -155,10 +180,10 @@ La API puede agrupar eventos de subida por actor/álbum/intervalo; el contrato d
 ## Subidas
 
 - `multipart/form-data`: `file`, `clientUploadId`, `takenAt?`, `description?`.
+- El `file` no se modela en Zod: el contrato compartido valida solo los campos de texto y el binario lo valida F25 (MIME por magic bytes, tamaño y píxeles). La respuesta `201` es un `PhotoDto`.
 - Un archivo por petición; el cliente controla concurrencia.
-- Respuesta `201` con `PhotoDTO`.
 - Errores por archivo con `code` y `message`.
-- Idempotencia por `(uploaderId, clientUploadId)`.
+- Idempotencia por `(uploaderId, clientUploadId)`: si se repite, se devuelve la foto existente con `200`.
 
 ## Imágenes
 

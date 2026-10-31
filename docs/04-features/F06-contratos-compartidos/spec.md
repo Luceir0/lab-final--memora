@@ -3,7 +3,7 @@ id: F06
 title: "Contratos compartidos y permisos"
 milestone: M1
 size: M
-status: draft
+status: accepted
 spec: complete
 depends_on:
   - "F05"
@@ -22,7 +22,7 @@ decisions:
 
 # F06 — Contratos compartidos y permisos
 
-> **Milestone:** M1 · **Talla:** M · **Estado:** draft · **Spec:** completa
+> **Milestone:** M1 · **Talla:** M · **Estado:** accepted · **Spec:** completa
 > **Depende de:** F05 · **Bloquea:** F07, F08, F09, F37
 
 ## Objetivo

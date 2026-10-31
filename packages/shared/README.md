@@ -3,7 +3,7 @@
 Tipos, contratos Zod y utilidades puras compartidas por la API y la web.
 
 - No importa React, Fastify ni Prisma.
-- Solo depende de `@memora/config` (tooling).
+- Depende de `zod` (contratos) y de `@memora/config` (tooling).
 
 ## Comandos
 
