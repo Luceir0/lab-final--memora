@@ -24,6 +24,29 @@ jobs:
     name: install · docs · agents · lint · typecheck · test · build
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    # PostgreSQL real para los tests de integración de la API (ADR-0004:
+    # Prisma 7 + PostgreSQL, sin pg-mem). Credenciales locales del job, no
+    # secretos: la base solo vive durante la ejecución.
+    services:
+      postgres:
+        image: postgres:17.11-alpine
+        env:
+          POSTGRES_USER: memora
+          POSTGRES_PASSWORD: memora
+          POSTGRES_DB: memora_test
+        ports:
+          - 5432:5432
+        # GitHub no arranca los pasos hasta que el contenedor esté healthy.
+        options: >-
+          --health-cmd "pg_isready -U memora -d memora_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 12
+          --health-start-period 10s
+    env:
+      # Host local, base acabada en `_test`: los tests de integración de la API
+      # exigen ambas cosas para no tocar una base de desarrollo.
+      DATABASE_URL: postgresql://memora:memora@localhost:5432/memora_test
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -54,7 +77,16 @@ jobs:
       - name: Typecheck
         run: pnpm typecheck
 
+      # Migraciones explícitas antes de los tests: `migrate deploy` aplica las
+      # ya versionadas y nunca genera una nueva. Reversible vía migraciones.
+      - name: Migrate database
+        run: pnpm --filter @memora/api db:migrate:deploy
+
+      # `NODE_ENV=test` es una de las condiciones del guard de integración.
+      # `DATABASE_URL` llega del `env` del job y turbo la propaga vía globalEnv.
       - name: Test
+        env:
+          NODE_ENV: test
         run: pnpm test
 
       - name: Build

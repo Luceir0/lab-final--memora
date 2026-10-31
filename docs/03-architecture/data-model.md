@@ -1,6 +1,6 @@
 # Modelo de datos
 
-PostgreSQL + Prisma 7.10.1. Nombres de tablas en PascalCase vía Prisma; columnas en camelCase.
+PostgreSQL + Prisma 7.10.1. Nombres de tablas en PascalCase vía Prisma; columnas en camelCase. Todas las fechas son `DateTime` mapeado a `timestamptz(3)` (`@db.Timestamptz(3)`).
 
 ## Entidades
 
@@ -136,7 +136,7 @@ Invitar, expulsar, cambiar permisos y borrar el círculo es **siempre solo del p
 | createdBy | String | FK User |
 | createdAt | DateTime | |
 
-Único `(photoId, taggedUserId)`. Índice `(taggedUserId)`.
+Único `(photoId, taggedUserId)`. Índice `(taggedUserId, photoId)` para «fotos de esta persona».
 
 ### DownloadJob
 
@@ -184,18 +184,19 @@ ActivityType: photo.uploaded | album.created | member.joined
 
 ## Invariantes
 
-- `Photo.circleId` coincide con `Album.circleId`.
+- `Photo.circleId` coincide con `Album.circleId`. La BD no puede garantizarlo (no hay FK compuesta `(circleId, albumId)`); lo valida la capa de servicio en F23/F25. Está documentado como `TODO(F23/F25)` en `apps/api/src/db.integration.test.ts`.
 - Un usuario no puede tener dos memberships en el mismo círculo.
 - Solo se etiqueta a miembros del círculo.
-- Si un miembro es expulsado o sale, sus fotos permanecen y conservan la autoría; sus etiquetas (`PhotoTag.taggedUserId`) se eliminan.
+- Si un miembro es expulsado o sale, sus fotos permanecen y conservan la autoría; sus etiquetas (`PhotoTag.taggedUserId`) se eliminan. No hay FK que lo haga: el usuario no se borra, así que F21 debe borrar los `PhotoTag` en la misma transacción que la expulsión o la salida.
 - Un propietario no puede eliminarse a sí mismo del círculo sin borrarlo o transferir (transfer fuera del MVP).
 - `Invitation.tokenHash` nunca se expone.
 - `Photo.originalKey` nunca se expone al cliente.
 - No se persisten coordenadas GPS.
 - Borrar una foto elimina sus tags y sus objetos. En `Activity`, el evento histórico se conserva con `photoId = null` (`SetNull`).
 - Borrar un álbum está permitido solo al propietario y **solo si está vacío**. Si tiene fotos, la API devuelve `409 ALBUM_NOT_EMPTY`; el cliente ofrece vaciarlo primero.
-- Vaciar un álbum elimina todas sus fotos (y objetos/tags/actividad asociada) con confirmación explícita.
-- Borrar un círculo elimina memberships, invitaciones, álbumes, fotos, tags, jobs y actividad.
+- Vaciar un álbum elimina todas sus fotos, sus objetos y sus `PhotoTag` con confirmación explícita. Los eventos de `Activity` **se conservan** con `photoId = null` (`SetNull`), igual que al borrar una foto suelta; `albumId` no cambia porque el álbum sigue existiendo (su FK pasa a `null` solo si se borra el álbum).
+- Borrar un círculo elimina memberships, invitaciones, álbumes, fotos, tags, jobs **y actividad**: `Activity.circleId` es `Cascade`. Esto es distinto de vaciar un álbum, que conserva el historial de actividad.
+- Verificación en F07: `apps/api/src/db.integration.test.ts` cubre la cascada del círculo y el `SetNull` de `Activity` al borrar una foto.
 
 ## Índices y rendimiento
 
@@ -208,5 +209,6 @@ ActivityType: photo.uploaded | album.created | member.joined
 ## Migraciones
 
 - `prisma migrate dev` en local; `prisma migrate deploy` en CI/producción.
-- Seed determinista en `apps/api/src/test/fixtures` o `prisma/seed.ts`.
-- Tests usan base de datos real separada.
+- Migración inicial única: `apps/api/prisma/migrations/20261031224916_init` (la migración de spike y `SpikeNote` se eliminaron).
+- Seed determinista en `apps/api/prisma/seed.ts`; ejecutable con `pnpm --filter @memora/api db:seed`.
+- Tests contra una base real separada, `memora_test`; los helpers rechazan cualquier base cuyo nombre no acabe en `_test`. Detalle y comando de creación en [monorepo.md](monorepo.md#base-de-datos-de-test).

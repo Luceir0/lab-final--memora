@@ -103,4 +103,4 @@ No se ha ejecutado ningún comando de aceptación, commit ni push.
 
 ## Siguiente paso propuesto
 
-F07 — Modelo de datos, migraciones y seed. Sigue en `draft` y no se abre sin permiso del usuario.
+F07 — Modelo de datos, migraciones y seed. Se abrió después con permiso del usuario y fue aceptada el 2026-11-01; está pendiente de commit, PR/CI y `done`. F08 no se abre sin permiso.

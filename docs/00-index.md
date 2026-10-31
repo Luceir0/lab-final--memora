@@ -40,4 +40,4 @@ Memora se documenta en capas pequeñas para que un agente pueda cargar solo lo n
 
 ## Estado
 
-F01–F06 están `done`. F05 se cerró el 2026-10-26 con el merge `8dfae5f` y CI en verde. F06 se cerró el 2026-10-31 con la PR #2, merge `b556168` en `main` y CI en verde (run `41246708428`, `completed/success`); `packages/shared` contiene contratos Zod, errores, paginación y permisos con 138 tests. F07–F43 están en `draft`; F07 no se abre sin permiso del usuario.
+F01–F06 están `done`. F05 se cerró el 2026-10-26 con el merge `8dfae5f` y CI en verde. F06 se cerró el 2026-10-31 con la PR #2, merge `b556168` en `main` y CI en verde (run `41246708428`, `completed/success`); `packages/shared` contiene contratos Zod, errores, paginación y permisos con 138 tests. F07 fue aceptada por el usuario el 2026-11-01: el modelo Prisma, la migración inicial, el seed determinista y los tests de integración están implementados y verificados. La aceptación no la cierra; faltan commit, PR/CI (con PostgreSQL real) y el paso a `done`. F08–F43 están en `draft`; F08 no se abre sin permiso del usuario.
