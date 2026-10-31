@@ -2,7 +2,7 @@
 
 | Área | Features | Casos prioritarios | Nivel |
 | --- | --- | --- | --- |
-| Permisos | F06, F17, F21, F23, F28, F32, F33 | owner/member × flags × acciones; `assertNever`; borrado y original | Unitario |
+| Permisos | F06, F17, F21, F23, F28, F32, F33 | owner/member × flags × acciones; `denyUnreachable` (`action: never`); `can()` deniega acciones desconocidas y recursos de otro círculo; borrado y original | Unitario |
 | Zod | F06 | requests válidos/inválidos; DTOs; paginación | Unitario |
 | Upload reducer | F26 | pending/uploading/done/error/cancelled; retry; cancel; concurrencia | Unitario/hook |
 | Auth | F15, F16 | registro, login, logout, sesión expirada, email duplicado genérico | API + componente |

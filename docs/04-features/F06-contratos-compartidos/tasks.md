@@ -32,7 +32,7 @@
 - [x] `typecheck`, `lint` y `build` del paquete `@memora/shared` → exit 0.
 - [x] `pnpm exec turbo run typecheck --force` → 8/8 tareas, 0 cached.
 - [x] `pnpm exec turbo run lint --force` → 6/6 tareas, 0 cached.
-- [x] `corepack pnpm docs:check` → 191 archivos, 426 enlaces, 0 rotos (tras esta actualización documental).
+- [x] `corepack pnpm docs:check` → 191 archivos, 427 enlaces, 0 rotos (tras el cierre documental).
 - [x] `corepack pnpm agents:check` → OK (10 agentes, 10 comandos, 6 skills, 43 specs, 43 filas de tablero).
 
 ## Revisión
@@ -48,8 +48,10 @@
 ## Cierre
 
 - [x] Aceptación del usuario (2026-10-31).
-- [ ] `done` (tras commit, merge y CI).
-- [ ] Commit propuesto (sin ejecutar).
-- [ ] Push (sin ejecutar).
+- [x] Commit `6435f9f` (`feat(shared): add contracts, errors, pagination and permissions`) y `6acc7ba` (`docs: close F06 documentation and record acceptance`) en `feat/F06-contratos-compartidos`.
+- [x] Push de la rama; la rama remota `feat/F06-contratos-compartidos` existe.
+- [x] PR #2 y merge en `main` como `b556168`.
+- [x] CI de `main` run `41246708428` `completed/success`; CI de la PR (head `6acc7ba`) `completed/success`.
+- [x] `done` (2026-10-31).
 
-Notas: rama actual `main`, sin commits de F06. F06 queda en `accepted`; no se marca `done` hasta el merge y el CI.
+Notas: F06 cerrada. El cierre documental de esta entrada lo commiteará el orquestador; este agente no hace commit ni push.

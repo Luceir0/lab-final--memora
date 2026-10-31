@@ -80,12 +80,14 @@ Prisma 7 se configuró con `apps/api/prisma7.config.ts`, generador `prisma-clien
 - `POST /api/spike/echo` temporal, con body `{ message: string }` (1–280 caracteres, `trim`) y respuesta tipada; marcado `TODO(F08)`.
 - `GET /api/spike/boom` es una ruta solo de test: se declara en `routes.test.ts` sobre la instancia de test y no se registra en producción. `rg` confirma que no aparece en `routes.ts` ni en `dist`.
 - Formato único de error: `{ code, message, details }`, con `details` como array de `{ field, message }`.
+- **Nota (2026-10-31, F06):** el contrato compartido vigente define cada detalle con al menos uno de `field`, `message`, `resource` o `limit`, y exige `details` como array **no vacío** o `null`; ver [api-contract.md](api-contract.md). La descripción anterior se conserva como resultado histórico del spike.
 - `build-server.ts` mapea los 4xx reales: 400/422 `VALIDATION_ERROR`, 401 `UNAUTHENTICATED`, 403 `FORBIDDEN`, 404 `NOT_FOUND`, 409 `CONFLICT`, 413 `PAYLOAD_TOO_LARGE`, 415 `UNSUPPORTED_MEDIA_TYPE`, 429 `RATE_LIMITED` y un fallback `CLIENT_ERROR`. Solo los 5xx se convierten en 500 `INTERNAL_ERROR`.
 - Los 4xx se registran como `warn` sin stack (`err`); los 5xx como `error`.
 - Pruebas y smoke:
   - `POST /api/spike/echo` con `{"message":"hola"}` → `200`.
   - `POST` con `{}` → `400 VALIDATION_ERROR` y `details[0].field === "message"`.
   - JSON malformado → `400 VALIDATION_ERROR` con `details: []`.
+  - **Nota (2026-10-31, F06):** desde F06 `details` es un array **no vacío** o `null`, y `[]` se rechaza. La API del spike sigue emitiendo `[]`; F08 debe alinearla con el contrato compartido. Se conserva el resultado histórico de arriba.
   - Body de 1.100.014 bytes → `413 PAYLOAD_TOO_LARGE`.
   - `GET /api/spike/boom` en la instancia de test → `500 INTERNAL_ERROR` sin filtrar el mensaje original.
   - `GET /api/no-existe` → `404 NOT_FOUND`.

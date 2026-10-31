@@ -1,6 +1,6 @@
 # Cobertura del temario
 
-Estado: **F01–F03 cubren los temas transversales, F04 el entorno y tooling, F05 el stack de aplicación y F06 los contratos y permisos compartidos** (organización, documentación, IA agente, revisión, activos, TypeScript estricto, monorepo, Docker, CI, render modes, Tailwind 4, Fastify + Zod, Prisma 7, sharp, Content Island, Zod como fuente única, errores, paginación y autorización pura). F05 está `done` tras el merge `8dfae5f` y CI en verde; F06 está `accepted` desde el 2026-10-31, con implementación y tests en verde, pendiente de commit, merge/CI y `done`. El resto está planificado y se actualiza al cerrar cada feature con evidencias reales.
+Estado: **F01–F03 cubren los temas transversales, F04 el entorno y tooling, F05 el stack de aplicación y F06 los contratos y permisos compartidos** (organización, documentación, IA agente, revisión, activos, TypeScript estricto, monorepo, Docker, CI, render modes, Tailwind 4, Fastify + Zod, Prisma 7, sharp, Content Island, Zod como fuente única, errores, paginación y autorización pura). F05 está `done` tras el merge `8dfae5f` y CI en verde; F06 está `done` desde el 2026-10-31 tras la PR #2, el merge `b556168` y CI en verde (run `41246708428`). El resto está planificado y se actualiza al cerrar cada feature con evidencias reales.
 
 **Fuente del temario:** `assets/design/temario-tecnologias.png` y la especificación histórica `docs/archive/spec-v1.md` §7. No hay una transcripción oficial en texto; este mapa es la referencia operativa.
 
@@ -44,7 +44,7 @@ Estado: **F01–F03 cubren los temas transversales, F04 el entorno y tooling, F0
 | Secretos fuera del build | El build no usa token; el JS cliente no contiene el snapshot ni `node:fs` | Inspección de `apps/web/dist/client/assets/*.js` | Cubierto |
 | Documentación de resultados | Informe, handoff y plan de salida | `docs/03-architecture/spike-results.md`, `docs/04-features/F05-spike-tecnico/handoff.md` | Cubierto |
 
-## Contratos y permisos compartidos (F06, accepted)
+## Contratos y permisos compartidos (F06, done)
 
 | Tema | Dónde se aplica | Evidencia | Estado |
 | --- | --- | --- | --- |

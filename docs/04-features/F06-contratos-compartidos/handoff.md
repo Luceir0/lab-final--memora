@@ -1,20 +1,25 @@
 # Handoff — F06 Contratos compartidos y permisos
 
-- **Estado:** `accepted` (aceptada por el usuario el 2026-10-31; `done` pendiente de commit, merge y CI)
-- **Rama:** `main`, sin commits de F06
-- **Fecha:** 2026-10-31
+- **Estado:** `done` (cerrada tras merge y CI en verde)
+- **Rama:** `feat/F06-contratos-compartidos`, mergeada en `main`; la rama remota sigue existiendo
+- **Fecha de cierre:** 2026-10-31
 - **Implementado por:** orquestador y subagentes de implementación de F06
 - **Revisado por:** reviewer independiente — primera iteración no apto; segunda iteración apto con correcciones menores; menores cerrados y re-verificados
 - **Dependencia añadida:** `zod@4.6.7` en `packages/shared`, con autorización del usuario
 - **Aceptado por:** usuario (2026-10-31)
+- **PR:** [#2](https://github.com/Luceir0/lab-final--memora/pull/2)
+- **Commits:** `6435f9f` (`feat(shared): add contracts, errors, pagination and permissions`) y `6acc7ba` (`docs: close F06 documentation and record acceptance`)
+- **Merge en `main`:** `b556168` (`Merge pull request #2 from Luceir0/feat/F06-contratos-compartidos`)
+- **CI de `main`:** run `41246708428`, `completed/success`
+- **CI de la PR:** head `6acc7ba`; install, docs, agents, lint, typecheck, test y build → `completed/success`
 
 ## Resultado
 
 `packages/shared` es la fuente única de contratos: esquemas Zod 4 de auth, círculos, álbumes, fotos, tags, invitaciones, descargas y actividad; DTOs con `z.infer`; `ErrorResponse`/`ApiResult`; paginación por cursor; mensajes de validación en español y `can()` pura con `album.empty`, `photo.update` y `album.update`.
 
-La verificación real está en verde: 5 archivos y 138 tests en el paquete, `typecheck`/`lint`/`build` del paquete en exit 0, Turbo `typecheck` 8/8 y `lint` 6/6 sin caché, y validadores documentales OK. La revisión independiente necesitó dos iteraciones: la primera fue **no apto** (2 bloqueantes en `can()`/`isCircleOwner()`, 4 mayores y 7 menores); la segunda fue **apto con correcciones menores**, sin bloqueantes ni mayores abiertos. F06 está **`accepted`**.
+La verificación real está en verde: 5 archivos y 138 tests en el paquete, `typecheck`/`lint`/`build` del paquete en exit 0, Turbo `typecheck` 8/8 y `lint` 6/6 sin caché, y validadores documentales OK. La revisión independiente necesitó dos iteraciones: la primera fue **no apto** (2 bloqueantes en `can()`/`isCircleOwner()`, 4 mayores y 7 menores); la segunda fue **apto con correcciones menores**, sin bloqueantes ni mayores abiertos. F06 está **`done`**.
 
-**Cierre:** el usuario aceptó F06 el 2026-10-31, después de la re-revisión y de cerrar los hallazgos menores. La aceptación no cierra la feature: quedan el commit en `feat/F06-contratos-compartidos`, la PR con merge y CI en verde, y el paso a `done`. Todavía no existen hash de commit, número de PR ni URL de CI de F06.
+**Cierre (2026-10-31):** el usuario aceptó F06 después de la re-revisión y de cerrar los hallazgos menores. Después se crearon los commits `6435f9f` y `6acc7ba` en `feat/F06-contratos-compartidos`, se abrió la PR #2, se mergeó en `main` como `b556168` y el CI de `main` pasó en green (run `41246708428`, `completed/success`). El CI de la PR, con head `6acc7ba`, también pasó install, docs, agents, lint, typecheck, test y build. La rama remota sigue existiendo.
 
 ## Cambios (archivos)
 
@@ -35,10 +40,10 @@ La verificación real está en verde: 5 archivos y 138 tests en el paquete, `typ
 - `docs/03-architecture/api-contract.md`: `details`, aceptación de invitación `{ circle, state }`, `clientUploadId`, `progress`, límites de entrada y binario fuera de Zod.
 - `docs/03-architecture/downloads.md`: `progress` derivado y cuándo es `null`.
 - `docs/03-architecture/uploads.md`: contrato de subida y `clientUploadId` en `PhotoDto`.
-- `docs/04-features/F06-contratos-compartidos/spec.md`: `status: accepted` y encabezado visible.
+- `docs/04-features/F06-contratos-compartidos/spec.md`: `status: done` y encabezado visible.
 - `docs/04-features/F06-contratos-compartidos/tasks.md`: implementación, AC, verificación y revisión marcadas con evidencias.
 - `docs/04-features/F06-contratos-compartidos/handoff.md`: este documento.
-- `docs/04-features/README.md`: F06 → `accepted` y «Situación actual».
+- `docs/04-features/README.md`: F06 → `done` y «Situación actual».
 - `docs/00-index.md` y `README.md`: estado real y `packages/shared` con contratos y permisos.
 - `docs/06-process/ai-log.md`: entrada de F06.
 - `docs/07-curriculum/coverage-map.md`: sección de F06 y evidencias.
@@ -53,7 +58,7 @@ Este agente no ha escrito en `apps/**` ni en `packages/shared/src/**`. `packages
 | `typecheck`, `lint` y `build` del paquete `@memora/shared` | exit 0 |
 | `pnpm exec turbo run typecheck --force` | 8/8 tareas, 0 cached |
 | `pnpm exec turbo run lint --force` | 6/6 tareas, 0 cached |
-| `corepack pnpm docs:check` | 191 archivos, 426 enlaces, 0 rotos (tras esta actualización) |
+| `corepack pnpm docs:check` | 191 archivos, 427 enlaces, 0 rotos (tras el cierre documental) |
 | `corepack pnpm agents:check` | OK (10 agentes, 10 comandos, 6 skills, 43 specs, 43 filas de tablero) |
 | `rg` de `any`/`@ts-ignore` en `packages/shared/src` | sin coincidencias |
 
@@ -72,18 +77,15 @@ No se ha ejecutado ningún comando de aceptación, commit ni push.
 
 ## Pendiente
 
-- Commit en `feat/F06-contratos-compartidos` y push, ambos sin ejecutar. No hay commits de F06 en `main`.
-- PR con merge y CI en verde.
-- Pasar F06 a `done` después del merge y del CI; hoy no se afirma `done`.
-- Deuda trasladada:
+- Ninguno de F06. Deuda trasladada:
   - **F08:** sustituir los códigos del spike `PAYLOAD_TOO_LARGE` y `CLIENT_ERROR` por los del contrato compartido (`FILE_TOO_LARGE`, `VALIDATION_ERROR`…); dejar de emitir `details: []`; no enviar cuerpo en `204`.
   - **F25:** validar el binario de subida (MIME por magic bytes, tamaño y píxeles); el `file` no está en Zod.
   - **F33:** garantizar que `errorMessage` de los jobs de descarga no contenga PII.
 
 ## Riesgos y limitaciones
 
-- Los contratos se congelan antes de API/UI; cualquier cambio posterior exige aviso y revisión.
-- La aceptación no cierra F06: antes de `done` hacen falta commit, merge y CI en verde.
+- Los contratos quedan congelados para API/UI; cualquier cambio posterior exige aviso y revisión.
+- F06 está cerrada con el CI de `main` en verde (run `41246708428`).
 - `progress` es derivado y no persistido; F33 debe calcularlo al leer el job, no añadirlo al modelo.
 - `details` rechaza `[]`; el mapeo de errores de F08 debe ajustarse o los tests fallarán.
 - Los DTOs de respuesta son deliberadamente laxos en longitudes para serializar datos ya persistidos; los límites duros se aplican a la entrada.
@@ -97,10 +99,8 @@ No se ha ejecutado ningún comando de aceptación, commit ni push.
 - [x] `docs/00-index.md` y `README.md`
 - [x] `docs/06-process/ai-log.md`
 - [x] `docs/07-curriculum/coverage-map.md`
+- [x] `docs/03-architecture/spike-results.md` y `docs/05-quality/test-matrix.md` (deuda documental)
 
 ## Siguiente paso propuesto
 
-1. Crear la rama `feat/F06-contratos-compartidos`, proponer el commit (`feat: add F06 shared contracts and permissions`) y hacer push con permiso.
-2. Abrir la PR, mergear y comprobar el CI en verde.
-3. Con el merge y el CI confirmados, cerrar F06 como `done` y registrar en el handoff el hash, la PR y el run reales.
-4. Abrir F07 solo con permiso del usuario.
+F07 — Modelo de datos, migraciones y seed. Sigue en `draft` y no se abre sin permiso del usuario.

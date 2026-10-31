@@ -142,3 +142,12 @@ Registro de usos relevantes de IA. No es un chat completo: es evidencia para el 
 - **Decisión final:** F06 queda en **`accepted`**. No se marca `done`: faltan el commit en `feat/F06-contratos-compartidos`, la PR con merge y CI en verde, y el cierre posterior. No existen todavía hash, número de PR ni URL de CI de F06; no se hizo commit ni push.
 - **Tema del temario:** cierre de features, trazabilidad documental, control de estado y trabajo agéntico.
 - **Evidencia:** `docs/04-features/F06-contratos-compartidos/spec.md`, `docs/04-features/F06-contratos-compartidos/handoff.md`, `docs/04-features/F06-contratos-compartidos/tasks.md`, `docs/04-features/README.md`, `docs/00-index.md`, `README.md`.
+
+### 2026-10-31 — Cierre de F06: PR, merge y CI
+
+- **Prompt representativo:** F06 ya está mergeada en `main` y el CI está en verde; cerrar la feature como `done` y corregir la deuda documental detectada, sin abrir F07.
+- **Propuesta de la IA:** registrar los datos reales del cierre (PR #2, commits `6435f9f`/`6acc7ba`, merge `b556168`, CI `41246708428`), pasar F06 a `done` y anotar la deuda de `spike-results.md` y `test-matrix.md` sin reescribir el historial.
+- **Qué se actualizó:** `spec.md` (`status: done`), handoff (estado, PR, commits, merge, CI y cierre completo), `tasks.md` (commit, push, PR/merge, CI y `done`), tablero, `docs/00-index.md`, `README.md`, `coverage-map.md` (F06 → `done`), nota fechada en `spike-results.md` sobre `details` y corrección de `assertNever` → `denyUnreachable` en `test-matrix.md`.
+- **Decisión final:** F06 queda **`done`** (2026-10-31). PR #2 mergeada en `main` (`b556168`), commits `6435f9f` y `6acc7ba`, CI de `main` run `41246708428` `completed/success` y CI de la PR `completed/success`. La rama remota `feat/F06-contratos-compartidos` sigue existiendo. F07 sigue en `draft` y no se abre sin permiso del usuario. Este cierre documental no se ha commiteado ni pusheado; lo hará el orquestador.
+- **Tema del temario:** cierre de features, trazabilidad PR/merge/CI, documentación viva, corrección de deuda documental y control de alcance.
+- **Evidencia:** `docs/04-features/F06-contratos-compartidos/handoff.md`, `docs/04-features/F06-contratos-compartidos/tasks.md`, `docs/04-features/F06-contratos-compartidos/spec.md`, `docs/04-features/README.md`, `docs/00-index.md`, `README.md`, `docs/07-curriculum/coverage-map.md`, `docs/03-architecture/spike-results.md`, `docs/05-quality/test-matrix.md`.
