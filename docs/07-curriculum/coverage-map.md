@@ -1,6 +1,6 @@
 # Cobertura del temario
 
-Estado: **F01–F03 cubren los temas transversales, F04 el entorno y tooling, F05 el stack de aplicación y F06 los contratos y permisos compartidos** (organización, documentación, IA agente, revisión, activos, TypeScript estricto, monorepo, Docker, CI, render modes, Tailwind 4, Fastify + Zod, Prisma 7, sharp, Content Island, Zod como fuente única, errores, paginación y autorización pura). F05 está `done` tras el merge `8dfae5f` y CI en verde; F06 está `done` desde el 2026-10-31 tras la PR #2, el merge `b556168` y CI en verde (run `41246708428`). El resto está planificado y se actualiza al cerrar cada feature con evidencias reales.
+Estado: **F01–F03 cubren los temas transversales, F04 el entorno y tooling, F05 el stack de aplicación, F06 los contratos y permisos compartidos y F07 el modelo de datos** (organización, documentación, IA agente, revisión, activos, TypeScript estricto, monorepo, Docker, CI, render modes, Tailwind 4, Fastify + Zod, Prisma 7, migraciones, seed determinista, PostgreSQL real en tests, sharp, Content Island, Zod como fuente única, errores, paginación y autorización pura). F05 está `done` tras el merge `8dfae5f` y CI en verde; F06 está `done` desde el 2026-10-31 tras la PR #2, el merge `b556168` y CI en verde (run `41246708428`); F07 está `accepted` desde el 2026-11-01, con implementación y tests en verde, pendiente de commit, PR/CI y `done`. El resto está planificado y se actualiza al cerrar cada feature con evidencias reales.
 
 **Fuente del temario:** `assets/design/temario-tecnologias.png` y la especificación histórica `docs/archive/spec-v1.md` §7. No hay una transcripción oficial en texto; este mapa es la referencia operativa.
 
@@ -35,7 +35,7 @@ Estado: **F01–F03 cubren los temas transversales, F04 el entorno y tooling, F0
 | Vite | Proxy `/api`, build de cliente y servidor | `apps/web/vite.config.ts`, `apps/web/dist/client`, `apps/web/dist/server` | Cubierto |
 | Fastify 5 + Zod 4 | Validación y serialización tipadas; 4xx reales, 413 y 500 uniformes; logs `warn`/`error`; cobertura parcial de 4xx | `apps/api/src/build-server.ts`, `apps/api/src/spike/*` | Cubierto con limitación: 401/403/409/415/422/429 sin ruta que los produzca |
 | API REST | `GET /api/health`, `POST /api/spike/echo`; `/api/spike/boom` solo en test; 400/404/413/500 | `apps/api/src/spike/routes.test.ts`, smoke en vivo | Cubierto para el spike; recursos reales en F08+ |
-| Prisma 7 + PostgreSQL | Configuración, migración y consulta; `globalEnv` de Turbo para el test de integración | `apps/api/prisma7.config.ts`, `apps/api/prisma/schema.prisma`, `turbo.json`, `apps/api/src/db.integration.test.ts` | Cubierto; 15/15 con `DATABASE_URL` y 1 saltado sin base |
+| Prisma 7 + PostgreSQL | Configuración, migración y consulta; `globalEnv` de Turbo para el test de integración | `apps/api/prisma7.config.ts`, `apps/api/prisma/schema.prisma`, `turbo.json`, `apps/api/src/db.integration.test.ts` | Cubierto en F05; ampliado en F07 (36 tests con base, 23 + 13 skipped sin base) |
 | Turbo: caché y entorno | `globalDependencies` del snapshot y `globalEnv` con `DATABASE_URL` y `CONTENT_ISLAND_SNAPSHOT_PATH` | `turbo.json`; `turbo run test --filter=@memora/api --force` → 15/15 | Cubierto |
 | Procesamiento de imágenes | thumb 400×400 cover, display ≤1600 px, orientación EXIF, sin EXIF/ICC, 50 MP con SOF parcheada | `apps/api/src/services/images.ts`, `apps/api/src/services/images.test.ts` | Cubierto para JPEG/PNG; WebP como entrada no probado; HEIC no validado |
 | Content Island y SSG | Snapshot versionado, `view: published`, lectura en build sin token, error genérico y log de servidor | `content-island-snapshot.json`, `apps/web/src/features/spike/content.server.ts`, `apps/web/dist/client/help/index.html` | Cubierto |
@@ -55,6 +55,19 @@ Estado: **F01–F03 cubren los temas transversales, F04 el entorno y tooling, F0
 | Permisos puros | Owner/member × flags × acciones; owner por `ownerId`; falla cerrado ante acciones desconocidas y recursos de otro círculo | `packages/shared/src/permissions.ts`, `packages/shared/src/permissions.test.ts` | Cubierto (F06) |
 | Validación en español | Mensajes de constraints y rango de `limit` | `packages/shared/src/validation-messages.ts`, `contracts.test.ts` | Cubierto (F06) |
 | Testing unitario | 5 archivos, 138 tests; sin mocks en permisos | `packages/shared/src/*.test.ts`; `pnpm --filter @memora/shared test` | Cubierto (F06) |
+
+## Modelo de datos, migraciones y seed (F07, accepted)
+
+| Tema | Dónde se aplica | Evidencia | Estado |
+| --- | --- | --- | --- |
+| Prisma 7 y PostgreSQL | 10 modelos y 5 enums; `timestamptz(3)`; sin GPS | `apps/api/prisma/schema.prisma`, `apps/api/prisma/migrations/20261031224916_init/migration.sql` | Cubierto (F07) |
+| Migración inicial | Una sola migración; `spike_init` y `SpikeNote` eliminados | `apps/api/src/db.integration.test.ts` (comprueba `_prisma_migrations`) | Cubierto (F07) |
+| Constraints e índices | Unique de email, membership, upload y tag; índices de galería, persona y actividad | `migration.sql`, tests de constraints en `db.integration.test.ts` | Cubierto (F07) |
+| Cascadas | Círculo borra hijos; foto conserva actividad y borra tags; portadas a `null`; job conserva `albumId = null` | `db.integration.test.ts` | Cubierto (F07) |
+| Seed determinista | Fechas fijas, upserts con id fijo y digests idénticos; 2 usuarios, 2 círculos, 4 memberships, 2 álbumes, 6 fotos, 2 tags, 1 invitación y 4 actividades | `apps/api/prisma/seed.ts`, tests de seed repetido | Cubierto (F07) |
+| Tests de integración reales | 4 archivos, 36 tests con `DATABASE_URL`; 23 + 13 skipped sin base | `apps/api/src/test/db.ts`, `apps/api/src/test/factories.ts`, `apps/api/src/db.integration.test.ts` | Cubierto (F07) |
+| Guardas de base de test | `_test`, host local y entorno de test; `ALLOW_REMOTE_TEST_DB=1` solo relaja el host | `apps/api/src/test/db.ts`, `apps/api/src/test/db.test.ts` | Cubierto (F07) |
+| PostgreSQL en CI | Servicio `postgres:17.11-alpine`, `db:migrate:deploy`, `NODE_ENV=test` | `.github/workflows/ci.yml` | Configurado; pendiente de validar en el runner |
 
 ## 1. Maquetación
 

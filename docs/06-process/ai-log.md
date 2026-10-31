@@ -151,3 +151,22 @@ Registro de usos relevantes de IA. No es un chat completo: es evidencia para el 
 - **Decisión final:** F06 queda **`done`** (2026-10-31). PR #2 mergeada en `main` (`b556168`), commits `6435f9f` y `6acc7ba`, CI de `main` run `41246708428` `completed/success` y CI de la PR `completed/success`. La rama remota `feat/F06-contratos-compartidos` sigue existiendo. F07 sigue en `draft` y no se abre sin permiso del usuario. Este cierre documental no se ha commiteado ni pusheado; lo hará el orquestador.
 - **Tema del temario:** cierre de features, trazabilidad PR/merge/CI, documentación viva, corrección de deuda documental y control de alcance.
 - **Evidencia:** `docs/04-features/F06-contratos-compartidos/handoff.md`, `docs/04-features/F06-contratos-compartidos/tasks.md`, `docs/04-features/F06-contratos-compartidos/spec.md`, `docs/04-features/README.md`, `docs/00-index.md`, `README.md`, `docs/07-curriculum/coverage-map.md`, `docs/03-architecture/spike-results.md`, `docs/05-quality/test-matrix.md`.
+
+### 2026-11-01 — F07 Modelo de datos, migraciones y seed
+
+- **Prompt representativo:** implementar el modelo Prisma definitivo, una migración inicial limpia, un seed determinista y tests de integración contra PostgreSQL real, sin construir endpoints ni UI, y hacerlo revisar antes de cerrar.
+- **Propuesta de la IA:** 10 modelos y 5 enums con `timestamptz(3)`; migración única `20261031224916_init`; seed con ids y fechas fijas; helpers `resetDb`/`withCleanDb` con guardas; factorías tipadas; suite de integración con constraints, cascadas y doble seed; PostgreSQL real en CI.
+- **Decisiones del usuario:** base de test separada `memora_test`; PostgreSQL real en CI ahora; reset de la base local autorizado con `prisma migrate reset --force`; eliminar la migración de spike y `SpikeNote`.
+- **Qué se corrigió:** la primera revisión fue **no apto** por 2 bloqueantes: el seed no era determinista y `resetDb` podía truncar cualquier base. Se fijaron ids, fechas y snapshots del seed; se añadió la guarda por sufijo `_test`, host local y entorno de test, con `ALLOW_REMOTE_TEST_DB=1` limitado a relajar el host. La segunda revisión fue **apto con correcciones**; las correcciones se cerraron y se re-verificaron.
+- **Decisión final:** F07 queda en **`review`** (2026-11-01). Verificación real: 4 archivos y 36 tests con `memora_test`; 23 passed + 13 skipped sin `DATABASE_URL`; la base `memora` se rechaza. CI con PostgreSQL configurado, pendiente de validar en el runner. No hay commit, PR ni run de CI de F07; F07 no se marca `accepted` ni `done`.
+- **Tema del temario:** Prisma 7, PostgreSQL, migraciones, modelado y constraints, cascadas, seed determinista, testing de integración, guardas de seguridad, CI y revisión independiente.
+- **Evidencia:** `apps/api/prisma/schema.prisma`, `apps/api/prisma/migrations/20261031224916_init/migration.sql`, `apps/api/prisma/seed.ts`, `apps/api/src/test/db.ts`, `apps/api/src/test/factories.ts`, `apps/api/src/db.integration.test.ts`, `.github/workflows/ci.yml`, `docs/04-features/F07-modelo-datos/handoff.md`.
+
+### 2026-11-01 — F07 aceptación del usuario
+
+- **Prompt representativo:** el usuario acepta F07 tras la re-revisión «apto con correcciones» y pide registrar la aceptación sin cerrar la feature ni inventar commit, PR o CI.
+- **Propuesta de la IA:** pasar F07 de `review` a `accepted`, dejar `done` a la espera de commit, PR/CI y merge, y actualizar solo la documentación.
+- **Qué se actualizó:** `spec.md` (`status: accepted` y encabezado), fila y «Situación actual» del tablero, handoff (estado, aceptación del 2026-11-01, cierre y siguiente paso), `tasks.md` (aceptación marcada; commit, push y `done` sin marcar), `docs/00-index.md`, `README.md`, `coverage-map.md` (F07 → `accepted`) y esta entrada.
+- **Decisión final:** F07 queda en **`accepted`**. No se marca `done`: faltan el commit en `feat/f07-modelo-datos`, la PR con CI (incluida la validación real del servicio PostgreSQL en el runner) y el merge. No existen todavía hash, número de PR ni run de CI de F07; no se hizo commit ni push.
+- **Tema del temario:** cierre de features, trazabilidad documental, control de estado, CI con PostgreSQL y trabajo agéntico.
+- **Evidencia:** `docs/04-features/F07-modelo-datos/spec.md`, `docs/04-features/F07-modelo-datos/handoff.md`, `docs/04-features/F07-modelo-datos/tasks.md`, `docs/04-features/README.md`, `docs/00-index.md`, `README.md`, `docs/07-curriculum/coverage-map.md`.
