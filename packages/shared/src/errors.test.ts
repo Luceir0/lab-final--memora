@@ -20,6 +20,7 @@ const CANONICAL_CODES: readonly ErrorCode[] = [
   'CONFLICT',
   'ALBUM_NOT_EMPTY',
   'FILE_TOO_LARGE',
+  'PAYLOAD_TOO_LARGE',
   'QUOTA_EXCEEDED',
   'UNSUPPORTED_MEDIA_TYPE',
   'UNPROCESSABLE_ENTITY',
@@ -44,6 +45,7 @@ describe('error catalogue', () => {
       CONFLICT: 409,
       ALBUM_NOT_EMPTY: 409,
       FILE_TOO_LARGE: 413,
+      PAYLOAD_TOO_LARGE: 413,
       QUOTA_EXCEEDED: 413,
       UNSUPPORTED_MEDIA_TYPE: 415,
       UNPROCESSABLE_ENTITY: 422,
@@ -106,7 +108,7 @@ describe('errorResponseSchema', () => {
   });
 
   it('rejects unknown codes and empty messages', () => {
-    expect(errorResponseSchema.safeParse({ code: 'PAYLOAD_TOO_LARGE', message: 'x' }).success).toBe(
+    expect(errorResponseSchema.safeParse({ code: 'CLIENT_ERROR', message: 'x' }).success).toBe(
       false,
     );
     expect(errorResponseSchema.safeParse({ code: 'CONFLICT', message: '' }).success).toBe(false);
