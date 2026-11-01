@@ -66,7 +66,7 @@
 - **Aviso benigno de Firefox en `/help`** («el diseño se forzó antes de que la página se cargara completamente»): aviso del navegador por layout temprano, no un error de hidratación. Se registra como observación, no como deuda.
 - **Corrección de code-splitting**: `apps/web/src/routes/login.tsx` exportaba `LoginPage` además de `Route`; el componente se movió a `apps/web/src/features/spike/login-page.tsx`, la ruta exporta solo `Route` y el test importa de la nueva ubicación. Re-verificado con 52 tests, typecheck, lint y build.
 - `docs:check` → 191 archivos, 433 enlaces, 0 rotos; `agents:check` → OK.
-- F09 quedó **`accepted`** el 2026-11-01: estos resultados acreditan la verificación técnica y la aceptación del usuario; **no hay commit, push, PR, merge ni CI todavía**, por lo que no está `done`.
+- F09 quedó **`done`** el 2026-11-01: estos resultados acreditan la verificación técnica y la aceptación del usuario, y el cierre operativo se completó con la rama `feat/F09-web-core`, los commits `a81dc9a`, `1363e71` y `8c4a963`, la **PR #5**, el CI de la PR en verde (run `41306238454`, `completed/success`), el merge `9fd987e` en `main` y el CI de `main` en verde (run `41306484717`, `completed/success`). Única deuda abierta: AC-06 automatizado en F37/F38.
 
 ## Flujo E2E principal
 
