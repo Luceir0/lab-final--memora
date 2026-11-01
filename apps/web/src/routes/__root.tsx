@@ -9,8 +9,17 @@ import type { ReactNode } from 'react';
 
 import { NotFound } from '../components/not-found';
 import { RouteError } from '../components/route-error';
+import { ThemeProvider } from '../components/theme-provider';
 import { getErrorMessage } from '../lib/error-message';
 import type { RouterContext } from '../lib/query-client';
+import {
+  createThemeInitScript,
+  FONT_PRELOAD,
+  parseThemeMode,
+  readThemeMode,
+  resolveDocumentTheme,
+  THEME_COLORS,
+} from '../lib/theme';
 
 import '../styles/app.css';
 
@@ -36,14 +45,46 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 
 function RootDocument({ children }: { readonly children: ReactNode }) {
   const { queryClient } = Route.useRouteContext();
+  const mode = parseThemeMode(readThemeMode());
+  const theme = resolveDocumentTheme(mode);
 
   return (
-    <html lang="es" data-theme="light">
+    /*
+     * `suppressHydrationWarning` sigue justificado: el script de arranque
+     * puede cambiar `data-theme` después del HTML del servidor (modo
+     * «sistema»). En cliente `resolveDocumentTheme` lee el valor ya pintado,
+     * así que el render coincide con el DOM; el atributo se protege por si el
+     * script y la hidratación se cruzan.
+     */
+    <html lang="es" data-theme={theme} suppressHydrationWarning>
       <head>
         <HeadContent />
+        {FONT_PRELOAD.map((href) => (
+          <link
+            key={href}
+            rel="preload"
+            href={href}
+            as="font"
+            type="font/woff2"
+            crossOrigin="anonymous"
+          />
+        ))}
+        <meta name="theme-color" content={THEME_COLORS[theme]} />
+        {/*
+         * `<script>` directo en `<head>` (no el API `scripts` de head): así el
+         * navegador lo ejecuta antes de parsear `<body>` y no hay destello.
+         * El contenido es una constante del código, no entrada del usuario.
+         * F42 añadirá nonce/hash de CSP sobre este mismo bloque.
+         */}
+        <script
+          data-memora-theme-init=""
+          dangerouslySetInnerHTML={{ __html: createThemeInitScript() }}
+        />
       </head>
       <body>
-        <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+        <QueryClientProvider client={queryClient}>
+          <ThemeProvider initialMode={mode}>{children}</ThemeProvider>
+        </QueryClientProvider>
         <Scripts />
       </body>
     </html>

@@ -2,6 +2,8 @@
  * Página de `/circles`. Vive fuera de `routes/` para poder probarla sin que el
  * generador de rutas avise de exports no code-splittables.
  */
+import { ThemeToggle } from '../../components/theme-toggle';
+
 export function CirclesPage() {
   return (
     <main className="mx-auto w-full max-w-3xl px-4 py-10 sm:px-6">
@@ -24,6 +26,17 @@ export function CirclesPage() {
         </h2>
         <p className="mt-2 text-body-sm text-muted">
           Cuando te inviten a un círculo o crees el primero, aparecerá en esta lista.
+        </p>
+      </section>
+
+      {/*
+       * TODO(F11/F34): mover `ThemeToggle` a Perfil y al shell definitivo.
+       * Provisional para verificar el tema en navegador durante F10.
+       */}
+      <section className="mt-6 rounded-xl border border-border bg-surface p-6 shadow-sm">
+        <ThemeToggle />
+        <p className="mt-4 border-t border-border pt-3 text-caption text-muted">
+          Control provisional de F10: vivirá en Perfil y en el shell cuando existan (F11/F34).
         </p>
       </section>
     </main>
