@@ -12,8 +12,10 @@
   },
   "dependencies": {
     "@content-island/api-client": "0.26.0",
+    "@memora/api-client": "workspace:*",
     "@memora/shared": "workspace:*",
     "@memora/ui": "workspace:*",
+    "@tanstack/react-query": "5.105.1",
     "@tanstack/react-router": "1.170.46",
     "@tanstack/react-start": "1.169.4",
     "react": "19.3.1",
