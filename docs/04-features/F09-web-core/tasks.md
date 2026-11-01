@@ -50,14 +50,14 @@
 - [x] `handoff.md` completo.
 - [x] Tablero actualizado.
 - [x] Bitácora y cobertura actualizadas.
-- [ ] Commit propuesto (sin ejecutar).
-- [ ] Push y PR.
-- [ ] CI de la PR y de `main` en verde.
-- [ ] Merge y paso a `done`.
+- [x] Commit en `feat/F09-web-core`: `a81dc9a` `feat(api-client): add typed HTTP client with canonical errors`, `1363e71` `feat(web): add web core with query provider and route states`, `8c4a963` `docs: record F09 implementation, review and acceptance`.
+- [x] Push y PR: [#5](https://github.com/Luceir0/lab-final--memora/pull/5).
+- [x] CI de la PR (head `8c4a963`): run `41306238454`, `completed/success`. CI de `main` sobre el merge: run `41306484717`, `completed/success`.
+- [x] Merge `9fd987e` en `main` (`Merge pull request #5 from Luceir0/feat/F09-web-core`) y paso a `done`.
 
 ## Deuda trasladada
 
-- AC-06 con **prueba automatizada** de navegador: F37 (infraestructura de tests) y F38 (E2E). La verificación manual ya está hecha.
+- AC-06 con **prueba automatizada** de navegador: F37 (infraestructura de tests) y F38 (E2E). La verificación manual ya está hecha y es la única deuda abierta de F09.
 - Consumidor de producto del cliente de servidor y cabecera `cookie` en server functions autenticadas: F10/F22.
 - Multipart y binario en el cliente: F25/F33.
 - Enrutado de `/api` en producción: F42.

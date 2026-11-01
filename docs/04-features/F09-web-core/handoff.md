@@ -1,13 +1,13 @@
 # Handoff — F09 Web core
 
-> Fecha: 2026-11-01 · Implementador: subagente de implementación web · Estado: `accepted`
-> Revisión independiente: cerrada en dos rondas; veredicto final «apto con correcciones», todas aplicadas · Aceptación del usuario (G4): **2026-11-01**, en Firefox real · Sin commit, sin PR, sin merge y sin run de CI.
+> Fecha: 2026-11-01 · Implementador: subagente de implementación web · Estado: `done`
+> Revisión independiente: cerrada en dos rondas; veredicto final «apto con correcciones», todas aplicadas · Aceptación del usuario (G4): **2026-11-01**, en Firefox real · Cierre operativo: rama `feat/F09-web-core`, PR [#5](https://github.com/Luceir0/lab-final--memora/pull/5), merge `9fd987e` en `main`, CI de la PR run `41306238454` y CI de `main` run `41306484717`, ambos `completed/success`.
 
 ## Resultado
 
 `packages/api-client` deja de ser un stub y pasa a ser un cliente HTTP tipado real: `createApiClient({ basePath?, fetch? })` con `request<T>()`, atajos `get/post/put/patch/delete`, validación estructural de la respuesta, `ApiError` (contrato canónico de `@memora/shared`) y `ApiTransportError` con `kind` discriminado, mensajes seguros en español, respuestas vacías (204/205, `Content-Length: 0`), aborto propagado sin envolver y query params deterministas. `apps/web` monta sobre TanStack Start el `QueryClientProvider` con un `QueryClient` por petición en servidor, el error boundary raíz con reintento y foco, el 404 con foco, el cliente de navegador y el de servidor con `API_INTERNAL_URL` validado como origen, y conserva `/login` (SSR), `/circles` (`ssr: false`) y `/help` (prerender) como rutas de humo.
 
-La revisión independiente cerró con veredicto «apto con correcciones» y todas las correcciones están aplicadas y verificadas. El usuario aceptó la feature el 2026-11-01 tras probarla en Firefox real sobre `/login`, `/circles`, `/help` y una ruta inexistente, sin errores de hidratación. F09 queda en **`accepted`**; solo resta el cierre operativo (commit, PR, CI, merge) y el paso a `done`.
+La revisión independiente cerró con veredicto «apto con correcciones» y todas las correcciones están aplicadas y verificadas. El usuario aceptó la feature el 2026-11-01 tras probarla en Firefox real sobre `/login`, `/circles`, `/help` y una ruta inexistente, sin errores de hidratación. El cierre operativo se completó el mismo 2026-11-01: PR #5 con CI en verde, merge `9fd987e` en `main` y CI de `main` en verde. F09 queda en **`done`**; solo permanece el AC-06 automatizado, trasladado a F37/F38.
 
 ## Cambios (archivos)
 
@@ -88,7 +88,21 @@ La revisión independiente cerró con veredicto «apto con correcciones» y toda
 - **Resultado:** todo funciona y **no hay errores de hidratación**. AC-06 pasa de «parcial» a **verificado en navegador por el usuario**.
 - **Limitación:** la comprobación es manual; no existe prueba automatizada de navegador. Playwright llega en F37 (infraestructura de tests) y F38 (E2E), que deberán convertir esta evidencia en un test reproducible.
 - **Aviso benigno observado y descartado:** en `/help`, Firefox muestra «El diseño se forzó antes de que la página se cargara completamente…». Es un aviso del navegador por cálculo de layout temprano; el único código propio que toca scroll es `scrollRestoration: true` del router. **No es un error, no afecta a la hidratación y no se corrige.** Queda registrado como observación, no como deuda.
-- **Decisión:** el usuario acepta la feature sin cambios solicitados. Estado → `accepted`.
+- **Decisión:** el usuario acepta la feature sin cambios solicitados. Estado → `accepted` (y `done` tras el cierre operativo).
+
+## Cierre operativo (2026-11-01)
+
+| Elemento | Valor real |
+| --- | --- |
+| Rama | `feat/F09-web-core` |
+| Commits | `a81dc9a` `feat(api-client): add typed HTTP client with canonical errors`; `1363e71` `feat(web): add web core with query provider and route states`; `8c4a963` `docs: record F09 implementation, review and acceptance` |
+| PR | [#5](https://github.com/Luceir0/lab-final--memora/pull/5) |
+| CI de la PR (head `8c4a963`) | run `41306238454` → `completed/success` |
+| Merge en `main` | `9fd987e` (`Merge pull request #5 from Luceir0/feat/F09-web-core`) |
+| CI de `main` sobre el merge | run `41306484717` → `completed/success` |
+| Rama remota | `feat/F09-web-core` sigue existiendo tras el merge |
+
+Verificación local final antes del merge: web **52 tests**, `api-client` **39**, `shared` **138**, `api` **77 + 13 skipped** sin `DATABASE_URL`; `-r typecheck` y `-r lint` OK; `build` con prerender de `/help`; `docs:check` **191 archivos / 433 enlaces / 0 rotos**; `agents:check` OK. AC-06 sigue verificado manualmente por el usuario en Firefox; la automatización corresponde a F37/F38.
 
 ## Criterios de aceptación
 
@@ -140,10 +154,7 @@ Tras N-01, N-02 y N-03 **todos los hallazgos están aplicados**. No hubo una ter
 
 ## Pendiente
 
-- **Cierre operativo:** commit en `feat/F09-web-core`, push, PR, CI y merge. **No existen todavía** hash, número de PR ni run de CI de F09; no se ha hecho commit ni push.
-- **Paso a `done`** tras el merge y el CI en verde: entonces se actualizará el tablero con los identificadores reales.
-- AC-06 con prueba automatizada de navegador en F37/F38 (la verificación manual ya está hecha).
-- Consumidor de producto del cliente de servidor en F10+.
+- **AC-06 con prueba automatizada de navegador** en F37 (infraestructura de tests) y F38 (E2E). Es lo único que queda abierto de F09; la verificación manual en Firefox ya está hecha y el cierre operativo está completo.
 
 ## Riesgos y limitaciones
 
@@ -159,18 +170,17 @@ Tras N-01, N-02 y N-03 **todos los hallazgos están aplicados**. No hubo una ter
 
 ## Documentación actualizada
 
-- `docs/04-features/F09-web-core/handoff.md`: este documento (sustituye la plantilla).
-- `docs/04-features/F09-web-core/spec.md`: `status: accepted` en frontmatter y encabezado; alcance y AC intactos.
-- `docs/04-features/F09-web-core/tasks.md`: implementación, revisión y aceptación marcadas; AC-06 marcado con evidencia manual; commit, push, PR/CI y `done` sin marcar.
-- `docs/04-features/README.md`: fila F09 → `accepted` y «Situación actual» con la aceptación del 2026-11-01, AC-06 verificado en navegador y ausencia de commit/PR/CI.
-- `README.md`: estado del proyecto y próximos pasos coherentes con `accepted`.
-- `docs/06-process/ai-log.md`: entrada de aceptación de F09 con el aviso benigno de Firefox y el arreglo de `login.tsx`.
-- `docs/07-curriculum/coverage-map.md`: sección de F09 → `accepted`, con AC-06 verificado en navegador y la evidencia del code-splitting.
-- `docs/05-quality/test-matrix.md`: nota de AC-06 verificado manualmente y del arreglo de code-splitting.
-- `docs/00-index.md`: resumen de estado de F09 alineado con `accepted` (antes decía `review`).
+- `docs/04-features/F09-web-core/handoff.md`: este documento (sustituye la plantilla), con el apartado de cierre operativo.
+- `docs/04-features/F09-web-core/spec.md`: `status: done` en frontmatter y encabezado; alcance y AC intactos.
+- `docs/04-features/F09-web-core/tasks.md`: implementación, revisión, aceptación y cierre operativo marcados (commit, push, PR/CI, merge y `done`).
+- `docs/04-features/README.md`: fila F09 → `done` y «Situación actual» con la PR #5, el merge `9fd987e`, el CI `41306484717` y AC-06 verificado manualmente.
+- `README.md`: estado del proyecto (`F01–F09 done`), tabla de elementos, próximos pasos con F10 en `draft` y párrafo histórico con PR/merge/CI de F09.
+- `docs/06-process/ai-log.md`: entrada de cierre de F09 con los datos reales del cierre, el arreglo de code-splitting, el aviso benigno de Firefox y la decisión final.
+- `docs/07-curriculum/coverage-map.md`: F09 → `done`.
+- `docs/05-quality/test-matrix.md`: nota de cierre de F09 con PR/merge/CI reales.
+- `docs/00-index.md`: resumen de estado de F09 alineado con `done`.
 
 ## Siguiente paso propuesto
 
-1. Cierre operativo de F09: commit en `feat/F09-web-core`, push, PR con CI y merge. Requiere permiso explícito; hoy no existe ninguno de esos artefactos.
-2. Con el CI en verde, F09 pasa a `done` y el tablero registra hash, PR y run reales.
-3. Después, **F10 — Sistema visual y tema**, que depende de F09. No se abre sin permiso.
+1. **F10 — Sistema visual y tema**, que depende de F09 (ya `done`). Sigue en `draft` y **no se abre sin permiso explícito**.
+2. F37 y F38 deben convertir el AC-06 manual de F09 en una prueba automatizada de navegador.
