@@ -12,6 +12,14 @@
 | API core: redacción de logs | F08 | cookies, `authorization`, `set-cookie`, CSRF, tokens, hashes, `sessionSecret` y `email` censurados en pino real, a tres niveles | Unitario/API |
 | API core: config y arranque | F08 | config Zod falla nombrando la variable y sin filtrar valores; producción exige `SESSION_SECRET`, `DATABASE_URL` y servicios `kind: 'real'`; `prisma generate` funciona sin URL y las migraciones no | Unitario + arranque manual |
 | API core: harness y fakes | F08 | `inject` sin abrir puerto; fakes de storage, email y geocoding en memoria | Unitario/API |
+| Cliente HTTP tipado | F09 | `request<T>()` y atajos `get/post/put/patch/delete`; validación estructural de la respuesta; query params deterministas; `credentials: 'include'`; 204/205 y `Content-Length: 0` resueltos sin parsear | Unitario (`fetch` sustituido) |
+| Cliente HTTP: errores | F09 | `ApiError` canónico; `ApiTransportError` con `kind` `network`/`invalid-json`/`invalid-response`/`unexpected-error-response`; mensajes seguros en español sin copiar el cuerpo crudo; guards | Unitario |
+| Cliente HTTP: cancelación | F09 | `AbortError` antes y durante la lectura del cuerpo se relanza sin envolver | Unitario |
+| Web core: provider de datos | F09 | `QueryClient` nuevo por petición en servidor, sin caché compartida; `staleTime` 30 s; 4xx sin reintento y 5xx/red con máximo 2 | Unitario + smoke SSR |
+| Web core: error boundary y 404 | F09 | Reintento desde el boundary, foco y enlace; 404 con foco y enlace a `/`; sin filtrar `Error.message` del servidor | Componente (RTL) |
+| Web core: entorno y proxy | F09 | `API_INTERNAL_URL` validado como origen al arrancar (falla con `/api`); `dist/client` sin `API_INTERNAL_URL` ni `127.0.0.1`; proxy `/api` operativo | Unitario + build + smoke HTTP |
+| Web core: render modes | F09 | `/login` con `h1` y `<form>` en el HTML inicial; `/circles` sin su componente; `/help` prerenderizado; sin errores de hidratación en navegador real | Smoke HTTP + prueba manual en Firefox (AC-06 verificado el 2026-11-01); automatización en F37/F38 |
+| Web core: code-splitting | F09 | Los archivos de `src/routes/` exportan solo `Route`; el componente de `/login` vive en `features/spike/login-page.tsx` | Estático (revisión de exports) + build + 52 tests |
 | Zod | F06 | requests válidos/inválidos; DTOs; paginación | Unitario |
 | Base de datos | F07 | migración inicial, constraints, cascadas, seed determinista, `resetDb`; guarda `_test`; PostgreSQL real en CI validado en el run `41254603622`, sin skips | Integración |
 | Upload reducer | F26 | pending/uploading/done/error/cancelled; retry; cancel; concurrencia | Unitario/hook |
@@ -42,7 +50,23 @@
 - `DATABASE_URL=…/memora_test pnpm --filter @memora/api test` → **90 passed**.
 - `pnpm --filter @memora/shared test` → **138 passed**.
 - `typecheck`, `lint` y `build` de `@memora/api`; `docs:check` (191 archivos, 431 enlaces, 0 rotos) y `agents:check` en verde.
-- F08 sigue en `review`: estos resultados acreditan la verificación técnica, no la aceptación del usuario.
+- F08 quedó `done` el 2026-11-01 (PR #4, merge `ed1f316`, CI run `41261491641`, `completed/success`); estos resultados acreditan la verificación técnica, que precedió a la aceptación.
+
+## Evidencia ejecutada (F09, 2026-11-01)
+
+- `corepack pnpm --filter @memora/api-client test` → **39 passed** (3 archivos), con `fetch` sustituido y sin red real ni MSW.
+- `corepack pnpm --filter @memora/web test` → **52 passed** (13 archivos).
+- `corepack pnpm --filter @memora/shared test` → **138 passed** (5 archivos).
+- `corepack pnpm --filter @memora/api test` sin `DATABASE_URL` → **77 passed + 13 skipped** (7 + 1 archivo).
+- `corepack pnpm --filter @memora/web typecheck` y `lint` → OK; `build` → OK con client, SSR y prerender de `/help` (1 página).
+- `corepack pnpm -r typecheck` y `corepack pnpm -r lint` → 6 workspaces OK.
+- Smoke real con API y web: `/api/health` 200; `/health` directo 404; proxy `localhost:3000/api/health` 200; `/login` con `h1` y `<form>`; `/circles` sin «Tus círculos»; `/help` prerenderizado; ruta inexistente 404 con enlace a `/`; `dist/client` sin `API_INTERNAL_URL` ni `127.0.0.1`; cliente de servidor contra la API real (`GET /health` → 200).
+- `API_INTERNAL_URL=/api` + `build` → **exit 1** con mensaje seguro.
+- **AC-06 verificado manualmente**: el usuario probó `/login`, `/circles`, `/help` y una ruta inexistente en Firefox real el 2026-11-01 y no hubo errores de hidratación. **No hay prueba automatizada de navegador**; Playwright llega en F37/F38, que deberán cubrir el criterio de forma reproducible.
+- **Aviso benigno de Firefox en `/help`** («el diseño se forzó antes de que la página se cargara completamente»): aviso del navegador por layout temprano, no un error de hidratación. Se registra como observación, no como deuda.
+- **Corrección de code-splitting**: `apps/web/src/routes/login.tsx` exportaba `LoginPage` además de `Route`; el componente se movió a `apps/web/src/features/spike/login-page.tsx`, la ruta exporta solo `Route` y el test importa de la nueva ubicación. Re-verificado con 52 tests, typecheck, lint y build.
+- `docs:check` → 191 archivos, 433 enlaces, 0 rotos; `agents:check` → OK.
+- F09 quedó **`accepted`** el 2026-11-01: estos resultados acreditan la verificación técnica y la aceptación del usuario; **no hay commit, push, PR, merge ni CI todavía**, por lo que no está `done`.
 
 ## Flujo E2E principal
 

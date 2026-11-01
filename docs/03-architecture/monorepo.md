@@ -43,7 +43,7 @@ shared    → config
 config    → (nada interno)
 ```
 
-La tabla es el **máximo** permitido, no una lista de dependencias obligatorias. Cada workspace declara en su `package.json` solo lo que usa: tras F05, `apps/web` depende de `shared`, `ui` y `config`; `api-client` se añadirá cuando exista consumo real de la API (F09+).
+La tabla es el **máximo** permitido, no una lista de dependencias obligatorias. Cada workspace declara en su `package.json` solo lo que usa: tras F09, `apps/web` depende de `shared`, `api-client`, `ui` y `config`, y `api-client` declara `shared` (valida respuestas con esquemas estructurales, sin `zod`); su primer consumidor de producto llega en F10+.
 
 - `shared` no importa React, Fastify ni Prisma.
 - `ui` no importa API ni dominio.

@@ -1,9 +1,9 @@
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
-import { LoginPage } from './login';
+import { LoginPage } from '../features/spike/login-page';
 
-describe('route /login', () => {
+describe('LoginPage', () => {
   it('renderiza el h1 y un formulario accesible', () => {
     render(<LoginPage />);
 
