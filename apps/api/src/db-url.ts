@@ -1,20 +1,28 @@
 /**
- * Default connection string used by local development and CI.
+ * Default connection string used only by `prisma generate` in local tooling.
  *
- * The API never reads a real `.env`; callers (shell, Compose, CI) inject
- * `DATABASE_URL` when they need a database. The fallback exists so
- * `prisma generate` and `prisma validate` work without one.
+ * Generation does not open a connection. Every command that connects to a
+ * database (migrations, seed, db push/execute) must provide `DATABASE_URL`
+ * explicitly and fails otherwise.
  */
 export const DEFAULT_DATABASE_URL =
   'postgresql://memora:memora@localhost:5432/memora?schema=public';
 
-/** Returns the configured database URL or the local development fallback. */
-export function resolveDatabaseUrl(): string {
-  const configured = process.env.DATABASE_URL;
+/**
+ * Returns `DATABASE_URL` or fails.
+ *
+ * Used by the Prisma CLI for commands that connect, and by the seed. The
+ * message never includes the value, so credentials cannot leak into logs.
+ */
+export function resolveRequiredDatabaseUrl(source: NodeJS.ProcessEnv = process.env): string {
+  const configured = source.DATABASE_URL;
 
-  if (configured !== undefined && configured.trim() !== '') {
-    return configured;
+  if (configured === undefined || configured.trim() === '') {
+    throw new Error(
+      'DATABASE_URL es obligatoria para migraciones, seed y comandos que abren conexión. ' +
+        'Configúrala en el entorno del proceso.',
+    );
   }
 
-  return DEFAULT_DATABASE_URL;
+  return configured;
 }

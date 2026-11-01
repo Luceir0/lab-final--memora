@@ -1,5 +1,6 @@
 import { pathToFileURL } from 'node:url';
 
+import { resolveRequiredDatabaseUrl } from '../src/db-url.ts';
 import { disconnectPrisma, getPrismaClient } from '../src/db.ts';
 import type { PrismaClient } from '../src/generated/prisma/client.ts';
 
@@ -553,7 +554,7 @@ export async function seedDatabase(prisma: PrismaClient): Promise<SeedSummary> {
 }
 
 async function run(): Promise<void> {
-  const prisma = getPrismaClient();
+  const prisma = getPrismaClient(resolveRequiredDatabaseUrl());
 
   try {
     const summary = await seedDatabase(prisma);
