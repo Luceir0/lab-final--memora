@@ -1,14 +1,22 @@
 import { defineConfig } from 'prisma/config';
 
-import { resolveDatabaseUrl } from './src/db-url.ts';
+import { DEFAULT_DATABASE_URL, resolveRequiredDatabaseUrl } from './src/db-url.ts';
 
 /**
- * Prisma 7 configuration.
+ * Prisma evaluates this file for every CLI command.
  *
- * Prisma 7 discovers `prisma7.config.ts` in the package root. The datasource
- * URL lives here instead of `schema.prisma`, which keeps `prisma generate`
- * working in CI without a database.
+ * Only `generate` may run without a database URL because it does not open a
+ * connection. `migrate *`, `db *`, `push` and `execute` must fail loudly
+ * instead of silently using the local fallback and touching the wrong
+ * database.
  */
+function usesDatabaseConnection(argv: readonly string[]): boolean {
+  // process.argv = [node, prisma-cli-entry, command, ...args].
+  return argv[2] !== 'generate';
+}
+
+const generationUrl = process.env.DATABASE_URL?.trim() || DEFAULT_DATABASE_URL;
+
 export default defineConfig({
   schema: 'prisma/schema.prisma',
   migrations: {
@@ -16,6 +24,6 @@ export default defineConfig({
     seed: 'node prisma/seed.ts',
   },
   datasource: {
-    url: resolveDatabaseUrl(),
+    url: usesDatabaseConnection(process.argv) ? resolveRequiredDatabaseUrl() : generationUrl,
   },
 });

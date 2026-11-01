@@ -1,6 +1,6 @@
 # Cobertura del temario
 
-Estado: **F01–F03 cubren los temas transversales, F04 el entorno y tooling, F05 el stack de aplicación, F06 los contratos y permisos compartidos y F07 el modelo de datos** (organización, documentación, IA agente, revisión, activos, TypeScript estricto, monorepo, Docker, CI, render modes, Tailwind 4, Fastify + Zod, Prisma 7, migraciones, seed determinista, PostgreSQL real en tests, sharp, Content Island, Zod como fuente única, errores, paginación y autorización pura). F05 está `done` tras el merge `8dfae5f` y CI en verde; F06 está `done` desde el 2026-10-31 tras la PR #2, el merge `b556168` y CI en verde (run `41246708428`); F07 está `done` desde el 2026-11-01 tras la PR #3, el merge `bd2769c` y CI en verde (run `41254603622`), con PostgreSQL 17.11 y tests de integración reales. El resto está planificado y se actualiza al cerrar cada feature con evidencias reales.
+Estado: **F01–F03 cubren los temas transversales, F04 el entorno y tooling, F05 el stack de aplicación, F06 los contratos y permisos compartidos, F07 el modelo de datos y F08 el esqueleto de la API** (organización, documentación, IA agente, revisión, activos, TypeScript estricto, monorepo, Docker, CI, render modes, Tailwind 4, Fastify + Zod, Prisma 7, migraciones, seed determinista, PostgreSQL real en tests, sharp, Content Island, Zod como fuente única, errores, paginación, autorización pura, OpenAPI, logs con redacción y harness de tests). F05 está `done` tras el merge `8dfae5f` y CI en verde; F06 está `done` desde el 2026-10-31 tras la PR #2, el merge `b556168` y CI en verde (run `41246708428`); F07 está `done` desde el 2026-11-01 tras la PR #3, el merge `bd2769c` y CI en verde (run `41254603622`), con PostgreSQL 17.11 y tests de integración reales. F08 está en `review` desde el 2026-11-01, con tres rondas de revisión independiente cerradas y la aceptación del usuario pendiente; su verificación real es `pnpm --filter @memora/api test` → 77 passed + 13 skipped sin `DATABASE_URL` y 90 passed con `memora_test`, más `pnpm --filter @memora/shared test` → 138 passed. El resto está planificado y se actualiza al cerrar cada feature con evidencias reales.
 
 **Fuente del temario:** `assets/design/temario-tecnologias.png` y la especificación histórica `docs/archive/spec-v1.md` §7. No hay una transcripción oficial en texto; este mapa es la referencia operativa.
 
@@ -33,13 +33,13 @@ Estado: **F01–F03 cubren los temas transversales, F04 el entorno y tooling, F0
 | Render modes | `/login` SSR, `/circles` `ssr: false`, `/help` prerender | `apps/web/src/routes/`, `apps/web/dist/client/help/index.html`, smoke HTTP | Cubierto con limitación: navegación SPA real pendiente |
 | TanStack Start | Rutas tipadas, prerender y server function | `apps/web/src/routes/*`, `apps/web/src/features/spike/content.ts`, `apps/web/vite.config.ts` | Cubierto |
 | Vite | Proxy `/api`, build de cliente y servidor | `apps/web/vite.config.ts`, `apps/web/dist/client`, `apps/web/dist/server` | Cubierto |
-| Fastify 5 + Zod 4 | Validación y serialización tipadas; 4xx reales, 413 y 500 uniformes; logs `warn`/`error`; cobertura parcial de 4xx | `apps/api/src/build-server.ts`, `apps/api/src/spike/*` | Cubierto con limitación: 401/403/409/415/422/429 sin ruta que los produzca |
-| API REST | `GET /api/health`, `POST /api/spike/echo`; `/api/spike/boom` solo en test; 400/404/413/500 | `apps/api/src/spike/routes.test.ts`, smoke en vivo | Cubierto para el spike; recursos reales en F08+ |
+| Fastify 5 + Zod 4 | Validación y serialización tipadas; error handler canónico con `details` validados; 400/404/413/415/429 y 500 uniformes; logs `warn`/`error` sin stack | `apps/api/src/app.ts`, `apps/api/src/errors.ts`, `apps/api/src/app.test.ts` | Cubierto (F08, en `review`) |
+| API REST | `GET /api/health` con contrato Zod; `/api/openapi.json` y Swagger UI dev-only; 400/404/413/415/429/500 | `apps/api/src/routes/health.ts`, `apps/api/src/routes/docs.ts`, `apps/api/src/test/routes.ts` | Cubierto (F08) para esqueleto; recursos de producto en F15+ |
 | Prisma 7 + PostgreSQL | Configuración, migración y consulta; `globalEnv` de Turbo para el test de integración | `apps/api/prisma7.config.ts`, `apps/api/prisma/schema.prisma`, `turbo.json`, `apps/api/src/db.integration.test.ts` | Cubierto en F05; ampliado en F07 (36 tests con base, 23 + 13 skipped sin base) |
 | Turbo: caché y entorno | `globalDependencies` del snapshot y `globalEnv` con `DATABASE_URL` y `CONTENT_ISLAND_SNAPSHOT_PATH` | `turbo.json`; `turbo run test --filter=@memora/api --force` → 15/15 | Cubierto |
 | Procesamiento de imágenes | thumb 400×400 cover, display ≤1600 px, orientación EXIF, sin EXIF/ICC, 50 MP con SOF parcheada | `apps/api/src/services/images.ts`, `apps/api/src/services/images.test.ts` | Cubierto para JPEG/PNG; WebP como entrada no probado; HEIC no validado |
 | Content Island y SSG | Snapshot versionado, `view: published`, lectura en build sin token, error genérico y log de servidor | `content-island-snapshot.json`, `apps/web/src/features/spike/content.server.ts`, `apps/web/dist/client/help/index.html` | Cubierto |
-| Vitest 5 y Testing Library | Tests de API, rutas, contenido y tokens | `apps/api/vitest.config.ts`, `apps/web/vitest.config.ts`, 30 passed + 1 skipped sin DB; 31 con DB | Cubierto para smoke; E2E en F37/F38 |
+| Vitest 5 y Testing Library | Tests de API, rutas, contenido y tokens | `apps/api/vitest.config.ts`, `apps/web/vitest.config.ts`; API 77 passed + 13 skipped sin `DATABASE_URL` y 90 con `memora_test` (F08) | Cubierto para smoke; E2E en F37/F38 |
 | TypeScript estricto aplicado | Código real de web, API y UI | `pnpm typecheck` → 8/8 tareas | Cubierto |
 | Secretos fuera del build | El build no usa token; el JS cliente no contiene el snapshot ni `node:fs` | Inspección de `apps/web/dist/client/assets/*.js` | Cubierto |
 | Documentación de resultados | Informe, handoff y plan de salida | `docs/03-architecture/spike-results.md`, `docs/04-features/F05-spike-tecnico/handoff.md` | Cubierto |
@@ -68,6 +68,22 @@ Estado: **F01–F03 cubren los temas transversales, F04 el entorno y tooling, F0
 | Tests de integración reales | 4 archivos, 36 tests con `DATABASE_URL`; 23 + 13 skipped sin base | `apps/api/src/test/db.ts`, `apps/api/src/test/factories.ts`, `apps/api/src/db.integration.test.ts` | Cubierto (F07) |
 | Guardas de base de test | `_test`, host local y entorno de test; `ALLOW_REMOTE_TEST_DB=1` solo relaja el host | `apps/api/src/test/db.ts`, `apps/api/src/test/db.test.ts` | Cubierto (F07) |
 | PostgreSQL en CI | Servicio `postgres:17.11-alpine`, `db:migrate:deploy`, `NODE_ENV=test` | `.github/workflows/ci.yml`; run `41254603622` | Validado en el runner; tests contra `memora_test` sin skips |
+
+## API core (F08, review)
+
+| Tema | Dónde se aplica | Evidencia | Estado |
+| --- | --- | --- | --- |
+| Bootstrap Fastify 5 | `buildApp()` sin abrir puerto; `server.ts` es la única entrada que escucha; `trustProxy` solo en producción | `apps/api/src/app.ts`, `apps/api/src/server.ts`, `apps/api/src/index.ts` | Cubierto (F08) |
+| Config Zod con fallo rápido | `NODE_ENV`, `API_PORT`, `HOST`, `LOG_LEVEL`, `SESSION_SECRET` y `DATABASE_URL` validados; producción exige secreto y URL; el error nombra la variable y no filtra valores | `apps/api/src/config.ts`, `apps/api/src/config.test.ts` | Cubierto (F08) |
+| Plugins base | cookie, CSRF, helmet, rate limit, multipart, swagger y swagger-ui; CSP de desarrollo relajada solo para Swagger UI | `apps/api/src/plugins/*`, `apps/api/src/app.test.ts` | Cubierto (F08) |
+| Error handler canónico | `ApiError`, `mapError`, overrides `FST_*`, allowlist de errores de parser y `details` validados con el esquema compartido | `apps/api/src/errors.ts`, `apps/api/src/errors.test.ts` | Cubierto (F08) |
+| `PAYLOAD_TOO_LARGE` (413) | Código canónico para cuerpo sobredimensionado; `FILE_TOO_LARGE` queda para el límite de archivo de multipart | `packages/shared/src/errors.ts`, `apps/api/src/errors.ts`, `docs/03-architecture/api-contract.md`, `apps/api/src/errors.test.ts` | Cubierto (F08); cambio de contrato autorizado |
+| OpenAPI 3.1 desde Zod | Documento generado desde los esquemas de ruta; `ErrorResponse` y `securitySchemes.cookieAuth`; `/api/openapi.json` con `no-store` | `apps/api/src/plugins/swagger.ts`, `apps/api/src/routes/health.ts`, `apps/api/src/routes/docs.test.ts` | Cubierto (F08) |
+| Swagger UI dev-only | `/api/docs` solo fuera de producción; en producción la ruta responde 404 y el JSON sigue disponible | `apps/api/src/routes/docs.ts`, `apps/api/src/routes/docs.test.ts` | Cubierto (F08) |
+| pino con redacción | Cookies, `authorization`, `set-cookie`, CSRF, tokens, hashes, `sessionSecret` y `email` censurados a tres niveles; niveles `warn` para 4xx y `error` para 5xx | `apps/api/src/logging.ts`, `apps/api/src/logging.test.ts`, `apps/api/src/test/routes.ts` | Cubierto (F08) |
+| Harness `inject` | `createTestApp()` arranca sin puerto, con config de test, logger capturable y rate limit configurable | `apps/api/src/test/harness.ts`, `apps/api/src/app.test.ts` | Cubierto (F08) |
+| Fakes de servicios | Storage, email y geocoding en memoria con `kind: 'fake'`; `buildApp()` rechaza servicios no `'real'` en producción | `apps/api/src/test/fakes.ts`, `apps/api/src/services/index.ts`, `apps/api/src/app.test.ts` | Cubierto (F08) |
+| Guardas de arranque y Prisma | `prisma generate` funciona sin URL; migraciones y seed exigen `DATABASE_URL`; producción falla cerrada sin adaptadores reales | `apps/api/prisma7.config.ts`, `apps/api/src/db-url.ts`, `apps/api/src/app.ts` | Cubierto (F08); adaptadores reales en F25 |
 
 ## 1. Maquetación
 
@@ -129,15 +145,15 @@ Estado: **F01–F03 cubren los temas transversales, F04 el entorno y tooling, F0
 | Mocking APIs | MSW con contratos; 401/403/500 | Handlers | Pendiente |
 | Hooks | `renderHook` | Tests | Pendiente |
 | Revisión con IA | Casos límite | Bitácora | Cubierto |
-| Además | API, E2E, axe | `apps/api/src/spike/routes.test.ts`, `apps/api/src/services/images.test.ts`; 30 passed + 1 skipped sin DB, 31 con DB; E2E y axe pendientes | Parcial (F05: tests de API) |
+| Además | API, E2E, axe | `apps/api/src/app.test.ts`, `apps/api/src/errors.test.ts`, `apps/api/src/services/images.test.ts`; API 77 passed + 13 skipped sin `DATABASE_URL`, 90 con `memora_test`; shared 138; E2E y axe pendientes | Parcial (F08: tests HTTP con `inject`; E2E en F38) |
 
 ## 6. API REST
 
 | Contenido | Dónde se aplica | Evidencia | Estado |
 | --- | --- | --- | --- |
-| API REST I y II | Recursos, verbos, códigos, paginación, subida, cookie | `apps/api/src/build-server.ts`, `apps/api/src/spike/routes.ts` | Parcial (F05: health, eco/boom, 4xx/413/500; recursos reales en F08+) |
+| API REST I y II | Recursos, verbos, códigos, paginación, subida, cookie | `apps/api/src/routes/health.ts`, `apps/api/src/errors.ts`, `apps/api/src/app.test.ts` | Parcial (F08: health, errores canónicos, 413/415/429, multipart; recursos de producto en F15+) |
 | Consumo de APIs | Cliente tipado en web y SSR | `api-client`; proxy `/api` validado; contratos en `shared` | Parcial (F06: contratos; cliente tipado en F09) |
-| Servicios externos | S3, email, geocoding, Content Island | `apps/web/src/features/spike/content.server.ts`, `content-island-snapshot.json` | Parcial (F05: Content Island snapshot; S3, email y geocoding pendientes) |
+| Servicios externos | S3, email, geocoding, Content Island | `apps/api/src/services/{storage,email,geocoding}.ts`, `apps/api/src/test/fakes.ts`, `apps/web/src/features/spike/content.server.ts`, `content-island-snapshot.json` | Parcial (F08: contratos de servicio y fakes en memoria; Content Island cubierto; adaptadores reales de S3, email y geocoding en F25) |
 
 ## Evidencias de entrega
 

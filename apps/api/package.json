@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "node --watch src/index.ts",
-    "build": "prisma generate && tsc -p tsconfig.build.json",
+    "build": "prisma generate && node -e \"import('node:fs').then(({ rmSync }) => rmSync('dist', { recursive: true, force: true }))\" && tsc -p tsconfig.build.json",
     "start": "node dist/index.js",
     "lint": "eslint .",
     "typecheck": "prisma generate && tsc -p tsconfig.json --noEmit",
@@ -16,6 +16,13 @@
     "db:seed": "prisma db seed"
   },
   "dependencies": {
+    "@fastify/cookie": "11.1.5",
+    "@fastify/csrf": "8.1.1",
+    "@fastify/helmet": "13.2.0",
+    "@fastify/multipart": "10.1.6",
+    "@fastify/rate-limit": "11.2.1",
+    "@fastify/swagger": "9.9.2",
+    "@fastify/swagger-ui": "6.1.2",
     "@memora/shared": "workspace:*",
     "@prisma/adapter-pg": "7.10.1",
     "@prisma/client": "7.10.1",

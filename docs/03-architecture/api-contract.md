@@ -27,6 +27,7 @@ Base: `/api`. Auth por cookie `memora_session`. JSON salvo subidas y descargas.
 | 409 | `CONFLICT` | Conflicto genérico |
 | 409 | `ALBUM_NOT_EMPTY` | Borrar álbum con fotos |
 | 413 | `FILE_TOO_LARGE` | Archivo por encima del límite |
+| 413 | `PAYLOAD_TOO_LARGE` | Cuerpo de petición por encima del límite |
 | 413 | `QUOTA_EXCEEDED` | Cuota del círculo superada |
 | 415 | `UNSUPPORTED_MEDIA_TYPE` | Formato no permitido |
 | 422 | `UNPROCESSABLE_ENTITY` | Imagen válida pero no procesable |
