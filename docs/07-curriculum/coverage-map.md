@@ -1,6 +1,6 @@
 # Cobertura del temario
 
-Estado: **F01–F03 cubren los temas transversales, F04 el entorno y tooling, F05 el stack de aplicación, F06 los contratos y permisos compartidos, F07 el modelo de datos y F08 el esqueleto de la API** (organización, documentación, IA agente, revisión, activos, TypeScript estricto, monorepo, Docker, CI, render modes, Tailwind 4, Fastify + Zod, Prisma 7, migraciones, seed determinista, PostgreSQL real en tests, sharp, Content Island, Zod como fuente única, errores, paginación, autorización pura, OpenAPI, logs con redacción y harness de tests). F05 está `done` tras el merge `8dfae5f` y CI en verde; F06 está `done` desde el 2026-10-31 tras la PR #2, el merge `b556168` y CI en verde (run `41246708428`); F07 está `done` desde el 2026-11-01 tras la PR #3, el merge `bd2769c` y CI en verde (run `41254603622`), con PostgreSQL 17.11 y tests de integración reales. F08 está `done` desde el 2026-11-01 tras la PR #4, el merge `ed1f316` y CI en verde (run `41261491641`); su verificación real es `pnpm --filter @memora/api test` → 77 passed + 13 skipped sin `DATABASE_URL` y 90 passed con `memora_test`, más `pnpm --filter @memora/shared test` → 138 passed. El resto está planificado y se actualiza al cerrar cada feature con evidencias reales.
+Estado: **F01–F03 cubren los temas transversales, F04 el entorno y tooling, F05 el stack de aplicación, F06 los contratos y permisos compartidos, F07 el modelo de datos, F08 el esqueleto de la API y F09 la base web y el cliente HTTP tipado** (organización, documentación, IA agente, revisión, activos, TypeScript estricto, monorepo, Docker, CI, render modes, Tailwind 4, Fastify + Zod, Prisma 7, migraciones, seed determinista, PostgreSQL real en tests, sharp, Content Island, Zod como fuente única, errores, paginación, autorización pura, OpenAPI, logs con redacción, harness de tests, cliente REST tipado, TanStack Query y error boundaries). F05 está `done` tras el merge `8dfae5f` y CI en verde; F06 está `done` desde el 2026-10-31 tras la PR #2, el merge `b556168` y CI en verde (run `41246708428`); F07 está `done` desde el 2026-11-01 tras la PR #3, el merge `bd2769c` y CI en verde (run `41254603622`), con PostgreSQL 17.11 y tests de integración reales. F08 está `done` desde el 2026-11-01 tras la PR #4, el merge `ed1f316` y CI en verde (run `41261491641`); su verificación real es `pnpm --filter @memora/api test` → 77 passed + 13 skipped sin `DATABASE_URL` y 90 passed con `memora_test`, más `pnpm --filter @memora/shared test` → 138 passed. F09 está en **`accepted`** desde el 2026-11-01: implementación y revisión independiente cerradas, y aceptación del usuario tras probarla en Firefox real sobre `/login`, `/circles`, `/help` y una ruta inexistente. AC-06 (hidratación) queda **verificado en navegador**, aunque sin prueba automatizada, que corresponde a F37/F38; sigue **sin commit, PR ni CI**. El resto está planificado y se actualiza al cerrar cada feature con evidencias reales.
 
 **Fuente del temario:** `assets/design/temario-tecnologias.png` y la especificación histórica `docs/archive/spec-v1.md` §7. No hay una transcripción oficial en texto; este mapa es la referencia operativa.
 
@@ -39,7 +39,7 @@ Estado: **F01–F03 cubren los temas transversales, F04 el entorno y tooling, F0
 | Turbo: caché y entorno | `globalDependencies` del snapshot y `globalEnv` con `DATABASE_URL` y `CONTENT_ISLAND_SNAPSHOT_PATH` | `turbo.json`; `turbo run test --filter=@memora/api --force` → 15/15 | Cubierto |
 | Procesamiento de imágenes | thumb 400×400 cover, display ≤1600 px, orientación EXIF, sin EXIF/ICC, 50 MP con SOF parcheada | `apps/api/src/services/images.ts`, `apps/api/src/services/images.test.ts` | Cubierto para JPEG/PNG; WebP como entrada no probado; HEIC no validado |
 | Content Island y SSG | Snapshot versionado, `view: published`, lectura en build sin token, error genérico y log de servidor | `content-island-snapshot.json`, `apps/web/src/features/spike/content.server.ts`, `apps/web/dist/client/help/index.html` | Cubierto |
-| Vitest 5 y Testing Library | Tests de API, rutas, contenido y tokens | `apps/api/vitest.config.ts`, `apps/web/vitest.config.ts`; API 77 passed + 13 skipped sin `DATABASE_URL` y 90 con `memora_test` (F08) | Cubierto para smoke; E2E en F37/F38 |
+| Vitest 5 y Testing Library | Tests de API, rutas, contenido, tokens, web core y cliente HTTP | `apps/api/vitest.config.ts`, `apps/web/vitest.config.ts`; API 77 passed + 13 skipped sin `DATABASE_URL` y 90 con `memora_test` (F08); web 52 (F09); `api-client` 39 (F09) | Cubierto para smoke; E2E en F37/F38 |
 | TypeScript estricto aplicado | Código real de web, API y UI | `pnpm typecheck` → 8/8 tareas | Cubierto |
 | Secretos fuera del build | El build no usa token; el JS cliente no contiene el snapshot ni `node:fs` | Inspección de `apps/web/dist/client/assets/*.js` | Cubierto |
 | Documentación de resultados | Informe, handoff y plan de salida | `docs/03-architecture/spike-results.md`, `docs/04-features/F05-spike-tecnico/handoff.md` | Cubierto |
@@ -85,6 +85,23 @@ Estado: **F01–F03 cubren los temas transversales, F04 el entorno y tooling, F0
 | Fakes de servicios | Storage, email y geocoding en memoria con `kind: 'fake'`; `buildApp()` rechaza servicios no `'real'` en producción | `apps/api/src/test/fakes.ts`, `apps/api/src/services/index.ts`, `apps/api/src/app.test.ts` | Cubierto (F08) |
 | Guardas de arranque y Prisma | `prisma generate` funciona sin URL; migraciones y seed exigen `DATABASE_URL`; producción falla cerrada sin adaptadores reales | `apps/api/prisma7.config.ts`, `apps/api/src/db-url.ts`, `apps/api/src/app.ts` | Cubierto (F08); adaptadores reales en F25 |
 
+## Base web y cliente HTTP tipado (F09, accepted)
+
+| Tema | Dónde se aplica | Evidencia | Estado |
+| --- | --- | --- | --- |
+| TanStack Start: router y providers | Router por archivos; `QueryClientProvider` en el contexto del router, con un `QueryClient` por petición en servidor y sin caché compartida entre peticiones | `apps/web/src/router.tsx`, `apps/web/src/routes/__root.tsx`, `apps/web/src/lib/query-client.ts`, `apps/web/src/lib/query-client.test.ts` | Cubierto (F09, `accepted`) |
+| Render modes con rutas de humo | `/login` SSR, `/circles` con `ssr: false` y `/help` prerenderizado; smoke HTTP real de las tres y prueba manual del usuario en Firefox | `apps/web/src/routes/{login,circles,help}.tsx`, `apps/web/src/features/spike/login-page.tsx`, `apps/web/dist/client/help/index.html` | Cubierto (F09, `accepted`); AC-06 verificado en navegador el 2026-11-01; prueba automatizada en F37/F38 |
+| Code-splitting por ruta | Los archivos de `src/routes/` exportan solo `Route`; el componente de `/login` vive en `features/spike/login-page.tsx` | `apps/web/src/routes/login.tsx`, `apps/web/src/features/spike/login-page.tsx`, `apps/web/src/routes/login.test.tsx` | Cubierto (F09, `accepted`): advertencia de TanStack Router corregida |
+| Cliente REST tipado | `createApiClient({ basePath?, fetch? })`, `request<T>()`, atajos por verbo, validación estructural (`parse`, sin `zod`), query determinista, 204/205 y `Content-Length: 0`, `credentials: 'include'`, `dist` compilado | `packages/api-client/src/client.ts`, `packages/api-client/src/types.ts`, `packages/api-client/src/url.ts`, `packages/api-client/README.md` | Cubierto (F09) |
+| Errores de contrato y de transporte | `ApiError` canónico de `shared`; `ApiTransportError` con `kind` (`network`, `invalid-json`, `invalid-response`, `unexpected-error-response`); mensajes seguros en español; guards; `AbortError` relanzado sin envolver | `packages/api-client/src/errors.ts`, `packages/api-client/src/errors.test.ts`, `apps/web/src/lib/error-message.ts` | Cubierto (F09) |
+| TanStack Query aplicado | `staleTime` 30 s; 4xx sin reintento, 5xx y fallo de red con máximo 2 reintentos | `apps/web/src/lib/query-client.ts`, `apps/web/src/lib/query-client.test.ts` | Cubierto (F09); hooks de datos de producto en F18+ |
+| Error boundaries y 404 | Error boundary raíz con reintento, foco y enlace; 404 con foco y enlace a `/` | `apps/web/src/components/route-error.tsx`, `apps/web/src/components/not-found.tsx` y sus tests | Cubierto (F09) |
+| Configuración por entorno | `VITE_API_BASE_URL` (default `/api`) y `API_INTERNAL_URL` como origen absoluto validado al arrancar (default `http://127.0.0.1:3001`, base final `${origen}/api`); `.env.example`; `dist/client` sin `API_INTERNAL_URL` ni `127.0.0.1` | `apps/web/src/lib/env.ts`, `apps/web/src/lib/env.server.ts` y tests, `.env.example` | Cubierto (F09); enrutado de `/api` en producción en F42 |
+| Proxy `/api` | Proxy de Vite con target desde `API_INTERNAL_URL`; `/api/health` por proxy 200 y `/health` directo 404 | `apps/web/vite.config.ts`, smoke HTTP | Cubierto (F09) para desarrollo |
+| Frontera cliente/servidor | `api-client.server.ts` importa `@tanstack/react-start/server-only`; la base de servidor se compone como `${origen}/api` | `apps/web/src/lib/api-client.ts`, `apps/web/src/lib/api-client.server.ts` y tests | Cubierto (F09); sin consumidor de producto hasta F10+ |
+| Testing de web y cliente | `api-client` 39 tests en 3 archivos con `fetch` sustituido; `apps/web` 52 tests en 13 archivos con Testing Library | `packages/api-client/src/*.test.ts`, `apps/web/src/**/*.test.tsx` | Cubierto (F09); E2E y navegador en F37/F38 |
+| Revisión independiente y aceptación | Dos rondas: **no apto** (B-01, M-01 y menores/sugerencias) → **apto con correcciones** (N-01, N-02, N-03), todas aplicadas; después, corrección C-01 del code-splitting de `/login` y aceptación del usuario en Firefox real (G4) | [handoff de F09](../04-features/F09-web-core/handoff.md) | Cubierto (F09, `accepted`); commit, PR y CI pendientes |
+
 ## 1. Maquetación
 
 | Contenido | Dónde se aplica | Evidencia | Estado |
@@ -105,7 +122,7 @@ Estado: **F01–F03 cubren los temas transversales, F04 el entorno y tooling, F0
 | --- | --- | --- | --- |
 | TypeScript core | `strict`, sin `any` | `packages/config/tsconfig/base.json`, `pnpm typecheck` 8/8 | Cubierto (F05: aplicado a código real) |
 | Union types y narrowing | Roles, acciones, tema y `ApiResult` | `packages/shared/src/permissions.ts`, `packages/shared/src/errors.ts`, `packages/shared/src/schemas/common.ts` | Cubierto (F06: roles, acciones, tema y resultado; estados de subida en F26) |
-| Genéricos | `Page<T>`, `ApiResult<T>`, `createPageSchema<T>`, `request<T>` | `packages/shared/src/pagination.ts`, `packages/shared/src/errors.ts` | Parcial (F06: `Page<T>` y `ApiResult<T>`; `request<T>` en F09) |
+| Genéricos | `Page<T>`, `ApiResult<T>`, `createPageSchema<T>`, `request<T>` | `packages/shared/src/pagination.ts`, `packages/shared/src/errors.ts`, `packages/api-client/src/client.ts` | Cubierto (F06: `Page<T>` y `ApiResult<T>`; F09: `request<T>` y `StructuralValidator<T>`) |
 | Utility types | `Omit`, `Partial`, `Pick`, `Record` | DTOs | Pendiente |
 | Tipos inferidos de Zod | `z.infer` como fuente | `packages/shared/src/schemas/dto.ts`, resto de `schemas/**` | Cubierto (F06) |
 | Inmutabilidad | `Readonly`/`Object.freeze` en settings; reducer y caché pendientes | `packages/shared/src/permissions.ts` | Parcial (F06: settings; upload reducer en F26) |
@@ -116,13 +133,13 @@ Estado: **F01–F03 cubren los temas transversales, F04 el entorno y tooling, F0
 
 | Contenido | Dónde se aplica | Evidencia | Estado |
 | --- | --- | --- | --- |
-| Vite y bundling | Start sobre Vite, proxy, env, splitting | `apps/web/vite.config.ts`, `apps/web/dist/client`, `apps/web/dist/server` | Cubierto (F05) |
+| Vite y bundling | Start sobre Vite, proxy, env, splitting | `apps/web/vite.config.ts`, `apps/web/dist/client`, `apps/web/dist/server` | Cubierto (F05; proxy con target por entorno en F09) |
 | SPA | Rutas privadas `ssr: false` | `/circles`, tabla de rutas | Cubierto (F05) |
 | SSR | Login, registro, invitación | `/login` en HTML inicial | Cubierto (F05: smoke; invitación en F20) |
 | SSG | Ayuda y privacidad | `apps/web/dist/client/help/index.html` | Cubierto (F05: `/help`; `/privacy` en F36) |
 | MPA | No se fuerza; ADR | ADR-0002 | Pendiente |
 | Turborepo | Monorepo, caché, CI y entorno global | `turbo.json` (`globalDependencies`/`globalEnv`), `.github/workflows/ci.yml`; test forzado 15/15 | Cubierto |
-| Paquetes compartidos | `shared`, `api-client`, `ui`, `config` | `pnpm-workspace.yaml`, `packages/*/package.json`, `packages/shared/src/**` | Parcial (F06: `shared` con contratos y permisos; `api-client` sin uso real) |
+| Paquetes compartidos | `shared`, `api-client`, `ui`, `config` | `pnpm-workspace.yaml`, `packages/*/package.json`, `packages/shared/src/**`, `packages/api-client/src/**` | Cubierto (F06: `shared`; F09: `api-client` con contrato propio, build y tests) |
 
 ## 4. Frameworks
 
@@ -131,8 +148,8 @@ Estado: **F01–F03 cubren los temas transversales, F04 el entorno y tooling, F0
 | React componentes | UI kit y features | `apps/web/src/routes/login.tsx`, `apps/web/src/features/spike/help-content.tsx` | Parcial (F05: páginas placeholder; UI kit en F11/F12) |
 | Hooks | `useUploadQueue`, `useMediaQuery`, `useTheme`, `useShare` | Tests de hooks | Pendiente |
 | Formularios | RHF + Zod | Auth, círculo, álbum, metadatos | Pendiente |
-| APIs | TanStack Query: caché, infinito, optimista | Etiquetas, galería | Pendiente |
-| Metaframework | TanStack Start | `apps/web/src/routes/*`, `apps/web/vite.config.ts` | Cubierto (F05) |
+| APIs | TanStack Query: caché, infinito, optimista | `apps/web/src/lib/query-client.ts`, `apps/web/src/router.tsx` | Parcial (F09: provider, `staleTime` y reintentos; caché de producto, infinito y optimista en F18–F35) |
+| Metaframework | TanStack Start | `apps/web/src/routes/*`, `apps/web/src/router.tsx`, `apps/web/vite.config.ts` | Cubierto (F05; providers y router propios en F09) |
 | Next.js | Comparación documentada | ADR-0001 | Cubierto (comparación) |
 | IA agente | Tareas acotadas y revisadas | Bitácora | Cubierto |
 
@@ -140,19 +157,19 @@ Estado: **F01–F03 cubren los temas transversales, F04 el entorno y tooling, F0
 
 | Contenido | Dónde se aplica | Evidencia | Estado |
 | --- | --- | --- | --- |
-| Componentes | Formularios, galería, navegación, tema | `apps/web/src/features/spike/help-content.test.tsx`, `apps/web/src/routes/*.test.tsx` | Parcial (F05: smoke; features reales en F09+) |
+| Componentes | Formularios, galería, navegación, tema | `apps/web/src/features/spike/help-content.test.tsx`, `apps/web/src/routes/*.test.tsx`, `apps/web/src/components/*.test.tsx` | Parcial (F05: smoke; F09: `route-error` y `not-found` con foco y reintento; features reales en F11+) |
 | Testing Library | Roles y texto accesible | `apps/web/src/routes/login.test.tsx` | Cubierto (F05) |
 | Mocking APIs | MSW con contratos; 401/403/500 | Handlers | Pendiente |
 | Hooks | `renderHook` | Tests | Pendiente |
 | Revisión con IA | Casos límite | Bitácora | Cubierto |
-| Además | API, E2E, axe | `apps/api/src/app.test.ts`, `apps/api/src/errors.test.ts`, `apps/api/src/services/images.test.ts`; API 77 passed + 13 skipped sin `DATABASE_URL`, 90 con `memora_test`; shared 138; E2E y axe pendientes | Parcial (F08: tests HTTP con `inject`; E2E en F38) |
+| Además | API, web, cliente HTTP, E2E, axe | `apps/api/src/app.test.ts`, `apps/api/src/errors.test.ts`, `apps/api/src/services/images.test.ts`, `packages/api-client/src/*.test.ts`, `apps/web/src/**/*.test.tsx`; API 77 passed + 13 skipped sin `DATABASE_URL`, 90 con `memora_test`; shared 138; api-client 39; web 52; E2E y axe pendientes | Parcial (F08: tests HTTP con `inject`; F09: cliente y web core; E2E en F38) |
 
 ## 6. API REST
 
 | Contenido | Dónde se aplica | Evidencia | Estado |
 | --- | --- | --- | --- |
 | API REST I y II | Recursos, verbos, códigos, paginación, subida, cookie | `apps/api/src/routes/health.ts`, `apps/api/src/errors.ts`, `apps/api/src/app.test.ts` | Parcial (F08: health, errores canónicos, 413/415/429, multipart; recursos de producto en F15+) |
-| Consumo de APIs | Cliente tipado en web y SSR | `api-client`; proxy `/api` validado; contratos en `shared` | Parcial (F06: contratos; cliente tipado en F09) |
+| Consumo de APIs | Cliente tipado en web y SSR | `packages/api-client/src/**`, `apps/web/src/lib/api-client.ts`, `apps/web/src/lib/api-client.server.ts`; proxy `/api` validado en vivo | Cubierto (F09: cliente tipado, errores y validación de respuesta; recursos de producto en F15+) |
 | Servicios externos | S3, email, geocoding, Content Island | `apps/api/src/services/{storage,email,geocoding}.ts`, `apps/api/src/test/fakes.ts`, `apps/web/src/features/spike/content.server.ts`, `content-island-snapshot.json` | Parcial (F08: contratos de servicio y fakes en memoria; Content Island cubierto; adaptadores reales de S3, email y geocoding en F25) |
 
 ## Evidencias de entrega

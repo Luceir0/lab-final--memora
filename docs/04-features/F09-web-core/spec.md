@@ -3,7 +3,7 @@ id: F09
 title: "Web core"
 milestone: M1
 size: M
-status: draft
+status: accepted
 spec: complete
 depends_on:
   - "F06"
@@ -22,7 +22,7 @@ decisions:
 
 # F09 — Web core
 
-> **Milestone:** M1 · **Talla:** M · **Estado:** draft · **Spec:** completa
+> **Milestone:** M1 · **Talla:** M · **Estado:** accepted · **Spec:** completa
 > **Depende de:** F06 · **Bloquea:** F10, F36, F37
 
 ## Objetivo
@@ -110,12 +110,19 @@ Crear la base de TanStack Start: router, providers, api-client, proxy, errores y
 
 ## Definition of Ready
 
-- [ ] Dependencias `done`. Excepción autorizada por el usuario y registrada en el tablero.
-- [ ] Decisiones resueltas.
-- [ ] Contratos congelados.
-- [ ] Diseño enlazado (si aplica).
-- [ ] Datos de prueba.
-- [ ] Sin preguntas bloqueantes.
+- [x] Dependencias `done`. F06 está `done`; el tablero registra la apertura autorizada por el usuario el 2026-11-01.
+- [x] Decisiones resueltas. ADR-0001 y ADR-0002 aceptadas; las cuatro decisiones de arranque están abajo.
+- [x] Contratos congelados. `render-modes.md` y `api-contract.md`.
+- [x] Diseño enlazado. No aplica: F09 no tiene pantallas de producto.
+- [x] Datos de prueba. No aplica: las rutas de humo no leen datos persistidos; los tests usan fixtures locales y `fetch` sustituido.
+- [x] Sin preguntas bloqueantes. Resueltas el 2026-11-01.
+
+## Decisiones de arranque (2026-11-01)
+
+1. **Dependencia nueva autorizada:** `@tanstack/react-query` en `apps/web`, versión exacta y compatible con React 19. Es la única dependencia de producto nueva de la feature.
+2. **Cliente API:** la lógica genérica (`request<T>()`, normalización de errores, base path) vive en `packages/api-client`; `apps/web/src/lib/api-client.ts` solo configura y exporta la instancia. `packages/api-client` deja de ser un stub.
+3. **Variables de entorno:** `VITE_API_BASE_URL` (navegador, por defecto `/api`) y `API_INTERNAL_URL` (SSR y server functions, por defecto `http://127.0.0.1:3001`), con validación al arrancar y documentación en `.env.example`. Sin secretos.
+4. **Rutas de humo:** se conservan `/login` (SSR), `/circles` (`ssr: false`) y `/help` (prerender) del spike F05, anotadas como placeholders. F16, F18 y F36 las sustituirán. No se retira la lectura del snapshot de Content Island en esta feature.
 
 ## Handoff
 
