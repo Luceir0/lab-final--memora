@@ -50,8 +50,10 @@
 ## Cierre
 
 - [x] Aceptación del usuario (2026-11-01).
-- [ ] `done` (tras commit, PR/CI y merge).
-- [ ] Commit propuesto (sin ejecutar).
-- [ ] Push (sin ejecutar).
+- [x] Commits `e94ba58` (`feat(api): add data model, initial migration and seed`), `15b26e1` (`ci: run api integration tests against postgres`) y `a936d7a` (`docs: close F07 documentation and record acceptance`) en `feat/F07-modelo-datos`.
+- [x] Push de la rama y PR #3.
+- [x] Merge en `main` como `bd2769c`.
+- [x] CI de la PR (head `a936d7a`) `completed/success`; CI de `main` run `41254603622` `completed/success`, con PostgreSQL 17.11 y tests contra `memora_test` sin skips.
+- [x] `done` (2026-11-01).
 
-Notas: rama actual `main`, sin commits de F07. F07 queda en `accepted`; no se marca `done` hasta el merge y el CI. El CI con PostgreSQL está configurado pero todavía no validado en el runner.
+Notas: F07 cerrada. El cierre documental de esta entrada lo commiteará el orquestador; este agente no hace commit ni push.

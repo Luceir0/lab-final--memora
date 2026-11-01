@@ -1,6 +1,6 @@
 # Cobertura del temario
 
-Estado: **F01–F03 cubren los temas transversales, F04 el entorno y tooling, F05 el stack de aplicación, F06 los contratos y permisos compartidos y F07 el modelo de datos** (organización, documentación, IA agente, revisión, activos, TypeScript estricto, monorepo, Docker, CI, render modes, Tailwind 4, Fastify + Zod, Prisma 7, migraciones, seed determinista, PostgreSQL real en tests, sharp, Content Island, Zod como fuente única, errores, paginación y autorización pura). F05 está `done` tras el merge `8dfae5f` y CI en verde; F06 está `done` desde el 2026-10-31 tras la PR #2, el merge `b556168` y CI en verde (run `41246708428`); F07 está `accepted` desde el 2026-11-01, con implementación y tests en verde, pendiente de commit, PR/CI y `done`. El resto está planificado y se actualiza al cerrar cada feature con evidencias reales.
+Estado: **F01–F03 cubren los temas transversales, F04 el entorno y tooling, F05 el stack de aplicación, F06 los contratos y permisos compartidos y F07 el modelo de datos** (organización, documentación, IA agente, revisión, activos, TypeScript estricto, monorepo, Docker, CI, render modes, Tailwind 4, Fastify + Zod, Prisma 7, migraciones, seed determinista, PostgreSQL real en tests, sharp, Content Island, Zod como fuente única, errores, paginación y autorización pura). F05 está `done` tras el merge `8dfae5f` y CI en verde; F06 está `done` desde el 2026-10-31 tras la PR #2, el merge `b556168` y CI en verde (run `41246708428`); F07 está `done` desde el 2026-11-01 tras la PR #3, el merge `bd2769c` y CI en verde (run `41254603622`), con PostgreSQL 17.11 y tests de integración reales. El resto está planificado y se actualiza al cerrar cada feature con evidencias reales.
 
 **Fuente del temario:** `assets/design/temario-tecnologias.png` y la especificación histórica `docs/archive/spec-v1.md` §7. No hay una transcripción oficial en texto; este mapa es la referencia operativa.
 
@@ -56,7 +56,7 @@ Estado: **F01–F03 cubren los temas transversales, F04 el entorno y tooling, F0
 | Validación en español | Mensajes de constraints y rango de `limit` | `packages/shared/src/validation-messages.ts`, `contracts.test.ts` | Cubierto (F06) |
 | Testing unitario | 5 archivos, 138 tests; sin mocks en permisos | `packages/shared/src/*.test.ts`; `pnpm --filter @memora/shared test` | Cubierto (F06) |
 
-## Modelo de datos, migraciones y seed (F07, accepted)
+## Modelo de datos, migraciones y seed (F07, done)
 
 | Tema | Dónde se aplica | Evidencia | Estado |
 | --- | --- | --- | --- |
@@ -67,7 +67,7 @@ Estado: **F01–F03 cubren los temas transversales, F04 el entorno y tooling, F0
 | Seed determinista | Fechas fijas, upserts con id fijo y digests idénticos; 2 usuarios, 2 círculos, 4 memberships, 2 álbumes, 6 fotos, 2 tags, 1 invitación y 4 actividades | `apps/api/prisma/seed.ts`, tests de seed repetido | Cubierto (F07) |
 | Tests de integración reales | 4 archivos, 36 tests con `DATABASE_URL`; 23 + 13 skipped sin base | `apps/api/src/test/db.ts`, `apps/api/src/test/factories.ts`, `apps/api/src/db.integration.test.ts` | Cubierto (F07) |
 | Guardas de base de test | `_test`, host local y entorno de test; `ALLOW_REMOTE_TEST_DB=1` solo relaja el host | `apps/api/src/test/db.ts`, `apps/api/src/test/db.test.ts` | Cubierto (F07) |
-| PostgreSQL en CI | Servicio `postgres:17.11-alpine`, `db:migrate:deploy`, `NODE_ENV=test` | `.github/workflows/ci.yml` | Configurado; pendiente de validar en el runner |
+| PostgreSQL en CI | Servicio `postgres:17.11-alpine`, `db:migrate:deploy`, `NODE_ENV=test` | `.github/workflows/ci.yml`; run `41254603622` | Validado en el runner; tests contra `memora_test` sin skips |
 
 ## 1. Maquetación
 

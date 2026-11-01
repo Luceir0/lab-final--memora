@@ -3,7 +3,7 @@ id: F07
 title: "Modelo de datos, migraciones y seed"
 milestone: M1
 size: M
-status: accepted
+status: done
 spec: complete
 depends_on:
   - "F06"
@@ -20,7 +20,7 @@ decisions:
 
 # F07 — Modelo de datos, migraciones y seed
 
-> **Milestone:** M1 · **Talla:** M · **Estado:** accepted · **Spec:** completa
+> **Milestone:** M1 · **Talla:** M · **Estado:** done · **Spec:** completa
 > **Depende de:** F06 · **Bloquea:** F08, F15, F25
 
 ## Objetivo

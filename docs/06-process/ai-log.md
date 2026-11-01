@@ -170,3 +170,12 @@ Registro de usos relevantes de IA. No es un chat completo: es evidencia para el 
 - **Decisión final:** F07 queda en **`accepted`**. No se marca `done`: faltan el commit en `feat/f07-modelo-datos`, la PR con CI (incluida la validación real del servicio PostgreSQL en el runner) y el merge. No existen todavía hash, número de PR ni run de CI de F07; no se hizo commit ni push.
 - **Tema del temario:** cierre de features, trazabilidad documental, control de estado, CI con PostgreSQL y trabajo agéntico.
 - **Evidencia:** `docs/04-features/F07-modelo-datos/spec.md`, `docs/04-features/F07-modelo-datos/handoff.md`, `docs/04-features/F07-modelo-datos/tasks.md`, `docs/04-features/README.md`, `docs/00-index.md`, `README.md`, `docs/07-curriculum/coverage-map.md`.
+
+### 2026-11-01 — Cierre de F07: PR, merge y CI con PostgreSQL
+
+- **Prompt representativo:** F07 ya está mergeada en `main` y el CI está en verde, con PostgreSQL real en el runner; cerrar la feature como `done` y actualizar la documentación sin abrir F08.
+- **Propuesta de la IA:** registrar los datos reales del cierre (PR #3, commits `e94ba58`/`15b26e1`/`a936d7a`, merge `bd2769c`, CI `41254603622`), pasar F07 a `done` y sustituir la nota de «CI pendiente» por la validación real sin skips.
+- **Qué se actualizó:** `spec.md` (`status: done`), handoff (estado, PR, commits, merge, CI y cierre completo), `tasks.md` (commit, push, PR/merge, CI y `done`), tablero, `docs/00-index.md`, `README.md`, `test-matrix.md` y `coverage-map.md`.
+- **Decisión final:** F07 queda **`done`** (2026-11-01). PR #3 mergeada en `main` (`bd2769c`), commits `e94ba58`, `15b26e1` y `a936d7a`; CI de `main` run `41254603622` `completed/success` y CI de la PR (head `a936d7a`) `completed/success`. El run incluyó por primera vez PostgreSQL 17.11 y los tests de integración se ejecutaron contra `memora_test` en el runner, sin skips. F08 sigue en `draft` y no se abre sin permiso del usuario. Este cierre documental no se ha commiteado ni pusheado; lo hará el orquestador.
+- **Tema del temario:** cierre de features, trazabilidad PR/merge/CI, validación de servicios en CI, documentación viva y control de alcance.
+- **Evidencia:** `docs/04-features/F07-modelo-datos/handoff.md`, `docs/04-features/F07-modelo-datos/tasks.md`, `docs/04-features/F07-modelo-datos/spec.md`, `docs/04-features/README.md`, `docs/00-index.md`, `README.md`, `docs/05-quality/test-matrix.md`, `docs/07-curriculum/coverage-map.md`.

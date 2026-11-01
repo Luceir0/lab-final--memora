@@ -13,7 +13,7 @@ Tablero de las 43 features. Cada carpeta contiene `spec.md`, `tasks.md` y `hando
 - `accepted`: aceptada por el usuario.
 - `done`: documentación y evidencias cerradas.
 
-**Situación actual:** F01–F06 están `done`. F06 se cerró el 2026-10-31 con la PR #2, merge `b556168` en `main` y CI en verde (run `41246708428`, `completed/success`). **F07 fue aceptada por el usuario el 2026-11-01** tras la re-revisión «apto con correcciones» y con las correcciones cerradas. La aceptación no la cierra: quedan el commit, la PR con CI (incluida la validación real del servicio PostgreSQL) y el paso a `done`. **F08 sigue en `draft`** y no se abre sin permiso del usuario. F08–F43 tienen la spec completa y las dependencias definidas.
+**Situación actual:** F01–F07 están `done`. F06 se cerró el 2026-10-31 con la PR #2, merge `b556168` en `main` y CI en verde (run `41246708428`, `completed/success`). **F07 se cerró el 2026-11-01** con la PR #3, merge `bd2769c` en `main` y CI en verde (run `41254603622`, `completed/success`); la aceptación del usuario fue el mismo día y el run ejecutó por primera vez PostgreSQL 17.11 con los tests de integración contra `memora_test`, sin skips. **F08 sigue en `draft`** y no se abre sin permiso del usuario. F08–F43 tienen la spec completa y las dependencias definidas.
 
 ## Tablero
 
@@ -25,7 +25,7 @@ Tablero de las 43 features. Cada carpeta contiene `spec.md`, `tasks.md` y `hando
 | F04 | [Monorepo, tooling, Docker y CI](F04-monorepo-tooling/spec.md) | M1 | M | `done` | F03 |
 | F05 | [Spike técnico integrado](F05-spike-tecnico/spec.md) | M1 | M | `done` | F04 |
 | F06 | [Contratos compartidos y permisos](F06-contratos-compartidos/spec.md) | M1 | M | `done` | F05 |
-| F07 | [Modelo de datos, migraciones y seed](F07-modelo-datos/spec.md) | M1 | M | `accepted` | F06 |
+| F07 | [Modelo de datos, migraciones y seed](F07-modelo-datos/spec.md) | M1 | M | `done` | F06 |
 | F08 | [API core](F08-api-core/spec.md) | M1 | M | `draft` | F06, F07 |
 | F09 | [Web core](F09-web-core/spec.md) | M1 | M | `draft` | F06 |
 | F10 | [Sistema visual y tema](F10-sistema-visual/spec.md) | M1 | M | `draft` | F09 |

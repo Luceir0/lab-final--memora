@@ -4,7 +4,7 @@
 | --- | --- | --- | --- |
 | Permisos | F06, F17, F21, F23, F28, F32, F33 | owner/member × flags × acciones; `denyUnreachable` (`action: never`); `can()` deniega acciones desconocidas y recursos de otro círculo; borrado y original | Unitario |
 | Zod | F06 | requests válidos/inválidos; DTOs; paginación | Unitario |
-| Base de datos | F07 | migración inicial, constraints, cascadas, seed determinista, `resetDb`; guarda `_test`; PostgreSQL real en CI (pendiente de validar en el runner) | Integración |
+| Base de datos | F07 | migración inicial, constraints, cascadas, seed determinista, `resetDb`; guarda `_test`; PostgreSQL real en CI validado en el run `41254603622`, sin skips | Integración |
 | Upload reducer | F26 | pending/uploading/done/error/cancelled; retry; cancel; concurrencia | Unitario/hook |
 | Auth | F15, F16 | registro, login, logout, sesión expirada, email duplicado genérico | API + componente |
 | Acceso | F15–F35 | usuario A no ve círculo B; 404 vs 403; descarga ajena | API + E2E |

@@ -10,7 +10,7 @@ Aplicación web real, con la misma calidad en **móvil** y **escritorio**, insta
 
 ## Estado del proyecto
 
-**Fase actual: definición, scaffold agéntico, monorepo, spike técnico y contratos compartidos completados (F01–F06). F06 está `done` desde el 2026-10-31 tras la PR #2, el merge `b556168` y CI en verde. F07 (modelo de datos, migraciones y seed) fue aceptada por el usuario el 2026-11-01; queda pendiente de commit, PR/CI y `done`.**
+**Fase actual: definición, scaffold agéntico, monorepo, spike técnico, contratos compartidos y modelo de datos completados (F01–F07). F06 está `done` desde el 2026-10-31 y F07 desde el 2026-11-01, ambas tras PR, merge y CI en verde. F07 validó además PostgreSQL 17.11 en el runner.**
 
 Todavía **no hay lógica de producto**: F04 deja listos el monorepo, el tooling, Docker y CI; F05 valida las piezas de riesgo (render modes, Tailwind 4, Fastify + Zod, Prisma 7, sharp y el snapshot de Content Island); F06 fija en `packages/shared` los contratos Zod, los errores, la paginación y los permisos puros, con 138 tests; F07 añade el esquema Prisma, la migración inicial, el seed determinista y los tests contra PostgreSQL real. Las features de producto empiezan en F08. Este repositorio contiene la especificación viva, el sistema de diseño, los ADRs, las 43 features y la configuración de agentes que se usará para construirlo paso a paso.
 
@@ -24,9 +24,9 @@ Todavía **no hay lógica de producto**: F04 deja listos el monorepo, el tooling
 | Monorepo y app | F04 `done`, CI en verde |
 | Spike técnico | F05 `done`, CI en verde en `main` |
 | Contratos compartidos | F06 `done`, PR #2, merge `b556168` y CI en verde; `@memora/shared` con Zod 4.6.7 y 138 tests |
-| Modelo de datos | F07 `accepted`; 10 modelos, migración `20261031224916_init`, seed determinista y 36 tests con PostgreSQL real; pendiente de PR/CI |
+| Modelo de datos | F07 `done`, PR #3, merge `bd2769c` y CI en verde; 10 modelos, migración `20261031224916_init`, seed determinista y 36 tests con PostgreSQL real |
 
-El tablero de features está en [docs/04-features/README.md](docs/04-features/README.md). F01–F06 están `done`; F07 está `accepted`, pendiente de commit, PR/CI y `done`. Los resultados del spike están en [docs/03-architecture/spike-results.md](docs/03-architecture/spike-results.md) y los handoffs en [F06](docs/04-features/F06-contratos-compartidos/handoff.md) y [F07](docs/04-features/F07-modelo-datos/handoff.md).
+El tablero de features está en [docs/04-features/README.md](docs/04-features/README.md). F01–F07 están `done`; F08 sigue en `draft` y no se abre sin permiso. Los resultados del spike están en [docs/03-architecture/spike-results.md](docs/03-architecture/spike-results.md) y los handoffs en [F06](docs/04-features/F06-contratos-compartidos/handoff.md) y [F07](docs/04-features/F07-modelo-datos/handoff.md).
 
 ---
 
@@ -233,14 +233,14 @@ Herramientas:
 
 ## Próximos pasos
 
-1. **F07** — cierre de modelo de datos, migraciones y seed (`accepted`; pendiente de commit, PR/CI y `done`).
-2. **F08–F14** — API/web core, sistema visual y UI kit.
+1. **F08** — API core; siguiente paso, sin abrir hasta que el usuario lo autorice.
+2. **F09–F14** — web core, sistema visual y UI kit.
 3. **F15–F22** — auth, círculos, invitaciones y personas.
 4. **F23–F28** — álbumes, subidas y ajustes.
 5. **F29–F35** — galería, visor, metadatos, etiquetas, descargas, perfil y actividad.
 6. **F36–F43** — Content Island, tests, accesibilidad, rendimiento, seguridad, despliegue y defensa.
 
-F05 queda `done` tras el merge `8dfae5f` y el CI en verde ([run 40371999132](https://github.com/Luceir0/lab-final--memora/actions/runs/40371999132)). F06 se cerró el 2026-10-31 con la PR #2, el merge `b556168` y el CI en verde (run `41246708428`, `completed/success`). F07 fue aceptada por el usuario el 2026-11-01 y está pendiente de commit, PR/CI (con PostgreSQL real) y `done`.
+F05 queda `done` tras el merge `8dfae5f` y el CI en verde ([run 40371999132](https://github.com/Luceir0/lab-final--memora/actions/runs/40371999132)). F06 se cerró el 2026-10-31 con la PR #2, el merge `b556168` y el CI en verde (run `41246708428`, `completed/success`). F07 se cerró el 2026-11-01 con la PR #3, el merge `bd2769c` y el CI en verde (run `41254603622`, `completed/success`); el run ejecutó PostgreSQL 17.11 y los tests de integración contra `memora_test`, sin skips. F08 no se abre sin permiso del usuario.
 
 ---
 

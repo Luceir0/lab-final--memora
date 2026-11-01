@@ -1,19 +1,24 @@
 # Handoff — F07 Modelo de datos, migraciones y seed
 
-- **Estado:** `accepted` (aceptada por el usuario el 2026-11-01; `done` pendiente de commit, PR/CI y merge)
-- **Rama:** `main`, sin commits de F07
-- **Fecha:** 2026-11-01
+- **Estado:** `done` (cerrada tras merge y CI en verde)
+- **Rama:** `feat/F07-modelo-datos`, mergeada en `main`
+- **Fecha de cierre:** 2026-11-01
 - **Implementado por:** orquestador y subagentes de implementación de F07
 - **Revisado por:** reviewer independiente — primera iteración no apto; segunda iteración apto con correcciones; correcciones cerradas y verificadas
 - **Aceptado por:** usuario (2026-11-01)
+- **PR:** [#3](https://github.com/Luceir0/lab-final--memora/pull/3)
+- **Commits:** `e94ba58` (`feat(api): add data model, initial migration and seed`), `15b26e1` (`ci: run api integration tests against postgres`) y `a936d7a` (`docs: close F07 documentation and record acceptance`)
+- **Merge en `main`:** `bd2769c`
+- **CI de `main`:** run `41254603622`, `completed/success`
+- **CI de la PR:** head `a936d7a`; install, docs, agents, lint, typecheck, test y build → `completed/success`
 
 ## Resultado
 
 `apps/api` tiene el modelo de datos completo: `prisma/schema.prisma` con 10 modelos y 5 enums, una migración inicial única (`20261031224916_init`) y un seed determinista e idempotente. La migración de spike y `SpikeNote` se eliminaron con permiso del usuario. Se añadieron helpers de test con guardas, factorías tipadas y una suite de integración contra PostgreSQL real.
 
-La verificación está en verde: con `DATABASE_URL` apuntando a `memora_test`, 4 archivos y 36 tests sin skips; sin `DATABASE_URL`, 23 passed + 13 skipped; apuntando a la base de desarrollo `memora`, la guarda se niega a truncar. La revisión independiente necesitó dos iteraciones: la primera fue **no apto** por dos bloqueantes (seed no determinista y `resetDb` capaz de truncar cualquier base); la segunda fue **apto con correcciones**. F07 está **`accepted`**.
+La verificación está en verde: con `DATABASE_URL` apuntando a `memora_test`, 4 archivos y 36 tests sin skips; sin `DATABASE_URL`, 23 passed + 13 skipped; apuntando a la base de desarrollo `memora`, la guarda se niega a truncar. La revisión independiente necesitó dos iteraciones: la primera fue **no apto** por dos bloqueantes (seed no determinista y `resetDb` capaz de truncar cualquier base); la segunda fue **apto con correcciones**. F07 está **`done`**.
 
-**Cierre:** el usuario aceptó F07 el 2026-11-01, después de la re-revisión «apto con correcciones» y con las correcciones cerradas. La aceptación no cierra la feature: quedan el commit en `feat/f07-modelo-datos`, la PR con CI (incluida la validación real del servicio PostgreSQL en el runner) y el paso a `done`. Todavía no existen hash de commit, número de PR ni run de CI de F07.
+**Cierre (2026-11-01):** el usuario aceptó F07 después de la re-revisión «apto con correcciones» y con las correcciones cerradas. Después se crearon los commits `e94ba58`, `15b26e1` y `a936d7a` en `feat/F07-modelo-datos`, se abrió la PR #3, se mergeó en `main` como `bd2769c` y el CI de `main` pasó en verde (run `41254603622`, `completed/success`). El CI de la PR, con head `a936d7a`, también pasó install, docs, agents, lint, typecheck, test y build. Por primera vez el run incluyó el servicio PostgreSQL 17.11: los tests de integración se ejecutaron contra `memora_test` en el runner, sin skips.
 
 ## Cambios (archivos)
 
@@ -61,8 +66,8 @@ La verificación está en verde: con `DATABASE_URL` apuntando a `memora_test`, 4
 | `pnpm exec turbo run lint --force` | 6/6 tareas |
 | `corepack pnpm docs:check` | 191 archivos, 430 enlaces, 0 rotos |
 | `corepack pnpm agents:check` | OK |
-
-El CI con PostgreSQL está configurado, pero **no se ha validado en el runner**: no hay PR de F07 todavía.
+| CI de la PR #3 (head `a936d7a`) | `completed/success` |
+| CI de `main` (`bd2769c`) | run `41254603622`, `completed/success`; tests de integración contra `memora_test`, sin skips |
 
 ## Criterios de aceptación
 
@@ -77,10 +82,7 @@ El CI con PostgreSQL está configurado, pero **no se ha validado en el runner**:
 
 ## Pendiente
 
-- Commit en `feat/f07-modelo-datos` y push; después PR, CI y merge. Hoy no existen hash, PR ni run de CI de F07.
-- Validar el CI con PostgreSQL en el runner (servicio, healthcheck, `db:migrate:deploy` y `NODE_ENV=test`).
-- Pasar F07 a `done` después del merge y del CI en verde.
-- Deuda trasladada:
+- Ninguno de F07. Deuda trasladada:
   - **F21:** borrar los `PhotoTag` del miembro expulsado o que sale en la misma transacción; no hay FK que lo haga.
   - **F23/F25:** garantizar en servicio que `Photo.circleId === Album.circleId`; la BD no tiene FK compuesta.
   - **F08/F15:** mapear `ActivityType` (`photo_uploaded`…) al contrato (`photo.uploaded`…).
@@ -91,8 +93,7 @@ El CI con PostgreSQL está configurado, pero **no se ha validado en el runner**:
 - El seed usa un hash placeholder que no autentica; es deliberado hasta F15.
 - `resetDb` trunca tablas: la guarda por nombre/host/entorno es la última defensa. `ALLOW_REMOTE_TEST_DB=1` no debe usarse contra bases compartidas.
 - La invariante `Photo.circleId`/`Album.circleId` no está en la BD; un bug de servicio puede crear una foto incoherente.
-- El CI con PostgreSQL no se ha ejecutado todavía; puede requerir ajustes de healthcheck o credenciales.
-- La aceptación no cierra F07: antes de `done` hacen falta commit, PR, CI en verde y merge.
+- El CI con PostgreSQL ya está validado (run `41254603622`), pero un cambio futuro del servicio o de las credenciales puede volver a romperlo.
 
 ## Documentación actualizada
 
@@ -107,7 +108,4 @@ El CI con PostgreSQL está configurado, pero **no se ha validado en el runner**:
 
 ## Siguiente paso propuesto
 
-1. Crear `feat/f07-modelo-datos`, commit y push con permiso.
-2. Abrir la PR y validar el CI con PostgreSQL en el runner.
-3. Tras merge y CI en verde, cerrar F07 como `done`.
-4. Abrir F08 solo con permiso del usuario.
+F08 — API core. Sigue en `draft` y no se abre sin permiso del usuario.
