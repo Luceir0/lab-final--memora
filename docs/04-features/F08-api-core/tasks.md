@@ -87,8 +87,8 @@
 ## Cierre
 
 - [x] Revisión independiente (tres rondas: apto con correcciones → mayores de generación Prisma y multipart → fallback de migraciones).
-- [ ] Aceptación del usuario.
+- [x] Aceptación del usuario (2026-11-01).
 - [x] `handoff.md` completo.
 - [x] Tablero actualizado.
 - [x] Bitácora y cobertura actualizadas.
-- [x] Commit propuesto (sin ejecutar).
+- [x] Commit, PR #4, CI en verde y merge `ed1f316`.

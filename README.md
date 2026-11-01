@@ -10,7 +10,7 @@ Aplicación web real, con la misma calidad en **móvil** y **escritorio**, insta
 
 ## Estado del proyecto
 
-**Fase actual: definición, scaffold agéntico, monorepo, spike técnico, contratos compartidos y modelo de datos completados (F01–F07). F06 está `done` desde el 2026-10-31 y F07 desde el 2026-11-01, ambas tras PR, merge y CI en verde. F07 validó además PostgreSQL 17.11 en el runner. F08 (API core) está `accepted` desde el 2026-11-01, pendiente de PR, CI y merge.**
+**Fase actual: definición, scaffold agéntico, monorepo, spike técnico, contratos compartidos, modelo de datos y esqueleto de la API completados (F01–F08). F06 está `done` desde el 2026-10-31 y F07 desde el 2026-11-01, ambas tras PR, merge y CI en verde. F07 validó además PostgreSQL 17.11 en el runner. F08 (API core) está `done` desde el 2026-11-01 tras la PR #4, el merge `ed1f316` y CI en verde (run `41261491641`).**
 
 Todavía **no hay lógica de producto**: F04 deja listos el monorepo, el tooling, Docker y CI; F05 valida las piezas de riesgo (render modes, Tailwind 4, Fastify + Zod, Prisma 7, sharp y el snapshot de Content Island); F06 fija en `packages/shared` los contratos Zod, los errores, la paginación y los permisos puros, con 138 tests; F07 añade el esquema Prisma, la migración inicial, el seed determinista y los tests contra PostgreSQL real; F08 monta el esqueleto de la API (Fastify 5, plugins, error handler canónico, OpenAPI desde Zod, pino con redacción y harness de tests) sin endpoints de producto. Este repositorio contiene la especificación viva, el sistema de diseño, los ADRs, las 43 features y la configuración de agentes que se usará para construirlo paso a paso.
 
@@ -25,9 +25,9 @@ Todavía **no hay lógica de producto**: F04 deja listos el monorepo, el tooling
 | Spike técnico | F05 `done`, CI en verde en `main` |
 | Contratos compartidos | F06 `done`, PR #2, merge `b556168` y CI en verde; `@memora/shared` con Zod 4.6.7 y 138 tests |
 | Modelo de datos | F07 `done`, PR #3, merge `bd2769c` y CI en verde; 10 modelos, migración `20261031224916_init`, seed determinista y 36 tests con PostgreSQL real |
-| API core | F08 `accepted`; Fastify 5, siete plugins, Swagger UI dev-only, error handler canónico y harness `inject`; 77 + 13 skipped sin base y 90 con `memora_test` |
+| API core | F08 `done`; Fastify 5, siete plugins, Swagger UI dev-only, error handler canónico y harness `inject`; 77 + 13 skipped sin base y 90 con `memora_test` |
 
-El tablero de features está en [docs/04-features/README.md](docs/04-features/README.md). F01–F07 están `done`; F08 está `accepted` desde el 2026-11-01, pendiente de PR y CI, y F09–F43 en `draft`. Los resultados del spike están en [docs/03-architecture/spike-results.md](docs/03-architecture/spike-results.md) y los handoffs en [F06](docs/04-features/F06-contratos-compartidos/handoff.md), [F07](docs/04-features/F07-modelo-datos/handoff.md) y [F08](docs/04-features/F08-api-core/handoff.md).
+El tablero de features está en [docs/04-features/README.md](docs/04-features/README.md). F01–F08 están `done`; F09–F43 están en `draft`. Los resultados del spike están en [docs/03-architecture/spike-results.md](docs/03-architecture/spike-results.md) y los handoffs en [F06](docs/04-features/F06-contratos-compartidos/handoff.md), [F07](docs/04-features/F07-modelo-datos/handoff.md) y [F08](docs/04-features/F08-api-core/handoff.md).
 
 ---
 
@@ -235,14 +235,14 @@ Herramientas:
 
 ## Próximos pasos
 
-1. **F08** — API core; `accepted` el 2026-11-01, pendiente de PR, CI y merge. No se abre F09 sin permiso del usuario.
+1. **F09** — Web core; `draft`. No se abre sin permiso del usuario.
 2. **F09–F14** — web core, sistema visual y UI kit.
 3. **F15–F22** — auth, círculos, invitaciones y personas.
 4. **F23–F28** — álbumes, subidas y ajustes.
 5. **F29–F35** — galería, visor, metadatos, etiquetas, descargas, perfil y actividad.
 6. **F36–F43** — Content Island, tests, accesibilidad, rendimiento, seguridad, despliegue y defensa.
 
-F05 queda `done` tras el merge `8dfae5f` y el CI en verde ([run 40371999132](https://github.com/Luceir0/lab-final--memora/actions/runs/40371999132)). F06 se cerró el 2026-10-31 con la PR #2, el merge `b556168` y el CI en verde (run `41246708428`, `completed/success`). F07 se cerró el 2026-11-01 con la PR #3, el merge `bd2769c` y el CI en verde (run `41254603622`, `completed/success`); el run ejecutó PostgreSQL 17.11 y los tests de integración contra `memora_test`, sin skips. F08 está `accepted` desde el 2026-11-01: revisión independiente cerrada y aceptación del usuario; no se marcará `done` sin commit, PR, CI y merge.
+F05 queda `done` tras el merge `8dfae5f` y el CI en verde ([run 40371999132](https://github.com/Luceir0/lab-final--memora/actions/runs/40371999132)). F06 se cerró el 2026-10-31 con la PR #2, el merge `b556168` y el CI en verde (run `41246708428`, `completed/success`). F07 se cerró el 2026-11-01 con la PR #3, el merge `bd2769c` y el CI en verde (run `41254603622`, `completed/success`); el run ejecutó PostgreSQL 17.11 y los tests de integración contra `memora_test`, sin skips. F08 se cerró el 2026-11-01 con la PR #4, el merge `ed1f316` y el CI en verde (run `41261491641`, `completed/success`).
 
 ---
 

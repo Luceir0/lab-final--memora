@@ -1,7 +1,11 @@
 # Handoff — F08 API core
 
-> Fecha: 2026-11-01 · Implementador: subagente `api-dev` · Estado: `accepted`
-> Revisión independiente: cerrada (tres rondas, veredicto final «apto») · Aceptación del usuario: 2026-11-01 · Commit: propuesto, pendiente de ejecución
+> Fecha: 2026-11-01 · Implementador: subagente `api-dev` · Estado: `done`
+> Revisión independiente: cerrada (tres rondas, veredicto final «apto») · Aceptación del usuario: 2026-11-01 · PR [#4](https://github.com/Luceir0/lab-final--memora/pull/4) · Merge: `ed1f316` · CI de `main`: run `41261491641`, `completed/success`
+
+## Cierre (2026-11-01)
+
+El usuario aceptó F08 el 2026-11-01. El trabajo se dividió en tres commits (`c421e3b` contrato compartido, `063661d` núcleo de la API, `050a3ed` documentación), se subió la rama `feat/F08-api-core`, se abrió la PR #4 y el CI de la PR pasó en verde (run `41260851691`, `completed/success`). El merge en `main` es `ed1f316` y el CI de `main` pasó en verde (run `41261491641`, `completed/success`). F08 queda **`done`**.
 
 ## Resultado
 
@@ -148,7 +152,4 @@ Veredicto: **el fallback de Prisma se aplicaba también a migraciones**; se corr
 
 ## Siguiente paso propuesto
 
-1. Aceptación del usuario: al ser una feature de backend, validar `/api/health`, `/api/openapi.json` y `/api/docs` en desarrollo.
-2. Tras la aceptación, proponer:
-   `fix(api): close F08 review findings on generation, multipart and services` (sin ejecutar).
-3. No marcar `done` hasta commit, PR, CI y merge; el cierre documental lo hará el orquestador.
+1. F08 está `done`. La siguiente feature es **F09 — Web core**, que depende de F06 (`done`) y sigue en `draft`. No se abre sin permiso del usuario.

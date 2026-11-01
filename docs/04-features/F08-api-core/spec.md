@@ -3,7 +3,7 @@ id: F08
 title: "API core"
 milestone: M1
 size: M
-status: accepted
+status: done
 spec: complete
 depends_on:
   - "F06"
@@ -22,7 +22,7 @@ decisions:
 
 # F08 — API core
 
-> **Milestone:** M1 · **Talla:** M · **Estado:** accepted · **Spec:** completa
+> **Milestone:** M1 · **Talla:** M · **Estado:** done · **Spec:** completa
 > **Depende de:** F06, F07 · **Bloquea:** F15, F17, F25
 
 ## Objetivo
