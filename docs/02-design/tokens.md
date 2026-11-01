@@ -34,6 +34,17 @@ Fuente visual: `assets/design/design-system-v0.1.png`. Los tokens se implementan
 | `--color-danger` | `#C8283C` | `#FF6B7D` | `#FDECEE` / `#3A1820` |
 | `--color-danger-text` | `#A61F31` | `#FF8A98` | — |
 | `--color-info` | `#2F6FD6` | `#6FA4FF` | `#DCE9FB` / `#14284A` |
+| `--color-success-text` | `#145C3D` | `#4CC38A` | — |
+| `--color-warning-text` | `#8A4510` | `#F0A04B` | — |
+| `--color-info-text` | `#1C4F8A` | `#6FA4FF` | — |
+
+Los tokens `*-text` son texto de estado sobre su fondo *soft* (`--color-*-soft`) o sobre
+`--color-bg`; los colores base de estado se reservan para iconos, barras y bordes. En
+claro los base no llegan a 4.5:1 como texto (`#1E8A5A` 3,58:1, `#B4610A` 3,65:1 y
+`#2F6FD6` 3,92:1 sobre su soft), y los `*-text` sí (`#145C3D` 6,60:1, `#8A4510` 5,78:1 y
+`#1C4F8A` 6,74:1). En oscuro coinciden con el color base porque ya superan AA
+(6,19:1, 6,59:1 y 5,89:1 sobre su soft). `--color-danger` sí cumple como texto en claro
+(4,81:1), por eso mantiene su `--color-danger-text` propio.
 
 ## Acentos de identidad
 
@@ -54,12 +65,15 @@ Asignación estable `hash(userId) % 5`, iguales en ambos temas.
 | Token | Tamaño / interlineado | Peso | Tracking | Uso |
 | --- | --- | --- | --- | --- |
 | `text-display` | 40 / 44 | 800 | -0.03em | Títulos grandes |
-| `text-h1` | 32 / 38 (móvil 26–28) | 800 | -0.02em | Título de pantalla |
+| `text-h1` | 32 / 38 · móvil 26 / 32 | 800 | -0.02em | Título de pantalla |
 | `text-h2` | 24 / 30 | 700 | -0.01em | Sección |
 | `text-h3` | 18 / 24 | 700 | 0 | Tarjeta |
 | `text-body` | 16 / 24 | 400 | 0 | Texto e inputs |
 | `text-body-sm` | 14 / 20 | 500 | 0 | Metadatos |
 | `text-caption` | 12 / 16 | 600 | 0.02em | Etiquetas y contadores |
+
+Por debajo del primer breakpoint (480 px) `h1` baja a **26 / 32 px**: es el tamaño del
+diseño móvil y evita que el título se parta en pantallas de 320–400 px.
 
 ## Espaciado y radios
 
@@ -98,11 +112,48 @@ Oscuro: solo `0 16px 40px rgba(0,0,0,.45)` en flotantes. Duraciones 150/250/350 
 | Content max | 1200–1280 px |
 | z-index | nav 40 · sheet 60 · modal 70 · toast 80 |
 
+Los nombres públicos de las capas son `--z-index-nav`, `--z-index-sheet`,
+`--z-index-modal` y `--z-index-toast`, mapeados a las variables de runtime
+`--memora-z-*` en `@theme inline`: se usan como utilidad (`z-nav`, `z-sheet`, `z-modal`,
+`z-toast`) o como variable (`z-(--memora-z-nav)`). Nada de números sueltos en
+componentes. Tailwind trae `2xl` por defecto; aquí queda **anulado**
+(`--breakpoint-2xl: initial`) porque el contrato solo define cuatro breakpoints y
+`2xl` (1536 px) no forma parte del diseño.
+
 ## Implementación
 
-- Variables en `packages/ui/src/styles/tokens.css`.
-- `packages/ui/src/styles/tokens.css` usa variables de runtime `--memora-*`; `@theme inline` las mapea a `--color-*`, `--radius-*`, `--shadow-*`, `--text-*` y `--font-sans`. Los nombres de la tabla siguen siendo los públicos.
-- Tailwind 4 con `@theme` apuntando a las variables.
-- `data-theme="light|dark"` en `<html>`; el servidor lo resuelve con cookie y `prefers-color-scheme`.
-- Sin destello: script mínimo en el documento o HTML generado en servidor.
-- `theme-color` y manifest coherentes.
+- **Tokens y utilidades.** Variables de runtime `--memora-*` en
+  `packages/ui/src/styles/tokens.css` (`:root` y `[data-theme='dark']`); `@theme inline`
+  las mapea a `--color-*`, `--text-*`, `--radius-*`, `--shadow-*`, `--z-index-*` y
+  `--font-sans`. Los nombres de las tablas de este documento son los públicos. Los
+  breakpoints (`sm` 30rem, `md` 48rem, `lg` 64rem, `xl` 80rem) viven en un `@theme` sin
+  `inline` porque son estáticos. Tailwind 4 CSS-first: sin preset JS ni
+  `tailwind.config`.
+- **Base y comportamiento.** `packages/ui/src/styles/theme.css` contiene la base de
+  `html`/`body`, la selección, el foco visible global (token de foco, 2 px con
+  `offset 2px`) y las reglas de `prefers-reduced-motion` (duraciones a 0, scroll
+  instantáneo). `color-scheme` se declara solo en `tokens.css` (`1+1`: claro en `:root`,
+  oscuro en `[data-theme='dark']`).
+- **Tema.** `data-theme="light|dark"` en `<html>`. El servidor resuelve el modo explícito
+  desde la cookie `memora-theme` (`light|dark|system`, `Path=/`, `Max-Age` de un año,
+  `SameSite=Lax` y `Secure` cuando la petición es https), y un script de arranque en
+  `<head>`, anterior a `<body>`, resuelve `system` con `prefers-color-scheme` y actualiza
+  `theme-color`: así no hay destello. `apps/web/src/lib/theme.ts` centraliza el parseo,
+  la cookie, la resolución y el script; `ThemeProvider` escucha el cambio del sistema
+  solo en modo `system`.
+- **`theme-color`.** Coincide con `--color-bg` (`#F6F6FA` claro, `#0B0F1E` oscuro); el
+  meta del servidor y el script usan los mismos valores y un test los compara con los
+  tokens.
+- **Fuente.** Plus Jakarta Sans self-hosted y vendorizada: `.woff2` (subset latin y
+  latin-ext) y `OFL.txt` en `apps/web/public/fonts/`; `@font-face` en
+  `packages/ui/src/styles/fonts.css` con `font-display: swap` y pesos 200–800; la app
+  añade `preload` solo del subset latin. Sin peticiones a terceros.
+
+### Deuda conocida (F11)
+
+`--color-border-strong` no llega a 3:1 sobre superficie (`1,96:1` en claro y `1,82:1` en
+oscuro), que es el mínimo de WCAG 2.2 para el borde de un control. Se usa hoy en bordes
+discontinuos y en el tirador de hojas, donde no delimita un control. Para los bordes de
+input, F11 debe decidir el token: en claro hay candidato `#8E8CA6` (3,25:1 sobre
+`--color-surface`), que no se aplica en F10 para no cambiar un valor congelado sin
+aprobación.

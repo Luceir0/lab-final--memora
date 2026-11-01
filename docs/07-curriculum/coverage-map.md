@@ -1,6 +1,6 @@
 # Cobertura del temario
 
-Estado: **F01–F03 cubren los temas transversales, F04 el entorno y tooling, F05 el stack de aplicación, F06 los contratos y permisos compartidos, F07 el modelo de datos, F08 el esqueleto de la API y F09 la base web y el cliente HTTP tipado** (organización, documentación, IA agente, revisión, activos, TypeScript estricto, monorepo, Docker, CI, render modes, Tailwind 4, Fastify + Zod, Prisma 7, migraciones, seed determinista, PostgreSQL real en tests, sharp, Content Island, Zod como fuente única, errores, paginación, autorización pura, OpenAPI, logs con redacción, harness de tests, cliente REST tipado, TanStack Query y error boundaries). F05 está `done` tras el merge `8dfae5f` y CI en verde; F06 está `done` desde el 2026-10-31 tras la PR #2, el merge `b556168` y CI en verde (run `41246708428`); F07 está `done` desde el 2026-11-01 tras la PR #3, el merge `bd2769c` y CI en verde (run `41254603622`), con PostgreSQL 17.11 y tests de integración reales. F08 está `done` desde el 2026-11-01 tras la PR #4, el merge `ed1f316` y CI en verde (run `41261491641`); su verificación real es `pnpm --filter @memora/api test` → 77 passed + 13 skipped sin `DATABASE_URL` y 90 passed con `memora_test`, más `pnpm --filter @memora/shared test` → 138 passed. F09 está **`done`** desde el 2026-11-01: implementación y revisión independiente cerradas, aceptación del usuario en Firefox real sobre `/login`, `/circles`, `/help` y una ruta inexistente, PR #5 con CI en verde (run `41306238454`, `completed/success`) y merge `9fd987e` en `main` con CI en verde (run `41306484717`, `completed/success`). AC-06 (hidratación) queda **verificado en navegador**, aunque sin prueba automatizada, que corresponde a F37/F38. El resto está planificado y se actualiza al cerrar cada feature con evidencias reales.
+Estado: **F01–F03 cubren los temas transversales, F04 el entorno y tooling, F05 el stack de aplicación, F06 los contratos y permisos compartidos, F07 el modelo de datos, F08 el esqueleto de la API, F09 la base web y el cliente HTTP tipado y F10 el sistema visual y el tema** (organización, documentación, IA agente, revisión, activos, TypeScript estricto, monorepo, Docker, CI, render modes, Tailwind 4 CSS-first, tokens, temas con SSR, Fastify + Zod, Prisma 7, migraciones, seed determinista, PostgreSQL real en tests, sharp, Content Island, Zod como fuente única, errores, paginación, autorización pura, OpenAPI, logs con redacción, harness de tests, cliente REST tipado, TanStack Query, error boundaries, contraste WCAG, cookies, scripts previos al pintado y fuentes self-hosted). F05 está `done` tras el merge `8dfae5f` y CI en verde; F06 está `done` desde el 2026-10-31 tras la PR #2, el merge `b556168` y CI en verde (run `41246708428`); F07 está `done` desde el 2026-11-01 tras la PR #3, el merge `bd2769c` y CI en verde (run `41254603622`), con PostgreSQL 17.11 y tests de integración reales. F08 está `done` desde el 2026-11-01 tras la PR #4, el merge `ed1f316` y CI en verde (run `41261491641`); su verificación real es `pnpm --filter @memora/api test` → 77 passed + 13 skipped sin `DATABASE_URL` y 90 passed con `memora_test`, más `pnpm --filter @memora/shared test` → 138 passed. F09 está **`done`** desde el 2026-11-01: implementación y revisión independiente cerradas, aceptación del usuario en Firefox real sobre `/login`, `/circles`, `/help` y una ruta inexistente, PR #5 con CI en verde (run `41306238454`, `completed/success`) y merge `9fd987e` en `main` con CI en verde (run `41306484717`, `completed/success`). AC-06 (hidratación) queda **verificado en navegador**, aunque sin prueba automatizada, que corresponde a F37/F38. F10 está en **`review`** desde el 2026-11-01: implementación y revisión independiente cerradas (primera **no apto**, segunda **apto con correcciones**), con 44 tests en `packages/ui` y 88 en `apps/web`; faltan la aceptación del usuario en navegador real y el cierre operativo. El resto está planificado y se actualiza al cerrar cada feature con evidencias reales.
 
 **Fuente del temario:** `assets/design/temario-tecnologias.png` y la especificación histórica `docs/archive/spec-v1.md` §7. No hay una transcripción oficial en texto; este mapa es la referencia operativa.
 
@@ -39,8 +39,8 @@ Estado: **F01–F03 cubren los temas transversales, F04 el entorno y tooling, F0
 | Turbo: caché y entorno | `globalDependencies` del snapshot y `globalEnv` con `DATABASE_URL` y `CONTENT_ISLAND_SNAPSHOT_PATH` | `turbo.json`; `turbo run test --filter=@memora/api --force` → 15/15 | Cubierto |
 | Procesamiento de imágenes | thumb 400×400 cover, display ≤1600 px, orientación EXIF, sin EXIF/ICC, 50 MP con SOF parcheada | `apps/api/src/services/images.ts`, `apps/api/src/services/images.test.ts` | Cubierto para JPEG/PNG; WebP como entrada no probado; HEIC no validado |
 | Content Island y SSG | Snapshot versionado, `view: published`, lectura en build sin token, error genérico y log de servidor | `content-island-snapshot.json`, `apps/web/src/features/spike/content.server.ts`, `apps/web/dist/client/help/index.html` | Cubierto |
-| Vitest 5 y Testing Library | Tests de API, rutas, contenido, tokens, web core y cliente HTTP | `apps/api/vitest.config.ts`, `apps/web/vitest.config.ts`; API 77 passed + 13 skipped sin `DATABASE_URL` y 90 con `memora_test` (F08); web 52 (F09); `api-client` 39 (F09) | Cubierto para smoke; E2E en F37/F38 |
-| TypeScript estricto aplicado | Código real de web, API y UI | `pnpm typecheck` → 8/8 tareas | Cubierto |
+| Vitest 5 y Testing Library | Tests de API, rutas, contenido, tokens, sistema visual, tema, web core y cliente HTTP | `apps/api/vitest.config.ts`, `apps/web/vitest.config.ts`, `packages/ui/vitest.config.ts`; API 77 passed + 13 skipped sin `DATABASE_URL` y 90 con `memora_test` (F08); web 88 en 17 archivos (F10); `ui` 44 en 5 archivos (F10); `api-client` 39 (F09) | Cubierto para smoke; E2E en F37/F38 |
+| TypeScript estricto aplicado | Código real de web, API y UI | `pnpm typecheck` → 9/9 tareas (F10) | Cubierto |
 | Secretos fuera del build | El build no usa token; el JS cliente no contiene el snapshot ni `node:fs` | Inspección de `apps/web/dist/client/assets/*.js` | Cubierto |
 | Documentación de resultados | Informe, handoff y plan de salida | `docs/03-architecture/spike-results.md`, `docs/04-features/F05-spike-tecnico/handoff.md` | Cubierto |
 
@@ -102,15 +102,31 @@ Estado: **F01–F03 cubren los temas transversales, F04 el entorno y tooling, F0
 | Testing de web y cliente | `api-client` 39 tests en 3 archivos con `fetch` sustituido; `apps/web` 52 tests en 13 archivos con Testing Library | `packages/api-client/src/*.test.ts`, `apps/web/src/**/*.test.tsx` | Cubierto (F09); E2E y navegador en F37/F38 |
 | Revisión independiente y aceptación | Dos rondas: **no apto** (B-01, M-01 y menores/sugerencias) → **apto con correcciones** (N-01, N-02, N-03), todas aplicadas; después, corrección C-01 del code-splitting de `/login` y aceptación del usuario en Firefox real (G4) | [handoff de F09](../04-features/F09-web-core/handoff.md) | Cubierto (F09, `done`); PR #5, merge `9fd987e` y CI en verde |
 
+## Sistema visual y tema (F10, review)
+
+| Tema | Dónde se aplica | Evidencia | Estado |
+| --- | --- | --- | --- |
+| Tailwind 4 CSS-first y tokens | Tokens `--memora-*` con `@theme inline`, breakpoints propios y capas `z-nav/sheet/modal/toast`; sin preset JS ni `tailwind.config` | `packages/ui/src/styles/tokens.css`, `packages/ui/src/styles/tokens.test.ts`, [tokens.md](../02-design/tokens.md) | Cubierto (F10): CSS compilado con `@media (width>=30/48/64/80rem)` y `has-[:checked]:*` |
+| Contraste y accesibilidad de color | Ratios WCAG 2.2 calculados sobre los hex reales; umbral 4.5:1 para texto y 3:1 para foco y componentes; tokens `*-text` de estado | `packages/ui/src/styles/contrast.test.ts`, `docs/02-design/tokens.md` | Cubierto (F10); borde de input (`--color-border-strong` < 3:1) en F11 |
+| Tema claro/oscuro/sistema con SSR | Cookie `memora-theme`, resolución en servidor de `data-theme`, listener de `prefers-color-scheme` solo en modo `system` | `apps/web/src/lib/theme.ts`, `apps/web/src/components/theme-provider.tsx` y sus tests | Cubierto (F10); verificación en navegador en G4 |
+| Script previo al pintado e hidratación | Script inline en `<head>` antes de `<body>` que fija `data-theme` y `theme-color`; `resolveDocumentTheme` parte del valor ya pintado | `apps/web/src/routes/__root.tsx`, `apps/web/src/lib/theme.ts` | Cubierto (F10) por SSR y tests; sin navegador real. CSP en F42 |
+| Cookie de tema | `memora-theme` con `Path=/`, `Max-Age` de un año, `SameSite=Lax` y `Secure` en https | `apps/web/src/lib/theme.ts`, `apps/web/src/lib/theme.test.ts` | Cubierto (F10) |
+| `theme-color` por tema | Meta resuelto en servidor y actualizado por script y provider; coincide con `--color-bg` | `apps/web/src/routes/__root.tsx`, `apps/web/src/lib/theme.test.ts` | Cubierto (F10) por `curl`; navegador real en G4 |
+| Fuentes self-hosted | Plus Jakarta Sans vendorizada (latin y latin-ext) con `OFL.txt`, `@font-face` con `swap` y `preload` solo del subset latin | `apps/web/public/fonts/`, `packages/ui/src/styles/fonts.css`, `packages/ui/src/styles/fonts.test.ts` | Cubierto (F10) |
+| Foco visible y movimiento reducido | Regla global de `:focus-visible` con token y bloque `prefers-reduced-motion` que anula duraciones, animaciones y scroll suave | `packages/ui/src/styles/theme.css`, `packages/ui/src/styles/theme.test.ts` | Cubierto (F10) en CSS y tests; preferencia activa en navegador en G4 |
+| Guardas anti-hex | `src` y `packages/ui/src` sin colores literales; única excepción `lib/theme.ts`, comparada con `tokens.css` | `apps/web/src/styles/no-hex.test.ts`, `apps/web/src/lib/theme.test.ts` | Cubierto (F10) |
+| Vitest en un paquete de UI | Entorno Node con tests de contrato y cálculo de contraste; 5 archivos y 44 tests | `packages/ui/vitest.config.ts`, `packages/ui/src/styles/*.test.ts` | Cubierto (F10) |
+| Revisión independiente | Primera **no apto** (B-01, M-01, M-03) → **apto con correcciones** (M-02 y menores), sin bloqueantes | [handoff de F10](../04-features/F10-sistema-visual/handoff.md) | Cubierto (F10); aceptación y cierre operativo pendientes |
+
 ## 1. Maquetación
 
 | Contenido | Dónde se aplica | Evidencia | Estado |
 | --- | --- | --- | --- |
 | HTML semántico | App shell, fotos, formularios, diálogos | axe; componentes | Pendiente |
-| CSS moderno | Variables CSS, `100dvh`, `focus-visible`; `clamp`, safe areas y reduced motion pendientes | `apps/web/src/styles/app.css`, `packages/ui/src/styles/tokens.css` | Parcial (F05) |
+| CSS moderno | Variables CSS, `100dvh`, `focus-visible`, `prefers-reduced-motion` y `:has()`; `clamp` y safe areas pendientes | `apps/web/src/styles/app.css`, `packages/ui/src/styles/tokens.css`, `packages/ui/src/styles/theme.css` | Parcial (F05 + F10: base, foco y movimiento reducido) |
 | Flexbox | Navegación, cabeceras, miembros, avatares | App shell | Pendiente |
 | Grid | Galería, círculos, layout escritorio | Galería | Pendiente |
-| Responsive | 320–1440; bottom nav/sidebar | Capturas + E2E | Pendiente |
+| Responsive | 320–1440; bottom nav/sidebar | `packages/ui/src/styles/tokens.css` (breakpoints 480/768/1024/1280) + E2E | Parcial (F10: breakpoints y `h1` móvil; revisión visual en G4) |
 | Container queries | Tarjetas de álbum/círculo/foto | `packages/ui` | Pendiente |
 | PostCSS | Tailwind 4 se integra con `@tailwindcss/vite`; no hay configuración PostCSS propia | `apps/web/vite.config.ts` | No aplica por ahora (F05) |
 | Tailwind CSS | Utilidades y tokens sin preset JS | `packages/ui/src/styles/tokens.css`, `apps/web/src/styles/app.css` | Cubierto (F05) |
@@ -120,7 +136,7 @@ Estado: **F01–F03 cubren los temas transversales, F04 el entorno y tooling, F0
 
 | Contenido | Dónde se aplica | Evidencia | Estado |
 | --- | --- | --- | --- |
-| TypeScript core | `strict`, sin `any` | `packages/config/tsconfig/base.json`, `pnpm typecheck` 8/8 | Cubierto (F05: aplicado a código real) |
+| TypeScript core | `strict`, sin `any` | `packages/config/tsconfig/base.json`, `pnpm typecheck` 9/9 (F10) | Cubierto (F05: aplicado a código real) |
 | Union types y narrowing | Roles, acciones, tema y `ApiResult` | `packages/shared/src/permissions.ts`, `packages/shared/src/errors.ts`, `packages/shared/src/schemas/common.ts` | Cubierto (F06: roles, acciones, tema y resultado; estados de subida en F26) |
 | Genéricos | `Page<T>`, `ApiResult<T>`, `createPageSchema<T>`, `request<T>` | `packages/shared/src/pagination.ts`, `packages/shared/src/errors.ts`, `packages/api-client/src/client.ts` | Cubierto (F06: `Page<T>` y `ApiResult<T>`; F09: `request<T>` y `StructuralValidator<T>`) |
 | Utility types | `Omit`, `Partial`, `Pick`, `Record` | DTOs | Pendiente |
@@ -139,14 +155,14 @@ Estado: **F01–F03 cubren los temas transversales, F04 el entorno y tooling, F0
 | SSG | Ayuda y privacidad | `apps/web/dist/client/help/index.html` | Cubierto (F05: `/help`; `/privacy` en F36) |
 | MPA | No se fuerza; ADR | ADR-0002 | Pendiente |
 | Turborepo | Monorepo, caché, CI y entorno global | `turbo.json` (`globalDependencies`/`globalEnv`), `.github/workflows/ci.yml`; test forzado 15/15 | Cubierto |
-| Paquetes compartidos | `shared`, `api-client`, `ui`, `config` | `pnpm-workspace.yaml`, `packages/*/package.json`, `packages/shared/src/**`, `packages/api-client/src/**` | Cubierto (F06: `shared`; F09: `api-client` con contrato propio, build y tests) |
+| Paquetes compartidos | `shared`, `api-client`, `ui`, `config` | `pnpm-workspace.yaml`, `packages/*/package.json`, `packages/shared/src/**`, `packages/api-client/src/**`, `packages/ui/src/styles/**` | Cubierto (F06: `shared`; F09: `api-client`; F10: `ui` con tres CSS y tests) |
 
 ## 4. Frameworks
 
 | Contenido | Dónde se aplica | Evidencia | Estado |
 | --- | --- | --- | --- |
 | React componentes | UI kit y features | `apps/web/src/routes/login.tsx`, `apps/web/src/features/spike/help-content.tsx` | Parcial (F05: páginas placeholder; UI kit en F11/F12) |
-| Hooks | `useUploadQueue`, `useMediaQuery`, `useTheme`, `useShare` | Tests de hooks | Pendiente |
+| Hooks | `useUploadQueue`, `useMediaQuery`, `useTheme`, `useShare` | `apps/web/src/components/theme-provider.tsx` (`useTheme` + `ThemeProvider`) y su test | Parcial (F10: `useTheme` con contexto; `useUploadQueue`, `useMediaQuery` y `useShare` en F11+) |
 | Formularios | RHF + Zod | Auth, círculo, álbum, metadatos | Pendiente |
 | APIs | TanStack Query: caché, infinito, optimista | `apps/web/src/lib/query-client.ts`, `apps/web/src/router.tsx` | Parcial (F09: provider, `staleTime` y reintentos; caché de producto, infinito y optimista en F18–F35) |
 | Metaframework | TanStack Start | `apps/web/src/routes/*`, `apps/web/src/router.tsx`, `apps/web/vite.config.ts` | Cubierto (F05; providers y router propios en F09) |
@@ -157,12 +173,12 @@ Estado: **F01–F03 cubren los temas transversales, F04 el entorno y tooling, F0
 
 | Contenido | Dónde se aplica | Evidencia | Estado |
 | --- | --- | --- | --- |
-| Componentes | Formularios, galería, navegación, tema | `apps/web/src/features/spike/help-content.test.tsx`, `apps/web/src/routes/*.test.tsx`, `apps/web/src/components/*.test.tsx` | Parcial (F05: smoke; F09: `route-error` y `not-found` con foco y reintento; features reales en F11+) |
+| Componentes | Formularios, galería, navegación, tema | `apps/web/src/features/spike/help-content.test.tsx`, `apps/web/src/routes/*.test.tsx`, `apps/web/src/components/*.test.tsx` (`theme-toggle`, `theme-provider`) | Parcial (F05: smoke; F09: `route-error` y `not-found`; F10: `ThemeToggle` y `ThemeProvider`; features reales en F11+) |
 | Testing Library | Roles y texto accesible | `apps/web/src/routes/login.test.tsx` | Cubierto (F05) |
 | Mocking APIs | MSW con contratos; 401/403/500 | Handlers | Pendiente |
 | Hooks | `renderHook` | Tests | Pendiente |
 | Revisión con IA | Casos límite | Bitácora | Cubierto |
-| Además | API, web, cliente HTTP, E2E, axe | `apps/api/src/app.test.ts`, `apps/api/src/errors.test.ts`, `apps/api/src/services/images.test.ts`, `packages/api-client/src/*.test.ts`, `apps/web/src/**/*.test.tsx`; API 77 passed + 13 skipped sin `DATABASE_URL`, 90 con `memora_test`; shared 138; api-client 39; web 52; E2E y axe pendientes | Parcial (F08: tests HTTP con `inject`; F09: cliente y web core; E2E en F38) |
+| Además | API, web, cliente HTTP, UI, E2E, axe | `apps/api/src/app.test.ts`, `apps/api/src/errors.test.ts`, `apps/api/src/services/images.test.ts`, `packages/api-client/src/*.test.ts`, `packages/ui/src/styles/*.test.ts`, `apps/web/src/**/*.test.tsx`; API 77 passed + 13 skipped sin `DATABASE_URL`, 90 con `memora_test`; shared 138; api-client 39; ui 44; web 88; E2E y axe pendientes | Parcial (F08: tests HTTP con `inject`; F09: cliente y web core; F10: contrato visual y contraste; E2E en F38) |
 
 ## 6. API REST
 

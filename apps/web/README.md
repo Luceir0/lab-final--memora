@@ -4,7 +4,9 @@ Aplicación web de Memora: TanStack Start 1.169.4 sobre Vite 8.3.5 y React 19.
 
 F05 dejó las rutas de humo y los tokens. F09 añade la base de la aplicación: cliente
 de API, `QueryClientProvider` por petición, error boundary con reintento, 404 y
-variables de entorno tipadas. Sigue sin haber pantallas de producto.
+variables de entorno tipadas. F10 añade el sistema visual y el tema (tokens, claro/
+oscuro/sistema, fuente self-hosted y control de apariencia). Sigue sin haber pantallas
+de producto.
 
 ## Rutas de humo
 
@@ -21,8 +23,9 @@ raíz. Los contratos de render modes están en `docs/03-architecture/render-mode
 
 ```text
 apps/web/
+├── public/fonts/           # Plus Jakarta Sans vendorizada + OFL.txt
 ├── src/
-│   ├── components/         # composición de app: 404 y error de ruta
+│   ├── components/         # 404, error de ruta, ThemeProvider y ThemeToggle
 │   ├── features/spike/     # contenido de /help y páginas de /circles y /login
 │   ├── lib/
 │   │   ├── api-client.ts        # instancia de navegador (VITE_API_BASE_URL)
@@ -30,10 +33,11 @@ apps/web/
 │   │   ├── env.ts               # base del navegador y normalización común
 │   │   ├── env.server.ts        # origen interno validado + base `/api` (solo servidor)
 │   │   ├── query-client.ts      # QueryClient, contexto del router y política de retry
+│   │   ├── theme.ts             # cookie, resolución SSR/cliente y script de arranque
 │   │   └── error-message.ts     # error -> mensaje seguro en español
 │   ├── routes/              # __root (documento + providers), index, login, circles, help
-│   ├── styles/app.css       # Tailwind 4 + tokens
-│   ├── test/setup.ts        # cleanup de Testing Library
+│   ├── styles/app.css       # Tailwind 4 + tokens.css + theme.css + fonts.css
+│   ├── test/setup.ts        # cleanup, tema y matchMedia simulado
 │   ├── router.tsx           # getRouter + QueryClient por petición
 │   └── vite-env.d.ts        # tipado de import.meta.env
 ├── vitest.config.ts         # jsdom + include de src/**/*.test.{ts,tsx}
@@ -84,7 +88,7 @@ Ese proxy es **solo de desarrollo**. En producción, el servidor web o el revers
 (F42) debe enrutar `/api` hacia la API; si no, el navegador recibiría el 404 de la web.
 
 En SSR, `credentials: 'include'` no reenvía cookies en el `fetch` de Node. Las server
-functions autenticadas deberán pasar la cabecera `cookie` explícitamente (F10/F22).
+functions autenticadas deberán pasar la cabecera `cookie` explícitamente.
 
 ## Query y errores
 
@@ -102,11 +106,31 @@ functions autenticadas deberán pasar la cabecera `cookie` explícitamente (F10/
 
 Tailwind 4.3.3 en modo CSS-first, sin preset JS ni `tailwind.config`.
 
-- `src/styles/app.css` importa `tailwindcss` y `@memora/ui/tokens.css`, y declara
-  `@source` hacia `packages/ui/src`.
+- `src/styles/app.css` importa `tailwindcss`, `@memora/ui/tokens.css`,
+  `@memora/ui/theme.css` y `@memora/ui/fonts.css`, y declara `@source` hacia
+  `packages/ui/src`.
 - `@memora/ui/tokens.css` define los tokens semánticos en `:root` y `[data-theme="dark"]`
   y los expone con `@theme inline`.
-- `__root.tsx` fija `data-theme="light"` en `<html>`.
+- `@memora/ui/theme.css` añade la base del documento, el foco visible y la regla de
+  `prefers-reduced-motion`.
+- `@memora/ui/fonts.css` declara Plus Jakarta Sans con los archivos self-hosted.
+
+## Tema
+
+- La preferencia vive en la cookie `memora-theme` (`light`, `dark` o `system`; por
+  defecto `system`). Se escribe con `Path=/`, `Max-Age` de un año, `SameSite=Lax` y
+  `Secure` cuando la página se sirve por https.
+- En SSR, `readThemeMode()` lee la cookie y el servidor pinta `data-theme` con el modo
+  explícito (`system` se sirve como claro). Un script en `<head>`, anterior al primer
+  pintado, resuelve `system` con `prefers-color-scheme` y actualiza
+  `meta[name="theme-color"]`.
+- `ThemeProvider` mantiene `data-theme`, `color-scheme` y `theme-color`, y solo escucha
+  `matchMedia('(prefers-color-scheme: dark)')` cuando el modo es `system`.
+- `ThemeToggle` (Claro / Oscuro / Sistema) es provisional y se monta en `/circles` con
+  `TODO(F11/F34)`.
+- Plus Jakarta Sans se sirve self-hosted desde `public/fonts/` junto a su `OFL.txt`. El
+  `<head>` precarga solo el subset latin; el latin-ext se descarga por `unicode-range`
+  cuando hace falta.
 
 ## Contenido editorial
 
@@ -141,11 +165,13 @@ corepack pnpm --filter @memora/web typecheck
 
 ## Tests
 
-Vitest 5 con entorno `jsdom`, Testing Library y un setup propio para el cleanup. Cubren
-los tokens y la ausencia de `tailwind.config`, la lectura del snapshot real (6 artículos
-y 8 FAQ), los modos de `/circles` y `/login`, `HelpContent`, la resolución de las dos
-bases de API, la política de reintentos del `QueryClient`, la instancia del cliente sin
-red real, el 404 y el error boundary.
+Vitest 5 con entorno `jsdom`, Testing Library y un setup propio para cleanup, tema y
+`matchMedia`. Cubren el contrato del CSS de la app (imports, `@source`, foco y ausencia
+de `tailwind.config`), el guard de colores literales, el tema (cookie, script de
+arranque, `ThemeProvider` y `ThemeToggle`), la lectura del snapshot real (6 artículos y
+8 FAQ), los modos de `/circles` y `/login`, `HelpContent`, la resolución de las dos bases
+de API, la política de reintentos del `QueryClient`, la instancia del cliente sin red
+real, el 404 y el error boundary.
 
 ## Limitaciones
 
@@ -154,5 +180,5 @@ red real, el 404 y el error boundary.
 - No hay autenticación ni datos persistidos en la web todavía.
 - La verificación de hidratación es estática (tests y HTML de servidor): no hay navegador
   real ni Playwright hasta F37/F38.
-- `scripts/no-tests.mjs` es un resto de F04, sin uso; se conserva por si Turbo lo
-  necesita.
+- `scripts/no-tests.mjs` es un resto de F04: hoy `pnpm test` ejecuta Vitest, así que el
+  script está huérfano; se conserva hasta que se decida retirarlo con permiso.

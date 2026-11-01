@@ -27,8 +27,9 @@ Todavía **no hay lógica de producto**: F04 deja listos el monorepo, el tooling
 | Modelo de datos | F07 `done`, PR #3, merge `bd2769c` y CI en verde; 10 modelos, migración `20261031224916_init`, seed determinista y 36 tests con PostgreSQL real |
 | API core | F08 `done`; Fastify 5, siete plugins, Swagger UI dev-only, error handler canónico y harness `inject`; 77 + 13 skipped sin base y 90 con `memora_test` |
 | Web core | F09 `done`; base de TanStack Start, `@memora/api-client` real, provider de datos con `QueryClient` por petición en servidor, error boundary y 404; PR #5, merge `9fd987e` y CI en verde (runs `41306238454` y `41306484717`); AC-06 verificado por el usuario en Firefox real, sin errores de hidratación |
+| Sistema visual y tema | F10 `review`; tokens y Tailwind 4 CSS-first, tema claro/oscuro/sistema con cookie y script previo al pintado, `theme-color`, fuente self-hosted, foco y movimiento reducido; 44 tests en `@memora/ui` y 88 en `apps/web`; pendiente de aceptación en navegador real y de commit/PR/CI |
 
-El tablero de features está en [docs/04-features/README.md](docs/04-features/README.md). F01–F09 están `done`: F09 cerró el 2026-11-01 con la PR #5, el merge `9fd987e` y CI en verde, y deja como única deuda abierta la prueba automatizada de hidratación (AC-06) en F37/F38; F10–F43 están en `draft`. Los resultados del spike están en [docs/03-architecture/spike-results.md](docs/03-architecture/spike-results.md) y los handoffs en [F06](docs/04-features/F06-contratos-compartidos/handoff.md), [F07](docs/04-features/F07-modelo-datos/handoff.md), [F08](docs/04-features/F08-api-core/handoff.md) y [F09](docs/04-features/F09-web-core/handoff.md).
+El tablero de features está en [docs/04-features/README.md](docs/04-features/README.md). F01–F09 están `done`: F09 cerró el 2026-11-01 con la PR #5, el merge `9fd987e` y CI en verde, y deja como única deuda abierta la prueba automatizada de hidratación (AC-06) en F37/F38; **F10 está en `review`**, con el sistema visual y el tema implementados y revisados, pendiente de la aceptación del usuario en navegador real y del cierre operativo; F11–F43 están en `draft`. Los resultados del spike están en [docs/03-architecture/spike-results.md](docs/03-architecture/spike-results.md) y los handoffs en [F06](docs/04-features/F06-contratos-compartidos/handoff.md), [F07](docs/04-features/F07-modelo-datos/handoff.md), [F08](docs/04-features/F08-api-core/handoff.md), [F09](docs/04-features/F09-web-core/handoff.md) y [F10](docs/04-features/F10-sistema-visual/handoff.md).
 
 ---
 
@@ -236,7 +237,7 @@ Herramientas:
 
 ## Próximos pasos
 
-1. **Siguiente: F10 — Sistema visual y tema.** En `draft`, con su dependencia F09 ya `done`. **No se abre sin permiso explícito.**
+1. **Siguiente: F10 — Sistema visual y tema.** En `review`: implementación y revisión independiente cerradas; faltan la aceptación del usuario en navegador real y el cierre operativo (commit, PR, CI y merge). Detalle en [F10](docs/04-features/F10-sistema-visual/handoff.md).
 2. **F10–F14** — sistema visual, UI kit, shell y PWA.
 3. **F15–F22** — auth, círculos, invitaciones y personas.
 4. **F23–F28** — álbumes, subidas y ajustes.
