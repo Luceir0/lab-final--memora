@@ -3,6 +3,15 @@
 | Área | Features | Casos prioritarios | Nivel |
 | --- | --- | --- | --- |
 | Permisos | F06, F17, F21, F23, F28, F32, F33 | owner/member × flags × acciones; `denyUnreachable` (`action: never`); `can()` deniega acciones desconocidas y recursos de otro círculo; borrado y original | Unitario |
+| API core: salud y headers | F08 | `/api/health` solo con `status`, `version` y `timestamp`; sin cookie ni configuración; CSP en todos los entornos y HSTS solo en producción; CSP de desarrollo relajada solo para Swagger UI | API (`inject`) |
+| API core: validación y 404 | F08 | 400 `VALIDATION_ERROR` con `details` no vacío; 400 con `details: null` para JSON malformado; 404 `NOT_FOUND` con `details: null` | API (`inject`) |
+| API core: 413, 415 y 429 | F08 | 413 `PAYLOAD_TOO_LARGE` para body JSON sobredimensionado; 413 `FILE_TOO_LARGE` solo para el límite de archivo multipart; 415 `UNSUPPORTED_MEDIA_TYPE` para content-type no soportado y para el 406 de multipart; 429 `RATE_LIMITED` al superar el techo | API (`inject`) |
+| API core: 500 sin stack | F08 | 500 `INTERNAL_ERROR` sin mensaje interno, stack ni rutas `.ts`, también con `NODE_ENV=production` | API (`inject`) |
+| API core: multipart | F08 | sin `boundary` → 4xx; `boundary` con cuerpo basura → 400; cuerpo truncado → 400; multipart válido → 200; ningún caso genera log nivel 50 | API (`inject`) + manual |
+| API core: OpenAPI | F08 | documento 3.1 generado desde Zod; componente `ErrorResponse` y `securitySchemes.cookieAuth`; `/api/openapi.json` 200; `/api/docs` solo fuera de producción | API (`inject`) |
+| API core: redacción de logs | F08 | cookies, `authorization`, `set-cookie`, CSRF, tokens, hashes, `sessionSecret` y `email` censurados en pino real, a tres niveles | Unitario/API |
+| API core: config y arranque | F08 | config Zod falla nombrando la variable y sin filtrar valores; producción exige `SESSION_SECRET`, `DATABASE_URL` y servicios `kind: 'real'`; `prisma generate` funciona sin URL y las migraciones no | Unitario + arranque manual |
+| API core: harness y fakes | F08 | `inject` sin abrir puerto; fakes de storage, email y geocoding en memoria | Unitario/API |
 | Zod | F06 | requests válidos/inválidos; DTOs; paginación | Unitario |
 | Base de datos | F07 | migración inicial, constraints, cascadas, seed determinista, `resetDb`; guarda `_test`; PostgreSQL real en CI validado en el run `41254603622`, sin skips | Integración |
 | Upload reducer | F26 | pending/uploading/done/error/cancelled; retry; cancel; concurrencia | Unitario/hook |
@@ -25,7 +34,15 @@
 | PWA | F14 | manifest, iconos, instalación Android | Manual |
 | Content Island | F36 | snapshot, Help/FAQ/Privacy, build sin snapshot falla | API/build |
 | A11y | F10–F39 | formularios, diálogos, foco, contraste, teclado, zoom, 2.4.11 | axe + manual |
-| Seguridad | F15–F41 | CSRF, rate limit, headers, uploads maliciosos, logs, redirects | API + revisión |
+| Seguridad | F08–F41 | CSRF, rate limit, headers, uploads maliciosos, logs, redirects | API + revisión |
+
+## Evidencia ejecutada (F08, 2026-11-01)
+
+- `pnpm --filter @memora/api test` sin `DATABASE_URL` → **77 passed + 13 skipped** (los 13 son tests de integración que exigen PostgreSQL).
+- `DATABASE_URL=…/memora_test pnpm --filter @memora/api test` → **90 passed**.
+- `pnpm --filter @memora/shared test` → **138 passed**.
+- `typecheck`, `lint` y `build` de `@memora/api`; `docs:check` (191 archivos, 431 enlaces, 0 rotos) y `agents:check` en verde.
+- F08 sigue en `review`: estos resultados acreditan la verificación técnica, no la aceptación del usuario.
 
 ## Flujo E2E principal
 
