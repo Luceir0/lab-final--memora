@@ -125,7 +125,7 @@
 - **axe en navegador real** (chrome-headless-shell 156 + CDP + axe 4.14) sobre `/ui`: **32 pasadas** (8 estados × 2 anchos × 2 temas) con **0 violaciones**. Es una comprobación puntual fuera del repo; la suite automatizada queda en F37/F38.
 - **Limitación honesta:** jsdom no calcula layout, así que áreas táctiles, zoom, colisión del tooltip y apilado visual no se miden en los tests. El gate de puntero del `Tooltip` (`hover: hover`) tampoco se puede comprobar en jsdom.
 - **Revisión y auditorías:** revisión independiente en dos rondas (primera **apto con correcciones** por M-01 a M-05 y N-01 a N-03; segunda **apto**) y auditoría de diseño en tres pasadas (primera **no apto** con cinco mayores y 14 menores; segunda **apto con correcciones**; tercera **apto**). Detalle en el [handoff de F12](../04-features/F12-ui-kit-ii/handoff.md).
-- **F12 queda en `accepted`** (2026-11-02): el usuario la aceptó en `/ui` con el estilo destructivo unificado. Falta el cierre operativo (commit, PR y CI con permiso); no existen todavía hash, PR ni run.
+- **F12 queda en `done`** (2026-11-02): el usuario la aceptó en `/ui` con el estilo destructivo unificado y se cerró con la PR #13, el merge `62d98b9` y CI en verde en la PR (run `41537887650`) y en `main` (run `41538068474`).
 
 ## Flujo E2E principal
 

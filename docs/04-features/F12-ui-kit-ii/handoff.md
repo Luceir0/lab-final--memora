@@ -1,7 +1,7 @@
 # Handoff — F12 UI kit II: overlays y feedback
 
-- **Estado:** `accepted` (2026-11-02)
-- **Rama:** `feat/F12-ui-kit-ii`, árbol de trabajo sin commitear
+- **Estado:** `done` (2026-11-02)
+- **Rama:** `feat/F12-ui-kit-ii` (commits `d79286e`, `5e5871f` y `eedb652`; PR #13, merge `62d98b9`)
 - **Fecha:** 2026-11-02
 - **Implementado por:** subagente `ui-dev` (cuatro tandas y tres turnos de correcciones)
 - **Revisado por:** revisión independiente (dos rondas), auditoría de accesibilidad en navegador real (chrome-headless-shell 156 + CDP + axe 4.14) y auditoría de diseño (tres pasadas)
@@ -50,6 +50,17 @@ anchos × 2 temas) y la de diseño cerró en **apto** con los doce componentes e
 | 1 | **No apto** | Cinco hallazgos mayores (ConfirmDialog no era hoja en móvil, Tabs con subrayado, Accordion en caja única, BottomSheet con scroll de todo el panel, foco del toast a 2,07:1) y 14 menores |
 | 2 | **Apto con correcciones** | N-01 (CTA deshabilitada indistinguible), F-08 (tooltip recortado), F-11 (radio del icono) y N-02 (tabs en dos filas), aplicados |
 | 3 | **Apto** | Los doce componentes en verde |
+
+## Cierre operativo (G5)
+
+| Elemento | Identificador real |
+| --- | --- |
+| Rama | `feat/F12-ui-kit-ii` (sigue existiendo en remoto) |
+| Commits | `d79286e` (`feat(ui): add overlays, navigation and feedback components (F12)`), `5e5871f` (`feat(web): add F12 specimens to the dev catalog`) y `eedb652` (`docs: record F12 implementation, audits and acceptance`) |
+| PR | [#13](https://github.com/Luceir0/lab-final--memora/pull/13) `feat: F12 UI kit II — overlays and feedback` |
+| CI de la PR | run `41537887650`, `completed/success`, head `eedb652` |
+| Merge en `main` | `62d98b9` (`Merge pull request #13 from Luceir0/feat/F12-ui-kit-ii`) |
+| CI de `main` | run `41538068474`, `completed/success` |
 
 ## Accesibilidad
 
@@ -232,11 +243,10 @@ Marcado solo lo evidenciado en esta feature:
 - [x] Bitácora y cobertura del temario.
 - [ ] ADR: no hubo decisión nueva de arquitectura; las decisiones están en la spec.
 - [x] Usuario ha probado y aceptado el 2026-11-02 en `/ui` (móvil y escritorio, claro y oscuro). Pidió un cambio, ya aplicado: estilo único destructivo en rojo suave.
-- [ ] Commit, PR y CI: **pendientes de permiso**; no existen todavía.
+- [x] Commit, PR y CI: `d79286e`, `5e5871f` y `eedb652`; PR #13 con CI en verde (run `41537887650`) y merge `62d98b9` con CI en verde (run `41538068474`).
 
 ## Pendiente
 
-- **Commit, PR y CI** con autorización explícita; hoy no existen hash, número de PR ni run.
 - **Lector de pantalla real** (NVDA/VoiceOver/TalkBack) para tooltip y anuncios → **F37/F39**.
 - **Límite de avisos simultáneos** en el viewport → **F26**.
 - **Chips de producto** → **F13/F14**.
@@ -269,7 +279,7 @@ Marcado solo lo evidenciado en esta feature:
 ## Documentación actualizada
 
 - [x] `docs/04-features/F12-ui-kit-ii/{spec,tasks,handoff}.md`
-- [x] `docs/04-features/README.md` (fila F12 → `accepted` y situación)
+- [x] `docs/04-features/README.md` (fila F12 → `done` y situación)
 - [x] `docs/06-process/ai-log.md`
 - [x] `docs/07-curriculum/coverage-map.md`
 - [x] `docs/05-quality/test-matrix.md`
@@ -279,6 +289,6 @@ Marcado solo lo evidenciado en esta feature:
 
 ## Siguiente paso propuesto
 
-Proponer el commit en `feat/F12-ui-kit-ii`, la PR y el CI, y ejecutarlos solo con permiso
-expreso del usuario. Tras el merge y el CI en verde, pasar F12 a `done`. F13 no se abre hasta
-cerrar F12.
+F12 está cerrada. El siguiente paso es F13 — App shell y navegación adaptativa, que depende de
+F11 y F12 y no se abre sin permiso del usuario. Deudas trasladadas: `ThemeToggle` y chips de
+producto (F13/F14), límite de avisos (F26), lector de pantalla (F37/F39).

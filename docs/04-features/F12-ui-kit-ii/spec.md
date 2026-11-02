@@ -3,7 +3,7 @@ id: F12
 title: "UI kit II: overlays y feedback"
 milestone: M1
 size: M
-status: accepted
+status: done
 spec: complete
 depends_on:
   - "F10"
@@ -21,7 +21,7 @@ decisions:
 
 # F12 — UI kit II: overlays y feedback
 
-> **Milestone:** M1 · **Talla:** M · **Estado:** accepted · **Spec:** completa
+> **Milestone:** M1 · **Talla:** M · **Estado:** done · **Spec:** completa
 > **Depende de:** F10 · **Bloquea:** F13
 
 ## Objetivo
