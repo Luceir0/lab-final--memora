@@ -78,6 +78,7 @@ Nunca:
 - hacer `push` sin autorización;
 - editar código de otra feature en curso;
 - aprobar tu propio trabajo;
+- hacer commit ni push mientras otro agente siga trabajando en el árbol de trabajo;
 - afirmar que un test pasa si no se ha ejecutado.
 
 ## 7. Stop conditions
