@@ -373,6 +373,52 @@ const uiTextPairs: readonly Pair[] = [
 const reviewPairs: readonly Pair[] = [
   ...(['light', 'dark'] as const).flatMap((theme) => [
     {
+      label: 'texto sobre toast/CTA inversa',
+      theme,
+      foreground: '--memora-on-inverse',
+      background: '--memora-inverse',
+      minimum: 4.5,
+    },
+    {
+      label: 'anillo de foco sobre toast/CTA inversa',
+      theme,
+      foreground: '--memora-on-inverse',
+      background: '--memora-inverse',
+      minimum: 3,
+    },
+    {
+      label: 'texto sobre CTA inversa deshabilitada',
+      theme,
+      foreground: '--memora-on-inverse',
+      background: '--memora-muted',
+      minimum: 4.5,
+    },
+  ]),
+  ...(['light', 'dark'] as const).flatMap((theme) => [
+    {
+      label: 'texto de peligro sobre fondo suave en hover',
+      theme,
+      foreground: '--memora-danger-text',
+      background: '--memora-danger-soft-hover',
+      minimum: 4.5,
+    },
+    {
+      label: 'texto de peligro sobre fondo suave pulsado',
+      theme,
+      foreground: '--memora-danger-text',
+      background: '--memora-danger-soft-active',
+      minimum: 4.5,
+    },
+    {
+      label: 'borde de peligro sobre fondo suave',
+      theme,
+      foreground: '--memora-danger',
+      background: '--memora-danger-soft',
+      minimum: 3,
+    },
+  ]),
+  ...(['light', 'dark'] as const).flatMap((theme) => [
+    {
       label: 'texto sobre acción principal pulsada',
       theme,
       foreground: '--memora-on-primary',

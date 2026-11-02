@@ -24,9 +24,8 @@ const variantClasses: Record<ButtonVariant, string> = {
   primary: 'bg-primary text-on-primary',
   secondary: 'border border-border-strong bg-surface text-text',
   ghost: 'bg-transparent text-primary-text',
-  // `on-inverse` es blanco en claro (5,49:1 sobre danger) y casi negro en
-  // oscuro (6,95:1 sobre danger claro); `on-primary` fallaría en oscuro.
-  danger: 'bg-danger text-on-inverse',
+  // Acción destructiva: borde y texto rojos sobre fondo rojo muy claro.
+  danger: 'border border-danger bg-danger-soft text-danger-text',
   soft: 'bg-primary-soft text-on-primary-soft',
 };
 
@@ -39,7 +38,7 @@ const variantInteractiveClasses: Record<ButtonVariant, string> = {
   primary: 'not-disabled:hover:bg-primary-hover not-disabled:active:bg-primary-active',
   secondary: 'not-disabled:hover:bg-surface-2 not-disabled:active:bg-surface-active',
   ghost: 'not-disabled:hover:bg-surface-2 not-disabled:active:bg-surface-active',
-  danger: 'not-disabled:hover:bg-danger-text not-disabled:active:bg-danger',
+  danger: 'not-disabled:hover:bg-danger-soft-hover not-disabled:active:bg-danger-soft-active',
   soft: 'not-disabled:hover:bg-primary-soft-hover not-disabled:active:bg-primary-soft-active',
 };
 
@@ -70,7 +69,7 @@ export function buttonStyles(options: {
   return cn(
     'inline-flex select-none items-center justify-center rounded-md font-semibold',
     'transition-[background-color,border-color,color] duration-(--memora-duration-fast) ease-standard',
-    'disabled:cursor-not-allowed disabled:border-border disabled:bg-surface-2 disabled:text-muted disabled:opacity-100',
+    'disabled:cursor-not-allowed disabled:border-border disabled:bg-surface-2 disabled:text-muted',
     variantClasses[variant],
     loading ? 'cursor-progress' : variantInteractiveClasses[variant],
     sizeClasses[size],
