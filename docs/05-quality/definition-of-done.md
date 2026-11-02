@@ -1,5 +1,7 @@
 # Definition of Done
 
+El nivel de auditoría (A/B/C/V) sale del tablero (`docs/04-features/README.md`) y las exigencias por nivel están en [el protocolo de revisión](../06-process/review-protocol.md).
+
 Una feature está terminada cuando:
 
 ## Producto
@@ -15,7 +17,7 @@ Una feature está terminada cuando:
 - [ ] Usa solo tokens y componentes del sistema.
 - [ ] Funciona en móvil y escritorio.
 - [ ] Funciona en claro y oscuro.
-- [ ] Revisada en 320, 375, 768, 1024 y 1440 px.
+- [ ] Revisada en los anchos de su nivel: 320–1440 en A, 375 y 1440 en B, 375 y 1440 en C.
 
 ## Accesibilidad
 
@@ -23,7 +25,7 @@ Una feature está terminada cuando:
 - [ ] Etiquetas y errores.
 - [ ] Contraste.
 - [ ] Alternativa a gestos.
-- [ ] axe sin errores críticos.
+- [ ] axe sin errores críticos (navegador real en A, B y V; CI en C).
 
 ## Código
 

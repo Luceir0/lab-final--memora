@@ -54,7 +54,8 @@ El prompt de delegación debe incluir:
 3. Archivos permitidos.
 4. Comandos de verificación.
 5. Recordatorio de parar si falta una decisión.
-6. Formato de handoff.
+6. El nivel de auditoría de la feature (A/B/C/V) según el tablero.
+7. Formato de handoff.
 
 ## Reglas
 

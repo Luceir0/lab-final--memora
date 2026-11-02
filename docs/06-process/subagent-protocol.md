@@ -10,6 +10,7 @@ Un subagente recibe **una feature**, contexto suficiente y límites claros. No d
 Feature: F25 — Upload pipeline API
 Spec: docs/04-features/F25-upload-pipeline-api/spec.md
 Rol: api-dev
+Nivel de auditoría: A | B | C | V (columna `Auditoría` del tablero)
 Objetivo: implementar el pipeline y sus tests
 Permitido: apps/api/**, packages/shared/**
 Prohibido: apps/web/**, packages/ui/**
@@ -46,6 +47,7 @@ Resumen en 2–4 líneas.
 
 ## Pendiente
 - ...
+- `[Menor]`/`[Nit]` no resueltos de la revisión, con su identificador.
 
 ## Riesgos y limitaciones
 - ...
