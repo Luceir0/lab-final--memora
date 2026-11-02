@@ -1,25 +1,52 @@
 import {
+  Accordion,
   Avatar,
   AvatarGroup,
   Badge,
+  BottomSheet,
+  Breadcrumb,
   Button,
   Card,
   Checkbox,
   Chip,
+  ConfirmDialog,
+  Dialog,
+  EmptyState,
   IconButton,
+  InlineAlert,
   LinkButton,
+  Menu,
   ProgressBar,
+  ResponsiveDialog,
   SearchField,
   SegmentedControl,
   Skeleton,
   Spinner,
   Switch,
+  Tabs,
   TextArea,
   TextField,
+  Toast,
+  ToastViewport,
+  Tooltip,
   VisuallyHidden,
+  type ToastTone,
 } from '@memora/ui';
-import { Heart, Mail, Plus, Search, Upload, X } from 'lucide-react';
-import { useState, type ReactNode } from 'react';
+import {
+  Download,
+  Heart,
+  Images,
+  Mail,
+  Plus,
+  Search,
+  Settings,
+  Share2,
+  Trash2,
+  Upload,
+  Users,
+  X,
+} from 'lucide-react';
+import { useRef, useState, type ReactNode } from 'react';
 
 import { useTheme } from '../../components/theme-provider';
 import type { ThemeMode } from '../../lib/theme';
@@ -48,7 +75,7 @@ export default function UiShowcasePage() {
         <p className="text-caption font-semibold uppercase tracking-wide text-primary-text">
           Solo desarrollo
         </p>
-        <h1 className="mt-2 text-h1 font-extrabold text-text">UI kit I</h1>
+        <h1 className="mt-2 text-h1 font-extrabold text-text">UI kit F11–F12</h1>
         <p className="mt-2 max-w-prose text-body text-muted">
           Catálogo de los componentes de <code>@memora/ui</code> con sus estados definidos. No forma
           parte del bundle de producción. Hover, foco y active son interactivos; además hay
@@ -62,8 +89,11 @@ export default function UiShowcasePage() {
             <Button icon={<Plus />}>Crear círculo</Button>
             <Button variant="secondary">Secundario</Button>
             <Button variant="ghost">Ghost</Button>
-            <Button variant="danger" icon={<X />}>
+            <Button variant="danger" icon={<Trash2 />}>
               Eliminar
+            </Button>
+            <Button variant="danger" disabled>
+              Eliminar deshabilitado
             </Button>
             <Button variant="soft">Suave</Button>
           </div>
@@ -75,6 +105,9 @@ export default function UiShowcasePage() {
             <Button size="md">Medio</Button>
             <Button size="lg">Grande</Button>
             <Button loading>Subiendo…</Button>
+            <Button variant="danger" loading>
+              Eliminando…
+            </Button>
             <Button disabled>Desactivado</Button>
           </div>
           <Button fullWidth>Ancho completo</Button>
@@ -85,10 +118,18 @@ export default function UiShowcasePage() {
             <IconButton label="Añadir recuerdo" icon={<Plus />} variant="solid" />
             <IconButton label="Buscar" icon={<Search />} variant="outline" />
             <IconButton label="Me gusta" icon={<Heart />} />
+            <IconButton label="Eliminar recuerdo" icon={<Trash2 />} variant="danger" />
+            <IconButton
+              label="Eliminar recuerdo deshabilitado"
+              icon={<Trash2 />}
+              variant="danger"
+              disabled
+            />
             <span className="relative inline-flex rounded-md bg-viewer-bg p-2">
               <IconButton label="Cerrar visor" icon={<X />} variant="onMedia" />
             </span>
             <IconButton label="Cargando" icon={<Upload />} loading />
+            <IconButton label="Eliminando recuerdo" icon={<Trash2 />} variant="danger" loading />
             <IconButton label="No disponible" icon={<Upload />} disabled />
           </div>
           <div className="flex flex-wrap items-center gap-3">
@@ -425,6 +466,10 @@ export default function UiShowcasePage() {
           </p>
         </ShowcaseSection>
 
+        <OverlaysShowcase />
+
+        <NavigationFeedbackShowcase />
+
         <ShowcaseSection title="Tipografía, colores y radios">
           <div className="flex flex-col gap-3">
             <p className="text-display font-extrabold text-text">Lisboa 2026</p>
@@ -485,6 +530,590 @@ export default function UiShowcasePage() {
         </ShowcaseSection>
       </div>
     </main>
+  );
+}
+
+function OverlaysShowcase() {
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [confirmReadyOpen, setConfirmReadyOpen] = useState(false);
+  const [confirmNeutralOpen, setConfirmNeutralOpen] = useState(false);
+  const [sheetOpen, setSheetOpen] = useState(false);
+  const [longSheetOpen, setLongSheetOpen] = useState(false);
+  const [responsiveOpen, setResponsiveOpen] = useState(false);
+  const [menuDialogOpen, setMenuDialogOpen] = useState(false);
+  const [nestedDialogOpen, setNestedDialogOpen] = useState(false);
+  const [nestedSheetOpen, setNestedSheetOpen] = useState(false);
+  const [result, setResult] = useState('Sin acciones todavía.');
+
+  return (
+    <ShowcaseSection title="Dialog, ConfirmDialog, BottomSheet y ResponsiveDialog">
+      <p className="max-w-prose text-body-sm text-muted">
+        Prueba con teclado: <kbd>Tab</kbd> cicla dentro del overlay, <kbd>Esc</kbd> cierra (salvo{' '}
+        <code>dismissible=false</code>) y el foco vuelve al disparador. En móvil, «ResponsiveDialog»
+        y «ConfirmDialog» se presentan como hoja; desde 768 px, como diálogo.
+      </p>
+      <div className="flex flex-wrap items-center gap-3">
+        <Button onClick={() => setDialogOpen(true)}>Abrir Dialog</Button>
+        <Button variant="danger" onClick={() => setConfirmOpen(true)}>
+          Eliminar recuerdo (pide frase)…
+        </Button>
+        <Button variant="danger" onClick={() => setConfirmReadyOpen(true)}>
+          Eliminar recuerdo (CTA habilitada)…
+        </Button>
+        <Button variant="secondary" onClick={() => setConfirmNeutralOpen(true)}>
+          Confirmar cambio (no destructivo)…
+        </Button>
+        <Button variant="secondary" onClick={() => setSheetOpen(true)}>
+          Abrir BottomSheet
+        </Button>
+        <Button variant="secondary" onClick={() => setLongSheetOpen(true)}>
+          Hoja con contenido largo
+        </Button>
+        <Button variant="soft" onClick={() => setResponsiveOpen(true)}>
+          Abrir ResponsiveDialog
+        </Button>
+        <Button variant="secondary" onClick={() => setMenuDialogOpen(true)}>
+          Dialog con menú
+        </Button>
+        <Button variant="secondary" onClick={() => setNestedDialogOpen(true)}>
+          Dialog + BottomSheet
+        </Button>
+      </div>
+      <p role="status" className="text-body-sm text-muted">
+        Última acción: {result}
+      </p>
+
+      <Dialog
+        open={dialogOpen}
+        onClose={() => setDialogOpen(false)}
+        title="Compartir álbum"
+        description="Elige quién puede ver las fotos de este álbum."
+        footer={
+          <>
+            <Button variant="secondary" onClick={() => setDialogOpen(false)}>
+              Cancelar
+            </Button>
+            <Button
+              onClick={() => {
+                setDialogOpen(false);
+                setResult('Álbum compartido.');
+              }}
+            >
+              Compartir
+            </Button>
+          </>
+        }
+      >
+        <div className="grid gap-3">
+          <Checkbox label="Ana Lima" description="Puede ver y subir fotos." defaultChecked />
+          <Checkbox label="Luis Mora" description="Puede ver las fotos." />
+        </div>
+      </Dialog>
+
+      <ConfirmDialog
+        open={confirmOpen}
+        onClose={() => setConfirmOpen(false)}
+        onConfirm={() => {
+          setConfirmOpen(false);
+          setResult('Recuerdo eliminado.');
+        }}
+        title="Eliminar recuerdo"
+        description="Esta acción no se puede deshacer."
+        danger
+        confirmLabel="Eliminar recuerdo"
+        confirmPhrase="eliminar"
+      >
+        <p>El recuerdo se borrará para todos los miembros del círculo.</p>
+      </ConfirmDialog>
+
+      <ConfirmDialog
+        open={confirmReadyOpen}
+        onClose={() => setConfirmReadyOpen(false)}
+        onConfirm={() => {
+          setConfirmReadyOpen(false);
+          setResult('Recuerdo eliminado sin escribir frase.');
+        }}
+        title="Eliminar recuerdo"
+        description="Esta acción no se puede deshacer."
+        danger
+        confirmLabel="Eliminar recuerdo"
+      >
+        <p>Sin frase de confirmación, la CTA roja suave con papelera se ve habilitada.</p>
+      </ConfirmDialog>
+
+      <ConfirmDialog
+        open={confirmNeutralOpen}
+        onClose={() => setConfirmNeutralOpen(false)}
+        onConfirm={() => {
+          setConfirmNeutralOpen(false);
+          setResult('Cambio confirmado.');
+        }}
+        title="Publicar cambios"
+        description="Los miembros del círculo verán la nueva portada."
+        confirmLabel="Confirmar"
+      >
+        <p>Esta acción no es destructiva; la CTA usa la variante primaria.</p>
+      </ConfirmDialog>
+
+      <BottomSheet
+        open={sheetOpen}
+        onClose={() => setSheetOpen(false)}
+        title="Acciones de la foto"
+        description="La hoja se puede cerrar con el botón, con Esc o arrastrando."
+        maxHeightPercent={90}
+        footer={
+          <Button onClick={() => setSheetOpen(false)} className="w-full sm:w-auto">
+            Hecho
+          </Button>
+        }
+      >
+        <div className="flex flex-col gap-2">
+          <Button variant="secondary" fullWidth>
+            Mover a un álbum
+          </Button>
+          <Button variant="secondary" fullWidth>
+            Descargar
+          </Button>
+          <Button
+            variant="danger"
+            fullWidth
+            onClick={() => {
+              setSheetOpen(false);
+              setResult('Recuerdo eliminado desde la hoja.');
+            }}
+          >
+            Eliminar
+          </Button>
+        </div>
+      </BottomSheet>
+
+      <BottomSheet
+        open={longSheetOpen}
+        onClose={() => setLongSheetOpen(false)}
+        title="Hoja con contenido largo"
+        description="La cabecera y la botonera deben quedar siempre visibles."
+        bodyLabel="Detalle de la hoja"
+        maxHeightPercent={70}
+        footerLayout="row"
+        footer={
+          <>
+            <Button variant="secondary" onClick={() => setLongSheetOpen(false)}>
+              Cancelar
+            </Button>
+            <Button onClick={() => setLongSheetOpen(false)}>Hecho</Button>
+          </>
+        }
+      >
+        <div className="flex flex-col gap-3">
+          {Array.from({ length: 14 }, (_, index) => (
+            <p key={index}>
+              Línea {index + 1}: el cuerpo hace scroll y las acciones siguen visibles. El asa y la
+              cabecera no se desplazan.
+            </p>
+          ))}
+        </div>
+      </BottomSheet>
+
+      <ResponsiveDialog
+        open={responsiveOpen}
+        onClose={() => setResponsiveOpen(false)}
+        title="Ajustes del círculo"
+        description="Un único contenido para móvil y escritorio."
+        size="md"
+      >
+        <p>En móvil esta misma información se muestra en una hoja inferior.</p>
+      </ResponsiveDialog>
+
+      <Dialog
+        open={menuDialogOpen}
+        onClose={() => setMenuDialogOpen(false)}
+        title="Acciones del álbum"
+        description="El menú se cierra con Esc sin cerrar este diálogo."
+        footer={
+          <Button variant="secondary" onClick={() => setMenuDialogOpen(false)}>
+            Cerrar
+          </Button>
+        }
+      >
+        <Menu
+          label="Acciones del álbum"
+          items={[
+            {
+              label: 'Compartir',
+              icon: <Share2 />,
+              onSelect: () => setResult('Compartir desde el menú anidado.'),
+            },
+            {
+              label: 'Descargar',
+              icon: <Download />,
+              onSelect: () => setResult('Descargar desde el menú anidado.'),
+            },
+            {
+              label: 'Eliminar',
+              icon: <Trash2 />,
+              danger: true,
+              onSelect: () => setResult('Eliminar desde el menú anidado.'),
+            },
+          ]}
+        />
+      </Dialog>
+
+      <Dialog
+        open={nestedDialogOpen}
+        onClose={() => setNestedDialogOpen(false)}
+        title="Álbum con hoja anidada"
+        description="La hoja se abre desde dentro del diálogo y debe quedar por encima."
+      >
+        <p className="mb-4">Abre la hoja y comprueba el apilado y el foco.</p>
+        <Button onClick={() => setNestedSheetOpen(true)}>Abrir hoja de acciones</Button>
+        <BottomSheet
+          open={nestedSheetOpen}
+          onClose={() => setNestedSheetOpen(false)}
+          title="Acciones de la foto"
+          description="La capa superior es la hoja, no el diálogo."
+        >
+          <p>El foco y Esc pertenecen a esta hoja mientras está abierta.</p>
+        </BottomSheet>
+      </Dialog>
+    </ShowcaseSection>
+  );
+}
+
+function NavigationFeedbackShowcase() {
+  const [menuResult, setMenuResult] = useState('Sin acciones todavía.');
+  const [activeTab, setActiveTab] = useState('albums');
+  const [toasts, setToasts] = useState<
+    ReadonlyArray<{
+      readonly id: number;
+      readonly tone: ToastTone;
+      readonly title: string;
+      readonly open: boolean;
+    }>
+  >([]);
+  const nextToastId = useRef(0);
+
+  const pushToast = (tone: ToastTone, title: string) => {
+    nextToastId.current += 1;
+    const id = nextToastId.current;
+    setToasts((current) => [...current, { id, tone, title, open: true }]);
+  };
+
+  const dismissToast = (id: number) => {
+    setToasts((current) =>
+      current.map((toast) => (toast.id === id ? { ...toast, open: false } : toast)),
+    );
+    window.setTimeout(() => {
+      setToasts((current) => current.filter((toast) => toast.id !== id));
+    }, 200);
+  };
+
+  const normalToasts = toasts.filter((toast) => toast.tone !== 'danger');
+  const urgentToasts = toasts.filter((toast) => toast.tone === 'danger');
+
+  const menuItems = [
+    {
+      label: 'Compartir',
+      icon: <Share2 />,
+      onSelect: () => setMenuResult('Compartir'),
+    },
+    {
+      label: 'Descargar',
+      icon: <Download />,
+      onSelect: () => setMenuResult('Descargar'),
+    },
+    {
+      label: 'Eliminar',
+      icon: <Trash2 />,
+      danger: true,
+      onSelect: () => setMenuResult('Eliminar'),
+    },
+  ];
+
+  const faqItems = [
+    {
+      id: 'visibility',
+      title: '¿Quién puede ver mis fotografías?',
+      content: (
+        <p>
+          Solo las personas que pertenecen al círculo donde las subes. No hay perfiles públicos ni
+          buscador: nadie de fuera puede encontrarlas.
+        </p>
+      ),
+    },
+    {
+      id: 'quality',
+      title: '¿Se guardan en calidad original?',
+      content: (
+        <p>
+          Sí. Memora conserva el archivo original y genera miniaturas para la cuadrícula y el visor,
+          sin sustituir la foto que descargas.
+        </p>
+      ),
+    },
+    {
+      id: 'invite',
+      title: '¿Cómo invito a alguien?',
+      content: (
+        <p>
+          Entra en el círculo y usa «Invitar» en la cabecera o en Personas. Puedes enviar un email o
+          compartir un enlace privado; caduca a los 7 días.
+        </p>
+      ),
+    },
+    {
+      id: 'download',
+      title: '¿Puedo descargar un álbum entero?',
+      content: (
+        <p>
+          Sí, desde el menú del álbum. La descarga conserva los nombres y la calidad original de las
+          fotos, y no incluye metadatos de ubicación.
+        </p>
+      ),
+    },
+  ];
+
+  return (
+    <ShowcaseSection title="Menu, Tabs, Accordion y feedback">
+      <div className="flex flex-col gap-4">
+        <p className="text-caption font-semibold uppercase tracking-wide text-muted">Menu</p>
+        <div className="flex flex-wrap items-start gap-6">
+          <Menu label="Acciones del álbum" items={menuItems} />
+          <Menu label="Acciones del álbum alineadas al final" items={menuItems} align="end" />
+        </div>
+        <p role="status" className="text-body-sm text-muted">
+          Última acción del menú: {menuResult}
+        </p>
+      </div>
+
+      <div className="flex flex-col gap-4">
+        <p className="text-caption font-semibold uppercase tracking-wide text-muted">Tabs</p>
+        <p className="text-body-sm text-muted">
+          Píldora activa, icono decorativo y contador en el nombre accesible.
+        </p>
+        <Tabs
+          label="Contenido del círculo (con iconos)"
+          value={activeTab}
+          onValueChange={setActiveTab}
+          items={[
+            {
+              value: 'albums',
+              label: 'Álbumes',
+              icon: Images,
+              count: 12,
+              content: <p>342 fotos en 12 álbumes.</p>,
+            },
+            {
+              value: 'people',
+              label: 'Personas',
+              icon: Users,
+              count: 8,
+              content: <p>8 personas comparten este círculo.</p>,
+            },
+            {
+              value: 'settings',
+              label: 'Ajustes',
+              icon: Settings,
+              content: <p>Solo los administradores pueden editar.</p>,
+            },
+          ]}
+        />
+        <p className="text-body-sm text-muted">
+          Pestaña activa: <span className="font-semibold text-text">{activeTab}</span>
+        </p>
+        <p className="text-caption font-semibold uppercase tracking-wide text-muted">
+          Sin iconos ni contadores
+        </p>
+        <Tabs
+          label="Contenido del círculo (sin iconos)"
+          defaultValue="albums"
+          items={[
+            { value: 'albums', label: 'Álbumes', content: <p>342 fotos en 12 álbumes.</p> },
+            {
+              value: 'people',
+              label: 'Personas',
+              content: <p>8 personas comparten este círculo.</p>,
+            },
+            {
+              value: 'settings',
+              label: 'Ajustes',
+              content: <p>Solo los administradores pueden editar.</p>,
+            },
+          ]}
+        />
+      </div>
+
+      <div className="flex flex-col gap-4">
+        <p className="text-caption font-semibold uppercase tracking-wide text-muted">Accordion</p>
+        <div className="grid gap-4 lg:grid-cols-2">
+          <div className="flex flex-col gap-2">
+            <p className="text-body-sm font-medium text-text">Simple · una abierta</p>
+            <Accordion items={faqItems} defaultValue={['visibility']} />
+          </div>
+          <div className="flex flex-col gap-2">
+            <p className="text-body-sm font-medium text-text">Múltiple</p>
+            <Accordion type="multiple" items={faqItems} />
+          </div>
+        </div>
+      </div>
+
+      <div className="flex flex-col gap-4">
+        <p className="text-caption font-semibold uppercase tracking-wide text-muted">
+          Toast y ToastViewport
+        </p>
+        <div className="flex flex-wrap items-center gap-2">
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={() => pushToast('success', 'Enlace copiado')}
+          >
+            Success
+          </Button>
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={() => pushToast('info', 'Foto movida a Lisboa 2026')}
+          >
+            Info
+          </Button>
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={() => pushToast('warning', 'La conexión va lenta')}
+          >
+            Warning
+          </Button>
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={() => pushToast('danger', 'No se pudo subir la foto')}
+          >
+            Danger
+          </Button>
+        </div>
+        <p className="text-body-sm text-muted">
+          Se cierran solos a los 8 s, salvo que pases el ratón o enfoques un control. Siempre hay
+          botón de cerrar. Con <kbd>Tab</kbd>, el anillo de foco de Cerrar/Deshacer usa el token
+          inverso para leerse sobre el toast.
+        </p>
+        <ToastViewport
+          assertive={urgentToasts.map((toast) => (
+            <Toast
+              key={toast.id}
+              tone={toast.tone}
+              title={toast.title}
+              open={toast.open}
+              duration={8000}
+              onClose={() => dismissToast(toast.id)}
+            />
+          ))}
+        >
+          {normalToasts.map((toast) => (
+            <Toast
+              key={toast.id}
+              tone={toast.tone}
+              title={toast.title}
+              open={toast.open}
+              duration={8000}
+              onClose={() => dismissToast(toast.id)}
+              action={
+                toast.tone === 'info' ? (
+                  <Button variant="secondary" size="sm" onClick={() => dismissToast(toast.id)}>
+                    Deshacer
+                  </Button>
+                ) : undefined
+              }
+            />
+          ))}
+        </ToastViewport>
+      </div>
+
+      <div className="flex flex-col gap-4">
+        <p className="text-caption font-semibold uppercase tracking-wide text-muted">InlineAlert</p>
+        <div className="grid gap-3">
+          <InlineAlert
+            tone="success"
+            title="Cambios guardados"
+            description="El círculo se ha actualizado."
+          />
+          <InlineAlert
+            tone="info"
+            title="Invitación pendiente"
+            description="Ana aún no ha aceptado la invitación."
+          />
+          <InlineAlert
+            tone="warning"
+            title="Queda poco espacio"
+            description="Has usado el 92 % del almacenamiento."
+            action={
+              <Button variant="secondary" size="sm">
+                Ver almacenamiento
+              </Button>
+            }
+          />
+          <InlineAlert
+            tone="danger"
+            title="No se pudo guardar"
+            description="Revisa la conexión e inténtalo de nuevo."
+          />
+        </div>
+      </div>
+
+      <div className="flex flex-col gap-4">
+        <p className="text-caption font-semibold uppercase tracking-wide text-muted">EmptyState</p>
+        <div className="grid gap-6 rounded-xl border border-border bg-surface p-6 lg:grid-cols-2">
+          <EmptyState
+            headingLevel={3}
+            icon={<Images />}
+            iconShape="square"
+            title="Aún no hay álbumes"
+            description="Crea el primero para empezar a compartir recuerdos."
+            action={<Button icon={<Plus />}>Crear álbum</Button>}
+          />
+          <EmptyState
+            headingLevel={3}
+            icon={<Search />}
+            iconShape="circle"
+            title="Sin resultados"
+            description="Prueba con otro nombre o limpia los filtros."
+            action={
+              <Button variant="secondary" size="sm">
+                Limpiar filtros
+              </Button>
+            }
+          />
+        </div>
+      </div>
+
+      <div className="flex flex-col gap-4">
+        <p className="text-caption font-semibold uppercase tracking-wide text-muted">Breadcrumb</p>
+        <Breadcrumb
+          items={[
+            { label: 'Mis círculos', href: '/circles' },
+            { label: 'Lisboa 2026', href: '/circles/lisboa' },
+            { label: 'Álbumes' },
+          ]}
+        />
+      </div>
+
+      <div className="flex flex-col gap-4">
+        <p className="text-caption font-semibold uppercase tracking-wide text-muted">Tooltip</p>
+        <p className="max-w-prose text-body-sm text-muted">
+          Solo aparece con capacidad de hover (ratón o trackpad); en táctil no se muestra. El globo
+          corrige la colisión horizontal con los bordes. Con foco aparece y con Esc se oculta.
+        </p>
+        <div className="flex flex-wrap items-center gap-4">
+          <Tooltip content="Descarga el álbum en calidad original">
+            <IconButton label="Descargar álbum" icon={<Download />} variant="outline" />
+          </Tooltip>
+          <Tooltip content="Comparte el álbum con el círculo">
+            <Button variant="secondary" icon={<Share2 />}>
+              Compartir
+            </Button>
+          </Tooltip>
+        </div>
+      </div>
+    </ShowcaseSection>
   );
 }
 
