@@ -40,6 +40,7 @@
 | Subidas globales | F27 | cola persistente en navegación, contador, recientes | Componente + E2E |
 | Tema | F10, F34 | claro/oscuro/sistema, persistencia, sin destello | Componente + E2E |
 | UI kit I: controles y datos | F11 | 18 componentes con estados y roles nativos; label/hint/error; loading con `aria-disabled`; `SegmentedControl` por flechas; áreas táctiles de 44 px; contraste sobre tokens; catálogo dev-only fuera del bundle | Componente (RTL) + axe + auditoría en navegador real |
+| UI kit II: overlays y feedback | F12 | 12 componentes; `Dialog` con `aria-modal`, trampa de foco, `Esc`, retorno, fondo inerte y scroll bloqueado; apilado por apertura; `BottomSheet` con botón y `Esc` además del arrastre; `ResponsiveDialog` por `matchMedia`; `Menu`/`Tabs`/`Accordion` con flechas y `Home`/`End`; `Toast`/`InlineAlert` con `status`/`alert` y 2.4.11; `Tooltip` con `aria-describedby`; áreas táctiles y contraste; axe en 32 pasadas de navegador real | Componente (RTL) + axe + auditoría en navegador real |
 | PWA | F14 | manifest, iconos, instalación Android | Manual |
 | Content Island | F36 | snapshot, Help/FAQ/Privacy, build sin snapshot falla | API/build |
 | A11y | F10–F39 | formularios, diálogos, foco, contraste, teclado, zoom, 2.4.11 | axe + manual |
@@ -112,6 +113,19 @@
 - **Verificación del orquestador:** `@memora/ui` **173 tests** (95 de componentes + 78 de estilos, 10 archivos); `@memora/web` **88 tests** (17 archivos); `build` forzado sin caché **5/5** en **9,54 s**; `typecheck` **9/9** después del build; `format:check`, `docs:check` y `agents:check` OK; `routeTree.gen.ts` con **SHA idéntico** antes y después del build; catálogo ausente de `apps/web/dist` con chunk stub de **103 B**.
 - **Cierre operativo:** rama `feat/F11-ui-kit-i`, commits `0e815e2`, `a1648ce`, `bf22fd4` y `94620ee`, **PR #11**, CI de la PR en verde (run `41498545493`, `completed/success`, head `94620ee`), merge `6d160ce` en `main` y CI de `main` en verde (run `41499457291`, `completed/success`).
 - **F11 queda `done`** el 2026-11-02. Deudas abiertas: axe en navegador real y medición automática de 44 px (**F37**); CSP con nonce/hash (**F42**); `ThemeToggle` al shell/Perfil (**F13/F34**); chips con cuerpo y quitar en producto (**F13/F14**).
+
+## Evidencia ejecutada (F12, 2026-11-02)
+
+- `corepack pnpm --filter @memora/ui test` → **270 tests OK en 13 archivos**: 172 de componentes + 98 de estilos.
+- Desglose por archivo: `overlays.test.tsx` 36, `feedback-ii.test.tsx` 27, `data.test.tsx` 23, `selection.test.tsx` 21, `button.test.tsx` 21, `navigation.test.tsx` 17, `fields.test.tsx` 14, `feedback.test.tsx` 13; `contrast.test.ts` 76, `tokens.test.ts` 11, `theme.test.ts` 6, `fonts.test.ts` 3 y `package.test.ts` 2.
+- `corepack pnpm --filter @memora/web test` → **88 tests OK** (17 archivos).
+- `corepack pnpm lint` → **6/6 tareas**; `corepack pnpm typecheck` → **9/9 tareas**, también después del build; `corepack pnpm build` → **5/5 tareas** en **8,78 s** con `/help` prerenderizado.
+- `corepack pnpm format:check` OK; `docs:check` → 191 archivos y 452 enlaces, 0 rotos; `agents:check` → 43 specs y 43 filas. `git status` → 10 modificados y 18 nuevos; `routeTree.gen.ts` sin cambios.
+- Catálogo en `apps/web/dist`: **sin textos**; queda el chunk stub `ui-BGGNz8zQ.js` (103 B).
+- **axe en navegador real** (chrome-headless-shell 156 + CDP + axe 4.14) sobre `/ui`: **32 pasadas** (8 estados × 2 anchos × 2 temas) con **0 violaciones**. Es una comprobación puntual fuera del repo; la suite automatizada queda en F37/F38.
+- **Limitación honesta:** jsdom no calcula layout, así que áreas táctiles, zoom, colisión del tooltip y apilado visual no se miden en los tests. El gate de puntero del `Tooltip` (`hover: hover`) tampoco se puede comprobar en jsdom.
+- **Revisión y auditorías:** revisión independiente en dos rondas (primera **apto con correcciones** por M-01 a M-05 y N-01 a N-03; segunda **apto**) y auditoría de diseño en tres pasadas (primera **no apto** con cinco mayores y 14 menores; segunda **apto con correcciones**; tercera **apto**). Detalle en el [handoff de F12](../04-features/F12-ui-kit-ii/handoff.md).
+- **F12 queda en `accepted`** (2026-11-02): el usuario la aceptó en `/ui` con el estilo destructivo unificado. Falta el cierre operativo (commit, PR y CI con permiso); no existen todavía hash, PR ni run.
 
 ## Flujo E2E principal
 
