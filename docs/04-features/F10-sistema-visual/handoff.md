@@ -1,10 +1,12 @@
 # Handoff — F10 Sistema visual y tema
 
-> Fecha: 2026-11-01 · Implementador: `ui-dev` (dos rondas) · Estado: **`review`**
+> Fecha: 2026-11-01 · Implementador: `ui-dev` (dos rondas) · Estado: **`accepted`**
+> (G4: 2026-11-02)
 > Revisión independiente: cerrada en dos rondas; primera **no apto** (B-01, M-01, M-03) y
 > segunda **apto con correcciones** (M-02 y menores de documentación/guard, aplicados) ·
-> Aceptación del usuario (G4): **pendiente** · Commit, PR, CI y merge: **no existen
-> todavía**.
+> Aceptación del usuario (G4): **2026-11-02**, revisión visual en Firefox real sobre
+> `/login`, `/circles` y `/help`, en claro/oscuro/sistema, escritorio y móvil, sin cambios
+> pedidos · Commit, PR, CI y merge: **no existen todavía**.
 
 ## Resultado
 
@@ -16,9 +18,12 @@ servidor desde la cookie `memora-theme`, pinta `data-theme` y `theme-color` ante
 primer pintado con un script en `<head>` y monta un `ThemeToggle` provisional en
 `/circles`.
 
-La revisión independiente cerró sin bloqueantes abiertos. La feature queda en **`review`**:
-falta la aceptación del usuario en navegador real y el cierre operativo (commits, push,
-PR, CI y merge con autorización). No se marca `accepted` ni `done`.
+La revisión independiente cerró sin bloqueantes abiertos. **El usuario aceptó la feature
+el 2026-11-02** tras revisarla en Firefox real sobre el servidor de desarrollo
+(`localhost:3000`) en `/login`, `/circles` y `/help`, alternando Claro / Oscuro / Sistema,
+recargando en oscuro, en escritorio y en vista móvil. Su valoración fue «De momento, todo
+parece estar bien» y no pidió cambios. F10 queda en **`accepted`** (no en `done`): falta el
+cierre operativo (commits, push, PR, CI y merge con autorización).
 
 ## Cambios (archivos)
 
@@ -85,7 +90,28 @@ PR, CI y merge con autorización). No se marca `accepted` ni `done`.
 | `corepack pnpm install --frozen-lockfile` | «Lockfile is up to date» |
 | SSR con dev en 3000 (`curl`) | sin cookie/`light` → `data-theme="light"` + `theme-color #F6F6FA`; `dark` → `data-theme="dark"` + `#0B0F1E`; `/circles` (`ssr:false`) resuelve por cookie; script `data-memora-theme-init` en `<head>` antes de `<body>`; un solo `preload` (subset latin) |
 | CSS compilado | `@media (width>=30/48/64/80rem)`, `(width<=29.99rem)` con `--memora-text-h1:1.625rem`, `has-[:checked]:border-primary`, `--color-scheme` 1+1, sin `96rem`, sin `scroll-behavior:smooth` |
-| Revisión visual en navegador | **Pendiente** (G4, la hará el usuario) |
+| Revisión visual en navegador | **Aceptada el 2026-11-02** (G4, ver abajo) |
+
+### Aceptación del usuario (G4, 2026-11-02)
+
+El usuario revisó la app en **Firefox real** sobre el servidor de desarrollo en
+`localhost:3000`, en `/login`, `/circles` y `/help`, alternando **Claro / Oscuro /
+Sistema**, recargando en oscuro, en escritorio y en vista móvil. Valoración textual: «De
+momento, todo parece estar bien». **No pidió cambios.**
+
+Verificación del orquestador justo antes, con peticiones reales (`curl`) al servidor de
+desarrollo:
+
+- `/circles` → **200**, `/login` → **200**, `/help` → **200**, `/api/health` vía proxy →
+  **200**.
+- Sin cookie: `data-theme="light"` y `theme-color #F6F6FA`.
+- Con cookie `memora-theme=dark`: `data-theme="dark"` y `theme-color #0B0F1E`.
+
+Tests re-ejecutados el 2026-11-02: `corepack pnpm --filter @memora/ui test` → **5 ficheros
+/ 44 tests OK**; `corepack pnpm --filter @memora/web test` → **17 ficheros / 88 tests OK**.
+
+**Limitación honesta:** sigue sin existir prueba automatizada de navegador. La aceptación
+es manual y la cobertura reproducible queda para **F37/F38**.
 
 **Deuda preexistente, no imputable a F10:** `pnpm format:check` falla en **13 archivos de
 `apps/api`** desde F08 (no modificados en esta rama). CI no ejecuta `format:check`.
@@ -98,9 +124,9 @@ PR, CI y merge con autorización). No se marca `accepted` ni `done`.
 | AC-02 | No hay hex sueltos en componentes | **pasa** | `apps/web/src/styles/no-hex.test.ts` recorre `src` y `packages/ui/src`; `theme.test.ts` comprueba cero hex en `theme.css`; única excepción documentada `lib/theme.ts` (`THEME_COLORS`, con test que la compara con `tokens.css`) |
 | AC-03 | El tema persiste en cookie | **pasa** | `serializeThemeCookie` (`Path=/`, `Max-Age` 1 año, `SameSite=Lax`, `Secure` en https) y lectura en servidor; `curl` con cookie `dark` devuelve `data-theme="dark"` y `/circles` resuelve por cookie |
 | AC-04 | Sistema sigue `prefers-color-scheme` | **pasa** | `resolveTheme` y listener `matchMedia` solo en modo `system`; script de arranque resuelve `system` antes del pintado; tests de `theme.ts` y `ThemeProvider` |
-| AC-05 | No hay destello al cargar | **pasa con limitación: falta navegador real** | Comprobación estática del SSR: script en `<head>` antes de `<body>`, `data-theme` y `theme-color` ya resueltos en el HTML. Sin captura ni playback en navegador |
-| AC-06 | `theme-color` cambia con el tema | **pasa con limitación: falta navegador real** | `curl`: `#F6F6FA` en claro y `#0B0F1E` en oscuro; el meta, el script y `ThemeProvider` usan `THEME_COLORS`; test que lo compara con `--memora-bg`. Sin cambio observado en navegador real |
-| AC-07 | Funciona con reduced motion | **pasa con limitación: falta navegador real** | `theme.css` anula duraciones, animaciones, transiciones y scroll suave; `theme.test.ts` y CSS compilado sin `scroll-behavior:smooth`. Sin prueba con la preferencia activa en navegador |
+| AC-05 | No hay destello al cargar | **pasa (verificado por el usuario)** | El usuario revisó `/login`, `/circles` y `/help` en Firefox real el 2026-11-02, recargando en oscuro, sin destello observado; se suma la comprobación estática del SSR (script en `<head>` antes de `<body>`, `data-theme` y `theme-color` resueltos en el HTML). **Sin prueba automatizada de navegador:** queda para F37/F38 |
+| AC-06 | `theme-color` cambia con el tema | **pasa (verificado por el usuario)** | `curl` del 2026-11-02: `#F6F6FA` en claro y `#0B0F1E` en oscuro; el usuario alternó claro/oscuro/sistema en Firefox real sin incidencias; meta, script y `ThemeProvider` usan `THEME_COLORS`, con test que lo compara con `--memora-bg`. **Sin prueba automatizada de navegador:** queda para F37/F38 |
+| AC-07 | Funciona con reduced motion | **pasa (verificado por el usuario)** | `theme.css` anula duraciones, animaciones, transiciones y scroll suave; `theme.test.ts` y CSS compilado sin `scroll-behavior:smooth`; la sesión de navegador del 2026-11-02 se aceptó sin cambios. La preferencia `prefers-reduced-motion` no se activó de forma explícita en esa sesión y **no hay prueba automatizada**: F37/F38 |
 
 ## Historia de revisión
 
@@ -123,10 +149,11 @@ No quedan bloqueantes ni mayores abiertos.
 
 ## Pendiente
 
-- **Aceptación del usuario (G4)** con revisión visual en navegador real: móvil y
-  escritorio, claro y oscuro, modo «Sistema», sin destello y con `theme-color` correcto.
 - **Cierre operativo:** commits convencionales en `feat/F10-sistema-visual`, push, PR, CI
   y merge solo con autorización. No existen todavía hashes, número de PR ni run de CI.
+- **F10 en `accepted`, no en `done`:** el paso a `done` depende del cierre operativo.
+- **Cobertura de navegador:** no hay prueba automatizada de los AC-05, AC-06 y AC-07; la
+  aceptación del 2026-11-02 es manual y F37/F38 deben aportar Playwright.
 - **`apps/web/README.md` y `packages/ui/README.md`:** actualizados con estructura, tema y contrato de fuentes.
 - `ThemeToggle` a Perfil y al shell definitivo en **F11/F34** (hoy provisional en
   `/circles` con `TODO(F11/F34)`).
@@ -138,8 +165,9 @@ No quedan bloqueantes ni mayores abiertos.
 
 ## Riesgos y limitaciones
 
-- **Sin navegador real:** AC-05, AC-06 y AC-07 están verificados por SSR, CSS compilado y
-  tests, no por observación. La aceptación del usuario es la que puede confirmarlos.
+- **Sin prueba automatizada de navegador:** AC-05, AC-06 y AC-07 se verificaron con SSR,
+  CSS compilado, tests y la revisión manual del usuario en Firefox (2026-11-02). No hay
+  evidencia reproducible en CI; F37/F38 deben cubrirlo con Playwright.
 - **`suppressHydrationWarning` en `<html>`:** necesario por el ajuste del script en modo
   «sistema», pero enmascara un desajuste de `data-theme`. Mitigado porque
   `resolveDocumentTheme` lee el valor ya pintado; F37/F38 deben cubrirlo con Playwright.
@@ -159,21 +187,24 @@ No quedan bloqueantes ni mayores abiertos.
 - `docs/02-design/tokens.md`: tokens `*-text` y su justificación de contraste, capas
   `--z-index-*`, `h1` móvil 26/32, implementación real de tema, fuente, cookie y
   `theme-color`, y deuda de `--color-border-strong` para F11.
-- `docs/04-features/F10-sistema-visual/handoff.md`: este documento.
+- `docs/04-features/F10-sistema-visual/handoff.md`: este documento, con la aceptación del
+  2026-11-02 y el estado `accepted`.
 - `docs/04-features/F10-sistema-visual/tasks.md`: implementación y AC con evidencia;
-  revisión, aceptación, commit y cierre sin marcar.
-- `docs/06-process/ai-log.md`: entrada del 2026-11-01 con decisiones, implementación, dos
-  rondas de revisión, comandos reales y deuda.
+  aceptación marcada, commit y cierre operativo sin marcar.
+- `docs/06-process/ai-log.md`: entradas del 2026-11-01 (decisiones, implementación y dos
+  rondas de revisión) y del 2026-11-02 (revisión visual, aceptación y nota de proceso
+  sobre PRs sin `gh`).
 - `docs/07-curriculum/coverage-map.md`: sección F10 y resumen de estado.
-- `docs/00-index.md` y `README.md`: F10 pasa de `draft` a `review`.
-- `docs/04-features/README.md`: «Situación actual» alineada con la revisión cerrada.
+- `docs/00-index.md` y `README.md`: F10 pasa de `review` a `accepted`.
+- `docs/04-features/README.md`: «Situación actual» y fila de F10 alineadas con la
+  aceptación.
+- `docs/05-quality/test-matrix.md`: evidencia ejecutada de F10 y límite de navegador.
 - `apps/web/README.md` y `packages/ui/README.md`: estructura, tema, contrato de fuentes y tests.
 
 ## Siguiente paso propuesto
 
-1. El orquestador aplica N-09/N-10 en los dos README de paquete.
-2. El usuario hace la revisión visual (móvil/escritorio, claro/oscuro) y acepta o pide
-   cambios (G4).
-3. Con la aceptación, commits convencionales, push, PR a `main`, CI en verde y merge con
-   autorización; solo entonces F10 pasa a `done`.
-4. F11 arranca después, con la deuda de bordes de input y `format:check`.
+1. Commits convencionales en `feat/F10-sistema-visual`, push y PR a `main` con
+   autorización.
+2. CI en verde sobre la PR y merge con autorización; F10 pasa a `done` con el hash, el
+   número de PR y el run reales.
+3. F11 arranca después, con la deuda de bordes de input y `format:check`.

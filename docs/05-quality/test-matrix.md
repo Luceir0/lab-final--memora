@@ -68,6 +68,15 @@
 - `docs:check` → 191 archivos, 433 enlaces, 0 rotos; `agents:check` → OK.
 - F09 quedó **`done`** el 2026-11-01: estos resultados acreditan la verificación técnica y la aceptación del usuario, y el cierre operativo se completó con la rama `feat/F09-web-core`, los commits `a81dc9a`, `1363e71` y `8c4a963`, la **PR #5**, el CI de la PR en verde (run `41306238454`, `completed/success`), el merge `9fd987e` en `main` y el CI de `main` en verde (run `41306484717`, `completed/success`). Única deuda abierta: AC-06 automatizado en F37/F38.
 
+## Evidencia ejecutada (F10, 2026-11-02)
+
+- `corepack pnpm --filter @memora/ui test` → **44 tests OK** (5 ficheros).
+- `corepack pnpm --filter @memora/web test` → **88 tests OK** (17 ficheros).
+- `curl` al servidor de desarrollo: `/circles` 200, `/login` 200, `/help` 200 y `/api/health` vía proxy 200; sin cookie `data-theme="light"` con `theme-color #F6F6FA`; con cookie `memora-theme=dark`, `data-theme="dark"` con `theme-color #0B0F1E`.
+- **AC-05, AC-06 y AC-07 verificados manualmente**: el usuario revisó `/login`, `/circles` y `/help` en Firefox real el 2026-11-02, alternando claro/oscuro/sistema, recargando en oscuro, en escritorio y en vista móvil; «De momento, todo parece estar bien», sin cambios pedidos.
+- **No hay prueba automatizada de navegador** para estos criterios; Playwright queda para F37/F38.
+- F10 quedó **`accepted`** el 2026-11-02. Pendiente el cierre operativo (commit, PR, CI y merge); no existen todavía hash, número de PR ni run de CI.
+
 ## Flujo E2E principal
 
 1. Usuario A se registra.

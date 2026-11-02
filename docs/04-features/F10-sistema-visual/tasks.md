@@ -26,9 +26,9 @@
 - [x] AC-02: No hay hex sueltos en componentes — `apps/web/src/styles/no-hex.test.ts` y `theme.test.ts`.
 - [x] AC-03: El tema persiste en cookie — `theme.test.ts`, `ThemeProvider` y `curl` con cookie `dark`.
 - [x] AC-04: Sistema sigue prefers-color-scheme — `resolveTheme`, listener de `matchMedia` y script de arranque.
-- [x] AC-05: No hay destello al cargar — script en `<head>` antes de `<body>` y estudio SSR (`curl`). **Limitación:** falta navegador real.
-- [x] AC-06: theme-color cambia con el tema — `#F6F6FA` / `#0B0F1E` en SSR y test contra `tokens.css`. **Limitación:** falta navegador real.
-- [x] AC-07: Funciona con reduced motion — `theme.css`, test y CSS compilado sin `scroll-behavior:smooth`. **Limitación:** falta navegador real.
+- [x] AC-05: No hay destello al cargar — script en `<head>` antes de `<body>`, estudio SSR (`curl`) y recarga en oscuro en Firefox real el 2026-11-02. **Limitación:** sin prueba automatizada de navegador (F37/F38).
+- [x] AC-06: theme-color cambia con el tema — `#F6F6FA` / `#0B0F1E` en SSR, test contra `tokens.css` y cambio observado al alternar temas en Firefox real el 2026-11-02. **Limitación:** sin prueba automatizada de navegador (F37/F38).
+- [x] AC-07: Funciona con reduced motion — `theme.css`, test y CSS compilado sin `scroll-behavior:smooth`; sesión de navegador aceptada el 2026-11-02 (preferencia no activada explícitamente). **Limitación:** sin prueba automatizada con la preferencia activa (F37/F38).
 
 ## Verificación
 
@@ -39,12 +39,14 @@
 - [x] `corepack pnpm build` → 5/5 tareas, OK; `/help` prerenderizado, `dist/client/fonts` copiado.
 - [x] `corepack pnpm docs:check` → 191 archivos, 439 enlaces, 0 rotos, OK.
 - [x] `corepack pnpm agents:check` → 10 agentes, 10 comandos, 6 skills, 43 specs, 43 filas, OK.
-- [ ] Revisar en claro/oscuro en navegador real — pendiente de G4.
+- [x] Revisar en claro/oscuro en navegador real — **aceptado el 2026-11-02** en Firefox sobre `/login`, `/circles` y `/help`, escritorio y móvil.
+- [x] `corepack pnpm --filter @memora/ui test` (re-ejecución 2026-11-02) → 5 ficheros, 44 tests, OK.
+- [x] `corepack pnpm --filter @memora/web test` (re-ejecución 2026-11-02) → 17 ficheros, 88 tests, OK.
 
 ## Cierre
 
 - [x] Revisión independiente — primera **no apto** (B-01, M-01, M-03) y segunda **apto con correcciones** (M-02 y menores), aplicadas.
-- [ ] Aceptación del usuario.
+- [x] Aceptación del usuario — **2026-11-02**, Firefox real sobre `/login`, `/circles` y `/help`; «De momento, todo parece estar bien», sin cambios pedidos. F10 queda en `accepted`.
 - [x] `handoff.md` completo.
 - [x] Tablero actualizado.
 - [x] Bitácora y cobertura actualizadas.
