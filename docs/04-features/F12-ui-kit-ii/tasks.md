@@ -41,15 +41,14 @@
 - [x] Revisión independiente (dos rondas; la segunda, apta).
 - [x] Auditoría de accesibilidad en navegador real (apto) y auditoría de diseño (tres pasadas, apto).
 - [x] `handoff.md` completo.
-- [x] Tablero actualizado (F12 → `accepted`).
+- [x] Tablero actualizado (F12 → `done`).
 - [x] Bitácora y cobertura actualizadas.
 - [x] Aceptación del usuario (G4) el 2026-11-02 en `/ui`, móvil y escritorio, claro y oscuro, con un cambio ya aplicado: estilo único destructivo en rojo suave.
-- [ ] Commit propuesto (sin ejecutar): pendiente de permiso del usuario.
-- [ ] Push, PR y CI: pendientes de permiso; no existen todavía.
-- [ ] Paso a `done`: pendiente de aceptación y cierre operativo.
+- [x] Commits `d79286e`, `5e5871f` y `eedb652` en `feat/F12-ui-kit-ii`.
+- [x] Push, PR #13 y CI en verde (run `41537887650`).
+- [x] Merge `62d98b9` en `main` y CI en verde sobre el merge (run `41538068474`).
+- [x] Paso a `done`.
 
-## Pendiente hasta `done`
+## Cierre
 
-1. Commit en `feat/F12-ui-kit-ii` con permiso.
-2. Push, PR y CI en verde con permiso.
-3. Merge y paso a `done` con la documentación ya preparada.
+Cerrada el 2026-11-02: PR #13, merge `62d98b9` en `main` y CI en verde en la PR y en `main`. Deudas trasladadas a F13, F26, F34, F37 y F39.
