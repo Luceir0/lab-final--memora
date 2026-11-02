@@ -55,15 +55,15 @@ describe('loadConfig', () => {
 
   it('requires SESSION_SECRET in production', () => {
     expect(() => loadConfig({ NODE_ENV: 'production' })).toThrow(/SESSION_SECRET/);
-    expect(() =>
-      loadConfig({ NODE_ENV: 'production', SESSION_SECRET: 'too-short' }),
-    ).toThrow(/SESSION_SECRET/);
+    expect(() => loadConfig({ NODE_ENV: 'production', SESSION_SECRET: 'too-short' })).toThrow(
+      /SESSION_SECRET/,
+    );
   });
 
   it('requires DATABASE_URL in production', () => {
-    expect(() =>
-      loadConfig({ NODE_ENV: 'production', SESSION_SECRET: 'p'.repeat(48) }),
-    ).toThrow(/DATABASE_URL/);
+    expect(() => loadConfig({ NODE_ENV: 'production', SESSION_SECRET: 'p'.repeat(48) })).toThrow(
+      /DATABASE_URL/,
+    );
   });
 
   it('accepts a production config with a strong secret and database', () => {
@@ -81,9 +81,9 @@ describe('loadConfig', () => {
   it('does not echo secret values in the error message', () => {
     const weakSecret = 'weak-secret-value';
 
-    expect(() =>
-      loadConfig({ NODE_ENV: 'production', SESSION_SECRET: weakSecret }),
-    ).toThrow(/SESSION_SECRET/);
+    expect(() => loadConfig({ NODE_ENV: 'production', SESSION_SECRET: weakSecret })).toThrow(
+      /SESSION_SECRET/,
+    );
 
     try {
       loadConfig({ NODE_ENV: 'production', SESSION_SECRET: weakSecret });
@@ -93,9 +93,7 @@ describe('loadConfig', () => {
   });
 
   it('rejects a non-PostgreSQL DATABASE_URL', () => {
-    expect(() => loadConfig({ DATABASE_URL: 'mysql://localhost/memora' })).toThrow(
-      /DATABASE_URL/,
-    );
+    expect(() => loadConfig({ DATABASE_URL: 'mysql://localhost/memora' })).toThrow(/DATABASE_URL/);
   });
 
   it('treats an empty DATABASE_URL as absent', () => {

@@ -53,9 +53,7 @@ export async function createTestApp(options: TestAppOptions = {}): Promise<TestA
 
   const services = options.services ?? createFakeServices();
   const servicesForApp =
-    options.markServicesReal === true
-      ? { ...services, kind: 'real' as const }
-      : services;
+    options.markServicesReal === true ? { ...services, kind: 'real' as const } : services;
 
   const app = await buildApp({
     config,

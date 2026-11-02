@@ -1,10 +1,7 @@
 import { errorResponseSchema } from '@memora/shared';
 import swagger from '@fastify/swagger';
 import type { FastifyInstance } from 'fastify';
-import {
-  jsonSchemaTransform,
-  jsonSchemaTransformObject,
-} from 'fastify-type-provider-zod';
+import { jsonSchemaTransform, jsonSchemaTransformObject } from 'fastify-type-provider-zod';
 import { z } from 'zod';
 
 import { API_VERSION } from '../version.ts';

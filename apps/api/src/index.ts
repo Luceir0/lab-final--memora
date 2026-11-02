@@ -7,8 +7,7 @@ try {
 
   await startServer(config);
 } catch (error) {
-  const message =
-    error instanceof Error ? error.message : 'Error desconocido al arrancar la API.';
+  const message = error instanceof Error ? error.message : 'Error desconocido al arrancar la API.';
 
   process.stderr.write(`[memora-api] ${message}\n`);
   process.exit(1);

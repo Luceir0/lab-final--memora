@@ -27,9 +27,7 @@ export interface Services {
 
 function notConfigured(name: string): Promise<never> {
   return Promise.reject(
-    new Error(
-      `${name} no está configurado. La API no llama a servicios externos reales en F08.`,
-    ),
+    new Error(`${name} no está configurado. La API no llama a servicios externos reales en F08.`),
   );
 }
 

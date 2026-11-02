@@ -22,10 +22,7 @@ function emptyToUndefined(value: unknown): unknown {
 
 const optionalSecretSchema = z.preprocess(
   emptyToUndefined,
-  z
-    .string()
-    .min(32, 'SESSION_SECRET debe tener al menos 32 caracteres.')
-    .optional(),
+  z.string().min(32, 'SESSION_SECRET debe tener al menos 32 caracteres.').optional(),
 );
 
 const optionalDatabaseUrlSchema = z.preprocess(

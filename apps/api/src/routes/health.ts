@@ -15,10 +15,7 @@ export interface HealthRouteOptions {
  * Returns only status, version and timestamp: no session, database URL,
  * environment or build metadata (AC-01).
  */
-export function registerHealthRoute(
-  app: MemoraServer,
-  options: HealthRouteOptions = {},
-): void {
+export function registerHealthRoute(app: MemoraServer, options: HealthRouteOptions = {}): void {
   app.get(
     '/api/health',
     {
