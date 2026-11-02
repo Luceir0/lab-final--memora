@@ -1,0 +1,70 @@
+/**
+ * Base y comportamiento del tema de Memora (F10).
+ *
+ * Los tokens runtime, incluido `color-scheme`, viven en `tokens.css`. Aquí se
+ * define la base del documento (html/body, selección), el foco visible y las
+ * reglas de comportamiento como `prefers-reduced-motion`. Los valores salen
+ * siempre de `tokens.css`; aquí no hay hex ni medidas sueltas.
+ */
+
+@layer base {
+  html {
+    background-color: var(--memora-bg);
+    color: var(--memora-text);
+    font-family: var(--memora-font-sans);
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    min-height: 100dvh;
+    background-color: var(--memora-bg);
+    color: var(--memora-text);
+    font-family: var(--memora-font-sans);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  ::selection {
+    background-color: var(--memora-primary-soft);
+    color: var(--memora-on-primary-soft);
+  }
+}
+
+/*
+ * Foco visible siempre, con token de foco y sin depender del color del texto.
+ * Fuera de `@layer base` para que ningún reset de componente lo pise.
+ */
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: 2px solid var(--memora-focus);
+  outline-offset: 2px;
+}
+
+/*
+ * AC-07: con movimiento reducido, animaciones y transiciones a 0 y scroll
+ * instantáneo. Los tokens de duración también se anulan para que cualquier
+ * `transition-duration: var(--memora-duration-*)` quede en 0.
+ */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --memora-duration-fast: 0ms;
+    --memora-duration-base: 0ms;
+    --memora-duration-slow: 0ms;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0ms !important;
+    animation-delay: 0ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0ms !important;
+    transition-delay: 0ms !important;
+    /*
+     * Guarda para F13/F16: hoy no hay `scroll-behavior: smooth` global, pero
+     * ningún componente futuro debe reactivar el scroll suave con movimiento
+     * reducido.
+     */
+    scroll-behavior: auto !important;
+  }
+}

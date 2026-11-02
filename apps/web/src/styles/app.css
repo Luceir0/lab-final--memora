@@ -1,35 +1,14 @@
 /**
  * CSS global de Memora web.
  *
- * Tailwind 4 CSS-first: no hay `tailwind.config.*`. Los tokens viven en
- * `@memora/ui/tokens.css` y se exponen con `@theme inline`.
+ * Tailwind 4 CSS-first: no hay `tailwind.config.*`. Los tokens, el tema y las
+ * fuentes viven en `@memora/ui`; aquí solo se importan y se declara el
+ * `@source` de los componentes del paquete UI.
  */
 @import 'tailwindcss';
 @import '@memora/ui/tokens.css';
+@import '@memora/ui/theme.css';
+@import '@memora/ui/fonts.css';
 
 /* Componentes presentacionales del paquete UI fuera de `apps/web`. */
 @source '../../../../packages/ui/src';
-
-@layer base {
-  html {
-    background-color: var(--memora-bg);
-    color: var(--memora-text);
-    font-family: var(--memora-font-sans);
-    -webkit-text-size-adjust: 100%;
-  }
-
-  body {
-    min-height: 100dvh;
-    background-color: var(--memora-bg);
-    color: var(--memora-text);
-    font-family: var(--memora-font-sans);
-    line-height: 1.5;
-    -webkit-font-smoothing: antialiased;
-  }
-
-  /* Foco visible siempre, con token de foco y sin depender del color del texto. */
-  :where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
-    outline: 2px solid var(--memora-focus);
-    outline-offset: 2px;
-  }
-}

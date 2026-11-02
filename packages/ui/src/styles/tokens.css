@@ -43,6 +43,11 @@
   --memora-info: #2f6fd6;
   --memora-info-soft: #dce9fb;
 
+  /* Texto de estado sobre su fondo suave (F10, decisión 4). */
+  --memora-success-text: #145c3d;
+  --memora-warning-text: #8a4510;
+  --memora-info-text: #1c4f8a;
+
   /* Acentos de identidad */
   --memora-accent-violet: #e6e1fe;
   --memora-accent-violet-text: #3f2db5;
@@ -97,6 +102,23 @@
   --memora-duration-base: 250ms;
   --memora-duration-slow: 350ms;
   --memora-ease-standard: cubic-bezier(0.2, 0, 0, 1);
+
+  /* Capas (docs/02-design/tokens.md). Expuestas como `z-nav`, `z-sheet`… y también accesibles con `z-(--memora-z-nav)`. */
+  --memora-z-nav: 40;
+  --memora-z-sheet: 60;
+  --memora-z-modal: 70;
+  --memora-z-toast: 80;
+}
+
+/**
+ * h1 móvil: 26/32 px por debajo del primer breakpoint (480 px), alineado con
+ * `tokens.md` y la decisión 5 de F10.
+ */
+@media (max-width: 29.99rem) {
+  :root {
+    --memora-text-h1: 1.625rem;
+    --memora-text-h1--line-height: 2rem;
+  }
 }
 
 [data-theme='dark'] {
@@ -130,6 +152,11 @@
   --memora-danger-text: #ff8a98;
   --memora-info: #6fa4ff;
   --memora-info-soft: #14284a;
+
+  /* Texto de estado sobre su fondo suave (F10, decisión 4). */
+  --memora-success-text: #4cc38a;
+  --memora-warning-text: #f0a04b;
+  --memora-info-text: #6fa4ff;
 
   /* Solo el flotante cambia en oscuro (docs/02-design/tokens.md). */
   --memora-shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.45);
@@ -168,6 +195,9 @@
   --color-danger-text: var(--memora-danger-text);
   --color-info: var(--memora-info);
   --color-info-soft: var(--memora-info-soft);
+  --color-success-text: var(--memora-success-text);
+  --color-warning-text: var(--memora-warning-text);
+  --color-info-text: var(--memora-info-text);
 
   --font-sans: var(--memora-font-sans);
 
@@ -202,4 +232,23 @@
   --shadow-lg: var(--memora-shadow-lg);
 
   --ease-standard: var(--memora-ease-standard);
+
+  --z-index-nav: var(--memora-z-nav);
+  --z-index-sheet: var(--memora-z-sheet);
+  --z-index-modal: var(--memora-z-modal);
+  --z-index-toast: var(--memora-z-toast);
+}
+
+/**
+ * Breakpoints de Memora. Sin `inline`: son valores estáticos del tema y deben
+ * sustituir a los de Tailwind (`sm` pasa de 640 a 480 px). Tailwind 4 los
+ * lee de `--breakpoint-*` y genera `sm:`, `md:`, `lg:` y `xl:`.
+ */
+@theme {
+  --breakpoint-sm: 30rem;
+  --breakpoint-md: 48rem;
+  --breakpoint-lg: 64rem;
+  --breakpoint-xl: 80rem;
+  /* Tailwind trae 2xl por defecto; el contrato no lo incluye. */
+  --breakpoint-2xl: initial;
 }
