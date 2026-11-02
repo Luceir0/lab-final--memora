@@ -257,9 +257,201 @@ const graphicalPairs: readonly Pair[] = [
     background: '--memora-surface-2',
     minimum: 3,
   },
+  // F11: `--memora-border-strong` delimita controles (inputs, chips), así que
+  // necesita 3:1 sobre las tres superficies donde se dibuja.
+  ...(['light', 'dark'] as const).flatMap((theme) =>
+    ['--memora-bg', '--memora-surface', '--memora-surface-2'].map((background) => ({
+      label: `borde fuerte sobre ${background.replace('--memora-', '')}`,
+      theme,
+      foreground: '--memora-border-strong',
+      background,
+      minimum: 3,
+    })),
+  ),
 ];
 
-describe.each([...textPairs, ...graphicalPairs])(
+/** Acentos de identidad: texto sobre su propio fondo (avatares y etiquetas). */
+const identityPairs: readonly Pair[] = (['violet', 'pink', 'green', 'orange', 'sky'] as const).map(
+  (accent) => ({
+    label: `texto de acento ${accent}`,
+    theme: 'light',
+    foreground: `--memora-accent-${accent}-text`,
+    background: `--memora-accent-${accent}`,
+    minimum: 4.5,
+  }),
+);
+
+/** Texto de interfaz sobre fondos de estado y componentes (F11, revisión). */
+const uiTextPairs: readonly Pair[] = [
+  {
+    label: 'texto sobre acción principal en hover (oscuro)',
+    theme: 'dark',
+    foreground: '--memora-on-primary',
+    background: '--memora-primary-hover',
+    minimum: 4.5,
+  },
+  {
+    label: 'texto sobre acción principal en hover (claro)',
+    theme: 'light',
+    foreground: '--memora-on-primary',
+    background: '--memora-primary-hover',
+    minimum: 4.5,
+  },
+  {
+    label: 'texto sobre fondo suave primario',
+    theme: 'light',
+    foreground: '--memora-on-primary-soft',
+    background: '--memora-primary-soft',
+    minimum: 4.5,
+  },
+  {
+    label: 'texto sobre fondo suave primario',
+    theme: 'dark',
+    foreground: '--memora-on-primary-soft',
+    background: '--memora-primary-soft',
+    minimum: 4.5,
+  },
+  {
+    label: 'texto sobre peligro',
+    theme: 'light',
+    foreground: '--memora-on-inverse',
+    background: '--memora-danger',
+    minimum: 4.5,
+  },
+  {
+    label: 'texto sobre peligro',
+    theme: 'dark',
+    foreground: '--memora-on-inverse',
+    background: '--memora-danger',
+    minimum: 4.5,
+  },
+  {
+    label: 'texto sobre peligro en hover',
+    theme: 'light',
+    foreground: '--memora-on-inverse',
+    background: '--memora-danger-text',
+    minimum: 4.5,
+  },
+  {
+    label: 'texto sobre peligro en hover',
+    theme: 'dark',
+    foreground: '--memora-on-inverse',
+    background: '--memora-danger-text',
+    minimum: 4.5,
+  },
+  {
+    label: 'texto secundario sobre superficie',
+    theme: 'light',
+    foreground: '--memora-muted',
+    background: '--memora-surface',
+    minimum: 4.5,
+  },
+  {
+    label: 'texto secundario sobre superficie',
+    theme: 'dark',
+    foreground: '--memora-muted',
+    background: '--memora-surface',
+    minimum: 4.5,
+  },
+  {
+    label: 'texto secundario sobre superficie 2',
+    theme: 'light',
+    foreground: '--memora-muted',
+    background: '--memora-surface-2',
+    minimum: 4.5,
+  },
+  {
+    label: 'texto secundario sobre superficie 2',
+    theme: 'dark',
+    foreground: '--memora-muted',
+    background: '--memora-surface-2',
+    minimum: 4.5,
+  },
+];
+
+/** Pares añadidos en la revisión de accesibilidad/diseño (2026-11-02). */
+const reviewPairs: readonly Pair[] = [
+  ...(['light', 'dark'] as const).flatMap((theme) => [
+    {
+      label: 'texto sobre acción principal pulsada',
+      theme,
+      foreground: '--memora-on-primary',
+      background: '--memora-primary-active',
+      minimum: 4.5,
+    },
+    {
+      label: 'texto sobre fondo suave primario en hover',
+      theme,
+      foreground: '--memora-on-primary-soft',
+      background: '--memora-primary-soft-hover',
+      minimum: 4.5,
+    },
+    {
+      label: 'texto sobre fondo suave primario pulsado',
+      theme,
+      foreground: '--memora-on-primary-soft',
+      background: '--memora-primary-soft-active',
+      minimum: 4.5,
+    },
+  ]),
+  {
+    // En claro el knob se delimita con sombra y borde; en oscuro necesita
+    // contraste propio contra la pista.
+    label: 'knob del switch sobre la pista (oscuro)',
+    theme: 'dark',
+    foreground: '--memora-control-knob',
+    background: '--memora-surface-2',
+    minimum: 3,
+  },
+  {
+    label: 'texto sobre superficie elevada (oscuro)',
+    theme: 'dark',
+    foreground: '--memora-text',
+    background: '--memora-elevated',
+    minimum: 4.5,
+  },
+  ...(['light', 'dark'] as const).flatMap((theme) => [
+    {
+      label: 'texto sobre superficie activa',
+      theme,
+      foreground: '--memora-text',
+      background: '--memora-surface-active',
+      minimum: 4.5,
+    },
+    {
+      label: 'texto de acción sobre superficie activa',
+      theme,
+      foreground: '--memora-primary-text',
+      background: '--memora-surface-active',
+      minimum: 4.5,
+    },
+    {
+      label: 'anillo de hover del avatar sobre superficie',
+      theme,
+      foreground: '--memora-primary',
+      background: '--memora-surface',
+      minimum: 3,
+    },
+  ]),
+  {
+    // El knob claro se delimita con este borde; 1,11:1 no se percibía y se
+    // subió a ~2:1 contra el knob y ~1,7:1 contra la pista.
+    label: 'borde del knob del switch (claro)',
+    theme: 'light',
+    foreground: '--memora-control-knob-border',
+    background: '--memora-control-knob',
+    minimum: 1.5,
+  },
+  {
+    label: 'borde del knob contra la pista (claro)',
+    theme: 'light',
+    foreground: '--memora-control-knob-border',
+    background: '--memora-surface-2',
+    minimum: 1.5,
+  },
+];
+
+describe.each([...textPairs, ...graphicalPairs, ...identityPairs, ...uiTextPairs, ...reviewPairs])(
   'contraste $theme · $label',
   ({ theme, foreground, background, minimum }) => {
     const ratio = contrastRatio(requireColor(theme, foreground), requireColor(theme, background));

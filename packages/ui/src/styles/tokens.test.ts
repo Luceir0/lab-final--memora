@@ -60,6 +60,43 @@ describe('contrato de tokens', () => {
     expect(theme.get('--color-info-text')).toBe('var(--memora-info-text)');
   });
 
+  it('define el borde fuerte de F11 y lo expone como utilidad', () => {
+    expect(light.get('--memora-border-strong')).toBe('#868399');
+    expect(dark.get('--memora-border-strong')).toBe('#6b7699');
+    expect(inlineTheme().get('--color-border-strong')).toBe('var(--memora-border-strong)');
+  });
+
+  it('define los tokens de control de la revisión de diseño', () => {
+    expect(light.get('--memora-primary-active')).toBe('#3d2bb8');
+    expect(dark.get('--memora-primary-active')).toBe('#4f3fd1');
+    expect(light.get('--memora-elevated')).toBe('#ffffff');
+    expect(dark.get('--memora-elevated')).toBe('#2a3450');
+    expect(light.get('--memora-control-knob')).toBe('#ffffff');
+    expect(dark.get('--memora-control-knob')).toBe('#eef0fa');
+    expect(light.get('--memora-control-knob-border')).toBe('#b9b6c9');
+    expect(dark.get('--memora-control-knob-border')).toBe('#263049');
+    expect(light.get('--memora-surface-active')).toBe('#e4e3ee');
+    expect(dark.get('--memora-surface-active')).toBe('#2a3450');
+
+    const theme = inlineTheme();
+    expect(theme.get('--color-primary-active')).toBe('var(--memora-primary-active)');
+    expect(theme.get('--color-elevated')).toBe('var(--memora-elevated)');
+    expect(theme.get('--color-control-knob')).toBe('var(--memora-control-knob)');
+    expect(theme.get('--color-control-knob-border')).toBe('var(--memora-control-knob-border)');
+    expect(theme.get('--color-surface-active')).toBe('var(--memora-surface-active)');
+  });
+
+  it('expone los acentos de identidad como utilidades de color', () => {
+    const theme = inlineTheme();
+
+    for (const accent of ['violet', 'pink', 'green', 'orange', 'sky']) {
+      expect(theme.get(`--color-accent-${accent}`)).toBe(`var(--memora-accent-${accent})`);
+      expect(theme.get(`--color-accent-${accent}-text`)).toBe(
+        `var(--memora-accent-${accent}-text)`,
+      );
+    }
+  });
+
   it('mapea radios, sombras y tipografía sin autorreferencias', () => {
     const theme = inlineTheme();
 

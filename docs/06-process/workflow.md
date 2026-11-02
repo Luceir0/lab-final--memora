@@ -81,6 +81,11 @@ No se pasa el README completo ni todas las specs.
 - Conventional Commits en inglés.
 - Sin `push` sin permiso.
 - Sin mezclar features en una rama.
+- **Sin commit ni push mientras un subagente siga trabajando.** Se espera su handoff y se
+  revisa el árbol completo. Un commit a medias obliga a una PR de seguimiento y ensucia el
+  historial: pasó en el cierre de F10 (PR #9).
+- Si un agente termina después de un commit ya hecho, sus cambios van en un commit o PR de
+  seguimiento explícito; nunca en un `--amend` silencioso.
 
 ## Cierre operativo de la PR sin `gh`
 

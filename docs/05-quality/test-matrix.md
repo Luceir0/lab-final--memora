@@ -77,6 +77,31 @@
 - **No hay prueba automatizada de navegador** para estos criterios; Playwright queda para F37/F38.
 - F10 quedó **`done`** el 2026-11-02. El cierre operativo real: rama `feat/F10-sistema-visual`, commits `517b6eb`, `3c79110` y `d4826df`, **PR #7**, CI de la PR en verde (run `41473542981`, `completed/success`, head `d4826df`), merge `f3b26a5` en `main` y CI de `main` en verde (run `41473996157`, `completed/success`). Única deuda abierta: AC-05, AC-06 y AC-07 automatizados en F37/F38.
 
+## Evidencia ejecutada (F11, 2026-11-02)
+
+- `corepack pnpm --filter @memora/ui test` → **158 tests OK** en la primera entrega (10 ficheros): 80 de componentes con RTL y axe + 78 de estilos (44 preexistentes de F10 + 13 de la primera entrega + 12 de la segunda + 9 de accesibilidad/diseño). **Tras la cuarta tanda: 173** (95 de componentes + 78 de estilos).
+- `corepack pnpm --filter @memora/web test` → **88 tests OK** (17 ficheros), incluido el guard anti-hex sobre `packages/ui/src`.
+- `corepack pnpm --filter @memora/ui typecheck` y `lint` → OK; `build` → OK (tsc, sin `src/test` en `dist`).
+- `corepack pnpm --filter @memora/web typecheck` y `lint` → OK.
+- `corepack pnpm build` → OK; `dist/` **sin rastro del catálogo de `/ui`** (`rg` sobre `apps/web/dist` sin coincidencias para `Solo desarrollo`, `Catálogo de los componentes` y `showcase-`), pero **sí con el chunk stub de la ruta** `ui-iE__YnrP.js` (103 B, solo exporta un componente `null` y el `notFound`). El CSS compilado contiene `border-border-strong`, `bg-accent-violet`, `text-on-primary-soft`, `sr-only`, `animate-pulse` y `bg-viewer-bg`.
+- axe-core **4.14.0** sobre cada familia de componentes, con `color-contrast` desactivado en jsdom (sin layout) y cubierto por `contrast.test.ts` con los hex reales.
+- Limitación honesta: jsdom no aplica `:focus-visible` ni activa controles nativos con `Space`/flechas; los tests comprueban foco programático, `tabIndex`, roles y que las flechas de `SegmentedControl` cambien selección y foco. La verificación visual en navegador real queda para la aceptación del usuario.
+- F11 queda en **`review`**; no hay commit, PR ni CI todavía.
+
+## Revisión de accesibilidad y diseño (F11, 2026-11-02)
+
+- `corepack pnpm --filter @memora/ui test` → **173 tests OK** (95 componentes + 78 estilos).
+- `corepack pnpm --filter @memora/web test` → **88 tests OK** (17 ficheros).
+- `corepack pnpm -r typecheck` → OK; `corepack pnpm lint` → 6/6.
+- `corepack pnpm build` → 5/5; `corepack pnpm typecheck` después del build → 9/9.
+- `rg` del catálogo en `apps/web/dist` → sin textos (`Solo desarrollo`, `Filtro con ambos handlers`, `Estados simulados`) ni chunk `showcase-*`; CSS con `bg-surface-active`, `control-knob-border`, `not-disabled`, `group-has-[:enabled]`, `has-[:enabled]`, `after:h-11` y `after:w-11`; sin `after:-inset-y-1` ni `after:-inset-1.5`.
+- axe en jsdom pasa a fallar también con `incomplete` no dependiente de layout; la cobertura de navegador real queda en F37.
+- **Áreas táctiles medidas en Chromium headless sobre `/ui`**: `getComputedStyle(el, '::after').height` = 44 px en 29 controles (mínimo y máximo 44), incluidas las variantes con borde `secondary`, `outline` y todos los segmentos. El quitar del `Chip` mide 44 × 44 y su hit empieza 2 px después del cuerpo.
+- **Hit-test del `Chip` con `onClick` + `onRemove`**: `elementFromPoint` a 0,5 px del borde derecho del cuerpo devuelve el cuerpo; a 0,5 px después, el hueco; el clic real en el borde alterna `aria-pressed` y no elimina el chip.
+- **Hover de deshabilitados**: borde del `Switch`, color del segmento y fondo del `Chip` idénticos antes/después del ratón. **Hover del `Avatar`**: `box-shadow` con `rgb(91,71,224)` a 2 px. **`Button` loading**: `cursor: progress` y fondo sin cambio al hacer hover.
+- Limitación honesta: jsdom no calcula layout; la medición anterior es una comprobación CDP puntual, no un test de navegador del repo. Queda para F37/F38.
+- F11 sigue en **`review`**; no hay commit, PR ni CI todavía.
+
 ## Flujo E2E principal
 
 1. Usuario A se registra.

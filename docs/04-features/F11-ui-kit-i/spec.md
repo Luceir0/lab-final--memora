@@ -3,7 +3,7 @@ id: F11
 title: "UI kit I: controles y datos"
 milestone: M1
 size: M
-status: draft
+status: review
 spec: complete
 depends_on:
   - "F10"
@@ -19,7 +19,7 @@ decisions:
 
 # F11 — UI kit I: controles y datos
 
-> **Milestone:** M1 · **Talla:** M · **Estado:** draft · **Spec:** completa
+> **Milestone:** M1 · **Talla:** M · **Estado:** review · **Spec:** completa
 > **Depende de:** F10 · **Bloquea:** F13
 
 ## Objetivo
@@ -49,6 +49,7 @@ Implementar los componentes base de formularios, acciones y datos.
 
 ### Incluye
 
+- 17 componentes del contrato + `VisuallyHidden` (18 en total).
 - Button, IconButton, LinkButton
 - TextField, TextArea, SearchField
 - Checkbox, Switch, SegmentedControl
@@ -104,12 +105,23 @@ Implementar los componentes base de formularios, acciones y datos.
 
 ## Definition of Ready
 
-- [ ] Dependencias `done`. Excepción autorizada por el usuario y registrada en el tablero.
-- [ ] Decisiones resueltas.
-- [ ] Contratos congelados.
-- [ ] Diseño enlazado (si aplica).
-- [ ] Datos de prueba.
-- [ ] Sin preguntas bloqueantes.
+- [x] Dependencias `done`. F10 cerrada el 2026-11-02 (PR #7, merge `f3b26a5`).
+- [x] Decisiones resueltas (ver «Decisiones de arranque»).
+- [x] Contratos congelados: `docs/02-design/components.md` y `docs/02-design/tokens.md`.
+- [x] Diseño enlazado: `assets/design/design-system-v0.1.png`.
+- [x] Datos de prueba: no aplica (componentes presentacionales sin datos de dominio).
+- [x] Sin preguntas bloqueantes.
+
+## Decisiones de arranque (2026-11-02)
+
+Aprobadas por el usuario antes de empezar:
+
+1. **Dependencias de React y testing en `packages/ui`.** Se autoriza declarar `react@19.3.1` y `react-dom@19.3.1` como `peerDependencies` y como `devDependencies` (para tests), más `@testing-library/react@16.3.3`, `@testing-library/dom@10.4.2`, `jsdom@30.1.3`, `@vitejs/plugin-react@6.1.2`, `@types/react@19.3.0`, `@types/react-dom@19.3.0` y `axe-core` (última estable, fijada al instalar). Son las versiones que ya usa `apps/web`; no entra ninguna librería nueva al monorepo. Esto no contradice la revisión de F10: aquella prohibió React en el paquete *antes* de F11, no después.
+2. **Iconos.** `lucide-react@1.66.0` como `peerDependency` de `@memora/ui`; el consumidor fija la versión. Uso directo dentro de los componentes, con `aria-hidden` en los decorativos.
+3. **Ejemplos.** Ruta `/ui` en `apps/web` **solo en desarrollo**, con todos los componentes y estados. No se instala Storybook. El **catálogo** no debe entrar en el bundle de producción: la ruta existe siempre en el árbol generado (idéntico en desarrollo y producción) y en producción renderiza la página 404, mientras el catálogo se carga con `import()` solo en desarrollo. Verificado sobre `dist/` tras un build forzado.
+4. **Token de borde.** `--memora-border-strong` pasa a `#868399` en claro (3,41:1 sobre `bg`, 3,67:1 sobre blanco, 3,21:1 sobre `surface-2`) y `#6B7699` en oscuro (4,25:1 / 3,86:1 / 3,48:1). Sustituye al `#8E8CA6` propuesto en F10, que fallaba sobre `surface-2` (2,84:1).
+5. **Componentes del contrato sin feature.** `Toast` e `InlineAlert` → F12; `Breadcrumb` → F13; `Tabs`, `EmptyState` y `Accordion` → la primera feature que los necesite. Queda anotado en el tablero de `docs/04-features/README.md`.
+6. **`format:check`.** Se arregló aparte antes de F11 (PR #10, merge `0e57654`); no forma parte de esta rama.
 
 ## Handoff
 
@@ -118,3 +130,19 @@ Al terminar, completa `handoff.md` y actualiza el tablero. No hagas commit ni pu
 ## Preguntas abiertas
 
 No crear variantes que no estén en el sistema.
+
+## Revisión de accesibilidad y diseño (2026-11-02)
+
+Tercera tanda: **apto con correcciones**, sin bloqueantes. Se aplicaron A-1…A-11 y D-1…D-13.
+Decisiones del usuario registradas: señal no cromática en `Chip`/`SegmentedControl` y knob del
+`Switch` visible en oscuro; el diseño canónico manda en `Button`; axe en navegador real se
+traslada a F37 (sin Playwright aquí). El catálogo `/ui` se completa y se conecta al tema real.
+
+## Cierre previo a la aceptación (2026-11-02)
+
+Cuarta tanda: se aplicaron C-1, C-2 y C-3, se completó D-11 y se cerró D-14 (hover en
+deshabilitados), además de los menores de knob, chip seleccionado, `surface-active`,
+`loading`, animaciones y catálogo. Sin cambios de contrato ni de API. Verificación real en
+Chromium headless (`::after` = 44 px en 26 controles y hit-test del chip con ambos handlers) y
+suite completa en verde. F11 sigue en `review`; la aceptación (G4) y el commit quedan
+pendientes. Detalle en [handoff.md](handoff.md).
