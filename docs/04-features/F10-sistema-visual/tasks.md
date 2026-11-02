@@ -46,11 +46,82 @@
 ## Cierre
 
 - [x] Revisión independiente — primera **no apto** (B-01, M-01, M-03) y segunda **apto con correcciones** (M-02 y menores), aplicadas.
-- [x] Aceptación del usuario — **2026-11-02**, Firefox real sobre `/login`, `/circles` y `/help`; «De momento, todo parece estar bien», sin cambios pedidos. F10 queda en `accepted`.
+- [x] Aceptación del usuario — **2026-11-02**, Firefox real sobre `/login`, `/circles` y `/help`; «De momento, todo parece estar bien», sin cambios pedidos.
 - [x] `handoff.md` completo.
 - [x] Tablero actualizado.
 - [x] Bitácora y cobertura actualizadas.
 - [x] `apps/web/README.md` y `packages/ui/README.md` actualizados — estructura, tema, contrato de fuentes y tests.
-- [ ] Commit propuesto (sin ejecutar).
-- [ ] Push, PR, CI y merge.
-- [ ] `done`.
+- [x] Commits en `feat/F10-sistema-visual`: `517b6eb` `feat(ui): add visual theme system with tokens, fonts and theme switch (F10)`, `3c79110` `docs: record F10 implementation, review and handoff` y `d4826df` `docs: record F10 acceptance`.
+- [x] Push y PR: [#7](https://github.com/Luceir0/lab-final--memora/pull/7) `feat: F10 visual system and theme`.
+- [x] CI de la PR (head `d4826df`): run `41473542981`, `completed/success`. CI de `main` sobre el merge: run `41473996157`, `completed/success`.
+- [x] Merge `f3b26a5` en `main` (`Merge pull request #7 from Luceir0/feat/F10-sistema-visual`) y paso a **`done`** (2026-11-02).
+
+> La rama remota `feat/F10-sistema-visual` sigue existiendo tras el merge; no se eliminó en el cierre.
+
+## Definition of Done (F10)
+
+Marcado solo lo que tiene evidencia real; lo que no aplica o no se verificó queda sin marcar.
+
+**Producto**
+
+- [x] Cumple todos sus criterios de aceptación — AC-01 a AC-07 con evidencia en el handoff.
+- [ ] Tiene estados de vacío, carga, éxito y error — no aplica: F10 no entrega pantallas de producto.
+- [ ] Funciona con datos persistidos, no mocks — no aplica: F10 no consume datos de producto.
+- [ ] Respeta permisos y autorización en servidor — no aplica: F10 no añade endpoints ni datos privados.
+
+**Diseño**
+
+- [ ] Coincide con la pantalla de referencia — no aplica todavía: F10 no implementa pantallas de producto (F11+); el contrato visual sí coincide con `docs/02-design/tokens.md`.
+- [x] Usa solo tokens y componentes del sistema — guard anti-hex en `apps/web/src` y `packages/ui/src`, tokens vía utilidades Tailwind.
+- [x] Funciona en móvil y escritorio — revisión del usuario el 2026-11-02 en escritorio y vista móvil.
+- [x] Funciona en claro y oscuro — revisión del usuario el 2026-11-02 alternando Claro / Oscuro / Sistema.
+- [ ] Revisada en 320, 375, 768, 1024 y 1440 px — no se verificaron esos anchos exactos; solo escritorio y vista móvil.
+
+**Accesibilidad**
+
+- [ ] Teclado y foco — regla global de `:focus-visible` y radios nativos implementados y testeados, pero sin sesión explícita de teclado; revisión completa en F39.
+- [x] Etiquetas y errores — `ThemeToggle` usa `radiogroup` nativo con etiquetas visibles; F10 no tiene errores de formulario.
+- [x] Contraste — `contrast.test.ts` sobre los hex reales (4,5:1 texto, 3:1 foco/componentes); `--color-border-strong` queda como deuda de F11.
+- [x] Alternativa a gestos — no hay gestos: el único control es un grupo de radios nativo.
+- [ ] axe sin errores críticos — no se ejecutó axe; auditoría en F39.
+
+**Código**
+
+- [x] TypeScript estricto; sin `any` — `pnpm typecheck` 9/9.
+- [x] Lint y typecheck limpios — `pnpm lint` 6/6 y `pnpm typecheck` 9/9.
+- [ ] Sin errores de consola ni hidratación — la sesión en Firefox real no mostró incidencias, pero no se comprobó la consola de forma explícita y `suppressHydrationWarning` sigue documentado como riesgo; F37/F38.
+- [x] Contratos compartidos; sin duplicar DTOs — F10 no añade DTOs ni toca `packages/shared`.
+- [x] Sin secretos ni PII en logs — F10 no añade logging y la cookie de tema no contiene datos personales.
+- [x] Sin dependencias innecesarias — solo `lucide-react` en `apps/web` y `vitest` en `packages/ui`, ambas autorizadas; fuentes vendorizadas.
+
+**Tests**
+
+- [x] Unitarios de lógica nueva — `packages/ui` 44 tests y `apps/web` 88 tests.
+- [ ] API de endpoints y permisos — no aplica: F10 no añade endpoints.
+- [x] Componentes de interacción — `theme-toggle.test.tsx` y `theme-provider.test.tsx`.
+- [x] Casos negativos — `theme.test.ts` cubre valores desconocidos de cookie y el guard anti-hex detecta literales de color.
+- [ ] E2E si es flujo crítico — no hay E2E; AC-05, AC-06 y AC-07 automatizados pasan a F37/F38.
+- [x] Resultados ejecutados y reportados — tabla de verificación del handoff.
+
+**Documentación**
+
+- [x] Spec actualizada si cambió algo — el alcance no cambió; el contrato de tokens se actualizó en `docs/02-design/tokens.md`.
+- [x] `handoff.md` completo.
+- [x] Estado en `docs/04-features/README.md`.
+- [x] Bitácora de IA.
+- [x] Cobertura del temario con evidencia.
+- [x] ADR si hubo decisión — las siete decisiones de arranque quedaron en la spec y el handoff; no hubo cambio de arquitectura que exigiera ADR.
+
+**Entrega**
+
+- [x] Usuario ha probado el flujo — 2026-11-02, Firefox real.
+- [x] Usuario ha aceptado — 2026-11-02, sin cambios pedidos.
+- [x] Commit propuesto (no ejecutado sin permiso) — tres commits ejecutados con autorización.
+
+## Deuda trasladada
+
+- `ThemeToggle` al shell definitivo y a Perfil: **F11/F34**.
+- CSP con nonce o hash para el script de arranque: **F42**.
+- `--color-border-strong` por debajo de 3:1 sobre superficie: **F11**.
+- `format:check` en **13 archivos de `apps/api`** (deuda desde F08, CI no lo ejecuta): **F11**.
+- Cobertura automatizada de navegador de AC-05, AC-06 y AC-07: **F37/F38**.

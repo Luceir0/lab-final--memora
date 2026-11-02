@@ -75,7 +75,7 @@
 - `curl` al servidor de desarrollo: `/circles` 200, `/login` 200, `/help` 200 y `/api/health` vía proxy 200; sin cookie `data-theme="light"` con `theme-color #F6F6FA`; con cookie `memora-theme=dark`, `data-theme="dark"` con `theme-color #0B0F1E`.
 - **AC-05, AC-06 y AC-07 verificados manualmente**: el usuario revisó `/login`, `/circles` y `/help` en Firefox real el 2026-11-02, alternando claro/oscuro/sistema, recargando en oscuro, en escritorio y en vista móvil; «De momento, todo parece estar bien», sin cambios pedidos.
 - **No hay prueba automatizada de navegador** para estos criterios; Playwright queda para F37/F38.
-- F10 quedó **`accepted`** el 2026-11-02. Pendiente el cierre operativo (commit, PR, CI y merge); no existen todavía hash, número de PR ni run de CI.
+- F10 quedó **`done`** el 2026-11-02. El cierre operativo real: rama `feat/F10-sistema-visual`, commits `517b6eb`, `3c79110` y `d4826df`, **PR #7**, CI de la PR en verde (run `41473542981`, `completed/success`, head `d4826df`), merge `f3b26a5` en `main` y CI de `main` en verde (run `41473996157`, `completed/success`). Única deuda abierta: AC-05, AC-06 y AC-07 automatizados en F37/F38.
 
 ## Flujo E2E principal
 
