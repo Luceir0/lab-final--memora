@@ -1,12 +1,15 @@
 # Handoff — F10 Sistema visual y tema
 
-> Fecha: 2026-11-01 · Implementador: `ui-dev` (dos rondas) · Estado: **`accepted`**
-> (G4: 2026-11-02)
+> Fecha: 2026-11-01 · Implementador: `ui-dev` (dos rondas) · Estado: **`done`**
+> (G4 aceptación: 2026-11-02 · G5 cierre: 2026-11-02)
 > Revisión independiente: cerrada en dos rondas; primera **no apto** (B-01, M-01, M-03) y
 > segunda **apto con correcciones** (M-02 y menores de documentación/guard, aplicados) ·
 > Aceptación del usuario (G4): **2026-11-02**, revisión visual en Firefox real sobre
 > `/login`, `/circles` y `/help`, en claro/oscuro/sistema, escritorio y móvil, sin cambios
-> pedidos · Commit, PR, CI y merge: **no existen todavía**.
+> pedidos · Cierre operativo (G5): rama `feat/F10-sistema-visual`, commits `517b6eb`,
+> `3c79110` y `d4826df`, PR [#7](https://github.com/Luceir0/lab-final--memora/pull/7),
+> CI de la PR run `41473542981` `completed/success` (head `d4826df`), merge `f3b26a5` en
+> `main` y CI de `main` run `41473996157` `completed/success`.
 
 ## Resultado
 
@@ -22,8 +25,9 @@ La revisión independiente cerró sin bloqueantes abiertos. **El usuario aceptó
 el 2026-11-02** tras revisarla en Firefox real sobre el servidor de desarrollo
 (`localhost:3000`) en `/login`, `/circles` y `/help`, alternando Claro / Oscuro / Sistema,
 recargando en oscuro, en escritorio y en vista móvil. Su valoración fue «De momento, todo
-parece estar bien» y no pidió cambios. F10 queda en **`accepted`** (no en `done`): falta el
-cierre operativo (commits, push, PR, CI y merge con autorización).
+parece estar bien» y no pidió cambios. **F10 está en `done`**: el cierre operativo se
+completó el 2026-11-02 con la rama `feat/F10-sistema-visual`, la PR #7, CI en verde en la
+PR y en `main`, y el merge `f3b26a5` (ver «Cierre operativo»).
 
 ## Cambios (archivos)
 
@@ -116,6 +120,22 @@ es manual y la cobertura reproducible queda para **F37/F38**.
 **Deuda preexistente, no imputable a F10:** `pnpm format:check` falla en **13 archivos de
 `apps/api`** desde F08 (no modificados en esta rama). CI no ejecuta `format:check`.
 
+## Cierre operativo (G5, 2026-11-02)
+
+| Elemento | Valor real |
+| --- | --- |
+| Rama | `feat/F10-sistema-visual` |
+| Commits | `517b6eb` `feat(ui): add visual theme system with tokens, fonts and theme switch (F10)`; `3c79110` `docs: record F10 implementation, review and handoff`; `d4826df` `docs: record F10 acceptance` |
+| PR | [#7](https://github.com/Luceir0/lab-final--memora/pull/7) `feat: F10 visual system and theme` |
+| CI de la PR | run `41473542981` `CI` `completed/success`, head `d4826df` |
+| Merge en `main` | `f3b26a5` `Merge pull request #7 from Luceir0/feat/F10-sistema-visual` |
+| CI de `main` | run `41473996157` `CI` `completed/success` sobre el merge |
+| Rama remota | `feat/F10-sistema-visual` sigue existiendo tras el merge |
+
+La aceptación (G4) del usuario es la del 2026-11-02 descrita arriba. No se ejecutó ningún
+paso de este cierre operativo desde este rol de documentación: los identificadores son los
+del cierre ya ejecutado y se registran sin reinterpretarlos.
+
 ## Criterios de aceptación
 
 | AC | Criterio | Estado | Evidencia |
@@ -149,19 +169,20 @@ No quedan bloqueantes ni mayores abiertos.
 
 ## Pendiente
 
-- **Cierre operativo:** commits convencionales en `feat/F10-sistema-visual`, push, PR, CI
-  y merge solo con autorización. No existen todavía hashes, número de PR ni run de CI.
-- **F10 en `accepted`, no en `done`:** el paso a `done` depende del cierre operativo.
-- **Cobertura de navegador:** no hay prueba automatizada de los AC-05, AC-06 y AC-07; la
-  aceptación del 2026-11-02 es manual y F37/F38 deben aportar Playwright.
-- **`apps/web/README.md` y `packages/ui/README.md`:** actualizados con estructura, tema y contrato de fuentes.
-- `ThemeToggle` a Perfil y al shell definitivo en **F11/F34** (hoy provisional en
+No queda nada pendiente del cierre de F10: implementación, revisión, aceptación, commits,
+PR, CI y merge están cerrados con los identificadores de «Cierre operativo». Las únicas
+deudas abiertas son las trasladadas a otras features:
+
+- `ThemeToggle` al shell definitivo y a Perfil en **F11/F34** (hoy provisional en
   `/circles` con `TODO(F11/F34)`).
-- **CSP en F42:** el script de arranque es inline y necesita nonce o hash.
-- **Bordes de input en F11:** `--color-border-strong` no llega a 3:1 sobre superficie
-  (1,96:1 en claro, 1,82:1 en oscuro); candidato claro `#8E8CA6` (3,25:1).
-- **`format:check` en F11:** falla en 13 archivos de `apps/api` desde F08; CI no lo
-  ejecuta.
+- **CSP** con nonce o hash para el script de arranque en **F42**: hoy es inline y sin CSP
+  activa.
+- `--color-border-strong` por debajo de 3:1 sobre superficie (1,96:1 en claro, 1,82:1 en
+  oscuro; candidato claro `#8E8CA6`, 3,25:1) en **F11**.
+- `format:check` falla en **13 archivos de `apps/api`** desde F08 (deuda preexistente, no
+  imputable a F10; CI no lo ejecuta) → **F11**.
+- **Cobertura automatizada de navegador** de AC-05, AC-06 y AC-07 → **F37/F38**; la
+  verificación actual es manual en Firefox real y está documentada arriba.
 
 ## Riesgos y limitaciones
 
@@ -188,23 +209,27 @@ No quedan bloqueantes ni mayores abiertos.
   `--z-index-*`, `h1` móvil 26/32, implementación real de tema, fuente, cookie y
   `theme-color`, y deuda de `--color-border-strong` para F11.
 - `docs/04-features/F10-sistema-visual/handoff.md`: este documento, con la aceptación del
-  2026-11-02 y el estado `accepted`.
-- `docs/04-features/F10-sistema-visual/tasks.md`: implementación y AC con evidencia;
-  aceptación marcada, commit y cierre operativo sin marcar.
+  2026-11-02, el cierre operativo (PR #7, commits, runs y merge) y el estado `done`.
+- `docs/04-features/F10-sistema-visual/tasks.md`: implementación, AC y cierre marcados con
+  evidencia; deuda trasladada separada y Definition of Done con lo que se cumple y lo que
+  no.
+- `docs/04-features/F10-sistema-visual/spec.md`: estado de la cabecera a `done`.
 - `docs/06-process/ai-log.md`: entradas del 2026-11-01 (decisiones, implementación y dos
-  rondas de revisión) y del 2026-11-02 (revisión visual, aceptación y nota de proceso
-  sobre PRs sin `gh`).
-- `docs/07-curriculum/coverage-map.md`: sección F10 y resumen de estado.
-- `docs/00-index.md` y `README.md`: F10 pasa de `review` a `accepted`.
-- `docs/04-features/README.md`: «Situación actual» y fila de F10 alineadas con la
-  aceptación.
-- `docs/05-quality/test-matrix.md`: evidencia ejecutada de F10 y límite de navegador.
+  rondas de revisión), del 2026-11-02 (revisión visual, aceptación y nota de proceso sobre
+  PRs sin `gh`) y la nueva entrada del 2026-11-02 sobre el cierre operativo y el paso a
+  `done`.
+- `docs/07-curriculum/coverage-map.md`: sección F10 y resumen de estado con el cierre real.
+- `docs/00-index.md` y `README.md`: F10 pasa de `accepted` a `done` con PR, merge y runs.
+- `docs/04-features/README.md`: «Situación actual» y fila de F10 alineadas con `done`.
+- `docs/05-quality/test-matrix.md`: evidencia ejecutada de F10, límite de navegador y cierre
+  operativo.
 - `apps/web/README.md` y `packages/ui/README.md`: estructura, tema, contrato de fuentes y tests.
 
 ## Siguiente paso propuesto
 
-1. Commits convencionales en `feat/F10-sistema-visual`, push y PR a `main` con
-   autorización.
-2. CI en verde sobre la PR y merge con autorización; F10 pasa a `done` con el hash, el
-   número de PR y el run reales.
-3. F11 arranca después, con la deuda de bordes de input y `format:check`.
+1. Abrir **F11 (UI kit I: controles y datos)** con la deuda trasladada: `ThemeToggle` al
+   shell/Perfil (F11/F34), `--color-border-strong` por debajo de 3:1 y `format:check` en 13
+   archivos de `apps/api`.
+2. Mantener en F37/F38 la cobertura automatizada de navegador de AC-05, AC-06 y AC-07, y en
+   F42 la CSP con nonce/hash.
+3. No encadenar ninguna feature nueva sin permiso explícito del usuario (G1).

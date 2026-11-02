@@ -26,7 +26,7 @@ decisions:
 
 # F10 — Sistema visual y tema
 
-> **Milestone:** M1 · **Talla:** M · **Estado:** review · **Spec:** completa
+> **Milestone:** M1 · **Talla:** M · **Estado:** done · **Spec:** completa
 > **Depende de:** F09 · **Bloquea:** F11, F12, F14, F36
 
 ## Objetivo
