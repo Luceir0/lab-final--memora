@@ -29,8 +29,8 @@ Fuente visual: `assets/design/design-system-v0.1.png`. Los tokens se implementan
 | `--color-control-knob-border` | `#B9B6C9` | `#263049` | Borde del knob (lo delimita en claro) |
 | `--color-overlay` | `rgba(11,15,30,.5)` | `rgba(0,0,0,.6)` | Fondo de modales |
 | `--color-viewer-bg` | `#070A14` | `#070A14` | Visor de fotos |
-| `--color-inverse` | `#14132B` | `#EEF0FA` | Toasts, barra de selección |
-| `--color-on-inverse` | `#FFFFFF` | `#0B0F1E` | Texto sobre inverse |
+| `--color-inverse` | `#14132B` | `#EEF0FA` | Toasts y barra de selección |
+| `--color-on-inverse` | `#FFFFFF` | `#0B0F1E` | Texto y foco sobre inverse |
 
 En oscuro, `--color-primary-hover` es `#5F4CE6` (F11): con `--color-on-primary` da 5,73:1 y
 cumple AA en los botones de 14–16 px semibold. El valor anterior `#7A69F5` daba 4,06:1.
@@ -44,6 +44,16 @@ en `contrast.test.ts`. El texto sobre `elevated` oscuro da 10,84:1.
 oscuro. El texto `text` da 14,27:1 / 10,84:1 y `primary-text` 6,16:1 / 5,21:1, así que cumple
 AA en `secondary`, `ghost`, `Chip` y el quitar. Sustituye el uso de `--color-border` como
 fondo `active`, que era un token de borde usado como superficie.
+
+**Sobre `inverse` el foco no usa `--color-focus`.** En oscuro el anillo (`#A99CFF`) sobre el
+toast inverso (`#EEF0FA`) da 2,07:1 y no llega al 3:1 de componente. Los controles que viven
+sobre `inverse` (cierre y acción del toast) usan `--color-on-inverse` como color de anillo:
+18,14:1 en claro y 16,78:1 en oscuro.
+
+**Borde del panel de overlay en oscuro.** `Dialog` y `BottomSheet` usan `--color-border` en
+claro (`#E4E3EE`) y `--color-border-strong` en oscuro (`#6B7699`) solo en el borde del panel:
+3,86:1 contra el panel y 4,51:1 contra el scrim compuesto. Sin él, panel (`#131A2C`) y scrim
+(`#04060C`) quedan a 1,17:1 y se pierde el límite del modal. No cambia el token global.
 
 El `SegmentedControl` mantiene un borde exterior de 1 px con `--color-border` que el diseño no
 dibuja: sin él la pista (`surface-2`) se confunde con `bg` (1,1:1) y el grupo pierde límite.
@@ -60,6 +70,10 @@ actualizará cuando se regenere el diseño:
   el peso son señales no cromáticas obligatorias.
 - **Borde del knob del `Switch` en claro.** El PNG no lo delimita; con `#FFFFFF` sobre
   `#F0EFF7` (1,14:1) el knob se perdía.
+- **Botones destructivos en rojo suave.** El PNG pinta «Eliminar» en rojo sólido y las
+  pantallas de Ajustes usan una CTA azul-noche. Desde F12 manda una sola piel: borde y texto
+  rojos sobre `danger-soft`. Decisión del usuario: el rojo sólido y la CTA inversa para
+  borrar quedan descartados. Los assets se actualizarán cuando se regeneren.
 
 ## Estados
 
@@ -81,6 +95,26 @@ claro los base no llegan a 4.5:1 como texto (`#1E8A5A` 3,58:1, `#B4610A` 3,65:1 
 `#1C4F8A` 6,74:1). En oscuro coinciden con el color base porque ya superan AA
 (6,19:1, 6,59:1 y 5,89:1 sobre su soft). `--color-danger` sí cumple como texto en claro
 (4,81:1), por eso mantiene su `--color-danger-text` propio.
+
+### Rojo suave de acciones destructivas (F12)
+
+Las acciones destructivas de botones y CTA usan la misma piel: borde y texto rojos sobre
+fondo rojo suave (`#FDECEE` en claro, `#3A1820` en oscuro). No hay rojo sólido en botones ni
+CTA inversa para borrar. En filas de menú la piel se reduce a texto rojo con hover suave,
+porque una fila con borde y relleno permanentes rompería el patrón del `Menu`.
+
+| Token | Claro | Oscuro | Uso |
+| --- | --- | --- | --- |
+| `--color-danger-soft` | `#FDECEE` | `#3A1820` | Fondo base del botón |
+| `--color-danger-soft-hover` | `#F9DDE1` | `#4A1F29` | Hover |
+| `--color-danger-soft-active` | `#F4CFD6` | `#582733` | Pulsado |
+| `--color-danger` | `#C8283C` | `#FF6B7D` | Borde |
+| `--color-danger-text` | `#A61F31` | `#FF8A98` | Texto e icono |
+
+Ratios: texto sobre soft **6,43:1 / 7,02:1**, sobre hover **5,75 / 6,15** y sobre active
+**5,15 / 5,33**; borde sobre soft **4,81 / 5,75**. Todo cumple AA (texto 4,5 y componente
+no textual 3). El estado deshabilitado sigue el neutro global (`surface-2`, `muted`), no el
+rojo.
 
 ## Acentos de identidad
 
@@ -160,6 +194,13 @@ Los nombres públicos de las capas son `--z-index-nav`, `--z-index-sheet`,
 componentes. Tailwind trae `2xl` por defecto; aquí queda **anulado**
 (`--breakpoint-2xl: initial`) porque el contrato solo define cuatro breakpoints y
 `2xl` (1536 px) no forma parte del diseño.
+
+**Apilado de overlays anidados (F12).** `sheet` y `modal` son la base nominal, pero el orden
+real lo decide la apertura: cada overlay recibe `--memora-z-sheet + 2 × secuencia` (60, 62,
+64…) con techo por debajo de `toast` (80), de modo que una hoja abierta desde un diálogo se
+pinta encima de él y `Esc` cierra solo la capa superior. El fondo inerte y el bloqueo de
+scroll siguen esa misma pila; al vaciarse se restauran. No se usan números sueltos: la base
+se lee de los tokens y el desplazamiento lo calcula `overlay-utils`.
 
 ## Implementación
 

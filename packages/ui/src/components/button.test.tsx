@@ -108,11 +108,45 @@ describe('Button', () => {
     expect(classes).toContain('not-disabled:hover:bg-surface-2');
   });
 
+  it('danger usa borde y texto rojos sobre fondo suave con hover/active propios', () => {
+    render(<Button variant="danger">Eliminar</Button>);
+
+    const classes = screen.getByRole('button', { name: 'Eliminar' }).className.split(/\s+/);
+
+    expect(classes).toContain('border-danger');
+    expect(classes).toContain('bg-danger-soft');
+    expect(classes).toContain('text-danger-text');
+    expect(classes).toContain('not-disabled:hover:bg-danger-soft-hover');
+    expect(classes).toContain('not-disabled:active:bg-danger-soft-active');
+    expect(classes).not.toContain('bg-danger');
+  });
+
+  it('danger deshabilitado conserva el neutro global', () => {
+    render(
+      <Button variant="danger" disabled>
+        Eliminar
+      </Button>,
+    );
+
+    const button = screen.getByRole('button', { name: 'Eliminar' });
+    const classes = button.className.split(/\s+/);
+
+    expect(button).toHaveProperty('disabled', true);
+    expect(classes).toContain('disabled:bg-surface-2');
+    expect(classes).toContain('disabled:text-muted');
+    expect(classes).toContain('disabled:border-border');
+    expect(classes).not.toContain('disabled:opacity-100');
+  });
+
   it('no tiene violaciones de axe en sus estados', async () => {
     const { container } = render(
       <div>
         <Button>Primario</Button>
         <Button variant="secondary">Secundario</Button>
+        <Button variant="danger">Eliminar</Button>
+        <Button variant="danger" disabled>
+          Eliminar deshabilitado
+        </Button>
         <Button variant="danger" loading>
           Eliminando
         </Button>
@@ -156,12 +190,37 @@ describe('IconButton', () => {
     expect(onClick).not.toHaveBeenCalled();
   });
 
+  it('danger usa la misma piel suave que Button', () => {
+    render(<IconButton label="Eliminar" icon={<svg />} variant="danger" />);
+
+    const classes = screen.getByRole('button', { name: 'Eliminar' }).className.split(/\s+/);
+
+    expect(classes).toContain('border-danger');
+    expect(classes).toContain('bg-danger-soft');
+    expect(classes).toContain('text-danger-text');
+    expect(classes).toContain('not-disabled:hover:bg-danger-soft-hover');
+    expect(classes).toContain('not-disabled:active:bg-danger-soft-active');
+    expect(classes).not.toContain('bg-danger');
+  });
+
+  it('danger deshabilitado usa el neutro global', () => {
+    render(<IconButton label="Eliminar" icon={<svg />} variant="danger" disabled />);
+
+    const classes = screen.getByRole('button', { name: 'Eliminar' }).className.split(/\s+/);
+
+    expect(classes).toContain('disabled:bg-surface-2');
+    expect(classes).toContain('disabled:text-muted');
+    expect(classes).toContain('disabled:border-border');
+  });
+
   it('no tiene violaciones de axe', async () => {
     const { container } = render(
       <div>
         <IconButton label="Cerrar" icon={<svg />} />
         <IconButton label="Compartir" icon={<svg />} variant="solid" />
         <IconButton label="Quitar" icon={<svg />} variant="onMedia" />
+        <IconButton label="Eliminar" icon={<svg />} variant="danger" />
+        <IconButton label="Eliminar deshabilitado" icon={<svg />} variant="danger" disabled />
       </div>,
     );
 
@@ -178,12 +237,29 @@ describe('LinkButton', () => {
     expect(link.getAttribute('href')).toBe('/circles');
   });
 
+  it('hereda la piel danger de Button', () => {
+    render(
+      <LinkButton href="/delete" variant="danger">
+        Eliminar
+      </LinkButton>,
+    );
+
+    const classes = screen.getByRole('link', { name: 'Eliminar' }).className.split(/\s+/);
+
+    expect(classes).toContain('border-danger');
+    expect(classes).toContain('bg-danger-soft');
+    expect(classes).toContain('text-danger-text');
+  });
+
   it('no tiene violaciones de axe', async () => {
     const { container } = render(
       <div>
         <LinkButton href="/a">Primario</LinkButton>
         <LinkButton href="/b" variant="secondary">
           Secundario
+        </LinkButton>
+        <LinkButton href="/c" variant="danger">
+          Eliminar
         </LinkButton>
       </div>,
     );

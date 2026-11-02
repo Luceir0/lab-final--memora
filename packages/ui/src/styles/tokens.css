@@ -46,6 +46,8 @@
   --memora-warning-soft: #fce3cc;
   --memora-danger: #c8283c;
   --memora-danger-soft: #fdecee;
+  --memora-danger-soft-hover: #f9dde1;
+  --memora-danger-soft-active: #f4cfd6;
   --memora-danger-text: #a61f31;
   --memora-info: #2f6fd6;
   --memora-info-soft: #dce9fb;
@@ -163,6 +165,8 @@
   --memora-warning-soft: #3a2814;
   --memora-danger: #ff6b7d;
   --memora-danger-soft: #3a1820;
+  --memora-danger-soft-hover: #4a1f29;
+  --memora-danger-soft-active: #582733;
   --memora-danger-text: #ff8a98;
   --memora-info: #6fa4ff;
   --memora-info-soft: #14284a;
@@ -213,6 +217,8 @@
   --color-warning-soft: var(--memora-warning-soft);
   --color-danger: var(--memora-danger);
   --color-danger-soft: var(--memora-danger-soft);
+  --color-danger-soft-hover: var(--memora-danger-soft-hover);
+  --color-danger-soft-active: var(--memora-danger-soft-active);
   --color-danger-text: var(--memora-danger-text);
   --color-info: var(--memora-info);
   --color-info-soft: var(--memora-info-soft);

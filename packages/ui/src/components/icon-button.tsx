@@ -8,7 +8,7 @@ import {
 
 import { cn } from './utils';
 
-export type IconButtonVariant = 'solid' | 'outline' | 'ghost' | 'onMedia';
+export type IconButtonVariant = 'solid' | 'outline' | 'ghost' | 'danger' | 'onMedia';
 
 export interface IconButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   /** Nombre accesible obligatorio: el botón solo contiene un icono. */
@@ -23,6 +23,8 @@ const variantClasses: Record<IconButtonVariant, string> = {
   solid: 'bg-primary text-on-primary',
   outline: 'border border-border-strong bg-surface text-text',
   ghost: 'bg-transparent text-text',
+  // Acción destructiva: misma piel suave que Button.
+  danger: 'border border-danger bg-danger-soft text-danger-text',
   // Sobre una foto: fondo del visor translúcido y texto blanco en ambos temas.
   onMedia: 'bg-viewer-bg/70 text-on-primary backdrop-blur-sm',
 };
@@ -31,6 +33,7 @@ const variantInteractiveClasses: Record<IconButtonVariant, string> = {
   solid: 'not-disabled:hover:bg-primary-hover not-disabled:active:bg-primary-active',
   outline: 'not-disabled:hover:bg-surface-2 not-disabled:active:bg-surface-active',
   ghost: 'not-disabled:hover:bg-surface-2 not-disabled:active:bg-surface-active',
+  danger: 'not-disabled:hover:bg-danger-soft-hover not-disabled:active:bg-danger-soft-active',
   onMedia: 'not-disabled:hover:bg-viewer-bg/85 not-disabled:active:bg-viewer-bg',
 };
 
