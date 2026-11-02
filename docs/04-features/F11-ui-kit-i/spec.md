@@ -3,7 +3,7 @@ id: F11
 title: "UI kit I: controles y datos"
 milestone: M1
 size: M
-status: review
+status: done
 spec: complete
 depends_on:
   - "F10"
@@ -19,7 +19,7 @@ decisions:
 
 # F11 — UI kit I: controles y datos
 
-> **Milestone:** M1 · **Talla:** M · **Estado:** review · **Spec:** completa
+> **Milestone:** M1 · **Talla:** M · **Estado:** done · **Spec:** completa
 > **Depende de:** F10 · **Bloquea:** F13
 
 ## Objetivo
@@ -143,6 +143,24 @@ traslada a F37 (sin Playwright aquí). El catálogo `/ui` se completa y se conec
 Cuarta tanda: se aplicaron C-1, C-2 y C-3, se completó D-11 y se cerró D-14 (hover en
 deshabilitados), además de los menores de knob, chip seleccionado, `surface-active`,
 `loading`, animaciones y catálogo. Sin cambios de contrato ni de API. Verificación real en
-Chromium headless (`::after` = 44 px en 26 controles y hit-test del chip con ambos handlers) y
-suite completa en verde. F11 sigue en `review`; la aceptación (G4) y el commit quedan
-pendientes. Detalle en [handoff.md](handoff.md).
+Chromium headless (`::after` = 44 px en 29 controles y hit-test del chip con ambos handlers) y
+suite completa en verde. Detalle en [handoff.md](handoff.md).
+
+## Aceptación y cierre operativo (2026-11-02)
+
+- **Revisión independiente (G3):** dos rondas. Primera **no apto** por el hover del primario en
+  oscuro a 4,06:1 y por `routeTree.gen.ts`, que cambiaba con el modo. Segunda **apto con
+  correcciones**, con m-07 (documental) cerrado. Auditoría de accesibilidad en navegador real
+  (Chrome/CDP + axe 4.14): 0 violaciones y 0 `incomplete` tras dos rondas de correcciones.
+  Auditoría de diseño: tres pasadas, cerrada en apto.
+- **Aceptación del usuario (G4):** 2026-11-02, tras revisión en navegador real; sin cambios
+  pedidos.
+- **Cierre operativo (G5):** rama `feat/F11-ui-kit-i` con los commits `0e815e2`
+  (`docs: open F11 with approved decisions`), `a1648ce` (`docs: forbid commits while agents are
+  working`), `bf22fd4` (`feat(ui): add UI kit controls and data (F11)`) y `94620ee`
+  (`docs: record F11 implementation and audits`); PR
+  [#11](https://github.com/Luceir0/lab-final--memora/pull/11) `feat: F11 UI kit I — controls and
+  data` con CI en verde (run `41498545493`, `completed/success`, head `94620ee`); merge
+  `6d160ce` en `main` (`Merge pull request #11 from Luceir0/feat/F11-ui-kit-i`) con CI en verde
+  (run `41499457291`, `completed/success`). La rama remota sigue existiendo.
+- **Estado:** `done`. Las deudas reales quedan en «Pendiente» de [handoff.md](handoff.md).

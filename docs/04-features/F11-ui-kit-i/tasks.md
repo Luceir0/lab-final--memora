@@ -67,9 +67,21 @@
 
 ## Cierre
 
-- [ ] Revisión independiente.
-- [ ] Aceptación del usuario.
+- [x] Revisión independiente: dos rondas (primera **no apto**: hover del primario en oscuro 4,06:1 y `routeTree.gen.ts` que cambiaba con el modo; segunda **apto con correcciones**, m-07 documental cerrado).
+- [x] Auditoría de accesibilidad en navegador real (Chrome/CDP + axe 4.14): 0 violaciones y 0 `incomplete` tras dos rondas de correcciones.
+- [x] Auditoría de diseño: tres pasadas, cerrada en apto.
+- [x] Aceptación del usuario (G4): 2026-11-02, tras revisión en navegador real, sin cambios pedidos.
 - [x] `handoff.md` completo.
-- [x] Tablero actualizado (F11 en `review`).
+- [x] Tablero actualizado (F11 en `done`).
 - [x] Bitácora y cobertura actualizadas.
-- [ ] Commit propuesto (sin ejecutar).
+- [x] Commit, push, PR, CI y merge ejecutados con autorización (ver «Cierre operativo»).
+
+## Cierre operativo (2026-11-02)
+
+- [x] Commits en `feat/F11-ui-kit-i`: `0e815e2` (`docs: open F11 with approved decisions`), `a1648ce` (`docs: forbid commits while agents are working`), `bf22fd4` (`feat(ui): add UI kit controls and data (F11)`) y `94620ee` (`docs: record F11 implementation and audits`).
+- [x] PR [#11](https://github.com/Luceir0/lab-final--memora/pull/11) `feat: F11 UI kit I — controls and data`.
+- [x] CI de la PR: run `41498545493`, `completed/success`, head `94620ee`.
+- [x] Merge en `main`: `6d160ce` (`Merge pull request #11 from Luceir0/feat/F11-ui-kit-i`).
+- [x] CI de `main` sobre el merge: run `41499457291`, `completed/success`.
+- [x] Verificación del orquestador: `@memora/ui` 173 tests, `@memora/web` 88 tests, `build` forzado sin caché 5/5 en 9,54 s, `typecheck` 9/9 después del build, `format:check`/`docs:check`/`agents:check` OK, `routeTree.gen.ts` con SHA idéntico antes y después del build y catálogo ausente de `apps/web/dist` (chunk stub de 103 B).
+- [x] Deudas trasladadas documentadas en «Pendiente» de [handoff.md](handoff.md): axe en navegador real y medición automática de 44 px → F37; CSP → F42; `ThemeToggle` → F13/F34; chips con cuerpo y quitar → F13/F14; `dist` no ESM nativo de Node; borde del knob en claro 1,98:1; `animate-spin`/`animate-pulse` fuera de la escala de movimiento; anillo de hover del `Avatar` en oscuro 3,52:1.

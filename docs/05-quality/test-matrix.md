@@ -39,6 +39,7 @@
 | Actividad | F35 | evento por acción, orden, paginación, privacidad | API + componente |
 | Subidas globales | F27 | cola persistente en navegación, contador, recientes | Componente + E2E |
 | Tema | F10, F34 | claro/oscuro/sistema, persistencia, sin destello | Componente + E2E |
+| UI kit I: controles y datos | F11 | 18 componentes con estados y roles nativos; label/hint/error; loading con `aria-disabled`; `SegmentedControl` por flechas; áreas táctiles de 44 px; contraste sobre tokens; catálogo dev-only fuera del bundle | Componente (RTL) + axe + auditoría en navegador real |
 | PWA | F14 | manifest, iconos, instalación Android | Manual |
 | Content Island | F36 | snapshot, Help/FAQ/Privacy, build sin snapshot falla | API/build |
 | A11y | F10–F39 | formularios, diálogos, foco, contraste, teclado, zoom, 2.4.11 | axe + manual |
@@ -86,7 +87,7 @@
 - `corepack pnpm build` → OK; `dist/` **sin rastro del catálogo de `/ui`** (`rg` sobre `apps/web/dist` sin coincidencias para `Solo desarrollo`, `Catálogo de los componentes` y `showcase-`), pero **sí con el chunk stub de la ruta** `ui-iE__YnrP.js` (103 B, solo exporta un componente `null` y el `notFound`). El CSS compilado contiene `border-border-strong`, `bg-accent-violet`, `text-on-primary-soft`, `sr-only`, `animate-pulse` y `bg-viewer-bg`.
 - axe-core **4.14.0** sobre cada familia de componentes, con `color-contrast` desactivado en jsdom (sin layout) y cubierto por `contrast.test.ts` con los hex reales.
 - Limitación honesta: jsdom no aplica `:focus-visible` ni activa controles nativos con `Space`/flechas; los tests comprueban foco programático, `tabIndex`, roles y que las flechas de `SegmentedControl` cambien selección y foco. La verificación visual en navegador real queda para la aceptación del usuario.
-- F11 queda en **`review`**; no hay commit, PR ni CI todavía.
+- En la primera entrega F11 quedó en **`review`**; después se completaron la revisión independiente, las auditorías, la aceptación y el cierre operativo (ver los dos apartados siguientes).
 
 ## Revisión de accesibilidad y diseño (F11, 2026-11-02)
 
@@ -100,7 +101,17 @@
 - **Hit-test del `Chip` con `onClick` + `onRemove`**: `elementFromPoint` a 0,5 px del borde derecho del cuerpo devuelve el cuerpo; a 0,5 px después, el hueco; el clic real en el borde alterna `aria-pressed` y no elimina el chip.
 - **Hover de deshabilitados**: borde del `Switch`, color del segmento y fondo del `Chip` idénticos antes/después del ratón. **Hover del `Avatar`**: `box-shadow` con `rgb(91,71,224)` a 2 px. **`Button` loading**: `cursor: progress` y fondo sin cambio al hacer hover.
 - Limitación honesta: jsdom no calcula layout; la medición anterior es una comprobación CDP puntual, no un test de navegador del repo. Queda para F37/F38.
-- F11 sigue en **`review`**; no hay commit, PR ni CI todavía.
+- La cuarta tanda cerró la revisión con F11 aún en **`review`**, pendiente de aceptación y cierre operativo; ambos se completaron el mismo 2026-11-02 (ver el apartado siguiente).
+
+## Revisión, auditorías, aceptación y cierre (F11, 2026-11-02)
+
+- **Revisión independiente, dos rondas:** primera **no apto** por el hover del primario en oscuro a **4,06:1** (por debajo de 4,5:1) y por `routeTree.gen.ts`, que cambiaba con el modo; segunda **apto con correcciones**, con **m-07** (documental) cerrado.
+- **Auditoría de accesibilidad en navegador real** (Chrome/CDP + axe 4.14) sobre `/ui`: **0 violaciones y 0 `incomplete`** tras dos rondas de correcciones.
+- **Auditoría de diseño:** tres pasadas, cerrada en **apto**.
+- **Aceptación del usuario (G4):** 2026-11-02, tras revisión en navegador real, **sin cambios pedidos**.
+- **Verificación del orquestador:** `@memora/ui` **173 tests** (95 de componentes + 78 de estilos, 10 archivos); `@memora/web` **88 tests** (17 archivos); `build` forzado sin caché **5/5** en **9,54 s**; `typecheck` **9/9** después del build; `format:check`, `docs:check` y `agents:check` OK; `routeTree.gen.ts` con **SHA idéntico** antes y después del build; catálogo ausente de `apps/web/dist` con chunk stub de **103 B**.
+- **Cierre operativo:** rama `feat/F11-ui-kit-i`, commits `0e815e2`, `a1648ce`, `bf22fd4` y `94620ee`, **PR #11**, CI de la PR en verde (run `41498545493`, `completed/success`, head `94620ee`), merge `6d160ce` en `main` y CI de `main` en verde (run `41499457291`, `completed/success`).
+- **F11 queda `done`** el 2026-11-02. Deudas abiertas: axe en navegador real y medición automática de 44 px (**F37**); CSP con nonce/hash (**F42**); `ThemeToggle` al shell/Perfil (**F13/F34**); chips con cuerpo y quitar en producto (**F13/F14**).
 
 ## Flujo E2E principal
 
