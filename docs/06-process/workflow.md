@@ -38,6 +38,8 @@ draft → ready → in-progress → review → accepted → done
 - `reviewer` independiente revisa diff.
 - Hallazgos por severidad.
 - El implementador corrige.
+- El nivel de la feature (tabla del tablero) decide el alcance: reviewer obligatorio en **A**, **B** y **V**; en **C** bastan los gates automáticos y la aceptación del usuario.
+- Una ronda por defecto; la segunda solo con un bloqueante. Los menores y nits van a `Pendiente` y no reabren la revisión.
 
 ### G4 — Aceptación
 
@@ -59,6 +61,7 @@ draft → ready → in-progress → review → accepted → done
 - [ ] Contratos congelados.
 - [ ] Diseño enlazado (móvil/escritorio, claro/oscuro, estados).
 - [ ] Datos de prueba.
+- [ ] Nivel de auditoría (A/B/C/V) declarado en el plan de G1.
 - [ ] Sin preguntas bloqueantes.
 
 Si falta algo, la feature vuelve a `draft`.
