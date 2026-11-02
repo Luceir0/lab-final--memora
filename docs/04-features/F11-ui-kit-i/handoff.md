@@ -1,10 +1,10 @@
 # Handoff — F11 UI kit I: controles y datos
 
-- **Estado:** `review` (revisión 1: no apto, corregida; revisión 2: apto con correcciones; tercera tanda: aplicada; **cuarta tanda de cierre: C-1/C-2/C-3, D-11, hover de deshabilitados, avatar y catálogo aplicados**)
-- **Rama:** `feat/F11-ui-kit-i` (commit de apertura `0e815e2`; **sin commit de implementación**)
+- **Estado:** `done` (2026-11-02)
+- **Rama:** `feat/F11-ui-kit-i` (commits `0e815e2`, `a1648ce`, `bf22fd4` y `94620ee`; PR #11, merge `6d160ce`)
 - **Fecha:** 2026-11-02
 - **Implementado por:** subagente `ui-dev`
-- **Revisado por:** auditorías de accesibilidad y diseño (apto con correcciones)
+- **Revisado por:** revisión independiente (dos rondas), auditoría de accesibilidad en navegador real (Chrome/CDP + axe 4.14) y auditoría de diseño (tres pasadas)
 
 ## Resultado
 
@@ -16,7 +16,42 @@ Chromium headless: 29 controles con `::after` de 44 px, incluidos todos los que 
 
 Resultado real: **173 tests en `packages/ui`** (95 de componentes + 78 de estilos) y 88 en
 `apps/web`; build 5/5 y `typecheck` 9/9. El catálogo sigue sin textos ni chunk propio en
-producción.
+producción. La revisión independiente, las auditorías, la aceptación del usuario y el cierre
+operativo se completaron el 2026-11-02 (ver la sección siguiente).
+
+## Revisión, auditorías, aceptación y cierre operativo (2026-11-02)
+
+### Revisión independiente (G3)
+
+Dos rondas:
+
+| Ronda | Resultado | Hallazgos principales |
+| --- | --- | --- |
+| 1 | **No apto** | Hover del botón primario en oscuro a **4,06:1** (por debajo de 4,5:1) y `routeTree.gen.ts` que cambiaba según el modo |
+| 2 | **Apto con correcciones** | Correcciones aplicadas; **m-07** (documental) cerrado en esta ronda |
+
+### Auditorías
+
+| Auditoría | Alcance | Resultado |
+| --- | --- | --- |
+| Accesibilidad | Navegador real (Chrome/CDP + axe 4.14) sobre `/ui` | **0 violaciones y 0 `incomplete`** tras dos rondas de correcciones |
+| Diseño | Tokens, estados y catálogo | Tres pasadas, cerrada en **apto** |
+
+### Aceptación (G4)
+
+El usuario aceptó la feature el **2026-11-02** tras revisarla en navegador real. **No pidió
+cambios.**
+
+### Cierre operativo (G5)
+
+| Elemento | Identificador real |
+| --- | --- |
+| Rama | `feat/F11-ui-kit-i` (sigue existiendo en remoto) |
+| Commits | `0e815e2` (`docs: open F11 with approved decisions`), `a1648ce` (`docs: forbid commits while agents are working`), `bf22fd4` (`feat(ui): add UI kit controls and data (F11)`), `94620ee` (`docs: record F11 implementation and audits`) |
+| PR | [#11](https://github.com/Luceir0/lab-final--memora/pull/11) `feat: F11 UI kit I — controls and data` |
+| CI de la PR | run `41498545493`, `completed/success`, head `94620ee` |
+| Merge en `main` | `6d160ce` (`Merge pull request #11 from Luceir0/feat/F11-ui-kit-i`) |
+| CI de `main` | run `41499457291`, `completed/success` |
 
 ## Accesibilidad
 
@@ -112,7 +147,19 @@ producción.
 | `Button` loading | cursor `progress` y fondo `rgb(91,71,224)` antes/después del hover |
 | `transition-property` de botones | `background-color,border-color,color` (sin `outline-color`) |
 | SHA256 de `routeTree.gen.ts` antes/después de build | `db298306…e21206` idéntico |
-| `git status --short` | `routeTree.gen.ts` `M` por la ruta nueva sin commitear, no por el build |
+| `git status --short` | limpio tras el merge del 2026-11-02; `routeTree.gen.ts` quedó commiteado con la ruta `/ui` |
+
+## Verificación del cierre (orquestador, 2026-11-02)
+
+| Comprobación | Resultado real |
+| --- | --- |
+| `@memora/ui` test | **173 tests** (95 de componentes + 78 de estilos, 10 archivos) |
+| `@memora/web` test | **88 tests** (17 archivos) |
+| `corepack pnpm build` forzado sin caché | **5/5** en **9,54 s** |
+| `corepack pnpm typecheck` después del build | **9/9** |
+| `format:check`, `docs:check`, `agents:check` | OK |
+| SHA de `routeTree.gen.ts` antes/después del build | **idéntico** |
+| Catálogo en `apps/web/dist` | **ausente**, con chunk stub de **103 B** |
 
 ## Ratios de los tokens nuevos y corregidos
 
@@ -132,15 +179,66 @@ producción.
 
 ## Criterios de aceptación
 
-AC-01 a AC-06: **pasan**. AC-07: **pasa con matiz** — consultas por rol/nombre; `getByText`
-para hints/descripciones y la clase `animate-spin` en el test de `Spinner.animated`.
+AC-01 a AC-07: **pasan al cierre**. AC-01…AC-06 por implementación y auditorías; AC-07 **pasa con
+matiz** — consultas por rol/nombre; `getByText` para hints/descripciones y la clase
+`animate-spin` en el test de `Spinner.animated`. La revisión independiente (dos rondas), la
+auditoría de accesibilidad en navegador real (0 violaciones, 0 `incomplete`) y la auditoría de
+diseño (tres pasadas, apto) no dejaron bloqueantes abiertos.
+
+## Definition of Done
+
+Marcado solo lo evidenciado en esta feature:
+
+- [x] Cumple sus criterios de aceptación (AC-01…AC-07).
+- [ ] Estados de vacío, carga, éxito y error: cubiertos en los componentes (`loading`, `error`,
+      disabled, empty del `SearchField`), pero no hay estados de página de producto.
+- [ ] Datos persistidos y permisos en servidor: **no aplica**; F11 son componentes presentacionales.
+- [x] Coincide con el diseño: auditoría de diseño, tres pasadas, apto.
+- [x] Usa solo tokens y componentes del sistema (guard anti-hex en verde).
+- [ ] Móvil y escritorio: catálogo revisado en Chromium headless y navegador real; no hay
+      revisión sistemática a 320/375/768/1024/1440.
+- [x] Claro y oscuro: ambos temas cubiertos por tests de contraste y auditoría de diseño.
+- [x] Teclado y foco: roles, foco programático y flechas del `SegmentedControl` en tests; el
+      comportamiento nativo de radios se documenta como correcto.
+- [x] Etiquetas y errores: label/hint/error con `aria-describedby` y `aria-invalid`.
+- [x] Contraste: ratios calculados sobre los hex reales de los tokens.
+- [ ] Alternativa a gestos: no aplica en esta entrega (no hay gestos).
+- [ ] axe sin errores críticos: 0 violaciones en **navegador real**; en jsdom sigue excluyendo
+      `color-contrast` por falta de layout.
+- [x] TypeScript estricto; sin `any`.
+- [x] Lint y typecheck limpios.
+- [ ] Sin errores de consola ni hidratación: el catálogo carga en desarrollo; no hay prueba
+      automatizada de hidratación de `/ui`.
+- [x] Contratos compartidos: no se duplican DTOs (no aplica dominio).
+- [x] Sin secretos ni PII.
+- [x] Unitarios de lógica nueva y componentes de interacción (173 tests).
+- [ ] API de endpoints y permisos: **no aplica**.
+- [x] Resultados ejecutados y reportados.
+- [ ] E2E: **no aplica**; F37/F38.
+- [x] Spec actualizada, `handoff.md` completo y estado en el tablero.
+- [x] Bitácora y cobertura del temario.
+- [ ] ADR: no hubo decisión nueva de arquitectura; las decisiones de arranque están en la spec.
+- [x] Usuario ha probado y aceptado (2026-11-02).
+- [x] Commit, PR, CI y merge ejecutados con autorización.
 
 ## Pendiente
 
-- Revisión/aceptación final del usuario (G4) en navegador real, móvil y escritorio, claro y oscuro.
-- **axe en navegador real: F37** (no se instala Playwright aquí).
-- Commit de implementación, push, PR y CI. Único commit: `0e815e2` de apertura.
-- **Limitación conocida:** `dist` no es ESM nativo de Node; solo bundlers.
+Deudas reales, todas trasladadas:
+
+- **axe en navegador real y medición automática de 44 px → F37.** La medición de áreas táctiles
+  se hizo con `chrome-headless-shell` + CDP sobre `/ui`; no es un test del repo.
+- **CSP con nonce/hash → F42** (incluye el script previo al pintado).
+- **`ThemeToggle` al shell/Perfil → F13/F34.**
+- **Chips con cuerpo y quitar en producto → F13/F14** (hoy solo existen en el catálogo).
+- **`dist` de `@memora/ui` no es ESM nativo de Node:** los imports internos no llevan `.js` y
+  `moduleResolution` es `bundler`; solo consumidores con bundler. Documentado en
+  `packages/ui/README.md`.
+- **Borde del knob del `Switch` en claro a 1,98:1** contra el knob (1,74:1 contra `surface-2`):
+  cumple el 1,5:1 del criterio de componente no textual, pero queda justo.
+- **`animate-spin`/`animate-pulse` fuera de la escala de movimiento** (150/250/350 ms);
+  documentado, no corregido.
+- **Anillo de hover del `Avatar` en oscuro a 3,52:1**: cumple 3:1 con margen justo; si F39 toca
+  la paleta, hay que revisarlo.
 
 ## Riesgos y limitaciones
 
@@ -152,9 +250,8 @@ para hints/descripciones y la clase `animate-spin` en el test de `Spinner.animat
 - axe sigue sin `color-contrast` en jsdom; además ahora falla con `incomplete` no-layout.
 - El contador de `AvatarGroup` conserva el `ring` de superficie, que en oscuro puede leerse
   como borde; no se cambió porque el diseño lo usa para el solape.
-- `routeTree.gen.ts` aparecerá como modificado hasta que se commitee la ruta.
-- `AGENTS.md` y `workflow.md` siguen modificados por actualizaciones externas.
-- `ai-log.md` y `coverage-map.md` están modificados en el árbol por otros roles; **no se tocaron**.
+- `dist` de `@memora/ui` no es ESM nativo de Node (ver «Pendiente»).
+- La rama remota `feat/F11-ui-kit-i` sigue existiendo tras el merge; no se ha borrado.
 
 ## Documentación actualizada
 
@@ -162,10 +259,12 @@ para hints/descripciones y la clase `animate-spin` en el test de `Spinner.animat
 - [x] `docs/02-design/components.md` (solo contrato afectado)
 - [x] `docs/04-features/F11-ui-kit-i/{spec,tasks,handoff}.md`
 - [x] `docs/05-quality/test-matrix.md`
-- [x] `packages/ui/README.md`
-- [ ] `ai-log.md` y `coverage-map.md`: **no tocados**, los cierra `docs-scribe`.
+- [x] `packages/ui/README.md` (incluye la limitación de ESM)
+- [x] `docs/04-features/README.md`, `docs/00-index.md` y `README.md`
+- [x] `docs/06-process/ai-log.md` y `docs/07-curriculum/coverage-map.md`
 
 ## Siguiente paso propuesto
 
-Aceptación en navegador real con foco/teclado y escala de grises, y revisión final del diff.
-Después, solo con autorización, commit + PR. No se hace commit ni push desde este rol.
+F12 — UI kit II: overlays y feedback queda en `draft` y no se abre sin autorización explícita
+del usuario. Antes de empezar, decidir si se resuelven en F12 las deudas de `ThemeToggle` y
+chips o se dejan para F13/F14.
