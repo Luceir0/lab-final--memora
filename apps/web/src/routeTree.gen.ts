@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as CirclesRouteImport } from './routes/circles'
 import { Route as HelpRouteImport } from './routes/help'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as UiRouteImport } from './routes/ui'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -34,18 +35,25 @@ const LoginRoute = LoginRouteImport.update({
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const UiRoute = UiRouteImport.update({
+  id: '/ui',
+  path: '/ui',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/circles': typeof CirclesRoute
   '/help': typeof HelpRoute
   '/login': typeof LoginRoute
+  '/ui': typeof UiRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/circles': typeof CirclesRoute
   '/help': typeof HelpRoute
   '/login': typeof LoginRoute
+  '/ui': typeof UiRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -53,13 +61,14 @@ export interface FileRoutesById {
   '/circles': typeof CirclesRoute
   '/help': typeof HelpRoute
   '/login': typeof LoginRoute
+  '/ui': typeof UiRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/circles' | '/help' | '/login'
+  fullPaths: '/' | '/circles' | '/help' | '/login' | '/ui'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/circles' | '/help' | '/login'
-  id: '__root__' | '/' | '/circles' | '/help' | '/login'
+  to: '/' | '/circles' | '/help' | '/login' | '/ui'
+  id: '__root__' | '/' | '/circles' | '/help' | '/login' | '/ui'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -67,6 +76,7 @@ export interface RootRouteChildren {
   CirclesRoute: typeof CirclesRoute
   HelpRoute: typeof HelpRoute
   LoginRoute: typeof LoginRoute
+  UiRoute: typeof UiRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -99,6 +109,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/ui': {
+      id: '/ui'
+      path: '/ui'
+      fullPath: '/ui'
+      preLoaderRoute: typeof UiRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -107,6 +124,7 @@ const rootRouteChildren: RootRouteChildren = {
   CirclesRoute: CirclesRoute,
   HelpRoute: HelpRoute,
   LoginRoute: LoginRoute,
+  UiRoute: UiRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -1,17 +1,19 @@
+import viteReact from '@vitejs/plugin-react';
 import { defineConfig } from 'vitest/config';
 
 /**
- * Vitest de `packages/ui` (F10).
+ * Vitest de `packages/ui`.
  *
- * Solo Node: aquí se prueba el contrato de los CSS (tokens, tema, fuentes),
- * no componentes React. Los tests de integración de la app viven en
- * `apps/web`.
+ * jsdom para los componentes React (F11) y para los tests de contrato de los
+ * CSS (F10), que solo leen archivos con `?raw` y no dependen de Node. `css:
+ * true` mantiene `?raw` devolviendo el contenido real.
  */
 export default defineConfig({
+  plugins: [viteReact()],
   test: {
-    environment: 'node',
-    include: ['src/**/*.test.ts'],
-    // Necesario para que `?raw` devuelva el CSS real en Vitest.
+    environment: 'jsdom',
+    include: ['src/**/*.test.{ts,tsx}'],
+    setupFiles: ['./src/test/setup.ts'],
     css: true,
   },
 });

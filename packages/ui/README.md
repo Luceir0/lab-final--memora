@@ -1,72 +1,85 @@
 # @memora/ui
 
-Componentes presentacionales y tokens de diseño de Memora.
+Componentes presentacionales, tokens y base visual de Memora.
 
-F05 dejó `./tokens.css` con los tokens semánticos en claro y oscuro y un bloque
-`@theme inline` para Tailwind 4. F10 añade `./theme.css`, `./fonts.css`, Vitest en Node y
-los tests de contrato y contraste. Todavía no hay React ni componentes: llegan en
-F11/F12.
+El paquete reúne los **18 componentes** de F11 (17 controles y datos + `VisuallyHidden`), los
+tokens de F05/F10 y la base del documento. Es presentacional: no importa router, query, fetch,
+dominio ni `apps/*`.
 
 ## Fronteras
 
 - `ui` → `config` (tooling). Nada más.
 - No importa `@memora/shared`, `@memora/api-client` ni `apps/*`.
-- Los tests del paquete no leen archivos de `apps/*`; la existencia de las fuentes
-  vendorizadas se verifica desde `apps/web`.
-- Sin React, sin componentes, sin lógica de dominio, sin fetch y sin estado de servidor.
-- Se consume como fuente en dev y se compila a `dist` para el build.
+- Sin lógica de dominio, sin fetch y sin estado de servidor.
+- React 19, `react-dom` y `lucide-react` son **peerDependencies**: el consumidor fija las
+  versiones. Para desarrollo y tests están también como `devDependencies`.
+- Se consume a través del `dist` compilado por `tsc` (`main`/`types`), no como fuente.
 
 ## Estructura
 
 ```text
 packages/ui/
 ├── src/
-│   ├── index.ts                  # punto de entrada (UI_PACKAGE_NAME)
+│   ├── index.ts                  # exports de componentes, props y UI_PACKAGE_NAME
 │   ├── vite-assets.d.ts          # tipos de imports ?raw usados por los tests
+│   ├── components/               # 18 componentes + helpers internos + tests
+│   │   ├── button.tsx
+│   │   ├── icon-button.tsx
+│   │   ├── link-button.tsx
+│   │   ├── text-field.tsx
+│   │   ├── text-area.tsx
+│   │   ├── search-field.tsx
+│   │   ├── visually-hidden.tsx
+│   │   ├── checkbox.tsx
+│   │   ├── switch.tsx
+│   │   ├── segmented-control.tsx
+│   │   ├── avatar.tsx
+│   │   ├── avatar-group.tsx
+│   │   ├── badge.tsx
+│   │   ├── chip.tsx
+│   │   ├── card.tsx
+│   │   ├── progress-bar.tsx
+│   │   ├── spinner.tsx
+│   │   ├── skeleton.tsx
+│   │   └── *.test.tsx
+│   ├── test/                     # setup de RTL y helper de axe
 │   └── styles/
 │       ├── tokens.css            # tokens runtime + @theme, exportado como ./tokens.css
 │       ├── theme.css             # base del documento, foco y reduced motion
 │       ├── fonts.css             # @font-face de Plus Jakarta Sans
-│       ├── tokens.test.ts        # contrato de tokens y breakpoints
-│       ├── contrast.test.ts      # contraste WCAG calculado sobre tokens.css
-│       ├── theme.test.ts         # base, foco y reduced motion
-│       ├── fonts.test.ts         # contrato de los @font-face
-│       └── package.test.ts       # exports y script de test
-├── vitest.config.ts              # entorno Node, include de src/**/*.test.ts
+│       └── *.test.ts             # contrato de tokens, contraste, tema y fuentes
+├── vitest.config.ts              # jsdom + plugin React + setup
 ├── tsconfig.json                 # typecheck (sin emitir)
 └── tsconfig.build.json           # build a dist con declaraciones
 ```
 
-## Tokens
+## Componentes
 
-`src/styles/tokens.css` es CSS-first: no hay preset JS ni `tailwind.config`.
+Tanda A (acción y formulario): `Button`, `IconButton`, `LinkButton`, `TextField`, `TextArea`,
+`SearchField` y `VisuallyHidden`.
 
-- Variables CSS en `:root` y `[data-theme="dark"]`: colores, estados, acentos,
-  tipografía, radios, sombras, movimiento y capas (fuente: `docs/02-design/tokens.md`).
-- `color-scheme` vive aquí, junto al resto de tokens de runtime.
-- `@theme inline` las expone como utilidades de Tailwind 4 (`bg-bg`, `text-text`,
-  `bg-surface`, `text-primary`, `rounded-xl`, `shadow-md`).
-- Los cambios de tema funcionan porque las utilidades referencian la variable, no un
-  valor congelado.
-- Un `@theme` no inline fija los breakpoints de Memora (`sm` 480, `md` 768, `lg` 1024,
-  `xl` 1280) y anula `2xl`; el `h1` móvil baja a 26/32 px por debajo de 480 px.
+Tanda B (selección y datos): `Checkbox`, `Switch`, `SegmentedControl`, `Avatar`, `AvatarGroup`,
+`Badge`, `Chip`, `Card`, `ProgressBar`, `Spinner` y `Skeleton`.
 
-## Tema
+Reglas que aplican todos:
 
-`src/styles/theme.css` define la base del documento que necesita cualquier app
-consumidora: `html`/`body` con tokens, `::selection`, foco visible global y la regla de
-`prefers-reduced-motion` que lleva animaciones, transiciones y scroll suave a 0. No
-duplica `color-scheme`: ese token sigue en `tokens.css`.
+- `<button>` o `<a>` reales; nunca un `div` con `onClick`.
+- Estados default, hover, focus, disabled, loading o error cuando el contrato los define.
+- Foco visible global desde `theme.css`; no se duplica en cada componente.
+- Iconos decorativos con `aria-hidden`; botones de icono con `aria-label` obligatorio.
+- `forwardRef` en `Button`, `TextField`, `TextArea`, `SearchField`, `Checkbox` y `Switch`.
+- Sin colores literales: solo tokens y utilidades Tailwind del `@theme`.
 
-## Fuentes
+## Tokens, tema y fuentes
 
-`src/styles/fonts.css` declara Plus Jakarta Sans con dos subsets variables (latin y
-latin-ext), pesos 200–800 y `font-display: swap`. Las rutas apuntan a
-`/fonts/plus-jakarta-sans-*.woff2`.
+`src/styles/tokens.css` es CSS-first: no hay preset JS ni `tailwind.config`. Variables en
+`:root` y `[data-theme="dark"]`; `@theme inline` las expone como utilidades (`bg-surface`,
+`text-muted`, `border-border-strong`, `bg-accent-violet`…). Un `@theme` no inline fija los
+breakpoints 480/768/1024/1280 y anula `2xl`.
 
-El paquete no incluye los binarios: la app consumidora debe servir esos `.woff2` y el
-`OFL.txt` en `/fonts/`. En `apps/web` viven en `public/fonts/` y el `<head>` precarga
-solo el subset latin.
+`src/styles/theme.css` define la base del documento, `::selection`, el foco visible global y
+`prefers-reduced-motion`. `src/styles/fonts.css` declara Plus Jakarta Sans (latin y latin-ext,
+pesos 200–800, `font-display: swap`); los `.woff2` los sirve la app consumidora en `/fonts/`.
 
 ## Tests
 
@@ -74,31 +87,40 @@ solo el subset latin.
 corepack pnpm --filter @memora/ui test
 ```
 
-Vitest 5 en entorno Node, sin React ni jsdom. Cubren:
+Vitest 5 con **jsdom**, `@testing-library/react` y `@testing-library/dom`. Los tests de
+componentes consultan por **rol y nombre accesible**, cubren teclado, estados y ejecutan
+`axe-core` con `color-contrast` desactivado (jsdom no calcula layout ni pintado). El helper
+falla también con `incomplete` salvo en las reglas que dependen de layout (`color-contrast`,
+`color-contrast-enhanced`, `target-size`). El contraste real se cubre en
+`src/styles/contrast.test.ts` sobre los hex de `tokens.css`.
 
-- contrato de tokens en claro y oscuro, `@theme inline` sin autorreferencias, radios,
-  sombras y los tres tokens `*-text`;
-- breakpoints propios, anulación de `2xl` y `h1` móvil;
-- contraste WCAG 2.2 calculado sobre los hex reales: AA para texto normal y 3:1 para
-  foco, componentes gráficos y borde de selección, con informe de los pares que llegan
-  a AAA;
-- `theme.css`: base, foco visible y `prefers-reduced-motion`;
-- `fonts.css`: dos `@font-face`, pesos, `swap`, `unicode-range` y ausencia de fuentes de
-  terceros;
-- exports de los tres CSS y script `test` del paquete.
+**La cobertura con axe en navegador real es de F37**, no de este paquete: aquí no se instala
+Playwright ni se simulan medidas de layout.
 
-## Consumo previsto
+## Script `dev`
 
-`apps/web` importa `@memora/ui/tokens.css`, `@memora/ui/theme.css` y
-`@memora/ui/fonts.css` desde su CSS global y declara `@source` hacia
-`packages/ui/src` para que Tailwind vea las clases de los componentes. Sin
-`tailwind.config` en ninguna de las dos partes.
+```bash
+corepack pnpm --filter @memora/ui dev
+```
+
+`tsc --watch --preserveWatchOutput` recompila `dist` al editar fuentes. `turbo dev` lo arranca
+junto a `apps/web`, de modo que el catálogo `/ui` (que consume `dist`) refleja los cambios sin
+reiniciar el servidor.
+
+## Limitación conocida: ESM en Node
+
+`dist` no es importable directamente por Node ESM: los imports internos no llevan extensión
+`.js` y `moduleResolution` es `bundler`. El paquete está pensado para consumidores con
+**bundler** (Vite/Next), que es el único caso actual (`apps/web`). No hay consumidor Node. Si
+aparece uno, habrá que decidir entre extensiones explícitas o un paso de bundling; no se
+cambia ahora.
 
 ## Comandos
 
 `pnpm` puede no estar en PATH; usa `corepack pnpm`.
 
 ```bash
+corepack pnpm --filter @memora/ui dev
 corepack pnpm --filter @memora/ui build
 corepack pnpm --filter @memora/ui lint
 corepack pnpm --filter @memora/ui test
@@ -107,6 +129,7 @@ corepack pnpm --filter @memora/ui typecheck
 
 ## Pendiente
 
-- Componentes base y sus estados (F11/F12).
-- Decidir si `HelpContent`, hoy en `apps/web`, se mueve aquí cuando exista React en el
-  paquete (F11/F12).
+- Overlays y feedback de F12 (`Toast`, `InlineAlert`, `Dialog`…).
+- Decidir si `HelpContent`, hoy en `apps/web`, se mueve aquí cuando exista un componente de
+  contenido compartido (F36).
+- ESM nativo en Node si aparece un consumidor fuera de un bundler.
