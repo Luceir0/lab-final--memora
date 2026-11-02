@@ -9,21 +9,57 @@ Fuente visual: `assets/design/design-system-v0.1.png`. Los tokens se implementan
 | `--color-bg` | `#F6F6FA` | `#0B0F1E` | Fondo |
 | `--color-surface` | `#FFFFFF` | `#131A2C` | Tarjetas, barras, hojas |
 | `--color-surface-2` | `#F0EFF7` | `#1B2338` | Inputs, hover, progreso, skeleton |
+| `--color-surface-active` | `#E4E3EE` | `#2A3450` | Fondo pulsado (`active`) de botones, chips y quitar |
 | `--color-border` | `#E4E3EE` | `#263049` | Bordes |
-| `--color-border-strong` | `#B9B7CC` | `#3A4563` | Bordes discontinuos, tirador |
+| `--color-border-strong` | `#868399` | `#6B7699` | Bordes de control, discontinuos, tirador |
 | `--color-text` | `#14132B` | `#EEF0FA` | Texto principal |
 | `--color-muted` | `#5E5D78` | `#A3A9C2` | Texto secundario |
 | `--color-primary` | `#5B47E0` | `#6A58F0` | Acción principal |
-| `--color-primary-hover` | `#4A37C9` | `#7A69F5` | Hover/pulsado |
+| `--color-primary-hover` | `#4A37C9` | `#5F4CE6` | Hover/pulsado |
+| `--color-primary-active` | `#3D2BB8` | `#4F3FD1` | Pulsado (distinto de hover) |
 | `--color-primary-text` | `#4A37C9` | `#A99CFF` | Enlaces y texto de acción |
 | `--color-primary-soft` | `#EEEBFE` | `#241F4D` | Fondos suaves |
+| `--color-primary-soft-hover` | `#E4DEFD` | `#2D2760` | Hover sobre soft |
+| `--color-primary-soft-active` | `#D8CFFB` | `#3A3378` | Pulsado sobre soft |
 | `--color-on-primary-soft` | `#2E2390` | `#C9C0FF` | Texto sobre soft |
 | `--color-on-primary` | `#FFFFFF` | `#FFFFFF` | Texto sobre primary |
 | `--color-focus` | `#7C6CF2` | `#A99CFF` | Anillo de foco |
+| `--color-elevated` | `#FFFFFF` | `#2A3450` | Superficie elevada (segmento activo) |
+| `--color-control-knob` | `#FFFFFF` | `#EEF0FA` | Knob del switch |
+| `--color-control-knob-border` | `#B9B6C9` | `#263049` | Borde del knob (lo delimita en claro) |
 | `--color-overlay` | `rgba(11,15,30,.5)` | `rgba(0,0,0,.6)` | Fondo de modales |
 | `--color-viewer-bg` | `#070A14` | `#070A14` | Visor de fotos |
 | `--color-inverse` | `#14132B` | `#EEF0FA` | Toasts, barra de selección |
 | `--color-on-inverse` | `#FFFFFF` | `#0B0F1E` | Texto sobre inverse |
+
+En oscuro, `--color-primary-hover` es `#5F4CE6` (F11): con `--color-on-primary` da 5,73:1 y
+cumple AA en los botones de 14–16 px semibold. El valor anterior `#7A69F5` daba 4,06:1.
+`--color-primary-active` da 9,39:1 en claro y 7,08:1 en oscuro sobre `on-primary`, así que
+`active` se distingue de `hover` sin bajar de AA. El knob claro se delimita con borde y sombra:
+el borde `control-knob-border` da 1,98:1 contra el knob y 1,74:1 contra `surface-2` (antes
+1,11:1 y no se percibía); en oscuro el par `control-knob`/`surface-2` da 13,75:1 y se prueba
+en `contrast.test.ts`. El texto sobre `elevated` oscuro da 10,84:1.
+
+`--color-surface-active` es la superficie de pulsación: `#E4E3EE` en claro y `#2A3450` en
+oscuro. El texto `text` da 14,27:1 / 10,84:1 y `primary-text` 6,16:1 / 5,21:1, así que cumple
+AA en `secondary`, `ghost`, `Chip` y el quitar. Sustituye el uso de `--color-border` como
+fondo `active`, que era un token de borde usado como superficie.
+
+El `SegmentedControl` mantiene un borde exterior de 1 px con `--color-border` que el diseño no
+dibuja: sin él la pista (`surface-2`) se confunde con `bg` (1,1:1) y el grupo pierde límite.
+Es una desviación documentada del diseño, no silenciosa.
+
+### Desviaciones deliberadas respecto al PNG
+
+El asset `design-system-v0.1.png` está desactualizado respecto a estas decisiones; se
+actualizará cuando se regenere el diseño:
+
+- **Segmento seleccionado con borde primario.** El PNG no dibuja borde; se añadió para que la
+  selección no dependa solo del color y se lea en escala de grises.
+- **Chip seleccionado con check y `bold`.** El PNG solo cambia el color de fondo; el check y
+  el peso son señales no cromáticas obligatorias.
+- **Borde del knob del `Switch` en claro.** El PNG no lo delimita; con `#FFFFFF` sobre
+  `#F0EFF7` (1,14:1) el knob se perdía.
 
 ## Estados
 
@@ -100,6 +136,11 @@ Ancho de borde: `--border-width: 1px`. No se usan grosores arbitrarios.
 
 Oscuro: solo `0 16px 40px rgba(0,0,0,.45)` en flotantes. Duraciones 150/250/350 ms, `cubic-bezier(.2,0,0,1)`.
 
+`Spinner` y `Skeleton` usan las animaciones de Tailwind (`animate-spin` 1 s lineal y
+`animate-pulse` 2 s) porque una animación continua no es una transición de interacción. Se
+mantienen fuera de la escala 150/250/350 y **no se crea una escala nueva**; con
+`prefers-reduced-motion` se anulan desde `theme.css`.
+
 ## Medidas
 
 | Medida | Valor |
@@ -125,10 +166,11 @@ componentes. Tailwind trae `2xl` por defecto; aquí queda **anulado**
 - **Tokens y utilidades.** Variables de runtime `--memora-*` en
   `packages/ui/src/styles/tokens.css` (`:root` y `[data-theme='dark']`); `@theme inline`
   las mapea a `--color-*`, `--text-*`, `--radius-*`, `--shadow-*`, `--z-index-*` y
-  `--font-sans`. Los nombres de las tablas de este documento son los públicos. Los
-  breakpoints (`sm` 30rem, `md` 48rem, `lg` 64rem, `xl` 80rem) viven en un `@theme` sin
-  `inline` porque son estáticos. Tailwind 4 CSS-first: sin preset JS ni
-  `tailwind.config`.
+  `--font-sans`. F11 añade los acentos de identidad como utilidades (`bg-accent-pink`,
+  `text-accent-pink-text`…), que usan `Avatar`, `Badge` y `Chip`. Los nombres de las tablas
+  de este documento son los públicos. Los breakpoints (`sm` 30rem, `md` 48rem, `lg` 64rem,
+  `xl` 80rem) viven en un `@theme` sin `inline` porque son estáticos. Tailwind 4 CSS-first:
+  sin preset JS ni `tailwind.config`.
 - **Base y comportamiento.** `packages/ui/src/styles/theme.css` contiene la base de
   `html`/`body`, la selección, el foco visible global (token de foco, 2 px con
   `offset 2px`) y las reglas de `prefers-reduced-motion` (duraciones a 0, scroll
@@ -149,11 +191,10 @@ componentes. Tailwind trae `2xl` por defecto; aquí queda **anulado**
   `packages/ui/src/styles/fonts.css` con `font-display: swap` y pesos 200–800; la app
   añade `preload` solo del subset latin. Sin peticiones a terceros.
 
-### Deuda conocida (F11)
+### Deuda conocida (resuelta en F11)
 
-`--color-border-strong` no llega a 3:1 sobre superficie (`1,96:1` en claro y `1,82:1` en
-oscuro), que es el mínimo de WCAG 2.2 para el borde de un control. Se usa hoy en bordes
-discontinuos y en el tirador de hojas, donde no delimita un control. Para los bordes de
-input, F11 debe decidir el token: en claro hay candidato `#8E8CA6` (3,25:1 sobre
-`--color-surface`), que no se aplica en F10 para no cambiar un valor congelado sin
-aprobación.
+`--color-border-strong` no llegaba a 3:1 sobre superficie (`1,96:1` en claro y `1,82:1` en
+oscuro), que es el mínimo de WCAG 2.2 para el borde de un control. F11 lo subió a
+`#868399` en claro (3,41:1 sobre `bg`, 3,67:1 sobre `surface`, 3,22:1 sobre `surface-2`)
+y `#6B7699` en oscuro (4,25:1 / 3,86:1 / 3,48:1). El antiguo `#8E8CA6` se descartó por
+fallar sobre `surface-2` (2,84:1). `contrast.test.ts` cubre los seis pares.

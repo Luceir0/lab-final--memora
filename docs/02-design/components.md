@@ -4,18 +4,18 @@
 
 | Componente | Variantes / props | Estados | Accesibilidad |
 | --- | --- | --- | --- |
-| `Button` | primary, secondary, ghost, danger, soft; sm 36 visual con área táctil 44, md 44, lg 52; `icon`, `loading`, `fullWidth` | hover, active, focus-visible, disabled, loading | `<button>` real; `aria-busy`; hit area ≥ 44 px |
+| `Button` | primary, secondary, ghost, danger, soft; sm 36 visual con área táctil 44, md 44, lg 52; `icon`, `loading`, `fullWidth` | hover, active (`surface-active` en secondary/ghost), focus-visible, disabled, loading (sin hover ni active, cursor de progreso) | `<button>` real; `aria-busy`; hit area ≥ 44 px |
 | `IconButton` | solid, outline, ghost, onMedia; `label` obligatorio | igual | `aria-label` |
-| `LinkButton` | variantes de Button sobre `<a>` | — | enlace real |
+| `LinkButton` | variantes de Button sobre `<a>` | igual | enlace real |
 | `TextField` / `TextArea` | label, hint, error, type, autoComplete, leadingIcon | default, focus, error, disabled | label, `aria-describedby`, `aria-invalid` |
 | `SearchField` | TextField con lupa y limpiar | vacío, con texto | label oculto |
-| `Checkbox` | label, description | marcado, desmarcado, indeterminado | input nativo |
-| `Switch` | label, description | on, off, disabled | `role="switch"` |
-| `SegmentedControl` | options, value | seleccionado, foco | radiogroup, flechas |
+| `Checkbox` | label, description | marcado, desmarcado, indeterminado, disabled (relleno `border-strong`, texto muted) | input nativo |
+| `Switch` | label, description | on, off, disabled (sin hover) | `role="switch"`; knob con borde propio en claro |
+| `SegmentedControl` | options, value | seleccionado, hover solo si está habilitado | radiogroup horizontal, flechas izquierda/derecha, ancho de contenido |
 | `Tabs` | items, value | activa, hover, foco | tablist/tab/tabpanel |
-| `Avatar` / `AvatarGroup` | name, src?, size 24–64, accent; max | con imagen, iniciales | nombre como alt; si es interactivo, hit area ≥ 44 px |
+| `Avatar` / `AvatarGroup` | name, src?, size 24–64, accent, `decorative`, max | con imagen, iniciales; hover del interactivo con anillo `primary` | nombre como alt; si es interactivo, hit area ≥ 44 px; `decorative` para nombres ya visibles |
 | `Badge` | primary, success, warning, danger, neutral | — | texto, no solo color |
-| `Chip` | selected, avatar?, onRemove? | normal, seleccionado, discontinuo | `aria-pressed` |
+| `Chip` | selected, avatar?, onRemove?, removeLabel? | normal, seleccionado, discontinuo, active (`surface-active`), disabled sin hover | `aria-pressed` solo con `onClick`; check + peso + borde además del color; cuerpo y quitar con hits de 44 px separados |
 | `Card` | padding, interactive | hover, foco | un enlace por tarjeta |
 | `ProgressBar` | value, size 6/8, tone | determinado, indeterminado | progressbar + label |
 | `Spinner` / `Skeleton` | size; shape rect/circle/text | animado, estático | status; `aria-busy` |
