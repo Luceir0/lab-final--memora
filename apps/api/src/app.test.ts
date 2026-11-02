@@ -457,9 +457,7 @@ describe('test harness', () => {
         longitude: 2.65,
       });
       expect(place).toBe('Palma, Mallorca');
-      expect(testApp.services.geocoding.requests).toEqual([
-        { latitude: 39.57, longitude: 2.65 },
-      ]);
+      expect(testApp.services.geocoding.requests).toEqual([{ latitude: 39.57, longitude: 2.65 }]);
 
       await testApp.app.services.storage.delete('photos/one.webp');
       expect(await testApp.app.services.storage.get('photos/one.webp')).toBeNull();

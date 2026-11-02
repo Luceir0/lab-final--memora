@@ -9,10 +9,7 @@ import type { MemoraServer } from '../types.ts';
  * Swagger UI is development/test-only: production exposes the JSON contract
  * but no interactive documentation, as required by the API contract.
  */
-export async function registerDocsRoutes(
-  app: MemoraServer,
-  config: AppConfig,
-): Promise<void> {
+export async function registerDocsRoutes(app: MemoraServer, config: AppConfig): Promise<void> {
   app.get(
     '/api/openapi.json',
     {

@@ -56,7 +56,9 @@ export interface FakeGeocodingService extends GeocodingService {
   placeName: string | null;
 }
 
-export function createFakeGeocodingService(placeName: string | null = 'Palma, Mallorca'): FakeGeocodingService {
+export function createFakeGeocodingService(
+  placeName: string | null = 'Palma, Mallorca',
+): FakeGeocodingService {
   const requests: ReverseGeocodingInput[] = [];
 
   return {

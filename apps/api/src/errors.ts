@@ -105,7 +105,9 @@ function isMultipartBodyErrorMessage(message: string): boolean {
 
 /** True only for a request that declares a multipart body. */
 export function isMultipartContentType(contentType: string | undefined): boolean {
-  return typeof contentType === 'string' && contentType.toLowerCase().startsWith('multipart/form-data');
+  return (
+    typeof contentType === 'string' && contentType.toLowerCase().startsWith('multipart/form-data')
+  );
 }
 
 /** Canonical body with `details: null` whenever there is nothing to detail. */

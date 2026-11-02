@@ -43,7 +43,10 @@ export interface BuildAppOptions {
 export async function buildApp(options: BuildAppOptions = {}): Promise<MemoraServer> {
   const config = options.config ?? loadConfig();
 
-  if (config.isProduction && (options.services === undefined || !isRealServices(options.services))) {
+  if (
+    config.isProduction &&
+    (options.services === undefined || !isRealServices(options.services))
+  ) {
     throw new Error(
       'NODE_ENV=production exige adaptadores reales (kind: "real") de storage, email y geocoding. ' +
         'buildApp() no arranca con el fallback ni con los fakes de test.',
@@ -51,10 +54,7 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<MemoraSer
   }
 
   const app = Fastify({
-    logger:
-      options.logger === false
-        ? false
-        : createLoggerOptions(config, options.loggerStream),
+    logger: options.logger === false ? false : createLoggerOptions(config, options.loggerStream),
     bodyLimit: JSON_BODY_LIMIT_BYTES,
     // Production runs behind a reverse proxy in the private network: trust
     // loopback, link-local and unique-local hops so rate limiting keys on the
