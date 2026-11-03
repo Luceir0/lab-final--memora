@@ -11,6 +11,7 @@ import { errorResponse, isMultipartContentType, mapError } from './errors.ts';
 import type { PrismaClient } from './generated/prisma/client.ts';
 import { createLoggerOptions, type LogStream } from './logging.ts';
 import { registerAuthRoutes } from './modules/auth/routes.ts';
+import { registerCircleRoutes } from './modules/circles/routes.ts';
 import { registerCookie } from './plugins/cookie.ts';
 import { registerCsrf } from './plugins/csrf.ts';
 import { registerHelmet } from './plugins/helmet.ts';
@@ -132,6 +133,7 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<MemoraSer
 
   registerHealthRoute(app);
   registerAuthRoutes(app, config);
+  registerCircleRoutes(app, config);
   await registerDocsRoutes(app, config);
 
   return app;

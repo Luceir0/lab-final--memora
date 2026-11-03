@@ -10,16 +10,16 @@ import {
   registerResponseSchema,
   updateMeRequestSchema,
 } from '@memora/shared';
-import type { FastifyReply, FastifyRequest } from 'fastify';
-import { z } from 'zod';
+import type { FastifyRequest } from 'fastify';
 
 import type { AppConfig } from '../../config.ts';
 import { ApiError } from '../../errors.ts';
-import { Prisma, type PrismaClient, type User } from '../../generated/prisma/client.ts';
+import { Prisma, type User } from '../../generated/prisma/client.ts';
 import { SESSION_SECURITY_SCHEME } from '../../plugins/swagger.ts';
 import type { MemoraServer } from '../../types.ts';
-import { CSRF_HEADER_NAME } from './constants.ts';
+import { csrfHeaderSchema } from './csrf-header.ts';
 import { toCurrentUserDto } from './dto.ts';
+import { assertCsrfToken, requirePrisma, setPrivateNoStore } from './guards.ts';
 import { assertTrustedOrigin } from './origin.ts';
 import { consumeTimingEqualisation, hashPassword, verifyPassword } from './password.ts';
 import {
@@ -55,50 +55,8 @@ const AUTH_TAG = 'Auth';
 
 const sessionSecurity = [{ [SESSION_SECURITY_SCHEME]: [] }];
 
-/**
- * Documents `X-CSRF-Token` without enforcing it in the schema.
- *
- * A missing token must be `403 FORBIDDEN` (AC-05), not a `400` validation
- * error, so the auth module owns the check; OpenAPI marks the header required
- * (see `plugins/swagger.ts`).
- */
-const csrfHeaderSchema = z.object({
-  [CSRF_HEADER_NAME]: z
-    .string()
-    .optional()
-    .describe('Token CSRF ligado a la sesión actual. Obligatorio en la práctica: 403 si falta.'),
-});
-
-/** Session responses must never be cached by browsers or shared proxies. */
-function setPrivateNoStore(reply: FastifyReply): void {
-  reply.header('cache-control', 'private, no-store').header('vary', 'Cookie');
-}
-
-function requirePrisma(app: MemoraServer): PrismaClient {
-  if (app.prisma === null) {
-    // Reached only when the process runs without DATABASE_URL (health-only
-    // development). Authentication has no meaning without persistence.
-    throw new Error('La API de autenticación requiere DATABASE_URL.');
-  }
-
-  return app.prisma;
-}
-
 function isUniqueConstraintError(error: unknown): boolean {
   return error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002';
-}
-
-/** Header token verified against the raw session token (bound by HMAC). */
-function assertCsrfToken(request: FastifyRequest, app: MemoraServer, sessionToken: string): void {
-  const header = request.headers[CSRF_HEADER_NAME];
-
-  if (typeof header !== 'string' || header.length === 0) {
-    throw new ApiError('FORBIDDEN', { message: 'Falta el token CSRF.' });
-  }
-
-  if (!app.csrf.verify(sessionToken, header)) {
-    throw new ApiError('FORBIDDEN', { message: 'Token CSRF inválido.' });
-  }
 }
 
 /**
