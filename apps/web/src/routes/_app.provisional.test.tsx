@@ -1,6 +1,7 @@
 import { createMemoryHistory, createRouter } from '@tanstack/react-router';
 import { render, screen } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import type { ReactNode } from 'react';
+import { describe, expect, it, vi } from 'vitest';
 
 import { createQueryClient } from '../lib/query-client';
 import { routeTree } from '../routeTree.gen';
@@ -8,6 +9,32 @@ import { routeTree } from '../routeTree.gen';
 import { Route as PrivacyRoute } from './_app.privacy';
 import { Route as ProfileRoute } from './_app.profile';
 import { Route as UploadsRoute } from './_app.uploads';
+
+/**
+ * El Perfil provisional usa `Link` para Ayuda y Privacidad. Estas pruebas
+ * montan las páginas sin router, así que el `Link` real se sustituye por un
+ * ancla equivalente; la navegación real se cubre en los tests de integración.
+ */
+vi.mock('@tanstack/react-router', async (importOriginal) => {
+  const actual = await importOriginal<Record<string, unknown>>();
+
+  return {
+    ...actual,
+    Link: ({
+      to,
+      children,
+      className,
+    }: {
+      readonly to: string;
+      readonly children?: ReactNode;
+      readonly className?: string;
+    }) => (
+      <a href={to} className={className}>
+        {children}
+      </a>
+    ),
+  };
+});
 
 const PLACEHOLDERS = [
   { path: '/profile', title: 'Perfil', Route: ProfileRoute },

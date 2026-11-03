@@ -1,10 +1,12 @@
+import { PageContainer } from '../../components/layout/page-container';
+
 /**
  * Página de `/circles`. Vive fuera de `routes/` para poder probarla sin que el
  * generador de rutas avise de exports no code-splittables.
  */
 export function CirclesPage() {
   return (
-    <div className="mx-auto w-full max-w-3xl px-4 py-10 sm:px-6">
+    <PageContainer>
       <header className="mb-8">
         <p className="text-caption font-semibold uppercase text-primary-text">Zona privada</p>
         <h1 className="mt-2 text-h1 font-extrabold text-text">Tus círculos</h1>
@@ -24,6 +26,6 @@ export function CirclesPage() {
           Cuando te inviten a un círculo o crees el primero, aparecerá en esta lista.
         </p>
       </section>
-    </div>
+    </PageContainer>
   );
 }

@@ -1,5 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router';
 
+import { PageContainer } from '../components/layout/page-container';
 import { loadHelpContent } from '../features/spike/content';
 import { HelpContent } from '../features/spike/help-content';
 
@@ -15,7 +16,7 @@ function HelpPage() {
   const { articles, faqs } = Route.useLoaderData();
 
   return (
-    <div className="mx-auto w-full max-w-3xl px-4 py-10 sm:px-6">
+    <PageContainer>
       <header className="mb-8">
         <p className="text-caption font-semibold uppercase text-primary-text">Ayuda</p>
         <h1 className="mt-2 text-h1 font-extrabold text-text">Centro de ayuda</h1>
@@ -25,6 +26,6 @@ function HelpPage() {
       </header>
 
       <HelpContent articles={articles} faqs={faqs} />
-    </div>
+    </PageContainer>
   );
 }

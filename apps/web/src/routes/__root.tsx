@@ -70,6 +70,18 @@ function RootDocument({ children }: { readonly children: ReactNode }) {
           />
         ))}
         <meta name="theme-color" content={THEME_COLORS[theme]} />
+        {/* PWA (F14): manifiesto e iconos de instalación. Sin service worker. */}
+        <link rel="manifest" href="/manifest.webmanifest" />
+        <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png" />
+        <link rel="apple-touch-icon" href="/icons/apple-touch-icon-180.png" />
+        {/*
+         * Chrome y los navegadores modernos usan `mobile-web-app-capable`. Se
+         * mantiene la meta de Apple porque iOS antiguo solo entiende la suya;
+         * el aviso de deprecación de Chrome es inofensivo.
+         */}
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-title" content="Memora" />
         {/*
          * `<script>` directo en `<head>` (no el API `scripts` de head): así el
          * navegador lo ejecuta antes de parsear `<body>` y no hay destello.

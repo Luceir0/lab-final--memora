@@ -122,7 +122,6 @@ interface NavItemProps {
 
 function NavItem({ destination, active }: NavItemProps) {
   const Icon = destination.icon;
-  const primary = destination.primary === true;
 
   return (
     <Link
@@ -141,14 +140,10 @@ function NavItem({ destination, active }: NavItemProps) {
       <span
         className={cx(
           'flex size-11 shrink-0 items-center justify-center rounded-full lg:size-6',
-          primary
-            ? 'bg-primary text-on-primary lg:bg-transparent lg:text-current'
-            : active
-              ? 'bg-primary-soft lg:bg-transparent'
-              : undefined,
+          active ? 'bg-primary-soft lg:bg-transparent' : undefined,
         )}
       >
-        <Icon aria-hidden="true" className={primary ? 'size-6 lg:size-5' : 'size-5'} />
+        <Icon aria-hidden="true" className="size-5" />
       </span>
       <span>
         {destination.label.mobile === destination.label.desktop ? (

@@ -34,11 +34,6 @@ export interface NavDestination {
    * sin cambiar el texto visible ni duplicar enlaces.
    */
   readonly mobileAccessibleSuffix?: string;
-  /**
-   * Acción principal de la barra inferior: icono grande y centrado, al alcance
-   * del pulgar. Sigue siendo un enlace normal, no un botón flotante aparte.
-   */
-  readonly primary?: boolean;
 }
 
 export const NAV_DESTINATIONS: readonly NavDestination[] = [
@@ -55,7 +50,6 @@ export const NAV_DESTINATIONS: readonly NavDestination[] = [
     icon: Upload,
     label: { mobile: 'Subir', desktop: 'Subidas' },
     visibility: 'all',
-    primary: true,
     // «Subir» a secas es ambiguo fuera de contexto. El sufijo forma
     // «Subir fotos» en el nombre accesible móvil y no toca el texto visible.
     mobileAccessibleSuffix: 'fotos',
