@@ -1,11 +1,15 @@
-import { render, screen, within } from '@testing-library/react';
+import { fireEvent, render, screen, within } from '@testing-library/react';
 import type { ReactNode } from 'react';
 import { describe, expect, it, vi } from 'vitest';
 
 import { expectNoAxeViolations } from '../../../../../packages/ui/src/test/axe';
+import { CirclesPage } from '../../features/spike/circles-page';
+import { Route as HelpRoute } from '../../routes/_app.help';
 import { ThemeProvider } from '../theme-provider';
 
 import { AppShell } from './app-shell';
+import { PageContainer } from './page-container';
+import { SectionPlaceholder } from './section-placeholder';
 
 /**
  * `Link` real exige un router montado. En estas pruebas el shell se renderiza
@@ -13,25 +17,33 @@ import { AppShell } from './app-shell';
  * atributos de accesibilidad. La integración con el router real se cubre en
  * `app-shell.router.test.tsx`.
  */
-vi.mock('@tanstack/react-router', () => ({
-  Link: ({
-    to,
-    children,
-    className,
-    'aria-label': ariaLabel,
-    'aria-current': ariaCurrent,
-  }: {
-    readonly to: string;
-    readonly children?: ReactNode;
-    readonly className?: string;
-    readonly 'aria-label'?: string;
-    readonly 'aria-current'?: 'page' | undefined;
-  }) => (
-    <a href={to} className={className} aria-label={ariaLabel} aria-current={ariaCurrent}>
-      {children}
-    </a>
-  ),
-}));
+const { navigateMock } = vi.hoisted(() => ({ navigateMock: vi.fn() }));
+
+vi.mock('@tanstack/react-router', async (importOriginal) => {
+  const actual = await importOriginal<Record<string, unknown>>();
+
+  return {
+    ...actual,
+    useRouter: () => ({ navigate: navigateMock }),
+    Link: ({
+      to,
+      children,
+      className,
+      'aria-label': ariaLabel,
+      'aria-current': ariaCurrent,
+    }: {
+      readonly to: string;
+      readonly children?: ReactNode;
+      readonly className?: string;
+      readonly 'aria-label'?: string;
+      readonly 'aria-current'?: 'page' | undefined;
+    }) => (
+      <a href={to} className={className} aria-label={ariaLabel} aria-current={ariaCurrent}>
+        {children}
+      </a>
+    ),
+  };
+});
 
 function renderShell(
   options: {
@@ -182,17 +194,33 @@ describe('AppShell', () => {
     expect(header.className).toContain('env(safe-area-inset-right)');
   });
 
-  it('deja «Subir» en el centro de la barra con 44 px de área táctil', () => {
+  it('trata «Subir» como un destino más, con 44 px de área táctil', () => {
     renderShell();
 
     const upload = within(getNav()).getByRole('link', { name: /Subir fotos/ });
     const iconShape = upload.querySelector('span');
+    const icon = iconShape?.querySelector('svg');
 
     expect(upload.className).toContain('w-full');
     expect(upload.className).toContain('h-full');
-    expect(iconShape?.className).toContain('size-11');
-    expect(iconShape?.className).toContain('rounded-full');
-    expect(iconShape?.className).toContain('bg-primary');
+    expect(upload.className).toContain('text-muted');
+    expect(upload.className).not.toContain('text-primary-text');
+    expect(iconShape?.classList.contains('size-11')).toBe(true);
+    expect(iconShape?.classList.contains('rounded-full')).toBe(true);
+    expect(iconShape?.classList.contains('bg-primary')).toBe(false);
+    expect(icon?.getAttribute('class')).toContain('size-5');
+  });
+
+  it('marca «Subir» activo con la misma píldora que el resto de destinos', () => {
+    renderShell({ currentPath: '/uploads' });
+
+    const upload = within(getNav()).getByRole('link', { name: /Subir fotos/ });
+    const iconShape = upload.querySelector('span');
+
+    expect(upload.getAttribute('aria-current')).toBe('page');
+    expect(upload.className).toContain('text-primary-text');
+    expect(iconShape?.classList.contains('bg-primary-soft')).toBe(true);
+    expect(iconShape?.classList.contains('bg-primary')).toBe(false);
   });
 
   it('coloca la lista de círculos como grupo entre Subidas y Ayuda, sin encabezado', () => {
@@ -250,11 +278,38 @@ describe('AppShell', () => {
     renderShell();
 
     const banner = screen.getByRole('banner');
-    const aside = screen.getByRole('complementary', { name: 'Cuenta y navegación' });
+    const aside = screen.getByRole('complementary', { name: 'Navegación' });
 
     expect(within(banner).getByRole('button', { name: /^Apariencia:/ })).toBeTruthy();
     expect(within(aside).getByRole('button', { name: /^Apariencia:/ })).toBeTruthy();
     expect(within(banner).queryByRole('link', { name: /Perfil/ })).toBeNull();
+  });
+
+  it('separa la cuenta en una sección que solo existe en escritorio', () => {
+    renderShell({ user: { name: 'Sofía Martín' } });
+
+    const aside = screen.getByRole('complementary', { name: 'Navegación' });
+    const account = within(aside).getByRole('region', { name: 'Cuenta y apariencia' });
+
+    expect(account.className).toContain('hidden');
+    expect(account.className).toContain('lg:block');
+    expect(within(aside).getByRole('navigation', { name: 'Navegación principal' })).toBeTruthy();
+    expect(within(account).getByRole('link', { name: /Sofía Martín/ })).toBeTruthy();
+  });
+
+  it('navega con el logotipo sin cambiar aria-current', () => {
+    renderShell();
+
+    const logo = screen.getAllByRole('link', { name: 'memora' })[0];
+
+    if (!logo) {
+      throw new Error('No hay logotipo');
+    }
+
+    fireEvent.click(logo);
+
+    expect(navigateMock).toHaveBeenCalledWith({ to: '/circles' });
+    expect(logo.getAttribute('aria-current')).toBe('false');
   });
 
   it('no usa dos regiones ni deja el shell sin landmarks', () => {
@@ -263,7 +318,7 @@ describe('AppShell', () => {
     expect(screen.getAllByRole('banner')).toHaveLength(1);
     expect(screen.getAllByRole('main')).toHaveLength(1);
     expect(screen.getAllByRole('navigation')).toHaveLength(1);
-    expect(screen.getAllByRole('complementary', { name: 'Cuenta y navegación' })).toHaveLength(1);
+    expect(screen.getAllByRole('complementary', { name: 'Navegación' })).toHaveLength(1);
   });
 
   it('no tiene violaciones de axe', async () => {
@@ -274,5 +329,71 @@ describe('AppShell', () => {
     });
 
     await expectNoAxeViolations(container);
+  });
+});
+
+function containerBox(container: HTMLElement): HTMLElement {
+  const box = container.querySelector<HTMLElement>('.max-w-7xl');
+
+  if (!box) {
+    throw new Error('La pantalla no usa PageContainer');
+  }
+
+  return box;
+}
+
+describe('PageContainer', () => {
+  it('declara 80rem y gutters de 24/32 px sin valores arbitrarios', () => {
+    const { container } = render(
+      <PageContainer>
+        <p>Contenido</p>
+      </PageContainer>,
+    );
+    const box = containerBox(container);
+
+    expect(box.className).toContain('mx-auto');
+    expect(box.className).toContain('w-full');
+    expect(box.className).toContain('max-w-7xl');
+    expect(box.className).toContain('px-6');
+    expect(box.className).toContain('lg:px-8');
+    expect(box.className).not.toMatch(/max-w-\[|px-\[/);
+  });
+
+  it.each([
+    {
+      name: 'SectionPlaceholder',
+      element: (
+        <SectionPlaceholder eyebrow="Tus datos" title="Privacidad" description="Provisional." />
+      ),
+    },
+    { name: 'CirclesPage', element: <CirclesPage /> },
+  ])('$name usa el contenedor compartido', ({ element }) => {
+    const { container } = render(element);
+    const box = containerBox(container);
+
+    expect(box.className).toContain('px-6');
+    expect(box.className).toContain('lg:px-8');
+  });
+
+  it('la página de Ayuda usa el contenedor compartido', () => {
+    const HelpPage = HelpRoute.options.component;
+
+    if (typeof HelpPage !== 'function') {
+      throw new Error('La ruta /help no tiene componente');
+    }
+
+    const loaderSpy = vi
+      .spyOn(HelpRoute, 'useLoaderData')
+      .mockReturnValue({ articles: [], faqs: [] });
+
+    try {
+      const { container } = render(<HelpPage />);
+      const box = containerBox(container);
+
+      expect(box.className).toContain('px-6');
+      expect(box.className).toContain('lg:px-8');
+    } finally {
+      loaderSpy.mockRestore();
+    }
   });
 });

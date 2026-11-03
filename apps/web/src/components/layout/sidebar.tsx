@@ -24,13 +24,18 @@ export interface SidebarProps {
  * en móvil/tablet: el `<nav>` de `PrimaryNav` se fija abajo y el logotipo, la
  * lista de círculos y el pie se ocultan porque solo tienen sentido con espacio
  * lateral. Un único árbol, sin duplicados.
+ *
+ * El landmark se llama «Navegación» porque en móvil solo contiene la
+ * navegación. En escritorio el pie de cuenta y apariencia va dentro de
+ * `<section aria-label="Cuenta y apariencia">`, que se oculta con CSS en móvil;
+ * así cada nombre describe lo que de verdad hay en el árbol de accesibilidad.
  */
 export function Sidebar({ currentPath = '', circleList, user }: SidebarProps) {
   const profileActive = isDestinationActive(currentPath, '/profile');
 
   return (
     <aside
-      aria-label="Cuenta y navegación"
+      aria-label="Navegación"
       className="lg:sticky lg:top-0 lg:flex lg:h-dvh lg:flex-col lg:border-r lg:border-border lg:bg-surface"
     >
       <div className="hidden px-5 pb-4 pt-6 lg:block">
@@ -39,7 +44,11 @@ export function Sidebar({ currentPath = '', circleList, user }: SidebarProps) {
 
       <PrimaryNav currentPath={currentPath} circleList={circleList} />
 
-      <div className="mt-auto hidden border-t border-border px-3 py-3 lg:block">
+      {/* `hidden lg:block`: la sección de cuenta no existe en móvil. */}
+      <section
+        aria-label="Cuenta y apariencia"
+        className="mt-auto hidden border-t border-border px-3 py-3 lg:block"
+      >
         {/*
          * El control de tema vive en el pie del sidebar para que todas las
          * páginas lo tengan en escritorio sin inventar cabeceras. Comparte
@@ -95,7 +104,7 @@ export function Sidebar({ currentPath = '', circleList, user }: SidebarProps) {
            */}
           {profileActive ? <VisuallyHidden>Página actual</VisuallyHidden> : null}
         </Link>
-      </div>
+      </section>
     </aside>
   );
 }

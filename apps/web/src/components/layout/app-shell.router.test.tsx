@@ -7,7 +7,7 @@ import {
   createRouter,
   useRouterState,
 } from '@tanstack/react-router';
-import { render, screen, within } from '@testing-library/react';
+import { fireEvent, render, screen, within } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
 import { ThemeProvider } from '../theme-provider';
@@ -144,5 +144,47 @@ describe('AppShell con el router real', () => {
     expect(document.querySelectorAll('nav')).toHaveLength(1);
     expect(navCurrentHrefs()).toEqual(['/circles']);
     expectLogosWithoutCurrent();
+  });
+
+  it('el clic primario del logotipo navega a /circles sin recarga completa', async () => {
+    const router = renderAt('/help');
+
+    await screen.findByRole('heading', { level: 1, name: 'Ayuda' });
+
+    const logo = screen.getAllByRole('link', { name: 'memora' })[0];
+
+    if (!logo) {
+      throw new Error('No hay logotipo');
+    }
+
+    const dispatched = fireEvent.click(logo);
+
+    // `preventDefault` en el clic primario: lo resuelve el router, no el navegador.
+    expect(dispatched).toBe(false);
+
+    await screen.findByRole('heading', { level: 1, name: 'Tus círculos' });
+
+    expect(router.state.location.pathname).toBe('/circles');
+    expect(screen.queryByRole('heading', { level: 1, name: 'Ayuda' })).toBeNull();
+    expectLogosWithoutCurrent();
+  });
+
+  it('con modificador no intercepta el clic del logotipo', async () => {
+    const router = renderAt('/help');
+
+    await screen.findByRole('heading', { level: 1, name: 'Ayuda' });
+
+    const logo = screen.getAllByRole('link', { name: 'memora' })[0];
+
+    if (!logo) {
+      throw new Error('No hay logotipo');
+    }
+
+    const dispatched = fireEvent.click(logo, { ctrlKey: true });
+
+    // Sin `preventDefault` el navegador decide (nueva pestaña, etc.).
+    expect(dispatched).toBe(true);
+    expect(router.state.location.pathname).toBe('/help');
+    expect(screen.getByRole('heading', { level: 1, name: 'Ayuda' })).toBeTruthy();
   });
 });
