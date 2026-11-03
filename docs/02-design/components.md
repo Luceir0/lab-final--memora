@@ -33,7 +33,7 @@
 
 | Grupo | Componentes | Diseño |
 | --- | --- | --- |
-| Estructura | `AppShell`, `BottomNav`, `Sidebar`, `TopBar`, `CircleHeader`, `ThemeToggle`, `Logo` | todas |
+| Estructura | `AppShell`, `PrimaryNav`, `Sidebar`, `TopBar`, `SkipLink`, `Logo`, `ThemeToggle` (variantes `compact` y `section`), `CircleHeader` | todas |
 | `auth` | `LoginForm`, `RegisterForm`, `AuthLayout` | Acceso, Registro |
 | `circles` | `CircleCard`, `CircleList`, `CircleForm`, `CirclePermissions`, `DangerZone` | Mis círculos, Ajustes |
 | `albums` | `AlbumCard`, `AlbumGrid`, `AlbumHeader`, `AlbumForm` | Círculo, Álbum |
