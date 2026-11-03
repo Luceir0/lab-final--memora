@@ -3,7 +3,7 @@ id: F13
 title: "App shell y navegación adaptativa"
 milestone: M1
 size: M
-status: accepted
+status: done
 spec: complete
 depends_on:
   - "F11"
@@ -23,7 +23,7 @@ decisions: []
 
 # F13 — App shell y navegación adaptativa
 
-> **Milestone:** M1 · **Talla:** M · **Estado:** accepted · **Spec:** completa
+> **Milestone:** M1 · **Talla:** M · **Estado:** done · **Spec:** completa
 > **Depende de:** F11, F12 · **Bloquea:** F14, F16
 
 ## Objetivo
