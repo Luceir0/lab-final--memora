@@ -12,3 +12,37 @@
 
 /* Componentes presentacionales del paquete UI fuera de `apps/web`. */
 @source '../../../../packages/ui/src';
+
+/**
+ * Alturas del shell. No son tokens visuales del sistema: son medidas de
+ * layout y una única fuente para la barra, el relleno de `<main>` y el
+ * `scroll-padding` de la cabecera sticky.
+ */
+:root {
+  --app-topbar-height: 3.75rem;
+  /* Altura mínima de contenido de la barra (sin safe area ni borde). */
+  --app-bottom-nav-min-height: 4.5rem;
+  /*
+   * Altura real de la barra, incluida safe area y borde. El shell la
+   * actualiza con `ResizeObserver` para que `<main>` reserve exactamente lo
+   * que ocupa la barra cuando el texto crece (zoom de texto al 200 %).
+   */
+  --app-bottom-nav-height: calc(var(--app-bottom-nav-min-height) + env(safe-area-inset-bottom));
+}
+
+@layer base {
+  /*
+   * El skip link lleva el foco a `<main>`, que queda bajo la cabecera sticky.
+   * Reservamos su altura (más el inset superior) para que el destino y su
+   * anillo de foco no queden tapados. En escritorio la cabecera no existe.
+   */
+  html {
+    scroll-padding-top: calc(var(--app-topbar-height) + env(safe-area-inset-top));
+  }
+
+  @media (min-width: 64rem) {
+    html {
+      scroll-padding-top: 0;
+    }
+  }
+}
