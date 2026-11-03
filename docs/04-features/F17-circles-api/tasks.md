@@ -55,4 +55,5 @@ Decisiones del G1 (2026-11-03): listado por `updatedAt desc` con desempate `id d
 - [x] `handoff.md` completo.
 - [x] Tablero actualizado (F17 en `done`).
 - [x] Bitácora y cobertura actualizadas.
-- [ ] Commit propuesto (sin ejecutar): `feat(api): add circles API with membership and stats (F17)`.
+- [x] Commit ejecutado: `c9fdb67` (`feat(api): add circles API with membership and stats (F17)`) y `2cde01b` (`docs: record F17 implementation, review and acceptance`).
+- [x] PR #24, CI en verde (run `41698807962`, job `126136355090`, `completed/success`) y merge `03d7250` en `main`, con CI sobre el merge en verde (run `41699199355`, job `126137711370`, `completed/success`).
