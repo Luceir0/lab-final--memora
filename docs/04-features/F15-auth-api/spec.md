@@ -3,7 +3,7 @@ id: F15
 title: "Auth API"
 milestone: M2
 size: M
-status: draft
+status: done
 spec: complete
 depends_on:
   - "F07"
@@ -21,7 +21,7 @@ decisions:
 
 # F15 — Auth API
 
-> **Milestone:** M2 · **Talla:** M · **Estado:** draft · **Spec:** completa
+> **Milestone:** M2 · **Talla:** M · **Estado:** done · **Spec:** completa
 > **Depende de:** F07, F08 · **Bloquea:** F16, F17
 
 ## Objetivo
@@ -103,16 +103,17 @@ Implementar registro, login, logout, sesión y usuario actual.
 
 ## Verificación
 
-- `pnpm --filter @memora/api test auth`
+- `DATABASE_URL="postgresql://memora:memora@127.0.0.1:5432/memora_test" pnpm --filter @memora/api test auth`
+- Sin `DATABASE_URL` la suite de integración se salta por diseño y no demuestra los AC.
 
 ## Definition of Ready
 
-- [ ] Dependencias `done`. Excepción autorizada por el usuario y registrada en el tablero.
-- [ ] Decisiones resueltas.
-- [ ] Contratos congelados.
-- [ ] Diseño enlazado (si aplica).
-- [ ] Datos de prueba.
-- [ ] Sin preguntas bloqueantes.
+- [x] Dependencias `done`. Excepción autorizada por el usuario y registrada en el tablero.
+- [x] Decisiones resueltas (ver «Decisiones cerradas»).
+- [x] Contratos congelados.
+- [x] Diseño enlazado (si aplica). No aplica: backend.
+- [x] Datos de prueba: factories de F07 y factoría de `Session` añadida en F15.
+- [x] Sin preguntas bloqueantes.
 
 ## Handoff
 
@@ -121,3 +122,21 @@ Al terminar, completa `handoff.md` y actualiza el tablero. No hagas commit ni pu
 ## Preguntas abiertas
 
 Sin verificación de email ni reset en MVP.
+
+## Decisiones cerradas
+
+El usuario las autorizó el 2026-11-03 en el G1:
+
+1. **Dependencia:** se autoriza instalar `@node-rs/argon2` en `apps/api`, con versión exacta fijada. Es la librería de `auth.md`; no hay alternativa sin cambiar una decisión de arquitectura.
+2. **Email duplicado en registro:** `409 CONFLICT` con `details: [{ field: 'email', message: 'Ya existe una cuenta con ese email.' }]`. El registro revela existencia de forma inevitable; AC-02 solo exige que **login** no la revele.
+3. **Login fallido:** código `UNAUTHENTICATED` (canónico) con mensaje específico «Email o contraseña incorrectos.», añadido como constante en `packages/shared`. No cambia códigos ni formas de respuesta.
+4. **Limpieza de sesiones:** en F15, toda lectura comprueba expiración y borra la sesión caducada (limpieza perezosa). La purga programada queda para F42 y debe anotarse en `Pendiente`.
+5. **PostgreSQL para tests:** los tests de auth son de integración contra `memora_test`; sin base de datos no se demuestran AC-01, AC-03 ni AC-07.
+
+Decisiones técnicas tomadas durante la implementación (2026-11-03), documentadas en `auth.md`:
+
+6. **CSRF:** token HMAC atado al token de sesión y cookie legible `memora_csrf`; la cookie no es la fuente de verdad. `GET /auth/csrf` exige sesión.
+7. **Cookie de sesión:** `memora_session`, `HttpOnly`, `SameSite=Lax`, `Path=/`, 30 días, `Secure` solo en producción; `Domain` solo con `COOKIE_DOMAIN`.
+8. **`APP_URL`:** origen de confianza obligatorio y `https` en producción.
+9. **Rate limit derivado:** login añade 20/min por IP además de 5/min por IP+email.
+10. **Fallback argon2 en Windows:** `@node-rs/argon2-wasm32-wasi` como devDependency; el binario nativo sigue siendo el preferido en Linux/CI.

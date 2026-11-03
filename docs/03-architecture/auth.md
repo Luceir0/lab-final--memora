@@ -7,24 +7,50 @@
 - En BD se guarda solo `SHA-256(token)`.
 - Cookie: `HttpOnly`, `Secure` en producción, `SameSite=Lax`, `Path=/`, 30 días.
 - Rotación al iniciar sesión; logout borra la sesión.
-- `lastUsedAt` se actualiza de forma perezosa.
-- Sesiones expiradas se limpian periódicamente.
+- `lastUsedAt` se actualiza de forma perezosa (como máximo cada 5 minutos).
+- Limpieza de sesiones: al leer una sesión caducada se borra la fila y se responde
+  401. La purga programada queda para F42; el MVP no ejecuta un job periódico.
+- `Domain` de la cookie: solo si `COOKIE_DOMAIN` está configurada; si no, host-only.
 
 ## Contraseñas
 
 - Hash `argon2id` con `@node-rs/argon2`.
 - Longitud mínima 8; máximo 128.
-- Sin mensajes que revelen si el email existe.
-- Rate limit por IP y por email.
+- El **login** no revela si el email existe: email desconocido y contraseña
+  incorrecta devuelven el mismo `401 UNAUTHENTICATED` con el mensaje «Email o
+  contraseña incorrectos.». Además se verifica un hash ficticio cuando la cuenta
+  no existe, para que la latencia tampoco lo delate.
+- El **registro** sí revela existencia: un email ya registrado devuelve
+  `409 CONFLICT` con `details` de campo `email`. Es una decisión de producto
+  (2026-11-03) y no afecta a AC-02, que solo cubre login.
+- Rate limit por IP y por email: login 5/min por IP+email, registro 3/hora por IP.
+  Además, login tiene un techo agregado de 20/min por IP (defensa derivada, no
+  está en el contrato) para frenar el password spraying que rota emails.
 - No se registra la contraseña ni el hash.
 
 ## CSRF
 
 - Cookie de sesión `SameSite=Lax` + comprobación de `Origin`/`Referer`.
-- Token CSRF de doble envío para mutaciones autenticadas:
-  - `GET /api/auth/csrf` devuelve un token y lo fija en cookie legible.
-  - El cliente envía `X-CSRF-Token`.
-- `POST /auth/login` y `/auth/register` también validan `Origin`.
+- Token CSRF atado a la sesión para mutaciones autenticadas:
+  - `GET /api/auth/csrf` devuelve `{ csrfToken }` y lo fija en la cookie legible
+    `memora_csrf` (sin `HttpOnly`).
+  - El cliente envía el token en la cabecera `X-CSRF-Token`.
+  - La API verifica el token con HMAC sobre el **token de sesión en claro**; la
+    cookie es solo un vehículo de lectura, no la fuente de verdad. Esto es más
+    fuerte que comparar cookie y cabecera y no necesita estado.
+- `POST /auth/login` y `/auth/register` validan `Origin`/`Referer` y no exigen
+  CSRF, porque todavía no hay sesión.
+- `POST /auth/logout` y `PATCH /me` exigen sesión válida, `Origin`/`Referer` y
+  `X-CSRF-Token`.
+- Un `Origin` presente y no permitido, o la ausencia de `Origin` y `Referer`,
+  devuelve `403 FORBIDDEN`.
+- Implicación para el render en servidor: una llamada servidor-a-servidor no
+  lleva `Origin` del navegador. F16 debe mutar desde el navegador o reenviar un
+  origen de confianza explícito; no se debe relajar la comprobación en servidor.
+- Tras login o registro la cookie `memora_csrf` anterior se limpia: el cliente
+  debe pedir `GET /api/auth/csrf` con la sesión nueva antes de mutar.
+- `APP_URL` es el origen de confianza. En producción es obligatoria y debe ser
+  `https`; fuera de producción por defecto es `http://localhost:3000`.
 
 ## Autorización
 
