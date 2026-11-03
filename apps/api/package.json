@@ -24,6 +24,7 @@
     "@fastify/swagger": "9.9.2",
     "@fastify/swagger-ui": "6.1.2",
     "@memora/shared": "workspace:*",
+    "@node-rs/argon2": "2.2.2",
     "@prisma/adapter-pg": "7.10.1",
     "@prisma/client": "7.10.1",
     "fastify": "5.12.7",
@@ -34,6 +35,7 @@
   },
   "devDependencies": {
     "@memora/config": "workspace:*",
+    "@node-rs/argon2-wasm32-wasi": "2.2.2",
     "@types/node": "24.19.2",
     "prisma": "7.10.1",
     "typescript": "6.0.3",

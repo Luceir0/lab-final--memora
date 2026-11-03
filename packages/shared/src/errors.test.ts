@@ -4,6 +4,7 @@ import {
   ERROR_CODES,
   ERROR_HTTP_STATUS,
   ERROR_MESSAGES,
+  INVALID_CREDENTIALS_MESSAGE,
   defaultErrorMessage,
   errorCodeSchema,
   errorResponseSchema,
@@ -63,6 +64,9 @@ describe('error catalogue', () => {
     }
 
     expect(ERROR_MESSAGES.FORBIDDEN).toBe('No tienes acceso a este círculo.');
+    // Login override: same code, specific message, no existence leak.
+    expect(INVALID_CREDENTIALS_MESSAGE).toBe('Email o contraseña incorrectos.');
+    expect(INVALID_CREDENTIALS_MESSAGE).not.toBe(ERROR_MESSAGES.UNAUTHENTICATED);
   });
 });
 

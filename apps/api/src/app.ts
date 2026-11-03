@@ -6,8 +6,11 @@ import {
 } from 'fastify-type-provider-zod';
 
 import { loadConfig, type AppConfig } from './config.ts';
+import { createPrismaClient } from './db.ts';
 import { errorResponse, isMultipartContentType, mapError } from './errors.ts';
+import type { PrismaClient } from './generated/prisma/client.ts';
 import { createLoggerOptions, type LogStream } from './logging.ts';
+import { registerAuthRoutes } from './modules/auth/routes.ts';
 import { registerCookie } from './plugins/cookie.ts';
 import { registerCsrf } from './plugins/csrf.ts';
 import { registerHelmet } from './plugins/helmet.ts';
@@ -33,6 +36,11 @@ export interface BuildAppOptions {
   readonly rateLimitMax?: number;
   /** Service adapters. Tests inject in-memory fakes. */
   readonly services?: Services;
+  /**
+   * Prisma client owned by the caller. Tests inject the shared test client so
+   * `buildApp()` never opens a second pool; the API closes only its own client.
+   */
+  readonly prisma?: PrismaClient;
 }
 
 /**
@@ -65,21 +73,11 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<MemoraSer
   app.setValidatorCompiler(validatorCompiler);
   app.setSerializerCompiler(serializerCompiler);
 
-  app.decorate('services', options.services ?? createUnavailableServices());
-
-  await registerHelmet(app, config);
-  await registerCookie(app);
-  await registerCsrf(app, config);
-  await registerRateLimit(
-    app,
-    options.rateLimitMax === undefined ? {} : { max: options.rateLimitMax },
-  );
-  await registerMultipart(app);
-  await registerSwagger(app);
-
-  registerHealthRoute(app);
-  await registerDocsRoutes(app, config);
-
+  // Fastify captures the error/not-found handlers in the route context at
+  // registration time (`Context.errorHandler = errorHandler ?? server[kErrorHandler]`).
+  // They must be installed before any route, including the ones registered by
+  // plugins (`/api/docs`, `/api/openapi.json`), or those routes keep Fastify's
+  // default handler and reply with the raw `FST_ERR_VALIDATION` shape.
   app.setNotFoundHandler((request, reply) => {
     request.log.warn({ code: 'NOT_FOUND', statusCode: 404 }, 'Route not found');
 
@@ -105,5 +103,46 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<MemoraSer
     return reply.code(mapped.statusCode).send(mapped.body);
   });
 
+  app.decorate('services', options.services ?? createUnavailableServices());
+
+  // The client is created eagerly but connects lazily (first query), so a
+  // `/api/health`-only development run without DATABASE_URL keeps working.
+  const ownedPrisma =
+    options.prisma === undefined && config.databaseUrl !== undefined
+      ? createPrismaClient(config.databaseUrl)
+      : null;
+
+  app.decorate('prisma', options.prisma ?? ownedPrisma);
+
+  if (ownedPrisma !== null) {
+    app.addHook('onClose', async () => {
+      await ownedPrisma.$disconnect();
+    });
+  }
+
+  await registerHelmet(app, config);
+  await registerCookie(app);
+  await registerCsrf(app, config);
+  await registerRateLimit(
+    app,
+    options.rateLimitMax === undefined ? {} : { max: options.rateLimitMax },
+  );
+  await registerMultipart(app);
+  await registerSwagger(app);
+
+  registerHealthRoute(app);
+  registerAuthRoutes(app, config);
+  await registerDocsRoutes(app, config);
+
   return app;
+}
+
+declare module 'fastify' {
+  interface FastifyInstance {
+    /**
+     * Prisma client bound to `config.databaseUrl`, or `null` when the process
+     * runs without a database (health-only development).
+     */
+    prisma: PrismaClient | null;
+  }
 }

@@ -12,12 +12,19 @@ interface OpenApiMediaType {
 
 interface OpenApiOperation {
   readonly summary?: string;
+  readonly parameters?: Array<{
+    readonly name?: string;
+    readonly in?: string;
+    readonly required?: boolean;
+    readonly schema?: { readonly type?: string };
+  }>;
   readonly responses?: Record<string, { readonly content?: Record<string, OpenApiMediaType> }>;
 }
 
 interface OpenApiDocument {
   readonly openapi: string;
   readonly info: { readonly title: string; readonly version: string };
+  readonly tags?: Array<{ readonly name: string; readonly description?: string }>;
   readonly paths: Record<string, Record<string, OpenApiOperation>>;
   readonly components?: {
     readonly schemas?: Record<
@@ -82,6 +89,37 @@ describe('OpenAPI', () => {
       in: 'cookie',
       name: 'memora_session',
     });
+  });
+
+  it('documents the Auth tag, the CSRF header and the 429 responses (M-09)', async () => {
+    const response = await testApp.app.inject({ method: 'GET', url: '/api/openapi.json' });
+    const document = response.json<OpenApiDocument>();
+
+    expect(document.tags?.map((tag) => tag.name)).toEqual(
+      expect.arrayContaining(['Salud', 'Auth']),
+    );
+
+    const csrfParameter = (operation: OpenApiOperation | undefined) =>
+      operation?.parameters?.find((parameter) => parameter.name === 'x-csrf-token');
+
+    const logout = document.paths['/api/auth/logout']?.post;
+    expect(csrfParameter(logout)).toMatchObject({
+      in: 'header',
+      required: true,
+      schema: { type: 'string' },
+    });
+    expect(logout?.responses?.['429']).toBeDefined();
+
+    const patchMe = document.paths['/api/me']?.patch;
+    expect(csrfParameter(patchMe)).toMatchObject({ in: 'header', required: true });
+    expect(patchMe?.responses?.['429']).toBeDefined();
+
+    expect(document.paths['/api/me']?.get?.responses?.['429']).toBeDefined();
+    expect(document.paths['/api/auth/csrf']?.get?.responses?.['429']).toBeDefined();
+
+    // GET routes do not check Origin, so they must not advertise a 403.
+    expect(document.paths['/api/me']?.get?.responses?.['403']).toBeUndefined();
+    expect(document.paths['/api/auth/csrf']?.get?.responses?.['403']).toBeUndefined();
   });
 
   it('does not publish the documentation routes themselves', async () => {
