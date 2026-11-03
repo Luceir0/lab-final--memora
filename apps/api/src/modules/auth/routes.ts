@@ -35,8 +35,8 @@ import {
   SESSION_COOKIE_NAME,
 } from './session.ts';
 
-/** `docs/03-architecture/api-contract.md`: 3 registrations per hour per IP. */
-export const REGISTER_RATE_LIMIT_MAX = 3;
+/** `docs/03-architecture/api-contract.md`: 10 registrations per hour per IP. */
+export const REGISTER_RATE_LIMIT_MAX = 10;
 
 /** `docs/03-architecture/api-contract.md`: 5 login attempts per minute per IP+email. */
 export const LOGIN_RATE_LIMIT_MAX = 5;
@@ -173,7 +173,7 @@ export function registerAuthRoutes(app: MemoraServer, config: AppConfig): void {
         description:
           'Crea el usuario y una sesión nueva. Devuelve el usuario y fija la cookie `memora_session`. ' +
           'Un email ya registrado responde `409 CONFLICT` con el detalle del campo `email`. ' +
-          'Exige `Origin`/`Referer` permitido (sin CSRF: todavía no hay sesión). Límite: 3 por hora e IP. ' +
+          'Exige `Origin`/`Referer` permitido (sin CSRF: todavía no hay sesión). Límite: 10 por hora e IP. ' +
           'Invalida cualquier cookie CSRF previa: el cliente debe pedir un token nuevo a `GET /auth/csrf`.',
         body: registerRequestSchema,
         response: {

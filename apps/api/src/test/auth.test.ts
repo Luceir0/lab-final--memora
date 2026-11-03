@@ -12,7 +12,7 @@ import {
   SESSION_COOKIE_NAME,
   SESSION_DURATION_SECONDS,
 } from '../modules/auth/session.ts';
-import { LOGIN_IP_RATE_LIMIT_MAX } from '../modules/auth/routes.ts';
+import { LOGIN_IP_RATE_LIMIT_MAX, REGISTER_RATE_LIMIT_MAX } from '../modules/auth/routes.ts';
 import { closeTestPrismaClient, getTestPrismaClient, hasDatabaseUrl, resetDb } from './db.ts';
 import { makeSession, makeUser } from './factories.ts';
 import { createTestApp, TEST_APP_URL, type TestApp } from './harness.ts';
@@ -529,13 +529,14 @@ describe.skipIf(!hasDatabase)('auth API', () => {
       });
     });
 
-    it('rejects the fourth registration from the same IP with 429', async () => {
-      for (let index = 0; index < 3; index += 1) {
+    it('rejects the eleventh registration from the same IP with 429', async () => {
+      // The first ten attempts in the window must all be accepted.
+      for (let index = 0; index < REGISTER_RATE_LIMIT_MAX; index += 1) {
         const allowed = await register({ email: `user-${index}@example.test` });
         expect(allowed.statusCode).toBe(201);
       }
 
-      const limited = await register({ email: 'user-3@example.test' });
+      const limited = await register({ email: `user-${REGISTER_RATE_LIMIT_MAX}@example.test` });
       expect(limited.statusCode).toBe(429);
       expect(limited.json<ErrorResponse>().code).toBe('RATE_LIMITED');
     });
