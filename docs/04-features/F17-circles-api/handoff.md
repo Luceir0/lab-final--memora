@@ -1,7 +1,7 @@
 # Handoff — F17 Circles API
 
 - **Estado:** done
-- **Rama:** `feat/F17-circles-api` (sin commits todavía)
+- **Rama:** `feat/F17-circles-api` (ya mergeada en `main`)
 - **Fecha:** 2026-11-03
 - **Implementado por:** implementador de F17; verificación completa del orquestador
 - **Revisado por:** `reviewer` independiente (nivel A)
@@ -56,9 +56,19 @@ Una ronda, nivel **A**, veredicto **cambios requeridos**:
 
 No hubo segunda ronda porque no quedaba ningún bloqueante; las correcciones se verificaron con la suite completa. El usuario aceptó la feature el **2026-11-03**.
 
+## Cierre operativo (2026-11-03)
+
+- **Rama:** `feat/F17-circles-api`.
+- **Commits:**
+  - `c9fdb67` — `feat(api): add circles API with membership and stats (F17)`
+  - `2cde01b` — `docs: record F17 implementation, review and acceptance`
+- **PR:** [#24](https://github.com/Luceir0/lab-final--memora/pull/24).
+- **CI en la PR:** run `41698807962`, job `126136355090`, `completed/success`, head `2cde01b`.
+- **Merge:** `03d7250` en `main` (`Merge pull request #24 from Luceir0/feat/F17-circles-api`).
+- **CI sobre el merge:** run `41699199355`, job `126137711370`, `completed/success`, commit `03d7250`.
+
 ## Pendiente
 
-- Commit **propuesto, no ejecutado**: `feat(api): add circles API with membership and stats (F17)`.
 - Limpieza de objetos de MinIO/S3 al borrar un círculo: diferida por la decisión 3.
 - `coverPhoto.thumbUrl` apunta a `/api/photos/{id}/image?size=thumb`, endpoint que llega en **F29**.
 - **F18 — Circles web** es la siguiente feature del tablero y **no se ha empezado**.
@@ -87,4 +97,4 @@ No hubo segunda ronda porque no quedaba ningún bloqueante; las correcciones se 
 
 ## Siguiente paso propuesto
 
-La revisión independiente ya está hecha y la aceptación del usuario también. Falta proponer el commit `feat(api): add circles API with membership and stats (F17)` y decidir si se ejecuta. Después, F18 — Circles web, que aún no ha empezado.
+La revisión independiente, la aceptación del usuario y el cierre operativo ya están hechos. Después, F18 — Circles web, que aún no ha empezado.

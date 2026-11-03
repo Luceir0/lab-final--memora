@@ -148,3 +148,5 @@ Limitaciones registradas:
 - `settings` corruptos en base de datos → `500`, decisión deliberada de no servir settings inválidos.
 - Los tests de carrera simulan la pérdida de fila con un `Proxy` del cliente Prisma sobre el camino HTTP real; no son transacciones concurrentes reales.
 - `PATCH` y `DELETE` no distinguen «círculo borrado» de «portada borrada»: ambos responden `404`, de forma deliberada.
+
+Cierre operativo: rama `feat/F17-circles-api`, [PR #24](https://github.com/Luceir0/lab-final--memora/pull/24) y merge `03d7250` en `main`, con CI en verde.
