@@ -1,7 +1,7 @@
 # Handoff — F13 App shell y navegación adaptativa
 
-- **Estado:** accepted (aceptada por el usuario el 2026-11-03; pendiente el cierre con PR y CI)
-- **Rama:** `feat/F13-app-shell`
+- **Estado:** done (aceptada por el usuario el 2026-11-03; mergeada en `main` con la PR #16)
+- **Rama:** `feat/F13-app-shell` (merge `2c2a587`, CI run `41610250888`)
 - **Fecha:** 2026-11-03
 - **Implementado por:** ui-dev (subagente)
 - **Revisado por:** reviewer (G3, dos rondas: hallazgos y «apto»), auditoría de diseño (todos los hallazgos cerrados salvo VIS-07/VIS-08, asignados a F14) y auditoría de accesibilidad (sin bloqueantes ni mayores)
@@ -233,8 +233,7 @@ emulado con una hoja de estilos que duplica solo la tipografía de las etiquetas
 - Verificación en dispositivo real: safe areas físicas, zoom de texto real al
   200/400 % y alcance del pulgar; recorrido manual de teclado y lector de
   pantalla.
-- Aceptación del usuario (G4) y cierre final (commit propuesto, sin ejecutar). El
-  tablero, la bitácora y la cobertura ya están actualizados por docs-scribe.
+- Aceptación del usuario (G4): **hecha el 2026-11-03**, sin cambios pedidos.
 
 ## Riesgos y limitaciones
 
@@ -286,6 +285,6 @@ emulado con una hoja de estilos que duplica solo la tipografía de las etiquetas
 
 ## Siguiente paso propuesto
 
-Aceptación del usuario (G4) en navegador real y cierre final con el commit
-propuesto. Si se acepta, F14 monta la lista real de círculos en `circleList` y el
-contenedor de contenido de escritorio.
+F14 — PWA e instalación (depende de F10 y F13, ya cerradas): monta la lista real
+de círculos en `circleList` y el contenedor de contenido de escritorio. Antes de
+abrirla, confirmar el plan y el nivel de auditoría (C) con el usuario.

@@ -74,4 +74,4 @@
 - [x] `handoff.md` completo.
 - [x] Tablero actualizado.
 - [x] Bitácora y cobertura actualizadas.
-- [ ] Commit propuesto (sin ejecutar).
+- [x] Commit, PR y merge (PR #16, merge `2c2a587`, CI `41610250888`).
