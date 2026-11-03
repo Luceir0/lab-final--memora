@@ -119,3 +119,47 @@ describe('ThemeToggle', () => {
     expect(group.closest('section')?.hasAttribute('aria-describedby')).toBe(false);
   });
 });
+
+describe('ThemeToggle compacto', () => {
+  function renderCompact() {
+    stubMatchMedia(false);
+
+    return render(
+      <ThemeProvider initialMode="system">
+        <ThemeToggle variant="compact" />
+      </ThemeProvider>,
+    );
+  }
+
+  it('es un único botón de 44 px con el modo actual en el nombre accesible', () => {
+    renderCompact();
+
+    const button = screen.getByRole('button', { name: 'Apariencia: Sistema. Cambiar a Claro.' });
+
+    expect(button.className).toContain('size-11');
+    expect(button.querySelector('svg')?.getAttribute('aria-hidden')).toBe('true');
+    expect(screen.queryByRole('radiogroup')).toBeNull();
+  });
+
+  it('cicla Claro → Oscuro → Sistema con la misma lógica de tema', () => {
+    renderCompact();
+
+    const button = screen.getByRole('button');
+
+    fireEvent.click(button);
+
+    expect(document.documentElement.dataset.theme).toBe('light');
+    expect(document.cookie).toContain(`${THEME_COOKIE}=light`);
+    expect(
+      screen.getByRole('button', { name: 'Apariencia: Claro. Cambiar a Oscuro.' }),
+    ).toBeTruthy();
+
+    fireEvent.click(button);
+
+    expect(document.documentElement.dataset.theme).toBe('dark');
+    expect(document.cookie).toContain(`${THEME_COOKIE}=dark`);
+    expect(
+      screen.getByRole('button', { name: 'Apariencia: Oscuro. Cambiar a Sistema.' }),
+    ).toBeTruthy();
+  });
+});

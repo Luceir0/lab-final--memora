@@ -10,24 +10,22 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as CirclesRouteImport } from './routes/circles'
-import { Route as HelpRouteImport } from './routes/help'
+import { Route as AppRouteImport } from './routes/_app'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as UiRouteImport } from './routes/ui'
+import { Route as AppCirclesRouteImport } from './routes/_app.circles'
+import { Route as AppHelpRouteImport } from './routes/_app.help'
+import { Route as AppPrivacyRouteImport } from './routes/_app.privacy'
+import { Route as AppProfileRouteImport } from './routes/_app.profile'
+import { Route as AppUploadsRouteImport } from './routes/_app.uploads'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const CirclesRoute = CirclesRouteImport.update({
-  id: '/circles',
-  path: '/circles',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const HelpRoute = HelpRouteImport.update({
-  id: '/help',
-  path: '/help',
+const AppRoute = AppRouteImport.update({
+  id: '/_app',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -40,41 +38,101 @@ const UiRoute = UiRouteImport.update({
   path: '/ui',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AppCirclesRoute = AppCirclesRouteImport.update({
+  id: '/circles',
+  path: '/circles',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppHelpRoute = AppHelpRouteImport.update({
+  id: '/help',
+  path: '/help',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppPrivacyRoute = AppPrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppProfileRoute = AppProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppUploadsRoute = AppUploadsRouteImport.update({
+  id: '/uploads',
+  path: '/uploads',
+  getParentRoute: () => AppRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/circles': typeof CirclesRoute
-  '/help': typeof HelpRoute
   '/login': typeof LoginRoute
   '/ui': typeof UiRoute
+  '/circles': typeof AppCirclesRoute
+  '/help': typeof AppHelpRoute
+  '/privacy': typeof AppPrivacyRoute
+  '/profile': typeof AppProfileRoute
+  '/uploads': typeof AppUploadsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/circles': typeof CirclesRoute
-  '/help': typeof HelpRoute
   '/login': typeof LoginRoute
   '/ui': typeof UiRoute
+  '/circles': typeof AppCirclesRoute
+  '/help': typeof AppHelpRoute
+  '/privacy': typeof AppPrivacyRoute
+  '/profile': typeof AppProfileRoute
+  '/uploads': typeof AppUploadsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/circles': typeof CirclesRoute
-  '/help': typeof HelpRoute
+  '/_app': typeof AppRouteWithChildren
   '/login': typeof LoginRoute
   '/ui': typeof UiRoute
+  '/_app/circles': typeof AppCirclesRoute
+  '/_app/help': typeof AppHelpRoute
+  '/_app/privacy': typeof AppPrivacyRoute
+  '/_app/profile': typeof AppProfileRoute
+  '/_app/uploads': typeof AppUploadsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/circles' | '/help' | '/login' | '/ui'
+  fullPaths:
+    | '/'
+    | '/login'
+    | '/ui'
+    | '/circles'
+    | '/help'
+    | '/privacy'
+    | '/profile'
+    | '/uploads'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/circles' | '/help' | '/login' | '/ui'
-  id: '__root__' | '/' | '/circles' | '/help' | '/login' | '/ui'
+  to:
+    | '/'
+    | '/login'
+    | '/ui'
+    | '/circles'
+    | '/help'
+    | '/privacy'
+    | '/profile'
+    | '/uploads'
+  id:
+    | '__root__'
+    | '/'
+    | '/_app'
+    | '/login'
+    | '/ui'
+    | '/_app/circles'
+    | '/_app/help'
+    | '/_app/privacy'
+    | '/_app/profile'
+    | '/_app/uploads'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  CirclesRoute: typeof CirclesRoute
-  HelpRoute: typeof HelpRoute
+  AppRoute: typeof AppRouteWithChildren
   LoginRoute: typeof LoginRoute
   UiRoute: typeof UiRoute
 }
@@ -88,18 +146,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/circles': {
-      id: '/circles'
-      path: '/circles'
-      fullPath: '/circles'
-      preLoaderRoute: typeof CirclesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/help': {
-      id: '/help'
-      path: '/help'
-      fullPath: '/help'
-      preLoaderRoute: typeof HelpRouteImport
+    '/_app': {
+      id: '/_app'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AppRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -116,13 +167,65 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UiRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_app/circles': {
+      id: '/_app/circles'
+      path: '/circles'
+      fullPath: '/circles'
+      preLoaderRoute: typeof AppCirclesRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/help': {
+      id: '/_app/help'
+      path: '/help'
+      fullPath: '/help'
+      preLoaderRoute: typeof AppHelpRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/privacy': {
+      id: '/_app/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof AppPrivacyRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/profile': {
+      id: '/_app/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof AppProfileRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/uploads': {
+      id: '/_app/uploads'
+      path: '/uploads'
+      fullPath: '/uploads'
+      preLoaderRoute: typeof AppUploadsRouteImport
+      parentRoute: typeof AppRoute
+    }
   }
 }
 
+interface AppRouteChildren {
+  AppCirclesRoute: typeof AppCirclesRoute
+  AppHelpRoute: typeof AppHelpRoute
+  AppPrivacyRoute: typeof AppPrivacyRoute
+  AppProfileRoute: typeof AppProfileRoute
+  AppUploadsRoute: typeof AppUploadsRoute
+}
+
+const AppRouteChildren: AppRouteChildren = {
+  AppCirclesRoute: AppCirclesRoute,
+  AppHelpRoute: AppHelpRoute,
+  AppPrivacyRoute: AppPrivacyRoute,
+  AppProfileRoute: AppProfileRoute,
+  AppUploadsRoute: AppUploadsRoute,
+}
+
+const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  CirclesRoute: CirclesRoute,
-  HelpRoute: HelpRoute,
+  AppRoute: AppRouteWithChildren,
   LoginRoute: LoginRoute,
   UiRoute: UiRoute,
 }

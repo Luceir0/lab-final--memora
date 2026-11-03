@@ -26,6 +26,7 @@ apps/web/
 ├── public/fonts/           # Plus Jakarta Sans vendorizada + OFL.txt
 ├── src/
 │   ├── components/         # 404, error de ruta, ThemeProvider y ThemeToggle
+│   │   └── layout/         # AppShell, PrimaryNav, Sidebar, TopBar, SkipLink y Logo
 │   ├── features/spike/     # contenido de /help y páginas de /circles y /login
 │   ├── lib/
 │   │   ├── api-client.ts        # instancia de navegador (VITE_API_BASE_URL)
@@ -35,7 +36,7 @@ apps/web/
 │   │   ├── query-client.ts      # QueryClient, contexto del router y política de retry
 │   │   ├── theme.ts             # cookie, resolución SSR/cliente y script de arranque
 │   │   └── error-message.ts     # error -> mensaje seguro en español
-│   ├── routes/              # __root (documento + providers), index, login, circles, help
+│   ├── routes/              # __root (documento + providers), _app (shell: _app.circles, _app.help, _app.profile, _app.uploads y _app.privacy), index y login
 │   ├── styles/app.css       # Tailwind 4 + tokens.css + theme.css + fonts.css
 │   ├── test/setup.ts        # cleanup, tema y matchMedia simulado
 │   ├── router.tsx           # getRouter + QueryClient por petición
@@ -48,6 +49,21 @@ apps/web/
 al ejecutar `dev` o `build`. No se edita a mano y está excluido de ESLint y Prettier; se
 versiona para que `pnpm typecheck` funcione en un clon limpio y en CI. Los `*.test.tsx`
 de `src/routes` se excluyen del árbol con `routeFileIgnorePattern`.
+
+## Shell y navegación
+
+- `components/layout/PrimaryNav` es el único `<nav>`: en móvil y tablet es la barra
+  inferior (Círculos · Subir · Perfil) de 72 px más safe area; desde `lg` es la lista
+  vertical del sidebar de 16 rem (Mis círculos · Subidas · Círculos · Ayuda ·
+  Privacidad). No hay dos árboles de navegación.
+- `AppShell` monta `TopBar` (solo móvil/tablet: logo y tema compacto), `Sidebar` y
+  `<main id="main-content" tabIndex={-1}>`, que es el destino enfocable del skip link.
+- La lista de círculos del sidebar es un hueco (`circleList`) que rellenará F14; sin
+  datos no se renderiza.
+- `/profile`, `/uploads` y `/privacy` son pantallas provisionales hasta F34, F27 y F36.
+  `/uploads` es el destino actual de «Subir»; F26 lo convertirá en el selector de fotos.
+- Contrato y mediciones: `docs/02-design/responsive.md` y
+  `docs/04-features/F13-app-shell/handoff.md`.
 
 ## Variables de entorno
 
@@ -126,8 +142,9 @@ Tailwind 4.3.3 en modo CSS-first, sin preset JS ni `tailwind.config`.
   `meta[name="theme-color"]`.
 - `ThemeProvider` mantiene `data-theme`, `color-scheme` y `theme-color`, y solo escucha
   `matchMedia('(prefers-color-scheme: dark)')` cuando el modo es `system`.
-- `ThemeToggle` (Claro / Oscuro / Sistema) es provisional y se monta en `/circles` con
-  `TODO(F11/F34)`.
+- `ThemeToggle` tiene dos variantes: `variant="compact"` (cabecera móvil y pie del
+  sidebar, presente en todas las rutas del shell) y `variant="section"` (grupo de
+  radios, reservada para Perfil, F34).
 - Plus Jakarta Sans se sirve self-hosted desde `public/fonts/` junto a su `OFL.txt`. El
   `<head>` precarga solo el subset latin; el latin-ext se descarga por `unicode-range`
   cuando hace falta.

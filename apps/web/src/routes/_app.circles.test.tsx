@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 
 import { CirclesPage } from '../features/spike/circles-page';
 import { ThemeProvider } from '../components/theme-provider';
-import { Route } from './circles';
+import { Route } from './_app.circles';
 
 describe('route /circles', () => {
   it('declara ssr: false', () => {
