@@ -96,6 +96,13 @@ Longitudes en caracteres. Fuente: `packages/shared/src/schemas/**`. Los valores 
 
 `GET /circles/:circleId` incluye `stats: { membersCount, albumsCount, photosCount, storageBytes, lastUploadAt }`.
 
+Semántica del CRUD implementada en F17:
+
+- `GET /circles` ordena por `updatedAt desc` con desempate `id desc`; el cursor es keyset opaco sobre `(updatedAt, id)` y `limit` va de 1 a 100 (defecto 24).
+- `coverPhotoId` inexistente o de otro círculo → `404 NOT_FOUND`; `null` limpia la portada.
+- `DELETE /circles/:circleId` responde `204`; un círculo ya inexistente → `404 NOT_FOUND`.
+- Sin sesión → `401`; sin membresía → `404` (nunca `403`, para no revelar existencia); miembro sin permiso en `PATCH`/`DELETE` → `403`.
+
 ## Invitaciones
 
 | Método | Ruta | Descripción |

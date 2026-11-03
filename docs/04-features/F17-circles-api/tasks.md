@@ -2,40 +2,57 @@
 
 ## Antes de empezar
 
-- [ ] Leer `AGENTS.md` y `spec.md`.
-- [ ] Comprobar dependencias: F08, F15.
-- [ ] Comprobar Definition of Ready.
-- [ ] Proponer plan y esperar confirmación.
+- [x] Leer `AGENTS.md` y `spec.md`.
+- [x] Comprobar dependencias: F08, F15.
+- [x] Comprobar Definition of Ready.
+- [x] Proponer plan y esperar confirmación.
+
+Decisiones del G1 (2026-11-03): listado por `updatedAt desc` con desempate `id desc` y cursor keyset `(updatedAt, id)`; `coverPhotoId` ajeno o inexistente → `404 NOT_FOUND`; borrado en cascada solo de filas, con limpieza de storage diferida.
 
 ## Implementación
 
-- [ ] GET/POST /circles
-- [ ] GET/PATCH/DELETE /circles/:circleId
-- [ ] Membership owner
-- [ ] Settings flags
-- [ ] Stats
-- [ ] Autorización
-- [ ] Tests de acceso cruzado
+- [x] GET/POST /circles
+- [x] GET/PATCH/DELETE /circles/:circleId
+- [x] Membership owner
+- [x] Settings flags
+- [x] Stats
+- [x] Autorización
+- [x] Tests de acceso cruzado
+
+### Correcciones de la revisión A
+
+- [x] Mayor: `PATCH` mapea `P2025`/`P2003` a `404`; `DELETE` usa `deleteMany` y `count === 0` → `404`; 4 tests nuevos de carrera.
+- [x] CSRF documentado en OpenAPI.
+- [x] `role` derivado de `ownerId`: un no-owner nunca se expone como `owner`.
+- [x] Negativos de `Origin` en las tres mutaciones.
+- [x] `format:check`.
+- [x] Comando de verificación de la spec con `DATABASE_URL` (M-08).
+- [x] Estado y documentación desactualizados: cerrados en este cierre.
+- [x] Nits: `400` en OpenAPI para params de detalle y `DELETE`, tag `Circles`, mensaje genérico de `requirePrisma`, `select` en `findCirclePhoto`, aserciones de `cache-control`/`vary`.
 
 ## Criterios de aceptación
 
-- [ ] AC-01: Crear círculo añade owner membership.
-- [ ] AC-02: Solo miembros ven el círculo.
-- [ ] AC-03: Solo owner edita settings/borra.
-- [ ] AC-04: Un extraño recibe 404.
-- [ ] AC-05: settings valida flags.
-- [ ] AC-06: Stats no filtran otros círculos.
-- [ ] AC-07: Tests negativos.
+- [x] AC-01: Crear círculo añade owner membership.
+- [x] AC-02: Solo miembros ven el círculo.
+- [x] AC-03: Solo owner edita settings/borra.
+- [x] AC-04: Un extraño recibe 404.
+- [x] AC-05: settings valida flags.
+- [x] AC-06: Stats no filtran otros círculos.
+- [x] AC-07: Tests negativos.
 
 ## Verificación
 
-- [ ] `pnpm --filter @memora/api test circles`
+- [x] `DATABASE_URL="postgresql://memora:memora@127.0.0.1:5432/memora_test" pnpm --filter @memora/api test circles` → 28/28.
+- [x] `DATABASE_URL="postgresql://memora:memora@127.0.0.1:5432/memora_test" pnpm --filter @memora/api test` → 10 archivos, 155/155.
+- [x] `pnpm --filter @memora/api typecheck` → limpio.
+- [x] `pnpm --filter @memora/api lint` → limpio.
+- [x] `pnpm format:check` → limpio.
 
 ## Cierre
 
-- [ ] Revisión independiente.
-- [ ] Aceptación del usuario.
-- [ ] `handoff.md` completo.
-- [ ] Tablero actualizado.
-- [ ] Bitácora y cobertura actualizadas.
-- [ ] Commit propuesto (sin ejecutar).
+- [x] Revisión independiente (nivel A, `reviewer`: una ronda, cambios requeridos; 1 Mayor, 6 Menores y 5 Nits, todos corregidos).
+- [x] Aceptación del usuario (2026-11-03).
+- [x] `handoff.md` completo.
+- [x] Tablero actualizado (F17 en `done`).
+- [x] Bitácora y cobertura actualizadas.
+- [ ] Commit propuesto (sin ejecutar): `feat(api): add circles API with membership and stats (F17)`.
