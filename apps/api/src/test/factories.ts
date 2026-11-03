@@ -38,6 +38,8 @@ export type PhotoTagOverrides = Partial<Prisma.PhotoTagUncheckedCreateInput> &
   Pick<Prisma.PhotoTagUncheckedCreateInput, 'photoId' | 'taggedUserId' | 'createdBy'>;
 export type ActivityOverrides = Partial<Prisma.ActivityUncheckedCreateInput> &
   Pick<Prisma.ActivityUncheckedCreateInput, 'circleId' | 'actorId'>;
+export type SessionOverrides = Partial<Prisma.SessionUncheckedCreateInput> &
+  Pick<Prisma.SessionUncheckedCreateInput, 'userId'>;
 
 export async function makeUser(prisma: PrismaClient, overrides: UserOverrides = {}) {
   const sequenceId = nextSequence();
@@ -134,4 +136,19 @@ export async function makeActivity(prisma: PrismaClient, overrides: ActivityOver
   };
 
   return prisma.activity.create({ data: { ...defaults, ...overrides } });
+}
+
+const DEFAULT_SESSION_EXPIRES_AT = new Date('2030-01-01T00:00:00.000Z');
+
+export async function makeSession(prisma: PrismaClient, overrides: SessionOverrides) {
+  const sequenceId = nextSequence();
+  const defaults: Prisma.SessionUncheckedCreateInput = {
+    id: `test-session-${sequenceId}`,
+    userId: overrides.userId,
+    tokenHash: `test-session-hash-${sequenceId}`,
+    expiresAt: DEFAULT_SESSION_EXPIRES_AT,
+    lastUsedAt: DEFAULT_TAKEN_AT,
+  };
+
+  return prisma.session.create({ data: { ...defaults, ...overrides } });
 }

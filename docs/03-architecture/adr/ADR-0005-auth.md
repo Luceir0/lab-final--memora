@@ -28,3 +28,14 @@ Sesiones en PostgreSQL, token aleatorio en cookie `HttpOnly` y hash en BD. `Same
 
 - `docs/03-architecture/auth.md`
 - `docs/04-features/F15-auth-api/spec.md`
+
+## Nota de implementación (2026-11-03, F15)
+
+- El CSRF se implementa con un token HMAC atado al token de sesión y una cookie
+  legible `memora_csrf`; no se compara cookie contra cabecera. Es más fuerte que
+  el doble envío literal y no cambia la decisión de fondo.
+- La limpieza de sesiones es perezosa al leer; la purga programada se difiere a
+  F42.
+- El registro responde `409` ante un email duplicado (decisión de producto).
+  El login mantiene un único `401` genérico.
+- Login añade un techo agregado de 20/min por IP además del límite por IP+email.

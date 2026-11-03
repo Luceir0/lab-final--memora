@@ -5,7 +5,7 @@ import { buildApp } from './app.ts';
 import { loadConfig } from './config.ts';
 import { startServer } from './server.ts';
 import { createFakeServices } from './test/fakes.ts';
-import { createTestApp, TEST_SESSION_SECRET, type TestApp } from './test/harness.ts';
+import { createTestApp, TEST_APP_URL, TEST_SESSION_SECRET, type TestApp } from './test/harness.ts';
 
 function expectUniformError(body: ErrorResponse, code: ErrorCode): void {
   expect(body.code).toBe(code);
@@ -86,6 +86,7 @@ describe('uniform errors', () => {
     const body = response.json<ErrorResponse>();
     expectUniformError(body, 'NOT_FOUND');
     expect(body.details).toBeNull();
+    expect(response.body).not.toContain('FST_ERR');
   });
 
   it('returns 400 with non-empty details for a schema validation error (AC-02)', async () => {
@@ -174,6 +175,35 @@ describe('uniform errors', () => {
   });
 });
 
+describe('error handling order', () => {
+  it('applies the canonical handler to a buildApp route registered after the plugins', async () => {
+    const testApp = await createTestApp();
+
+    try {
+      // `/api/auth/register` is registered by `buildApp()` itself (not by
+      // `registerTestRoutes`). Before the handler-order fix it kept Fastify's
+      // default handler, which serialized the raw `FST_ERR_VALIDATION` body and
+      // ended in a 500.
+      const response = await testApp.app.inject({
+        method: 'POST',
+        url: '/api/auth/register',
+        headers: { origin: TEST_APP_URL },
+        payload: { name: 'Lucía', email: 'no-es-un-email', password: 'corta' },
+      });
+
+      expect(response.statusCode).toBe(400);
+
+      const body = response.json<ErrorResponse>();
+      expectUniformError(body, 'VALIDATION_ERROR');
+      expect(body.details?.some((detail) => detail.field === 'email')).toBe(true);
+      expect(response.body).not.toContain('FST_ERR');
+      expect(response.body).not.toContain('validationContext');
+    } finally {
+      await testApp.close();
+    }
+  });
+});
+
 describe('production error handling', () => {
   let testApp: TestApp;
 
@@ -220,6 +250,7 @@ describe('startup', () => {
       NODE_ENV: 'production',
       SESSION_SECRET: TEST_SESSION_SECRET,
       DATABASE_URL: 'postgresql://memora:memora@127.0.0.1:5432/memora',
+      APP_URL: 'https://memora.example',
     });
 
     await expect(startServer(config)).rejects.toThrow(/adaptadores reales/);
@@ -230,6 +261,7 @@ describe('startup', () => {
       NODE_ENV: 'production',
       SESSION_SECRET: TEST_SESSION_SECRET,
       DATABASE_URL: 'postgresql://memora:memora@127.0.0.1:5432/memora',
+      APP_URL: 'https://memora.example',
     });
 
     await expect(

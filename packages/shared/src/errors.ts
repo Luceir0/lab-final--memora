@@ -75,6 +75,15 @@ export function defaultErrorMessage(code: ErrorCode): string {
 }
 
 /**
+ * Message used by `POST /auth/login` when the email or the password is wrong.
+ *
+ * The canonical code stays `UNAUTHENTICATED`; the endpoint overrides the
+ * generic message so the response never reveals whether the email exists
+ * (AC-02 of F15).
+ */
+export const INVALID_CREDENTIALS_MESSAGE = 'Email o contraseña incorrectos.';
+
+/**
  * One machine-readable detail. Only `field`, `message`, `resource` and `limit`
  * may carry request context; never another circle's data. An empty detail is
  * rejected: it would tell the client nothing and hide a bug.

@@ -3,6 +3,7 @@ import { pathToFileURL } from 'node:url';
 import { resolveRequiredDatabaseUrl } from '../src/db-url.ts';
 import { disconnectPrisma, getPrismaClient } from '../src/db.ts';
 import type { PrismaClient } from '../src/generated/prisma/client.ts';
+import { hashPassword } from '../src/modules/auth/password.ts';
 
 /**
  * Deterministic, idempotent development seed.
@@ -13,13 +14,13 @@ import type { PrismaClient } from '../src/generated/prisma/client.ts';
  */
 
 /**
- * Deliberately fake credential placeholder.
+ * Public development credential for every seeded account.
  *
- * It is not a valid argon2id hash and must never authenticate anyone. F15
- * replaces seed/dev credentials with real hashing; until then, sign-in cannot
- * succeed with this value.
+ * The Argon2id hash is generated at seed time. The fixed salt only makes the
+ * public demo fixtures reproducible across runs; real users get random salts.
  */
-const SEED_PASSWORD_HASH = 'seed-placeholder-not-a-valid-password-hash';
+const SEED_PASSWORD = 'memora-demo';
+const SEED_PASSWORD_SALT = Buffer.from('memora-seed-salt', 'utf8');
 
 /**
  * Fixed timestamp for every seeded row. `@updatedAt` fields are set
@@ -191,12 +192,14 @@ const PHOTOS: readonly SeedPhotoInput[] = [
 
 /** Inserts or updates the deterministic seed data and returns seed-only counts. */
 export async function seedDatabase(prisma: PrismaClient): Promise<SeedSummary> {
+  const passwordHash = await hashPassword(SEED_PASSWORD, { salt: SEED_PASSWORD_SALT });
+
   await prisma.user.upsert({
     where: { id: USER_LUCIA_ID },
     update: {
       name: 'Lucía Ferrer',
       email: 'lucia@memora.test',
-      passwordHash: SEED_PASSWORD_HASH,
+      passwordHash,
       themePreference: 'system',
       createdAt: SEED_TIMESTAMP,
       updatedAt: SEED_TIMESTAMP,
@@ -205,7 +208,7 @@ export async function seedDatabase(prisma: PrismaClient): Promise<SeedSummary> {
       id: USER_LUCIA_ID,
       name: 'Lucía Ferrer',
       email: 'lucia@memora.test',
-      passwordHash: SEED_PASSWORD_HASH,
+      passwordHash,
       themePreference: 'system',
       createdAt: SEED_TIMESTAMP,
       updatedAt: SEED_TIMESTAMP,
@@ -217,7 +220,7 @@ export async function seedDatabase(prisma: PrismaClient): Promise<SeedSummary> {
     update: {
       name: 'Mateo Ríos',
       email: 'mateo@memora.test',
-      passwordHash: SEED_PASSWORD_HASH,
+      passwordHash,
       themePreference: 'dark',
       createdAt: SEED_TIMESTAMP,
       updatedAt: SEED_TIMESTAMP,
@@ -226,7 +229,7 @@ export async function seedDatabase(prisma: PrismaClient): Promise<SeedSummary> {
       id: USER_MATEO_ID,
       name: 'Mateo Ríos',
       email: 'mateo@memora.test',
-      passwordHash: SEED_PASSWORD_HASH,
+      passwordHash,
       themePreference: 'dark',
       createdAt: SEED_TIMESTAMP,
       updatedAt: SEED_TIMESTAMP,

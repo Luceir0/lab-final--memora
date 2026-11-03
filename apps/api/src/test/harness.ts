@@ -1,5 +1,6 @@
 import { buildApp } from '../app.ts';
 import { loadConfig, type AppConfig } from '../config.ts';
+import type { PrismaClient } from '../generated/prisma/client.ts';
 import type { LogStream } from '../logging.ts';
 import type { MemoraServer } from '../types.ts';
 import { createFakeServices, type FakeServices } from './fakes.ts';
@@ -11,6 +12,12 @@ export const TEST_SESSION_SECRET = 'memora-test-session-secret-0123456789';
 /** Test database URL: validated but never connected by the HTTP suite. */
 export const TEST_DATABASE_URL = 'postgresql://memora:memora@127.0.0.1:5432/memora_test';
 
+/** Trusted web origin used by the auth `Origin` checks in tests. */
+export const TEST_APP_URL = 'http://localhost:3000';
+
+/** Production requires HTTPS, so the production test app uses this origin. */
+export const TEST_PRODUCTION_APP_URL = 'https://localhost:3000';
+
 export interface TestAppOptions {
   /** Extra environment overrides merged over the test defaults. */
   readonly env?: NodeJS.ProcessEnv;
@@ -19,6 +26,8 @@ export interface TestAppOptions {
   readonly rateLimitMax?: number;
   readonly testRoutes?: boolean;
   readonly services?: FakeServices;
+  /** Shared Prisma client; when omitted `buildApp()` creates and owns one. */
+  readonly prisma?: PrismaClient;
   /**
    * Marks the test fakes as real for production-config tests.
    *
@@ -43,12 +52,16 @@ export interface TestApp {
  * tests that assert 429 lower the ceiling explicitly.
  */
 export async function createTestApp(options: TestAppOptions = {}): Promise<TestApp> {
+  const environment = options.env ?? {};
+  const isProduction = environment.NODE_ENV === 'production';
+
   const config = loadConfig({
     NODE_ENV: 'test',
     SESSION_SECRET: TEST_SESSION_SECRET,
     DATABASE_URL: TEST_DATABASE_URL,
+    APP_URL: isProduction ? TEST_PRODUCTION_APP_URL : TEST_APP_URL,
     LOG_LEVEL: 'silent',
-    ...options.env,
+    ...environment,
   });
 
   const services = options.services ?? createFakeServices();
@@ -61,6 +74,7 @@ export async function createTestApp(options: TestAppOptions = {}): Promise<TestA
     logger: options.loggerStream === undefined ? false : true,
     ...(options.loggerStream === undefined ? {} : { loggerStream: options.loggerStream }),
     ...(options.rateLimitMax === undefined ? {} : { rateLimitMax: options.rateLimitMax }),
+    ...(options.prisma === undefined ? {} : { prisma: options.prisma }),
   });
 
   if (options.testRoutes === true) {
