@@ -23,9 +23,13 @@
 - El **registro** sí revela existencia: un email ya registrado devuelve
   `409 CONFLICT` con `details` de campo `email`. Es una decisión de producto
   (2026-11-03) y no afecta a AC-02, que solo cubre login.
-- Rate limit por IP y por email: login 5/min por IP+email, registro 3/hora por IP.
+- Rate limit por IP y por email: login 5/min por IP+email, registro 10/hora por IP.
   Además, login tiene un techo agregado de 20/min por IP (defensa derivada, no
   está en el contrato) para frenar el password spraying que rota emails.
+- El límite de registro era 3/hora en F15 y pasó a 10/hora el 2026-11-03, a
+  petición del usuario: al ser por IP, tres altas legítimas desde una misma
+  conexión (una casa) bloqueaban a todo el mundo durante una hora. Sigue
+  habiendo límite porque no hay verificación de email y cada alta es gratis.
 - No se registra la contraseña ni el hash.
 
 ## CSRF
