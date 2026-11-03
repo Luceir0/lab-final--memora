@@ -73,6 +73,13 @@ export async function registerSwagger(app: FastifyInstance): Promise<void> {
             'Registro, sesión, CSRF y perfil del usuario actual. La sesión viaja en la cookie ' +
             '`memora_session`; las mutaciones autenticadas exigen `X-CSRF-Token`.',
         },
+        {
+          name: 'Circles',
+          description:
+            'CRUD de círculos y sus stats. Solo los miembros pueden ver un círculo; el propietario ' +
+            '(`Circle.ownerId`) es el único que lo edita o lo borra. Las mutaciones exigen ' +
+            '`X-CSRF-Token`.',
+        },
       ],
       components: {
         schemas: {
