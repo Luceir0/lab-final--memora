@@ -48,4 +48,4 @@
 - [x] `handoff.md` completo.
 - [x] Tablero actualizado.
 - [x] Bitácora y cobertura actualizadas.
-- [ ] Commit propuesto (sin ejecutar). **La PR no existe todavía**: no hay commit, PR ni run que registrar.
+- [x] Commits, push y PR (#22, merge `dd9d48e`; CI run `41683883983` en verde).

@@ -1,6 +1,6 @@
 # Handoff — F16 Auth web
 
-> Estado: **`done`** (2026-11-03). Nivel de auditoría **A**. Aceptada por el usuario el **2026-11-03** tras probar login, registro, `401`, `409`, redirect y `429` en navegador real a 390×844 y escritorio. Revisión independiente en **tres rondas** (reviewer + accesibilidad + diseño) con tres rondas de corrección del implementador. **La PR todavía no se ha creado**; este handoff no incluye identificadores de commit, PR ni CI.
+> Estado: **`done`** (2026-11-03). Nivel de auditoría **A**. Aceptada por el usuario el **2026-11-03** tras probar login, registro, `401`, `409`, redirect y `429` en navegador real a 390×844 y escritorio. Revisión independiente en **tres rondas** (reviewer + accesibilidad + diseño) con tres rondas de corrección del implementador. Cierre operativo: PR #22, merge `dd9d48e` y CI run `41683883983` en verde.
 
 ## Resultado
 
@@ -87,7 +87,7 @@ Fuera de alcance de F16 o diferido por decisión del usuario. Nada de esto bloqu
 - **Exceso de `role="alert"` simultáneos** (hallazgo de accesibilidad): asignado a **F39** por decisión del usuario, porque exige tocar `packages/ui`.
 - **Enlace «Inicia sesión» dentro del `409`**: requiere que `FieldMessages` acepte un nodo React; queda en el kit.
 - **Icono de error alineado con el mensaje** y **check verde del hint**: mejoras del kit, no de la feature.
-- **PR**: no creada. No se han inventado ni commit, ni número de PR, ni run de CI.
+- **Cierre operativo**: PR #22 (`feat/F16-auth-web`), merge `dd9d48e` en `main`, CI run `41683883983` en `completed/success`. Tres commits: web, API/contrato y documentación.
 
 ## Riesgos y limitaciones
 
@@ -110,6 +110,5 @@ Fuera de alcance de F16 o diferido por decisión del usuario. Nada de esto bloqu
 
 ## Siguiente paso propuesto
 
-1. Revisar el árbol completo y proponer el commit único de la feature (sin ejecutarlo sin permiso).
-2. Crear la PR con el procedimiento de `docs/06-process/workflow.md` y registrar el número real, el run de CI y el merge cuando existan.
-3. Tras el merge, abrir **F17 — Circles API**, cuya DoR depende de F15 y F08, ya `done`.
+1. ~~Revisar el árbol, commitear y abrir la PR.~~ Hecho: PR #22, merge `dd9d48e`, CI en verde.
+2. Abrir **F17 — Circles API**, cuya DoR depende de F15 y F08, ya `done`. Alternativa en paralelo: **F16 no bloquea F17**, así que puede abordarse sin esperar a nada.
