@@ -3,7 +3,7 @@ id: F16
 title: "Auth web"
 milestone: M2
 size: M
-status: draft
+status: done
 spec: complete
 depends_on:
   - "F13"
@@ -27,7 +27,7 @@ decisions:
 
 # F16 — Auth web
 
-> **Milestone:** M2 · **Talla:** M · **Estado:** draft · **Spec:** completa
+> **Milestone:** M2 · **Talla:** M · **Estado:** done · **Spec:** completa
 > **Depende de:** F13, F15 · **Bloquea:** F18, F20, F34
 
 ## Objetivo
@@ -121,12 +121,18 @@ Implementar login y registro con validación compartida, estados y redirección.
 
 ## Definition of Ready
 
-- [ ] Dependencias `done`. Excepción autorizada por el usuario y registrada en el tablero.
-- [ ] Decisiones resueltas.
-- [ ] Contratos congelados.
-- [ ] Diseño enlazado (si aplica).
-- [ ] Datos de prueba.
-- [ ] Sin preguntas bloqueantes.
+- [x] Dependencias `done`: F13 y F15, sin necesidad de excepción.
+- [x] Decisiones resueltas.
+- [x] Contratos congelados.
+- [x] Diseño enlazado (si aplica).
+- [x] Datos de prueba.
+- [x] Sin preguntas bloqueantes.
+
+Cumplida al arrancar el 2026-11-03: F13 y F15 estaban `done`, los contratos de `auth` y de render modes estaban congelados, los cinco diseños estaban enlazados, había seed con `lucia@memora.test` / `memora-demo` y la cookie se gestiona solo desde el servidor (no se toca desde JS), que era la única duda abierta.
+
+## Estado
+
+`done` desde el 2026-11-03, aceptada por el usuario ese mismo día. Las tres rondas de revisión, los pendientes diferidos y la verificación real están en [handoff.md](handoff.md).
 
 ## Handoff
 
@@ -134,4 +140,4 @@ Al terminar, completa `handoff.md` y actualiza el tablero. No hagas commit ni pu
 
 ## Preguntas abiertas
 
-La cookie no se toca desde JS.
+La cookie no se toca desde JS. **Resuelta:** la sesión la gestiona el servidor y el cliente no lee ni escribe `memora_session`.

@@ -1,6 +1,24 @@
 import { cleanup } from '@testing-library/react';
 import { afterEach } from 'vitest';
 
+/**
+ * `fetch` del navegador acepta rutas relativas; el de Node que usa jsdom no.
+ * Se resuelven contra el origen de jsdom para que el cliente de la app
+ * (`/api`) y MSW trabajen con la misma URL absoluta que en producción.
+ */
+if (typeof window !== 'undefined') {
+  const nativeFetch = globalThis.fetch;
+
+  globalThis.fetch = (input: RequestInfo | URL, init?: RequestInit) => {
+    const resolved =
+      typeof input === 'string' && input.startsWith('/')
+        ? new URL(input, window.location.origin).href
+        : input;
+
+    return nativeFetch(resolved, init);
+  };
+}
+
 afterEach(() => {
   cleanup();
 

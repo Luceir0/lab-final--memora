@@ -205,7 +205,7 @@ La API puede agrupar eventos de subida por actor/álbum/intervalo; el contrato d
 | Acción | Límite orientativo |
 | --- | --- |
 | Login | 5/min por IP + email |
-| Registro | 3/hora por IP |
+| Registro | 10/hora por IP |
 | Invitaciones | 10/hora por usuario |
 | Subidas | 60/min por usuario |
 | Descargas | 10/min por usuario |
