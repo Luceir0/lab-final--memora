@@ -59,4 +59,4 @@ Decisiones del G1 (2026-11-03): `@node-rs/argon2` autorizado; email duplicado �
 - [x] `handoff.md` completo.
 - [x] Tablero actualizado (F15 en `done`).
 - [x] Bitácora y cobertura actualizadas.
-- [ ] Commit y PR (no ejecutados: el cierre operativo espera autorización del usuario).
+- [x] Commit y PR (rama `feat/F15-auth-api`, commits `e4ed4f8` y `1e1e704`, PR #20, CI run `41640174983` y merge `af7d865` con CI run `41640515283`).

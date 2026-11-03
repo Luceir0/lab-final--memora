@@ -1,10 +1,10 @@
 # Handoff — F15 Auth API
 
-> Estado: **`done`** (2026-11-03). Aceptada por el usuario el 2026-11-03 y revisada de forma independiente en nivel **A** por `reviewer` (**apto con correcciones**: 1 Mayor y 8 Menores resueltos, N-01 aceptado). Verificación real: 127/127 tests de la API (auth: 29/29) contra `memora_test`. **Cierre operativo pendiente**: no hay commit, PR ni CI.
+> Estado: **`done`** (2026-11-03). Aceptada por el usuario el 2026-11-03 y revisada de forma independiente en nivel **A** por `reviewer` (**apto con correcciones**: 1 Mayor y 8 Menores resueltos, N-01 aceptado). Verificación real: 127/127 tests de la API (auth: 29/29) contra `memora_test`. **Cierre operativo completo**: rama `feat/F15-auth-api`, commits `e4ed4f8` y `1e1e704`, [PR #20](https://github.com/Luceir0/lab-final--memora/pull/20), CI en verde en la PR (run `41640174983`, `completed/success`), merge `af7d865` en `main` y CI en verde sobre el merge (run `41640515283`, `completed/success`).
 
 ## Resultado
 
-F15 queda cerrada técnicamente. Además de la feature original, esta ronda aplica las correcciones M-01, M-03, M-04, M-05, M-06, M-07 y M-09 de la revisión independiente, y las opcionales N-03. M-02 y N-01 se aceptan y documentan; M-08 lo corrige el orquestador en la spec. El usuario aceptó la feature el **2026-11-03**, con AC-01…AC-07 en verde, y queda en **`done`**; el cierre operativo sigue pendiente de autorización.
+F15 queda cerrada técnicamente. Además de la feature original, esta ronda aplica las correcciones M-01, M-03, M-04, M-05, M-06, M-07 y M-09 de la revisión independiente, y las opcionales N-03. M-02 y N-01 se aceptan y documentan; M-08 lo corrige el orquestador en la spec. El usuario aceptó la feature el **2026-11-03**, con AC-01…AC-07 en verde, y queda en **`done`**; el cierre operativo se completó con la PR #20 y el merge `af7d865`.
 
 ## Cambios (archivos)
 
@@ -71,7 +71,7 @@ F15 queda cerrada técnicamente. Además de la feature original, esta ronda apli
 
 ## Pendiente
 
-- **Cierre operativo pendiente:** commit, PR y CI no ejecutados; esperan autorización del usuario. No hay hash, número de PR ni run que registrar.
+- **Cierre operativo:** completado el 2026-11-03 con los commits `e4ed4f8` (`feat(api): add auth API with sessions, CSRF and rate limiting (F15)`) y `1e1e704` (`docs: record F15 implementation, review and acceptance`), la [PR #20](https://github.com/Luceir0/lab-final--memora/pull/20), CI en verde en la PR (run `41640174983`, `completed/success`), el merge `af7d865` en `main` y CI en verde sobre el merge (run `41640515283`, `completed/success`).
 - **M-02: corregido por el orquestador** en `auth.md`, `ADR-0005` y `.env.example`.
 - **N-01: aceptado.** En `PATCH /me` la validación del body ocurre antes que el 401; se deja como está.
 - **M-08: corregido por el orquestador** en la spec (comando con `DATABASE_URL`).
@@ -103,6 +103,5 @@ F15 queda cerrada técnicamente. Además de la feature original, esta ronda apli
 
 ## Siguiente paso propuesto
 
-1. Autorización del usuario para commit y push.
-2. Cierre operativo: rama `feat/F15-auth-api`, commit, PR y CI.
-3. Abrir F16 (Auth web), que debe pedir `GET /api/auth/csrf` tras login/registro y resolver `Origin` en SSR.
+1. Abrir F16 (Auth web), que debe pedir `GET /api/auth/csrf` tras login/registro y resolver `Origin` en SSR.
+2. Cierre operativo de F15: completado con la PR #20 y el merge `af7d865`.
