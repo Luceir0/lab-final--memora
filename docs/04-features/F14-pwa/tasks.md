@@ -70,4 +70,4 @@
 - [x] `handoff.md` completo.
 - [x] Tablero actualizado.
 - [x] Bitácora y cobertura actualizadas.
-- [ ] Commit, PR y CI: **no ejecutados**; pendientes de autorización sobre `feat/F14-pwa`.
+- [x] Commit, PR y CI: commits `b1424a1` (`feat(web): add PWA install experience and desktop content container (F14)`) y `f4688a0` (`docs: record F14 implementation and acceptance`), [PR #18](https://github.com/Luceir0/lab-final--memora/pull/18), CI en verde en la PR (run `41623491101`, job `125874871580`) y en `main` (run `41623729693`, job `125875703913`), merge `160fb00`.

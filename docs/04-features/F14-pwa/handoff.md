@@ -1,10 +1,11 @@
 # Handoff — F14 PWA e instalación
 
-- **Estado:** done (aceptada por el usuario el 2026-11-03)
-- **Rama:** `feat/F14-pwa` (sin commits ni push: todo el cambio vive en el árbol de trabajo)
+- **Estado:** done (aceptada por el usuario el 2026-11-03; mergeada en `main` con la PR #18)
+- **Rama:** `feat/F14-pwa` (merge `160fb00`, CI `41623729693`)
 - **Fecha:** 2026-11-03
 - **Implementado por:** ui-dev (subagente, tres pasadas: Parte A PWA, Parte B shell y correcciones) y el orquestador (plan, verificación independiente y cierre)
 - **Revisado por:** no aplica (nivel C; gates automáticos y aceptación del usuario)
+- **Cierre operativo:** commits `b1424a1` y `f4688a0`, [PR #18](https://github.com/Luceir0/lab-final--memora/pull/18), CI en verde en la PR (run `41623491101`, job `125874871580`, `completed/success`) y en `main` sobre el merge `160fb00` (run `41623729693`, job `125875703913`, `completed/success`)
 
 ## Resultado
 
@@ -194,6 +195,5 @@ Ajuste pedido en la aceptación (2026-11-03), medido a 375 px:
 
 ## Siguiente paso propuesto
 
-Cerrar el ciclo operativo de F14 con autorización explícita: commits, PR y CI
-sobre `feat/F14-pwa`; el árbol de trabajo está completo pero sin commit. Después,
-F15 — Auth API (nivel A), que no se abre sin plan confirmado.
+F15 — Auth API (nivel A, `draft`), que no se abre sin plan confirmado. No
+encadenar la siguiente feature sin permiso.
