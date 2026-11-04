@@ -3,7 +3,7 @@ id: F20
 title: "Invitación SSR + compartir"
 milestone: M2
 size: M
-status: draft
+status: accepted
 spec: complete
 depends_on:
   - "F16"
@@ -23,7 +23,7 @@ decisions:
 
 # F20 — Invitación SSR + compartir
 
-> **Milestone:** M2 · **Talla:** M · **Estado:** draft · **Spec:** completa
+> **Milestone:** M2 · **Talla:** M · **Estado:** accepted · **Spec:** completa
 > **Depende de:** F16, F19 · **Bloquea:** F22
 
 ## Objetivo
@@ -109,17 +109,17 @@ Construir la página de invitación con SSR, Open Graph, compartir y round-trip 
 
 ## Verificación
 
-- `pnpm --filter @memora/web test invitations`
+- `pnpm --filter @memora/web test invite`
 - `curl -s /invite/token | rg "og:"`
 
 ## Definition of Ready
 
-- [ ] Dependencias `done`. Excepción autorizada por el usuario y registrada en el tablero.
-- [ ] Decisiones resueltas.
-- [ ] Contratos congelados.
-- [ ] Diseño enlazado (si aplica).
-- [ ] Datos de prueba.
-- [ ] Sin preguntas bloqueantes.
+- [x] Dependencias `done`: F16 y F19.
+- [x] Decisiones resueltas (D1–D5).
+- [x] Contratos congelados: `GET /invitations/:token` y `POST /invitations/:token/accept`.
+- [x] Diseño enlazado (móvil, escritorio y estados).
+- [x] Datos de prueba: seed de F07 más invitación creada con la API.
+- [x] Sin preguntas bloqueantes.
 
 ## Handoff
 
@@ -127,4 +127,14 @@ Al terminar, completa `handoff.md` y actualiza el tablero. No hagas commit ni pu
 
 ## Preguntas abiertas
 
-La preview usa una imagen genérica, nunca la portada del círculo.
+Ninguna.
+
+## Decisiones cerradas (2026-11-04)
+
+| # | Decisión |
+| --- | --- |
+| D1 | Revocar una invitación ya aceptada sigue siendo **no-op** y el enlace es reutilizable hasta caducar. Sin cambios en la API ni en el contrato de F19. |
+| D2 | La imagen `og:image` es **genérica** (1200×630), generada por script: fondo primario, anillos y punto del logotipo, **sin texto**. El nombre del círculo viaja en `og:title`. Nunca la portada del círculo. |
+| D3 | **AC-07** se cierra con test automatizado del HTML del servidor y `curl` local. La comprobación en validadores externos (Facebook Sharing Debugger, LinkedIn Post Inspector) queda pendiente para **F42**, cuando exista URL pública con HTTPS. |
+| D4 | El helper de compartir/copiar se implementa y se prueba en F20. Su botón visible llega en **F22**, donde el dueño genera el enlace; la página de invitación no se desvía del diseño. |
+| D5 | Sin sesión se muestra la misma tarjeta con la preview y el CTA «Entrar para aceptar», que navega a `/login?redirect=/invite/<token>`. Se conserva el SSR y el Open Graph. |
