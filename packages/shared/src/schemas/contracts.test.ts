@@ -212,6 +212,7 @@ const photoTag = {
   user,
   createdAt: ISO,
 };
+const member = { user, role: 'member', joinedAt: ISO, photosCount: 3 };
 
 interface ContractPart {
   readonly schema: z.ZodType;
@@ -357,7 +358,7 @@ const ENDPOINTS: readonly EndpointContract[] = [
     query: { schema: listMembersQuerySchema, value: {} },
     response: {
       schema: listMembersResponseSchema,
-      value: { items: [{ user, role: 'member', joinedAt: ISO }], nextCursor: null },
+      value: { items: [member], nextCursor: null },
     },
   },
   {
@@ -1175,6 +1176,31 @@ describe('activity contract', () => {
         nextCursor: null,
       }).success,
     ).toBe(true);
+  });
+});
+
+describe('member contract', () => {
+  it('carries the per-circle photosCount and no email', () => {
+    const parsed = memberDtoSchema.parse({
+      ...member,
+      email: 'lucas@example.com',
+    });
+
+    expect(parsed.photosCount).toBe(3);
+    expect(parsed).not.toHaveProperty('email');
+    expect(Object.keys(parsed).sort()).toEqual(['joinedAt', 'photosCount', 'role', 'user']);
+    expect(parsed.user).not.toHaveProperty('email');
+  });
+
+  it('accepts zero and rejects a missing or negative photosCount', () => {
+    expect(memberDtoSchema.safeParse({ ...member, photosCount: 0 }).success).toBe(true);
+
+    const missing = { user, role: 'member', joinedAt: ISO };
+
+    expect(memberDtoSchema.safeParse(missing).success).toBe(false);
+    expect(memberDtoSchema.safeParse({ ...member, photosCount: -1 }).success).toBe(false);
+    expect(memberDtoSchema.safeParse({ ...member, photosCount: 1.5 }).success).toBe(false);
+    expect(memberDtoSchema.safeParse({ ...member, photosCount: '3' }).success).toBe(false);
   });
 });
 

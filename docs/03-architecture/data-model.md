@@ -68,6 +68,8 @@ Invitar, expulsar, cambiar permisos y borrar el círculo es **siempre solo del p
 
 Único `(circleId, userId)`. Índice `(userId)`.
 
+`MemberDto.photosCount` no se persiste: se deriva por consulta agrupada sobre `PhotoTag` filtrada por `Photo.circleId` al listar miembros (F21). No existe todavía un endpoint que lo use fuera del listado.
+
 ### Invitation
 
 | Campo | Tipo | Notas |
@@ -187,7 +189,7 @@ ActivityType: photo.uploaded | album.created | member.joined
 - `Photo.circleId` coincide con `Album.circleId`. La BD no puede garantizarlo (no hay FK compuesta `(circleId, albumId)`); lo valida la capa de servicio en F23/F25. Está documentado como `TODO(F23/F25)` en `apps/api/src/db.integration.test.ts`.
 - Un usuario no puede tener dos memberships en el mismo círculo.
 - Solo se etiqueta a miembros del círculo.
-- Si un miembro es expulsado o sale, sus fotos permanecen y conservan la autoría; sus etiquetas (`PhotoTag.taggedUserId`) se eliminan. No hay FK que lo haga: el usuario no se borra, así que F21 debe borrar los `PhotoTag` en la misma transacción que la expulsión o la salida.
+- Si un miembro es expulsado o sale, sus fotos permanecen y conservan la autoría; sus etiquetas (`PhotoTag.taggedUserId`) **en fotos de ese círculo** se eliminan. No hay FK que lo haga: el usuario no se borra, así que F21 borra esos `PhotoTag` en la misma transacción que la expulsión o la salida. Las etiquetas que creó para otras personas (`PhotoTag.createdBy`) y las etiquetas suyas en fotos de otros círculos se conservan; `Activity` tampoco se borra.
 - Un propietario no puede eliminarse a sí mismo del círculo sin borrarlo o transferir (transfer fuera del MVP).
 - `Invitation.tokenHash` nunca se expone.
 - `Photo.originalKey` nunca se expone al cliente.
