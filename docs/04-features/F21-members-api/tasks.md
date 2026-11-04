@@ -46,7 +46,7 @@
 - [x] `handoff.md` completo, con la tabla AC-01…AC-07 y la evidencia real.
 - [x] Tablero actualizado: F21 en `done`.
 - [x] Bitácora y cobertura actualizadas.
-- [x] Commit propuesto: `feat(api): add circle members endpoints (F21)` (sin ejecutar).
+- [x] Commits `b69cbb6` (feature) y `39e33f6` (documentación); [PR #32](https://github.com/Luceir0/lab-final--memora/pull/32), merge `1b3215d` y CI en verde en la PR (run `41879532946`) y en `main` (run `41881097031`).
 
 Los **Menores** m-01…m-06 y los **Nits** n-01…n-05 no se corrigen en esta feature: quedan
 en `Pendiente` del [handoff](handoff.md) con su identificador y **no reabren la revisión**.

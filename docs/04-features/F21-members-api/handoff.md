@@ -1,6 +1,6 @@
 # Handoff — F21 Members API
 
-- **Estado:** `done` (aceptada por el usuario el 2026-11-04; commit propuesto en `feat/F21-members-api`, sin ejecutar)
+- **Estado:** `done` (aceptada el 2026-11-04; merge `1b3215d` en `main` y CI en verde en la PR y en `main`)
 - **Rama:** `feat/F21-members-api`
 - **Fecha:** 2026-11-04
 - **Implementado por:** `api-dev`
@@ -121,6 +121,13 @@ Con la API arrancada contra `memora_test`: **41/41** comprobaciones. Cubre regis
 - [api-contract.md](../../03-architecture/api-contract.md) y [data-model.md](../../03-architecture/data-model.md): semántica de miembros ya registrada durante la implementación.
 - [README](../../../README.md): estado, narrativa y enlace a este handoff.
 
+## Cierre operativo
+
+- Commits: `b69cbb6` (`feat(api): add circle members endpoints (F21)`) y `39e33f6` (`docs: record F21 implementation, review and acceptance`).
+- [PR #32](https://github.com/Luceir0/lab-final--memora/pull/32), CI en verde en la PR (run `41879532946`, job `126748140089`, `completed/success`, head `39e33f6`).
+- Merge `1b3215d` en `main` y CI en verde sobre el merge (run `41881097031`, `completed/success`).
+- La rama `feat/F21-members-api` sigue existiendo, ya mergeada.
+
 ## Siguiente paso propuesto
 
-Proponer el commit `feat(api): add circle members endpoints (F21)` —**sin ejecutarlo**— y después empezar **F22 — People web**, asumiendo la desviación del email y decidiendo qué hacer con la promoción a administrador.
+F21 está cerrada y mergeada. La siguiente feature es **F22 — People web**, asumiendo la desviación del email y decidiendo qué hacer con la promoción a administrador, que no existe en el modelo.
