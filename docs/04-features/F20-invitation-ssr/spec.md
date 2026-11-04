@@ -3,7 +3,7 @@ id: F20
 title: "Invitación SSR + compartir"
 milestone: M2
 size: M
-status: accepted
+status: done
 spec: complete
 depends_on:
   - "F16"
@@ -23,7 +23,7 @@ decisions:
 
 # F20 — Invitación SSR + compartir
 
-> **Milestone:** M2 · **Talla:** M · **Estado:** accepted · **Spec:** completa
+> **Milestone:** M2 · **Talla:** M · **Estado:** done · **Spec:** completa
 > **Depende de:** F16, F19 · **Bloquea:** F22
 
 ## Objetivo

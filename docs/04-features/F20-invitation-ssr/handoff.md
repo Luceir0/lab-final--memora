@@ -1,7 +1,7 @@
 # Handoff — F20 Invitación SSR + compartir
 
-- **Estado:** `accepted` (aceptada por el usuario el 2026-11-04; pendiente el cierre operativo con commit y PR)
-- **Rama:** `feat/F20-invitation-ssr` (sin commits todavía)
+- **Estado:** `done` (aceptada por el usuario el 2026-11-04 y cerrada con la PR #30 y el merge `19a8485`)
+- **Rama:** `feat/F20-invitation-ssr`, mergeada; la rama remota sigue existiendo
 - **Fecha:** 2026-11-04
 - **Implementado por:** sesión de F20 (implementación y correcciones)
 - **Revisado por:** `reviewer` (nivel A), `a11y-auditor` y `design-auditor`
@@ -70,7 +70,6 @@ Nota de entorno: con el paralelismo por defecto de esta máquina, 4 tests de `ci
 - `[Menor]` A-08: enlaces en línea de 15–16 px.
 - Estados caducada/revocada no medidos en navegador con axe; sí cubiertos por tests.
 - Flakiness de timeouts en `circles` bajo paralelismo alto de esta máquina; no es un fallo de F20.
-- Cierre operativo: commit y PR todavía no ejecutados.
 
 ## Riesgos y limitaciones
 
@@ -85,16 +84,27 @@ Nota de entorno: con el paralelismo por defecto de esta máquina, 4 tests de `ci
 
 La cuenta temporal `f20.demo@memora.test` y la invitación de prueba se eliminaron de la base de desarrollo. El seed queda intacto.
 
+## Cierre operativo (2026-11-04)
+
+- Rama `feat/F20-invitation-ssr`, mergeada.
+- Commits: `ab5159c` (`feat(web): add invitation SSR page with Open Graph and accept flow (F20)`) y `74e30ec` (`docs: record F20 implementation, review and acceptance`).
+- [PR #30](https://github.com/Luceir0/lab-final--memora/pull/30).
+- Merge commit en `main`: `19a8485` («Merge pull request #30 from Luceir0/feat/F20-invitation-ssr»).
+- CI de la PR: run #67, `completed/success`, head `74e30ec`.
+- CI de `main` sobre `19a8485`: run #68, `completed/success`.
+- La rama remota `feat/F20-invitation-ssr` sigue existiendo, ya mergeada.
+- F20 pasa de `accepted` a `done`.
+
 ## Documentación actualizada
 
-- [spec.md](spec.md): estado `accepted` y comando de verificación corregido.
-- [tasks.md](tasks.md): implementación, AC, verificación, revisión y aceptación marcados con evidencia.
-- [Tablero de features](../README.md): F20 en `accepted` y situación actual actualizada.
-- [Bitácora](../../06-process/ai-log.md): entrada del 2026-11-04 con el ciclo completo.
+- [spec.md](spec.md): estado `done` y comando de verificación corregido.
+- [tasks.md](tasks.md): implementación, AC, verificación, revisión, aceptación y cierre operativo marcados con evidencia.
+- [Tablero de features](../README.md): F20 en `done` y situación actual actualizada.
+- [Bitácora](../../06-process/ai-log.md): entrada del 2026-11-04 con el ciclo completo y el cierre operativo.
 - [Cobertura del temario](../../07-curriculum/coverage-map.md): SSR, componentes, tests, seguridad/privacidad y Open Graph con F20.
 - [render-modes.md](../../03-architecture/render-modes.md): `/invite/:token` implementada según el contrato.
-- [README](../../../README.md): estado y tabla de features alineados con F20 `accepted`.
+- [README](../../../README.md): estado y tabla de features alineados con F20 `done`.
 
 ## Siguiente paso propuesto
 
-Hacer el commit de la feature y de esta documentación en `feat/F20-invitation-ssr`, abrir la PR y mergearla cuando el CI esté en verde. Tras el merge, pasar F20 a `done` y empezar **F21 — Members API**.
+Empezar **F21 — Members API**.

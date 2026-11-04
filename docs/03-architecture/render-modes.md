@@ -47,7 +47,7 @@ Consecuencias:
 - Reenvía cookie a la API si existe.
 - La página de login/registro se renderiza en servidor para carga rápida.
 
-Implementación de `/invite/:token` (F20, estado `accepted`, pendiente de commit y PR): vive en `apps/web/src/routes/invite.$token.tsx`, reenvía la cookie de sesión a la API en el servidor, responde con `Cache-Control: private, no-store` y `Vary: Cookie`, y genera `og:title` con el nombre del círculo, `og:description`, `og:image` genérica 1200×630, `og:url`, `og:type`, `twitter:card` y `meta robots noindex`. La validación en validadores externos de Open Graph y la URL canónica quedan en **F42** (D3); los detalles y la evidencia están en [el handoff de F20](../04-features/F20-invitation-ssr/handoff.md).
+Implementación de `/invite/:token` (F20, estado `done`): vive en `apps/web/src/routes/invite.$token.tsx`, reenvía la cookie de sesión a la API en el servidor, responde con `Cache-Control: private, no-store` y `Vary: Cookie`, y genera `og:title` con el nombre del círculo, `og:description`, `og:image` genérica 1200×630, `og:url`, `og:type`, `twitter:card` y `meta robots noindex`. La validación en validadores externos de Open Graph y la URL canónica quedan en **F42** (D3); los detalles y la evidencia están en [el handoff de F20](../04-features/F20-invitation-ssr/handoff.md).
 
 ## Validación en F05
 
