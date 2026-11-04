@@ -104,6 +104,16 @@ Semántica del CRUD implementada en F17:
 - `DELETE /circles/:circleId` responde `204`; un círculo ya inexistente → `404 NOT_FOUND`.
 - Sin sesión → `401`; sin membresía → `404` (nunca `403`, para no revelar existencia); miembro sin permiso en `PATCH`/`DELETE` → `403`.
 
+Semántica de miembros cerrada en F21:
+
+- `GET /circles/:circleId/members` está disponible para **cualquier miembro**. Orden estable `joinedAt asc` con desempate `id asc`, de modo que el propietario queda primero porque su membresía se crea junto con el círculo. Keyset opaco sobre `(joinedAt, id)` y `limit` de 1 a 100 (defecto 24).
+- `MemberDto` es `{ user, role, joinedAt, photosCount }`. `photosCount` es el número de fotos **de ese círculo** en las que la persona está etiquetada (columna «Aparece en»); no cuenta fotos subidas ni etiquetas de otros círculos, y es `0` si no aparece en ninguna. Se calcula con una consulta agrupada por página, nunca una por miembro.
+- **Ningún payload de miembros incluye `email`.** Es una desviación consciente del mock de escritorio por minimización de datos; `UserDto` sigue sin email.
+- `DELETE /circles/:circleId/members/:userId` es **solo del propietario**, decidido por `Circle.ownerId` y no por el `role` de la fila: un miembro recibe `403 FORBIDDEN`, un extraño `404 NOT_FOUND`. Un objetivo que no está en el círculo → `404`. El propietario no se puede expulsar, ni a sí mismo → `409 CONFLICT` con mensaje genérico.
+- `POST /circles/:circleId/leave` responde `204` al miembro; el propietario → `409 CONFLICT` porque debe borrar el círculo; sin membresía → `404`.
+- Expulsión y salida borran, **en una transacción**, los `PhotoTag` de esa persona en fotos de ese círculo y su `Membership`. Las fotos permanecen con su autoría, las etiquetas que creó para otras personas se conservan, las etiquetas suyas en otros círculos no se tocan y `Activity` no se borra.
+
+
 ## Invitaciones
 
 | Método | Ruta | Descripción |
@@ -154,6 +164,9 @@ Semántica cerrada en F19:
 | GET | `/circles/:circleId/members/:userId/photos` | Fotos de esta persona |
 
 `PhotoDto` incluye `clientUploadId` (string o `null`) para que el cliente reconcilie su cola tras un reintento. No incluye claves de almacenamiento ni coordenadas: solo `placeName`.
+
+`GET /circles/:circleId/members/:userId/photos` (F21) lista solo fotos de **ese círculo** en las que el miembro indicado está etiquetado, con `PhotoDto` completo (`uploader`, `tags`, `thumbUrl` y `displayUrl`). Orden `createdAt desc` con desempate `id desc`, keyset opaco y `limit` 1–100 (defecto 24). Tanto el llamante como el objetivo deben pertenecer al círculo; si cualquiera de los dos no es miembro, la respuesta es `404 NOT_FOUND`, para no revelar usuarios de otros círculos. Las URLs apuntan a `GET /photos/:photoId/image?size=thumb|display`; ese endpoint llega en **F29**, así que en F21 solo se construyen las URLs.
+
 
 ## Descargas
 

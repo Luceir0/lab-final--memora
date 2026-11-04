@@ -117,10 +117,19 @@ export const circleDetailDtoSchema = circleDtoSchema.extend({
 
 export type CircleDetailDto = z.infer<typeof circleDetailDtoSchema>;
 
+/**
+ * Circle member as listed in `GET /circles/:circleId/members`.
+ *
+ * `photosCount` is the number of photos **of this circle** in which the person
+ * is tagged (the «Aparece en» column), never photos uploaded by them nor tags
+ * from another circle. There is no email: members only expose the public
+ * identity of `userDtoSchema`.
+ */
 export const memberDtoSchema = z.object({
   user: userDtoSchema,
   role: roleSchema,
   joinedAt: isoDateTimeSchema,
+  photosCount: z.number().int().nonnegative(),
 });
 
 export type MemberDto = z.infer<typeof memberDtoSchema>;
