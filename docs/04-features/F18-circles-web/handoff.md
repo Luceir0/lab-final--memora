@@ -1,7 +1,7 @@
 # Handoff — F18 Circles web
 
-- **Estado:** `accepted` (aceptada por el usuario el 2026-11-04; `done` pendiente de commit, PR, merge y CI)
-- **Rama:** `feat/F18-circles-web`
+- **Estado:** `done` (aceptada el 2026-11-04 y cerrada el mismo día tras el merge y el CI)
+- **Rama:** `feat/F18-circles-web` (mergeada en `main`; la rama remota no se ha borrado)
 - **Fecha:** 2026-11-04
 - **Implementado por:** `api-dev` (contrato/API) + `ui-dev` (web y tests)
 - **Revisado por:** `reviewer` independiente (nivel B), dos pasadas; `design-auditor`. Corrección del 2026-11-04: revisión B + auditoría de diseño → **apto con correcciones, sin bloqueantes**; ajustes aplicados y fix del `fieldset` verificado como correcto; cierre con `max-w-md`.
@@ -9,7 +9,7 @@
 
 ## Resultado
 
-Mis círculos, alta y detalle funcionan contra la API real con sesión, CSRF y persistencia. La lista muestra el destacado, la rejilla/lista responsive, los estados vacío/carga/error/refetch y el N+1 de stats con caché compartida con el detalle. El alta vive en `/circles/new` con `ResponsiveDialog`, valida con los schemas compartidos, envía los cuatro permisos iniciales y, al guardar, abre el círculo nuevo con un toast de confirmación y el foco en el título. El detalle tiene portada con reserva, stats, pestañas (Álbumes activo; Personas y Ajustes explicadas y deshabilitadas), cabecera compacta móvil y un estado «sin acceso» que no filtra datos. El guard de sesión protege `/circles*`, `/uploads` y `/profile`; `/help` y `/privacy` siguen públicas. El sidebar muestra los círculos, la persona de `/me` y el subnav del círculo activo. **Corrección 2026-11-04:** el alta ya no muestra portada ni placeholder (la portada se edita en F28 y `POST /circles` no acepta `coverPhotoId`); nombre y descripción siguen en una columna, los permisos pasan a 2+2 con separador vertical desde `lg` y el atajo `Esc` se alinea abajo a la izquierda del pie. **El usuario aceptó la feature el 2026-11-04** tras la revisión visual y de teclado que estaba pendiente; el merge y el CI todavía no se han ejecutado.
+Mis círculos, alta y detalle funcionan contra la API real con sesión, CSRF y persistencia. La lista muestra el destacado, la rejilla/lista responsive, los estados vacío/carga/error/refetch y el N+1 de stats con caché compartida con el detalle. El alta vive en `/circles/new` con `ResponsiveDialog`, valida con los schemas compartidos, envía los cuatro permisos iniciales y, al guardar, abre el círculo nuevo con un toast de confirmación y el foco en el título. El detalle tiene portada con reserva, stats, pestañas (Álbumes activo; Personas y Ajustes explicadas y deshabilitadas), cabecera compacta móvil y un estado «sin acceso» que no filtra datos. El guard de sesión protege `/circles*`, `/uploads` y `/profile`; `/help` y `/privacy` siguen públicas. El sidebar muestra los círculos, la persona de `/me` y el subnav del círculo activo. **Corrección 2026-11-04:** el alta ya no muestra portada ni placeholder (la portada se edita en F28 y `POST /circles` no acepta `coverPhotoId`); nombre y descripción siguen en una columna, los permisos pasan a 2+2 con separador vertical desde `lg` y el atajo `Esc` se alinea abajo a la izquierda del pie. **El usuario aceptó la feature el 2026-11-04** tras la revisión visual y de teclado; el cierre se completó el mismo día con la PR #26, el merge `155da94` en `main` y CI en verde.
 
 ## Cambios (archivos)
 
@@ -54,9 +54,9 @@ Mis círculos, alta y detalle funcionan contra la API real con sesión, CSRF y p
 
 ### Documentación
 
-- `docs/04-features/F18-circles-web/spec.md` (decisiones, alcance, DoR, verificación y estado `accepted`).
+- `docs/04-features/F18-circles-web/spec.md` (decisiones, alcance, DoR, verificación y estado `done`).
 - `docs/04-features/F18-circles-web/tasks.md` (aceptación, verificación completa y cierre pendiente de commit/PR).
-- `docs/04-features/README.md` (F18 en `accepted`).
+- `docs/04-features/README.md` (F18 en `done`).
 - Este `handoff.md`.
 - `docs/06-process/ai-log.md` (entrada del 2026-11-04).
 - `docs/07-curriculum/coverage-map.md`.
@@ -76,7 +76,7 @@ Verificación consolidada del **2026-11-04** (orquestador), con todos los paquet
 | `pnpm typecheck` | OK |
 | `pnpm lint` | OK |
 | `pnpm format:check` | OK |
-| `pnpm docs:check` | OK (191 archivos, **470** enlaces tras esta pasada documental; 463 en la verificación previa, 0 rotos) |
+| `pnpm docs:check` | OK (191 archivos, **470** enlaces, 0 rotos) |
 | `pnpm agents:check` | OK (43 specs, 43 filas) |
 | `pnpm build` | OK; chunks propios de lista, alta y detalle; **5 rutas prerenderizadas** |
 | Test de regresión del alta | «no muestra portada ni ninguna acción de foto»: pasa; axe sin violaciones |
@@ -84,6 +84,16 @@ Verificación consolidada del **2026-11-04** (orquestador), con todos los paquet
 | axe | Cobertura jsdom con `expectNoAxeViolations` |
 | 375/1440 y claro/oscuro | **Aceptado por el usuario el 2026-11-04** |
 | Teclado | **Aceptado por el usuario el 2026-11-04** |
+
+## Cierre operativo (2026-11-04)
+
+- **Commits:** `f9b9ea2` (`feat(circles): add circles web with creation and detail (F18)`) y `8bb73de` (`docs: record F18 implementation, review and acceptance`).
+- **PR:** [#26](https://github.com/Luceir0/lab-final--memora/pull/26).
+- **CI en la PR:** run `41814318422`, job `126521136747`, `completed/success`, head `8bb73de`.
+- **Merge:** `155da94` en `main` (`Merge pull request #26 from Luceir0/feat/F18-circles-web`).
+- **CI en `main` sobre el merge:** run `41814512961`, job `126521774021`, `completed/success`, commit `155da94`.
+- **Rama:** `feat/F18-circles-web` mergeada; no se ha borrado.
+- **Estado final:** `done`.
 
 ## Criterios de aceptación
 
@@ -100,7 +110,7 @@ Verificación consolidada del **2026-11-04** (orquestador), con todos los paquet
 ## Pendiente
 
 - **Aceptación del usuario:** cumplida el 2026-11-04 («todo aprobado»). Cubre la revisión visual 375/1440 en claro y oscuro y la revisión de teclado.
-- **Cierre operativo:** commit, PR, merge y CI **sin ejecutar**. El estado pasa a `done` en una segunda pasada tras el merge y el CI en verde. No se inventan PR, merge ni run.
+- **Cierre operativo:** completado el 2026-11-04 con la PR #26, el merge `155da94` y CI en verde en la PR y en `main`.
 - `[Menor]` M-03: la portada editable se delega a F28, pero la spec de F28 no la menciona. **No tocar F28 sin permiso**; queda constancia para la revisión de esa feature.
 - `[Nit]` CTA por debajo del pliegue en ventanas de poca altura (1440×800) por la columna única; pendiente de decisión de kit (pie sticky) o de aceptación.
 - `[Menor]` N-04: la salida del toast no está animada.
@@ -134,10 +144,9 @@ Verificación consolidada del **2026-11-04** (orquestador), con todos los paquet
 - [x] `docs/03-architecture/api-contract.md`
 - [x] `docs/06-process/ai-log.md` (entrada del 2026-11-04)
 - [x] `docs/07-curriculum/coverage-map.md`
-- [x] `README.md` raíz: estado del proyecto y tablero alineados con `accepted`.
+- [x] `README.md` raíz: estado del proyecto y tablero alineados con `done`.
+- [x] Tablero, bitácora y cobertura con el cierre operativo (PR #26, merge `155da94` y runs).
 
 ## Siguiente paso propuesto
 
-1. Proponer el commit de la rama `feat/F18-circles-web` (sin ejecutarlo todavía): implementación, correcciones del alta y documentación.
-2. Abrir la PR, esperar el CI en verde y hacer el merge a `main`.
-3. Segunda pasada documental tras el merge: registrar commit, PR, merge y run reales, y pasar F18 de `accepted` a `done` en la spec, `tasks.md`, este handoff, el tablero, la bitácora y el README.
+F18 está cerrada. La siguiente feature es **F19 — Invitations API**, que depende de F17 (`done`). F20 (invitación SSR), F21 (members) y F22 (people web) quedan después; F22 depende además de F18, ya `done`. Antes de abrir F19 hay que comprobar su Definition of Ready y confirmar el nivel de auditoría **A** en el plan de G1.
