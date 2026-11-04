@@ -29,9 +29,15 @@ export const listCirclesResponseSchema = createPageSchema(circleDtoSchema);
 
 export type ListCirclesResponse = z.infer<typeof listCirclesResponseSchema>;
 
+/**
+ * `POST /circles`. `settings` is optional and, when present, must be the whole
+ * object: a missing flag or an unknown one is a contract error, never a merge
+ * with the defaults.
+ */
 export const createCircleRequestSchema = z.object({
   name: displayNameSchema,
   description: z.string().max(500, VALIDATION_MESSAGES.circleDescriptionTooLong).optional(),
+  settings: circleSettingsSchema.optional(),
 });
 
 export type CreateCircleRequest = z.infer<typeof createCircleRequestSchema>;

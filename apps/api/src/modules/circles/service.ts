@@ -28,6 +28,8 @@ export interface NewCircleInput {
   readonly ownerId: string;
   readonly name: string;
   readonly description: string | null;
+  /** Whole object, never merged; omitted means `DEFAULT_CIRCLE_SETTINGS`. */
+  readonly settings?: CircleSettings | undefined;
 }
 
 export interface CircleUpdateInput {
@@ -92,8 +94,9 @@ export async function createCircleWithOwner(
         ownerId: input.ownerId,
         name: input.name,
         description: input.description,
-        // New circles start with every member capability enabled.
-        settings: { ...DEFAULT_CIRCLE_SETTINGS },
+        // `settings` is optional on create: without it the circle starts with
+        // every member capability enabled, and when sent it is stored whole.
+        settings: { ...(input.settings ?? DEFAULT_CIRCLE_SETTINGS) },
       },
     });
 

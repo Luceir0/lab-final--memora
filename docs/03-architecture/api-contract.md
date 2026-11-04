@@ -84,7 +84,7 @@ Longitudes en caracteres. Fuente: `packages/shared/src/schemas/**`. Los valores 
 | Método | Ruta | Descripción |
 | --- | --- | --- |
 | GET | `/circles` | Círculos del usuario |
-| POST | `/circles` | Crear |
+| POST | `/circles` | Crear; `settings` opcional (si falta, defaults) |
 | GET | `/circles/:circleId` | Detalle con stats |
 | PATCH | `/circles/:circleId` | Editar nombre, descripción, portada, settings |
 | DELETE | `/circles/:circleId` | Borrar (owner) |
@@ -99,6 +99,7 @@ Longitudes en caracteres. Fuente: `packages/shared/src/schemas/**`. Los valores 
 Semántica del CRUD implementada en F17:
 
 - `GET /circles` ordena por `updatedAt desc` con desempate `id desc`; el cursor es keyset opaco sobre `(updatedAt, id)` y `limit` va de 1 a 100 (defecto 24).
+- `POST /circles` acepta `settings` opcional. Si no viene, se aplican los valores por defecto (`membersCanCreateAlbums`, `membersCanUpload`, `membersCanDownload` y `membersCanTag` en `true`). Si viene, debe ser el objeto completo: falta una flag o llega una desconocida → `400 VALIDATION_ERROR`, nunca un merge con los defaults.
 - `coverPhotoId` inexistente o de otro círculo → `404 NOT_FOUND`; `null` limpia la portada.
 - `DELETE /circles/:circleId` responde `204`; un círculo ya inexistente → `404 NOT_FOUND`.
 - Sin sesión → `401`; sin membresía → `404` (nunca `403`, para no revelar existencia); miembro sin permiso en `PATCH`/`DELETE` → `403`.

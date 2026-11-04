@@ -19,6 +19,9 @@ import { Route as AppHelpRouteImport } from './routes/_app.help'
 import { Route as AppPrivacyRouteImport } from './routes/_app.privacy'
 import { Route as AppProfileRouteImport } from './routes/_app.profile'
 import { Route as AppUploadsRouteImport } from './routes/_app.uploads'
+import { Route as AppCirclesIndexRouteImport } from './routes/_app.circles.index'
+import { Route as AppCirclesCircleIdRouteImport } from './routes/_app.circles.$circleId'
+import { Route as AppCirclesNewRouteImport } from './routes/_app.circles.new'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -69,28 +72,48 @@ const AppUploadsRoute = AppUploadsRouteImport.update({
   path: '/uploads',
   getParentRoute: () => AppRoute,
 } as any)
+const AppCirclesIndexRoute = AppCirclesIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppCirclesRoute,
+} as any)
+const AppCirclesCircleIdRoute = AppCirclesCircleIdRouteImport.update({
+  id: '/$circleId',
+  path: '/$circleId',
+  getParentRoute: () => AppCirclesRoute,
+} as any)
+const AppCirclesNewRoute = AppCirclesNewRouteImport.update({
+  id: '/new',
+  path: '/new',
+  getParentRoute: () => AppCirclesRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
   '/ui': typeof UiRoute
-  '/circles': typeof AppCirclesRoute
+  '/circles': typeof AppCirclesRouteWithChildren
   '/help': typeof AppHelpRoute
   '/privacy': typeof AppPrivacyRoute
   '/profile': typeof AppProfileRoute
   '/uploads': typeof AppUploadsRoute
+  '/circles/$circleId': typeof AppCirclesCircleIdRoute
+  '/circles/new': typeof AppCirclesNewRoute
+  '/circles/': typeof AppCirclesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
   '/ui': typeof UiRoute
-  '/circles': typeof AppCirclesRoute
   '/help': typeof AppHelpRoute
   '/privacy': typeof AppPrivacyRoute
   '/profile': typeof AppProfileRoute
   '/uploads': typeof AppUploadsRoute
+  '/circles/$circleId': typeof AppCirclesCircleIdRoute
+  '/circles/new': typeof AppCirclesNewRoute
+  '/circles': typeof AppCirclesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -99,11 +122,14 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
   '/ui': typeof UiRoute
-  '/_app/circles': typeof AppCirclesRoute
+  '/_app/circles': typeof AppCirclesRouteWithChildren
   '/_app/help': typeof AppHelpRoute
   '/_app/privacy': typeof AppPrivacyRoute
   '/_app/profile': typeof AppProfileRoute
   '/_app/uploads': typeof AppUploadsRoute
+  '/_app/circles/$circleId': typeof AppCirclesCircleIdRoute
+  '/_app/circles/new': typeof AppCirclesNewRoute
+  '/_app/circles/': typeof AppCirclesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -117,17 +143,22 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/profile'
     | '/uploads'
+    | '/circles/$circleId'
+    | '/circles/new'
+    | '/circles/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/login'
     | '/register'
     | '/ui'
-    | '/circles'
     | '/help'
     | '/privacy'
     | '/profile'
     | '/uploads'
+    | '/circles/$circleId'
+    | '/circles/new'
+    | '/circles'
   id:
     | '__root__'
     | '/'
@@ -140,6 +171,9 @@ export interface FileRouteTypes {
     | '/_app/privacy'
     | '/_app/profile'
     | '/_app/uploads'
+    | '/_app/circles/$circleId'
+    | '/_app/circles/new'
+    | '/_app/circles/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -222,11 +256,48 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppUploadsRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/circles/': {
+      id: '/_app/circles/'
+      path: '/'
+      fullPath: '/circles/'
+      preLoaderRoute: typeof AppCirclesIndexRouteImport
+      parentRoute: typeof AppCirclesRoute
+    }
+    '/_app/circles/$circleId': {
+      id: '/_app/circles/$circleId'
+      path: '/$circleId'
+      fullPath: '/circles/$circleId'
+      preLoaderRoute: typeof AppCirclesCircleIdRouteImport
+      parentRoute: typeof AppCirclesRoute
+    }
+    '/_app/circles/new': {
+      id: '/_app/circles/new'
+      path: '/new'
+      fullPath: '/circles/new'
+      preLoaderRoute: typeof AppCirclesNewRouteImport
+      parentRoute: typeof AppCirclesRoute
+    }
   }
 }
 
+interface AppCirclesRouteChildren {
+  AppCirclesCircleIdRoute: typeof AppCirclesCircleIdRoute
+  AppCirclesNewRoute: typeof AppCirclesNewRoute
+  AppCirclesIndexRoute: typeof AppCirclesIndexRoute
+}
+
+const AppCirclesRouteChildren: AppCirclesRouteChildren = {
+  AppCirclesCircleIdRoute: AppCirclesCircleIdRoute,
+  AppCirclesNewRoute: AppCirclesNewRoute,
+  AppCirclesIndexRoute: AppCirclesIndexRoute,
+}
+
+const AppCirclesRouteWithChildren = AppCirclesRoute._addFileChildren(
+  AppCirclesRouteChildren,
+)
+
 interface AppRouteChildren {
-  AppCirclesRoute: typeof AppCirclesRoute
+  AppCirclesRoute: typeof AppCirclesRouteWithChildren
   AppHelpRoute: typeof AppHelpRoute
   AppPrivacyRoute: typeof AppPrivacyRoute
   AppProfileRoute: typeof AppProfileRoute
@@ -234,7 +305,7 @@ interface AppRouteChildren {
 }
 
 const AppRouteChildren: AppRouteChildren = {
-  AppCirclesRoute: AppCirclesRoute,
+  AppCirclesRoute: AppCirclesRouteWithChildren,
   AppHelpRoute: AppHelpRoute,
   AppPrivacyRoute: AppPrivacyRoute,
   AppProfileRoute: AppProfileRoute,
