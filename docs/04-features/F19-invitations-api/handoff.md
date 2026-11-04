@@ -1,6 +1,6 @@
 # Handoff — F19 Invitations API
 
-- **Estado:** accepted
+- **Estado:** done
 - **Rama:** `feat/F19-invitations-api`
 - **Fecha:** 2026-11-04
 - **Implementado por:** api-dev (subagente)
@@ -114,7 +114,17 @@ Contra `memora_test` y Mailpit, con la API levantada:
 - **F20**: confirmar la decisión de que revocar una invitación ya aceptada es no-op y el enlace sigue siendo reutilizable hasta caducar.
 - `Services.kind` sigue `'unavailable'`; el guard de producción no se ha debilitado. Storage/geocoding reales llegan en **F25/F42**.
 - `[Menor]` Sin tests unitarios de `mailpit.ts`/`resend.ts`: los tests no llaman servicios externos; la selección está cubierta por `config.test.ts` y el envío por el fake.
-- `[Nit]` Commit, PR y merge no se han ejecutado: los cierra el orquestador con permiso del usuario. F19 no se marca `done` hasta después del merge.
+
+## Cierre operativo (2026-11-04)
+
+Rama `feat/F19-invitations-api` con dos commits: `1250e29` (feature) y `2d3cfc5` (documentación).
+
+- **PR #28** — `feat(api): F19 invitations API`, mergeada en `main` el 2026-11-04.
+- **CI de la PR:** run **41826103313**, `completed/success`.
+- **Merge commit:** **`d0c4465`** en `main`.
+- **CI de `main` sobre `d0c4465`:** run **41826486383**, `completed/success` (https://github.com/Luceir0/lab-final--memora/actions/runs/41826486383).
+
+Con esto F19 pasa de `accepted` a **`done`**.
 
 ## Riesgos y limitaciones
 
@@ -129,15 +139,15 @@ Contra `memora_test` y Mailpit, con la API levantada:
 
 ## Documentación actualizada
 
-- `docs/04-features/F19-invitations-api/spec.md`: `status: accepted` y línea «Estado».
-- `docs/04-features/F19-invitations-api/tasks.md`: implementación, AC, verificación, revisión y aceptación marcadas; commit y merge sin marcar.
-- `docs/04-features/F19-invitations-api/handoff.md`: este documento, con las dos rondas de revisión y la prueba real.
-- `docs/04-features/README.md`: fila F19 en `accepted` y «Situación actual».
+- `docs/04-features/F19-invitations-api/spec.md`: `status: done` y línea «Estado».
+- `docs/04-features/F19-invitations-api/tasks.md`: implementación, AC, verificación, revisión, aceptación y cierre operativo (commit, PR #28, merge `d0c4465` y CI) marcados.
+- `docs/04-features/F19-invitations-api/handoff.md`: este documento, con las dos rondas de revisión, la prueba real y el cierre operativo.
+- `docs/04-features/README.md`: fila F19 en `done` y «Situación actual».
 - `docs/03-architecture/api-contract.md`: semántica cerrada de invitaciones.
-- `docs/06-process/ai-log.md`: entrada del 2026-11-04.
-- `docs/07-curriculum/coverage-map.md`: F19 en la narrativa y en las tablas.
-- `README.md`: estado alineado con F19 `accepted`.
+- `docs/06-process/ai-log.md`: entrada del 2026-11-04 con el cierre operativo.
+- `docs/07-curriculum/coverage-map.md`: F19 en `done` con la PR #28, el merge `d0c4465` y el CI.
+- `README.md`: estado, narrativa y tabla alineados con F19 `done`, con el merge y el run.
 
 ## Siguiente paso propuesto
 
-Proponer commit (`feat(api): add invitations API with tokens, email and preview (F19)` y el commit documental), abrir PR, validar CI y mergear. Después, **F20** puede consumir `GET /api/invitations/:token` para la preview SSR y debe confirmar la decisión sobre revocar invitaciones aceptadas.
+F20 puede consumir `GET /api/invitations/:token` para la preview SSR y debe confirmar la decisión sobre revocar invitaciones aceptadas.

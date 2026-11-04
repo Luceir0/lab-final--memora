@@ -59,5 +59,14 @@
 - [x] `handoff.md` completo, con las dos rondas y la prueba real.
 - [x] Tablero actualizado.
 - [x] Bitácora y cobertura actualizadas.
-- [ ] Commit propuesto (sin ejecutar) y PR.
-- [ ] Merge y CI; después, F19 pasa a `done`.
+- [x] Commit y PR.
+- [x] Merge y CI; después, F19 pasa a `done`.
+
+## Cierre operativo (2026-11-04)
+
+- [x] Rama `feat/F19-invitations-api` con los commits `1250e29` (feature) y `2d3cfc5` (documentación).
+- [x] PR **#28** (`feat(api): F19 invitations API`), mergeada en `main` el 2026-11-04.
+- [x] CI de la PR en verde: run **41826103313**, `completed/success`.
+- [x] Merge commit **`d0c4465`** en `main`.
+- [x] CI de `main` sobre `d0c4465` en verde: run **41826486383**, `completed/success` (https://github.com/Luceir0/lab-final--memora/actions/runs/41826486383).
+- [x] F19 en **`done`**.
