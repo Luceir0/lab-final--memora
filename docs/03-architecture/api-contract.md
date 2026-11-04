@@ -118,6 +118,16 @@ Semántica del CRUD implementada en F17:
 
 `POST /invitations/:token/accept` devuelve `{ circle, state }`: el `CircleDto` ya con el rol del usuario y `state: valid` al unirse o `already_member` si ya lo era. Es idempotente y no añade un booleano paralelo.
 
+Semántica cerrada en F19:
+
+- `POST /circles/:circleId/invitations` responde `201` y **el token en claro aparece una sola vez**, en esa respuesta; no se vuelve a exponer en el listado ni en la preview. `Cache-Control: private, no-store`. En producción el email exige `EMAIL_PROVIDER=resend`; el fallo de envío no revierte la invitación.
+- `GET /circles/:circleId/invitations` lista solo las **pendientes**: excluye revocadas, aceptadas y caducadas.
+- `DELETE /circles/:circleId/invitations/:invitationId` responde `204` y es **idempotente**. Revocar una invitación ya aceptada es un **no-op**: no expulsa al miembro y el enlace sigue siendo reutilizable hasta caducar (decisión a confirmar en F20).
+- `GET /invitations/:token` resuelve `state` con precedencia **`revoked` > `expired` > `already_member` > `valid`**.
+- `POST /invitations/:token/accept` con invitación caducada o revocada → `409 CONFLICT` con mensaje genérico, sin revelar el motivo ni datos del círculo. Una aceptación correcta escribe membresía y `Activity` `member.joined` en una transacción y es idempotente.
+- Rate limit de invitaciones: **10/hora por usuario**.
+- El token viaja en el path por contrato: la API lo redacta en sus logs de petición; los access logs del proxy inverso se redactan en **F42**.
+
 ## Álbumes
 
 | Método | Ruta | Descripción |
