@@ -3,7 +3,7 @@ id: F19
 title: "Invitations API"
 milestone: M2
 size: M
-status: draft
+status: accepted
 spec: complete
 depends_on:
   - "F17"
@@ -20,7 +20,7 @@ decisions:
 
 # F19 — Invitations API
 
-> **Milestone:** M2 · **Talla:** M · **Estado:** draft · **Spec:** completa
+> **Milestone:** M2 · **Talla:** M · **Estado:** accepted · **Spec:** completa
 > **Depende de:** F17 · **Bloquea:** F20, F22
 
 ## Objetivo

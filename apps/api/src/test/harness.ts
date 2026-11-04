@@ -1,5 +1,5 @@
 import { buildApp } from '../app.ts';
-import { loadConfig, type AppConfig } from '../config.ts';
+import { DEFAULT_EMAIL_FROM, loadConfig, type AppConfig } from '../config.ts';
 import type { PrismaClient } from '../generated/prisma/client.ts';
 import type { LogStream } from '../logging.ts';
 import type { MemoraServer } from '../types.ts';
@@ -60,6 +60,8 @@ export async function createTestApp(options: TestAppOptions = {}): Promise<TestA
     SESSION_SECRET: TEST_SESSION_SECRET,
     DATABASE_URL: TEST_DATABASE_URL,
     APP_URL: isProduction ? TEST_PRODUCTION_APP_URL : TEST_APP_URL,
+    EMAIL_FROM: DEFAULT_EMAIL_FROM,
+    ...(isProduction ? { EMAIL_PROVIDER: 'resend', RESEND_API_KEY: 're_test_key' } : {}),
     LOG_LEVEL: 'silent',
     ...environment,
   });

@@ -12,6 +12,7 @@ import type { PrismaClient } from './generated/prisma/client.ts';
 import { createLoggerOptions, type LogStream } from './logging.ts';
 import { registerAuthRoutes } from './modules/auth/routes.ts';
 import { registerCircleRoutes } from './modules/circles/routes.ts';
+import { registerInvitationRoutes } from './modules/invitations/routes.ts';
 import { registerCookie } from './plugins/cookie.ts';
 import { registerCsrf } from './plugins/csrf.ts';
 import { registerHelmet } from './plugins/helmet.ts';
@@ -65,6 +66,10 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<MemoraSer
   const app = Fastify({
     logger: options.logger === false ? false : createLoggerOptions(config, options.loggerStream),
     bodyLimit: JSON_BODY_LIMIT_BYTES,
+    // The shared invitation token accepts up to 256 characters. The router's
+    // default limit (100) would answer 414 before Zod could reject an
+    // over-long token with `400 VALIDATION_ERROR`; ids stay well below this.
+    routerOptions: { maxParamLength: 512 },
     // Production runs behind a reverse proxy in the private network: trust
     // loopback, link-local and unique-local hops so rate limiting keys on the
     // real client without accepting spoofed public X-Forwarded-For chains.
@@ -134,6 +139,7 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<MemoraSer
   registerHealthRoute(app);
   registerAuthRoutes(app, config);
   registerCircleRoutes(app, config);
+  registerInvitationRoutes(app, config);
   await registerDocsRoutes(app, config);
 
   return app;

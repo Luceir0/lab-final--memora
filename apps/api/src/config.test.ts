@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { loadConfig } from './config.ts';
+import { DEFAULT_EMAIL_FROM, loadConfig } from './config.ts';
 
 describe('loadConfig', () => {
   it('applies development defaults', () => {
@@ -72,6 +72,9 @@ describe('loadConfig', () => {
       SESSION_SECRET: 'p'.repeat(48),
       DATABASE_URL: 'postgresql://user:pass@127.0.0.1:5432/memora',
       APP_URL: 'https://memora.example',
+      EMAIL_FROM: 'Memora <no-reply@memora.example>',
+      EMAIL_PROVIDER: 'resend',
+      RESEND_API_KEY: 're_test_key',
     });
 
     expect(config.isProduction).toBe(true);
@@ -116,6 +119,9 @@ describe('loadConfig', () => {
         SESSION_SECRET: 'p'.repeat(48),
         DATABASE_URL: 'postgresql://user:pass@127.0.0.1:5432/memora',
         APP_URL: insecure,
+        EMAIL_FROM: 'Memora <no-reply@memora.example>',
+        EMAIL_PROVIDER: 'resend',
+        RESEND_API_KEY: 're_test_key',
       }),
     ).toThrow(/APP_URL/);
 
@@ -125,6 +131,9 @@ describe('loadConfig', () => {
         SESSION_SECRET: 'p'.repeat(48),
         DATABASE_URL: 'postgresql://user:pass@127.0.0.1:5432/memora',
         APP_URL: insecure,
+        EMAIL_FROM: 'Memora <no-reply@memora.example>',
+        EMAIL_PROVIDER: 'resend',
+        RESEND_API_KEY: 're_test_key',
       });
     } catch (error) {
       // Fail fast without echoing the configured value.
@@ -162,5 +171,111 @@ describe('loadConfig', () => {
 
   it('treats an empty DATABASE_URL as absent', () => {
     expect(loadConfig({ DATABASE_URL: '' }).databaseUrl).toBeUndefined();
+  });
+
+  it('applies email defaults outside production', () => {
+    const config = loadConfig({});
+
+    expect(config.emailProvider).toBe('mailpit');
+    expect(config.emailFrom).toBe(DEFAULT_EMAIL_FROM);
+    expect(config.resendApiKey).toBeUndefined();
+    expect(config.smtpHost).toBe('localhost');
+    expect(config.smtpPort).toBe(1025);
+  });
+
+  it('parses the email adapter variables', () => {
+    const config = loadConfig({
+      EMAIL_PROVIDER: 'resend',
+      EMAIL_FROM: 'Memora <no-reply@memora.example>',
+      RESEND_API_KEY: 're_test_key',
+      SMTP_HOST: 'mailpit',
+      SMTP_PORT: '2525',
+    });
+
+    expect(config.emailProvider).toBe('resend');
+    expect(config.emailFrom).toBe('Memora <no-reply@memora.example>');
+    expect(config.resendApiKey).toBe('re_test_key');
+    expect(config.smtpHost).toBe('mailpit');
+    expect(config.smtpPort).toBe(2525);
+  });
+
+  it('treats an empty RESEND_API_KEY as absent', () => {
+    const config = loadConfig({ RESEND_API_KEY: '' });
+
+    expect(config.resendApiKey).toBeUndefined();
+  });
+
+  it('rejects an unknown EMAIL_PROVIDER', () => {
+    expect(() => loadConfig({ EMAIL_PROVIDER: 'sendgrid' })).toThrow(/EMAIL_PROVIDER/);
+  });
+
+  it('requires RESEND_API_KEY when EMAIL_PROVIDER=resend', () => {
+    expect(() => loadConfig({ EMAIL_PROVIDER: 'resend' })).toThrow(/RESEND_API_KEY/);
+  });
+
+  it('rejects RESEND_API_KEY when the provider is not resend', () => {
+    expect(() => loadConfig({ RESEND_API_KEY: 're_test_key' })).toThrow(/RESEND_API_KEY/);
+  });
+
+  it('requires EMAIL_FROM in production', () => {
+    expect(() =>
+      loadConfig({
+        NODE_ENV: 'production',
+        SESSION_SECRET: 'p'.repeat(48),
+        DATABASE_URL: 'postgresql://user:pass@127.0.0.1:5432/memora',
+        APP_URL: 'https://memora.example',
+        EMAIL_PROVIDER: 'resend',
+        RESEND_API_KEY: 're_test_key',
+      }),
+    ).toThrow(/EMAIL_FROM/);
+  });
+
+  it('requires EMAIL_PROVIDER=resend in production', () => {
+    expect(() =>
+      loadConfig({
+        NODE_ENV: 'production',
+        SESSION_SECRET: 'p'.repeat(48),
+        DATABASE_URL: 'postgresql://user:pass@127.0.0.1:5432/memora',
+        APP_URL: 'https://memora.example',
+        EMAIL_FROM: 'Memora <no-reply@memora.example>',
+        EMAIL_PROVIDER: 'mailpit',
+      }),
+    ).toThrow(/EMAIL_PROVIDER/);
+  });
+
+  it('rejects production without an explicit EMAIL_PROVIDER', () => {
+    expect(() =>
+      loadConfig({
+        NODE_ENV: 'production',
+        SESSION_SECRET: 'p'.repeat(48),
+        DATABASE_URL: 'postgresql://user:pass@127.0.0.1:5432/memora',
+        APP_URL: 'https://memora.example',
+        EMAIL_FROM: 'Memora <no-reply@memora.example>',
+      }),
+    ).toThrow(/EMAIL_PROVIDER/);
+  });
+
+  it('rejects an EMAIL_FROM without a valid address', () => {
+    for (const invalid of ['Memora', 'no-es-un-email', 'Memora <>', 'Memora <no-es-un-email>']) {
+      expect(() => loadConfig({ EMAIL_FROM: invalid }), invalid).toThrow(/EMAIL_FROM/);
+    }
+  });
+
+  it('accepts a bare address, an RFC angle-address and a display name in EMAIL_FROM', () => {
+    expect(loadConfig({ EMAIL_FROM: 'no-reply@memora.example' }).emailFrom).toBe(
+      'no-reply@memora.example',
+    );
+    expect(loadConfig({ EMAIL_FROM: '<no-reply@memora.example>' }).emailFrom).toBe(
+      '<no-reply@memora.example>',
+    );
+    expect(loadConfig({ EMAIL_FROM: 'Equipo Memora <no-reply@memora.example>' }).emailFrom).toBe(
+      'Equipo Memora <no-reply@memora.example>',
+    );
+  });
+
+  it('rejects an invalid SMTP_PORT', () => {
+    expect(() => loadConfig({ SMTP_PORT: '0' })).toThrow(/SMTP_PORT/);
+    expect(() => loadConfig({ SMTP_PORT: 'not-a-port' })).toThrow(/SMTP_PORT/);
+    expect(() => loadConfig({ SMTP_PORT: '70000' })).toThrow(/SMTP_PORT/);
   });
 });

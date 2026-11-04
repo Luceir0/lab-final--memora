@@ -80,6 +80,13 @@ export async function registerSwagger(app: FastifyInstance): Promise<void> {
             '(`Circle.ownerId`) es el único que lo edita o lo borra. Las mutaciones exigen ' +
             '`X-CSRF-Token`.',
         },
+        {
+          name: 'Invitations',
+          description:
+            'Invitaciones por enlace: creación, listado de pendientes y revocación (solo propietario), ' +
+            'previsualización pública y aceptación idempotente. El token en claro se devuelve una sola vez; ' +
+            'la base de datos guarda solo su hash.',
+        },
       ],
       components: {
         schemas: {

@@ -29,6 +29,7 @@
     "@prisma/client": "7.10.1",
     "fastify": "5.12.7",
     "fastify-type-provider-zod": "7.0.0",
+    "nodemailer": "10.3.1",
     "pg": "8.23.1",
     "sharp": "0.35.5",
     "zod": "4.6.7"
@@ -37,6 +38,7 @@
     "@memora/config": "workspace:*",
     "@node-rs/argon2-wasm32-wasi": "2.2.2",
     "@types/node": "24.19.2",
+    "@types/nodemailer": "8.0.2",
     "prisma": "7.10.1",
     "typescript": "6.0.3",
     "vitest": "5.0.5"
