@@ -13,6 +13,11 @@ export interface AppShellProps {
   readonly circleList?: ReactNode | undefined;
   /** Persona autenticada, cuando F34 la conecte. */
   readonly user?: ShellUser | undefined;
+  /**
+   * Oculta la cabecera móvil en pantallas inmersivas (detalle de círculo).
+   * En escritorio la cabecera ya no se pinta.
+   */
+  readonly hideTopBar?: boolean | undefined;
 }
 
 /**
@@ -29,12 +34,18 @@ export interface AppShellProps {
  *   en móvil sea cabecera → navegación → contenido. En escritorio la cabecera
  *   se oculta con `lg:hidden` y no ocupa celda de rejilla.
  */
-export function AppShell({ children, currentPath, circleList, user }: AppShellProps) {
+export function AppShell({
+  children,
+  currentPath,
+  circleList,
+  user,
+  hideTopBar = false,
+}: AppShellProps) {
   return (
     <div className="min-h-dvh bg-bg text-text lg:grid lg:grid-cols-[16rem_minmax(0,1fr)]">
       <SkipLink />
 
-      <TopBar />
+      {hideTopBar ? null : <TopBar />}
 
       <Sidebar currentPath={currentPath} circleList={circleList} user={user} />
 

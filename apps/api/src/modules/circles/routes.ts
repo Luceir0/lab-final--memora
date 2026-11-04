@@ -97,7 +97,8 @@ export function registerCircleRoutes(app: MemoraServer, config: AppConfig): void
         tags: [CIRCLES_TAG],
         summary: 'Crear círculo',
         description:
-          'Crea el círculo con los settings por defecto y, en la misma transacción, la membresía `owner` del creador. ' +
+          'Crea el círculo y, en la misma transacción, la membresía `owner` del creador. `settings` es opcional: ' +
+          'si falta se aplican los valores por defecto y, si viene, se guarda el objeto completo sin merge. ' +
           'Requiere sesión, `Origin` permitido y `X-CSRF-Token`.',
         security: sessionSecurity,
         headers: csrfHeaderSchema,
@@ -117,11 +118,12 @@ export function registerCircleRoutes(app: MemoraServer, config: AppConfig): void
 
       assertCsrfToken(request, app, token);
 
-      const { name, description } = request.body;
+      const { name, description, settings } = request.body;
       const created = await createCircleWithOwner(prisma, {
         ownerId: user.id,
         name,
         description: description ?? null,
+        settings,
       });
 
       return reply

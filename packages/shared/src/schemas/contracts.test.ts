@@ -880,6 +880,55 @@ describe('negative cases', () => {
   });
 });
 
+describe('circle creation settings', () => {
+  const customSettings = {
+    membersCanCreateAlbums: false,
+    membersCanUpload: true,
+    membersCanDownload: false,
+    membersCanTag: true,
+  };
+
+  it('accepts a circle without settings', () => {
+    expect(createCircleRequestSchema.safeParse({ name: 'Familia' }).success).toBe(true);
+    expect(
+      createCircleRequestSchema.safeParse({ name: 'Familia', description: 'Casa' }).success,
+    ).toBe(true);
+  });
+
+  it('accepts the complete settings object', () => {
+    const parsed = createCircleRequestSchema.parse({ name: 'Familia', settings: customSettings });
+
+    expect(parsed.settings).toEqual(customSettings);
+  });
+
+  it('rejects a settings object with an unknown flag', () => {
+    expect(
+      createCircleRequestSchema.safeParse({
+        name: 'Familia',
+        settings: { ...customSettings, membersCanInvite: true },
+      }).success,
+    ).toBe(false);
+  });
+
+  it('rejects settings with a wrong flag type', () => {
+    expect(
+      createCircleRequestSchema.safeParse({
+        name: 'Familia',
+        settings: { ...customSettings, membersCanUpload: 'yes' },
+      }).success,
+    ).toBe(false);
+  });
+
+  it('rejects an incomplete settings object instead of merging defaults', () => {
+    expect(
+      createCircleRequestSchema.safeParse({
+        name: 'Familia',
+        settings: { membersCanUpload: true },
+      }).success,
+    ).toBe(false);
+  });
+});
+
 describe('exact boundaries', () => {
   it('accepts the largest allowed input values', () => {
     expect(

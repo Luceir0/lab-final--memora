@@ -202,6 +202,81 @@ describe.skipIf(!hasDatabase)('circles API', () => {
       expect(memberships).toHaveLength(1);
       expect(memberships[0]).toMatchObject({ userId: owner.id, role: 'owner' });
     });
+
+    it('sin settings aplica y persiste los valores por defecto', async () => {
+      const owner = await makeUser(prisma);
+
+      const response = await testApp.app.inject({
+        method: 'POST',
+        url: '/api/circles',
+        headers: headers(await makeAuth(owner.id)),
+        payload: { name: 'Familia' },
+      });
+
+      expect(response.statusCode).toBe(201);
+
+      const body = response.json<CircleResponse>();
+      expect(body.settings).toEqual(DEFAULT_CIRCLE_SETTINGS);
+
+      const persisted = await prisma.circle.findUnique({ where: { id: body.id } });
+      expect(persisted?.settings).toEqual(DEFAULT_CIRCLE_SETTINGS);
+    });
+
+    it('con settings guarda el objeto completo recibido', async () => {
+      const owner = await makeUser(prisma);
+      const settings = {
+        membersCanCreateAlbums: false,
+        membersCanUpload: true,
+        membersCanDownload: false,
+        membersCanTag: true,
+      };
+
+      const response = await testApp.app.inject({
+        method: 'POST',
+        url: '/api/circles',
+        headers: headers(await makeAuth(owner.id)),
+        payload: { name: 'Familia', settings },
+      });
+
+      expect(response.statusCode).toBe(201);
+
+      const body = response.json<CircleResponse>();
+      expect(body.settings).toEqual(settings);
+
+      const persisted = await prisma.circle.findUnique({ where: { id: body.id } });
+      expect(persisted?.settings).toEqual(settings);
+    });
+
+    it('rechaza settings inválidos con 400 VALIDATION_ERROR y no crea nada', async () => {
+      const owner = await makeUser(prisma);
+      const auth = await makeAuth(owner.id);
+      const invalidPayloads = [
+        { name: 'Familia', settings: { membersCanUpload: true } },
+        {
+          name: 'Familia',
+          settings: { ...DEFAULT_CIRCLE_SETTINGS, membersCanInvite: true },
+        },
+        {
+          name: 'Familia',
+          settings: { ...DEFAULT_CIRCLE_SETTINGS, membersCanUpload: 'yes' },
+        },
+      ];
+
+      for (const payload of invalidPayloads) {
+        const response = await testApp.app.inject({
+          method: 'POST',
+          url: '/api/circles',
+          headers: headers(auth),
+          payload,
+        });
+
+        expect(response.statusCode, JSON.stringify(payload)).toBe(400);
+        expectError(response, 'VALIDATION_ERROR');
+      }
+
+      expect(await prisma.circle.count()).toBe(0);
+      expect(await prisma.membership.count()).toBe(0);
+    });
   });
 
   describe('AC-02 — solo los miembros ven el círculo', () => {

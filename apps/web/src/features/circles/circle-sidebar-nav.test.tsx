@@ -1,0 +1,123 @@
+import { QueryClient } from '@tanstack/react-query';
+import { screen, within } from '@testing-library/react';
+import { HttpResponse, http } from 'msw';
+import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest';
+
+import { expectNoAxeViolations } from '../../../../../packages/ui/src/test/axe';
+import { AUTH_TEST_API_BASE } from '../../test/auth-fixtures';
+import { renderWithRouter } from '../../test/circles-harness';
+import { circleThird, circleWithCover, defaultCircles } from '../../test/circles-fixtures';
+import { createAuthTestServer, startAuthTestServer } from '../../test/auth-server';
+
+import { CircleSidebarNav } from './circle-sidebar-nav';
+
+const server = createAuthTestServer();
+const CIRCLES_URL = `${AUTH_TEST_API_BASE}/circles`;
+
+beforeAll(() => {
+  startAuthTestServer(server);
+});
+
+afterEach(() => {
+  server.resetHandlers();
+});
+
+afterAll(() => {
+  server.close();
+});
+
+function useCircles() {
+  server.use(
+    http.get(CIRCLES_URL, () => HttpResponse.json({ items: defaultCircles, nextCursor: null })),
+  );
+}
+
+describe('CircleSidebarNav', () => {
+  it('lista los círculos y despliega el subnav del activo', async () => {
+    useCircles();
+
+    const { container } = renderWithRouter(<CircleSidebarNav currentPath="/circles/cir_familia" />);
+
+    const family = await screen.findByRole('link', { name: /Familia García/ });
+
+    expect(family.getAttribute('href')).toBe('/circles/cir_familia');
+    expect(family.getAttribute('aria-current')).toBe('page');
+    expect(screen.getByRole('link', { name: /Lisboa 2026/ })).toBeTruthy();
+    expect(screen.getByRole('link', { name: /Amigas de la uni/ })).toBeTruthy();
+
+    const albums = screen.getByRole('link', { name: 'Álbumes' });
+
+    expect(albums.getAttribute('href')).toBe('/circles/cir_familia');
+    expect(albums.getAttribute('aria-current')).toBeNull();
+
+    await expectNoAxeViolations(container);
+  });
+
+  it('anuncia Personas y Ajustes como deshabilitados, sin href roto', async () => {
+    useCircles();
+
+    renderWithRouter(<CircleSidebarNav currentPath="/circles/cir_familia" />);
+
+    await screen.findByRole('link', { name: /Familia García/ });
+
+    for (const label of ['Personas', 'Ajustes']) {
+      const item = screen.getByRole('link', { name: new RegExp(`^${label}`) });
+
+      expect(item.getAttribute('aria-disabled')).toBe('true');
+      expect(item.getAttribute('href')).toBeNull();
+      expect(item.getAttribute('tabindex')).toBe('0');
+
+      const descriptionId = item.getAttribute('aria-describedby');
+
+      expect(descriptionId).toBeTruthy();
+      expect(document.getElementById(descriptionId ?? '')?.textContent).toContain('Disponible');
+    }
+  });
+
+  it('no muestra subnav fuera de un círculo', async () => {
+    useCircles();
+
+    renderWithRouter(<CircleSidebarNav currentPath="/circles" />);
+
+    const family = await screen.findByRole('link', { name: /Familia García/ });
+
+    expect(family.getAttribute('aria-current')).toBeNull();
+    expect(screen.queryByRole('link', { name: 'Álbumes' })).toBeNull();
+  });
+
+  it('usa todas las páginas cargadas para encontrar el círculo activo', async () => {
+    useCircles();
+
+    const queryClient = new QueryClient({
+      defaultOptions: { queries: { retry: false, staleTime: 30_000 } },
+    });
+    queryClient.setQueryData(['circles', 'list'], {
+      pages: [
+        { items: [circleWithCover], nextCursor: 'cursor-2' },
+        { items: [circleThird], nextCursor: null },
+      ],
+      pageParams: [null, 'cursor-2'],
+    });
+
+    renderWithRouter(<CircleSidebarNav currentPath="/circles/cir_amigas" />, '/', {
+      queryClient,
+    });
+
+    const active = await screen.findByRole('link', { name: /Amigas de la uni/ });
+
+    expect(active.getAttribute('aria-current')).toBe('page');
+    expect(screen.getByRole('link', { name: 'Álbumes' })).toBeTruthy();
+  });
+
+  it('no deja enlaces duplicados en la lista de círculos', async () => {
+    useCircles();
+
+    renderWithRouter(<CircleSidebarNav currentPath="/circles" />);
+
+    const list = await screen.findByRole('list');
+    const links = within(list).getAllByRole('link');
+
+    expect(links).toHaveLength(3);
+    expect(new Set(links.map((link) => link.getAttribute('href'))).size).toBe(3);
+  });
+});

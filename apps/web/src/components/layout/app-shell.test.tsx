@@ -321,6 +321,19 @@ describe('AppShell', () => {
     expect(screen.getAllByRole('complementary', { name: 'Navegación' })).toHaveLength(1);
   });
 
+  it('omite la cabecera móvil en una pantalla inmersiva', () => {
+    render(
+      <ThemeProvider initialMode="system">
+        <AppShell hideTopBar>
+          <h1>Detalle inmersivo</h1>
+        </AppShell>
+      </ThemeProvider>,
+    );
+
+    expect(screen.queryByRole('banner')).toBeNull();
+    expect(screen.getByRole('main')).toBeTruthy();
+  });
+
   it('no tiene violaciones de axe', async () => {
     const { container } = renderShell({
       currentPath: '/profile',
