@@ -3,7 +3,7 @@ id: F18
 title: "Circles web"
 milestone: M2
 size: M
-status: accepted
+status: done
 spec: complete
 depends_on:
   - "F16"
@@ -32,7 +32,7 @@ decisions: []
 
 # F18 — Circles web
 
-> **Milestone:** M2 · **Talla:** M · **Estado:** accepted · **Spec:** completa
+> **Milestone:** M2 · **Talla:** M · **Estado:** done · **Spec:** completa
 > **Depende de:** F16, F17 · **Bloquea:** F22, F24, F28
 
 ## Objetivo
@@ -135,7 +135,7 @@ Construir Mis círculos, crear círculo y detalle con estados.
 
 ### Nota de aceptación (2026-11-04)
 
-El usuario aceptó la feature el 2026-11-04 («todo aprobado») tras la revisión visual y de teclado que estaba pendiente. La aceptación cubre AC-01 (layout de lista, detalle y alta a 375/1440, claro y oscuro) y AC-07 (recorrido con teclado, foco, `Esc` y pestañas). El estado pasa a `accepted`; el paso a `done` queda pendiente del commit, la PR, el merge y el CI, que aún no se han ejecutado.
+El usuario aceptó la feature el 2026-11-04 («todo aprobado») tras la revisión visual y de teclado que estaba pendiente. La aceptación cubre AC-01 (layout de lista, detalle y alta a 375/1440, claro y oscuro) y AC-07 (recorrido con teclado, foco, `Esc` y pestañas). **El cierre operativo se completó el 2026-11-04** con los commits `f9b9ea2` y `8bb73de`, la [PR #26](https://github.com/Luceir0/lab-final--memora/pull/26), el merge `155da94` en `main` y CI en verde (runs `41814318422` en la PR y `41814512961` en `main`); la feature queda en `done`.
 
 ## Pruebas
 

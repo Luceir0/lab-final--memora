@@ -57,7 +57,7 @@ Verificación completa del orquestador (2026-11-04), tras la aceptación:
 - [x] `pnpm typecheck` → OK.
 - [x] `pnpm lint` → OK.
 - [x] `pnpm format:check` → OK.
-- [x] `pnpm docs:check` → 191 archivos, **470** enlaces (463 en la verificación previa), 0 rotos.
+- [x] `pnpm docs:check` → 191 archivos, **470** enlaces, 0 rotos.
 - [x] `pnpm agents:check` → 43 specs, 43 filas.
 - [x] `pnpm build` → OK; chunks propios de lista, alta y detalle y **5 rutas prerenderizadas**.
 - [x] `pnpm --filter @memora/web test circles` → 10 archivos, 64 tests.
@@ -71,5 +71,9 @@ Verificación completa del orquestador (2026-11-04), tras la aceptación:
 - [x] `handoff.md` completo.
 - [x] Tablero actualizado.
 - [x] Bitácora y cobertura actualizadas.
-- [ ] Commit propuesto (sin ejecutar).
-- [ ] PR, merge y CI (pendientes; el estado pasa a `done` tras el merge).
+- [x] Commit: `f9b9ea2` (`feat(circles): add circles web with creation and detail (F18)`) y `8bb73de` (`docs: record F18 implementation, review and acceptance`).
+- [x] PR #26: https://github.com/Luceir0/lab-final--memora/pull/26
+- [x] CI en la PR: run `41814318422`, job `126521136747`, `completed/success`, head `8bb73de`.
+- [x] Merge `155da94` en `main` (`Merge pull request #26 from Luceir0/feat/F18-circles-web`).
+- [x] CI en `main` sobre el merge: run `41814512961`, job `126521774021`, `completed/success`, commit `155da94`.
+- [x] Feature en `done`; la rama `feat/F18-circles-web` sigue existiendo, ya mergeada.
