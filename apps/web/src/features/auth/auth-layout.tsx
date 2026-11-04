@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 
+import { MemoraBrand } from '../../components/memora-brand';
 import { AuthCollage, type CollagePhoto } from './auth-collage';
 
 export interface AuthLayoutProps {
@@ -16,21 +17,6 @@ export interface AuthLayoutProps {
   readonly photos: readonly CollagePhoto[];
   readonly quoteTitle: ReactNode;
   readonly quoteText: string;
-}
-
-/** Marca textual de Memora, sin navegación: en acceso y registro no es un enlace. */
-function Brand() {
-  return (
-    <span className="inline-flex items-center gap-2 text-text">
-      <span
-        aria-hidden="true"
-        className="relative flex size-5 items-center justify-center rounded-full border-2 border-primary bg-surface"
-      >
-        <span className="absolute -right-1 -top-0.5 size-1.5 rounded-full bg-accent-pink" />
-      </span>
-      <span className="text-h3 font-extrabold">memora</span>
-    </span>
-  );
 }
 
 /**
@@ -73,7 +59,7 @@ export function AuthLayout({
             <div className="relative lg:hidden">
               <AuthCollage variant="login" surface="hero" photos={photos} />
               <div className="absolute left-4 top-[max(0.75rem,env(safe-area-inset-top))] rounded-full bg-surface/95 px-3 py-1.5 shadow-sm">
-                <Brand />
+                <MemoraBrand />
               </div>
             </div>
           ) : (
@@ -94,7 +80,7 @@ export function AuthLayout({
           >
             <div className="mx-auto w-full max-w-[26.25rem]">
               <div className="hidden lg:mb-6 lg:block">
-                <Brand />
+                <MemoraBrand />
               </div>
 
               <h1

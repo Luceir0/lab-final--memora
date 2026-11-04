@@ -19,6 +19,7 @@ import { Route as AppHelpRouteImport } from './routes/_app.help'
 import { Route as AppPrivacyRouteImport } from './routes/_app.privacy'
 import { Route as AppProfileRouteImport } from './routes/_app.profile'
 import { Route as AppUploadsRouteImport } from './routes/_app.uploads'
+import { Route as InviteTokenRouteImport } from './routes/invite.$token'
 import { Route as AppCirclesIndexRouteImport } from './routes/_app.circles.index'
 import { Route as AppCirclesCircleIdRouteImport } from './routes/_app.circles.$circleId'
 import { Route as AppCirclesNewRouteImport } from './routes/_app.circles.new'
@@ -72,6 +73,11 @@ const AppUploadsRoute = AppUploadsRouteImport.update({
   path: '/uploads',
   getParentRoute: () => AppRoute,
 } as any)
+const InviteTokenRoute = InviteTokenRouteImport.update({
+  id: '/invite/$token',
+  path: '/invite/$token',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AppCirclesIndexRoute = AppCirclesIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -98,6 +104,7 @@ export interface FileRoutesByFullPath {
   '/privacy': typeof AppPrivacyRoute
   '/profile': typeof AppProfileRoute
   '/uploads': typeof AppUploadsRoute
+  '/invite/$token': typeof InviteTokenRoute
   '/circles/$circleId': typeof AppCirclesCircleIdRoute
   '/circles/new': typeof AppCirclesNewRoute
   '/circles/': typeof AppCirclesIndexRoute
@@ -111,6 +118,7 @@ export interface FileRoutesByTo {
   '/privacy': typeof AppPrivacyRoute
   '/profile': typeof AppProfileRoute
   '/uploads': typeof AppUploadsRoute
+  '/invite/$token': typeof InviteTokenRoute
   '/circles/$circleId': typeof AppCirclesCircleIdRoute
   '/circles/new': typeof AppCirclesNewRoute
   '/circles': typeof AppCirclesIndexRoute
@@ -127,6 +135,7 @@ export interface FileRoutesById {
   '/_app/privacy': typeof AppPrivacyRoute
   '/_app/profile': typeof AppProfileRoute
   '/_app/uploads': typeof AppUploadsRoute
+  '/invite/$token': typeof InviteTokenRoute
   '/_app/circles/$circleId': typeof AppCirclesCircleIdRoute
   '/_app/circles/new': typeof AppCirclesNewRoute
   '/_app/circles/': typeof AppCirclesIndexRoute
@@ -143,6 +152,7 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/profile'
     | '/uploads'
+    | '/invite/$token'
     | '/circles/$circleId'
     | '/circles/new'
     | '/circles/'
@@ -156,6 +166,7 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/profile'
     | '/uploads'
+    | '/invite/$token'
     | '/circles/$circleId'
     | '/circles/new'
     | '/circles'
@@ -171,6 +182,7 @@ export interface FileRouteTypes {
     | '/_app/privacy'
     | '/_app/profile'
     | '/_app/uploads'
+    | '/invite/$token'
     | '/_app/circles/$circleId'
     | '/_app/circles/new'
     | '/_app/circles/'
@@ -182,6 +194,7 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   RegisterRoute: typeof RegisterRoute
   UiRoute: typeof UiRoute
+  InviteTokenRoute: typeof InviteTokenRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -256,6 +269,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppUploadsRouteImport
       parentRoute: typeof AppRoute
     }
+    '/invite/$token': {
+      id: '/invite/$token'
+      path: '/invite/$token'
+      fullPath: '/invite/$token'
+      preLoaderRoute: typeof InviteTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_app/circles/': {
       id: '/_app/circles/'
       path: '/'
@@ -320,6 +340,7 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   RegisterRoute: RegisterRoute,
   UiRoute: UiRoute,
+  InviteTokenRoute: InviteTokenRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
