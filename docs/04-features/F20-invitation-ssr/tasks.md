@@ -40,6 +40,6 @@
 - [x] Revisión independiente: `reviewer` nivel A **apto con correcciones** (M-01 corregido y menores/nits aplicables); `a11y-auditor` en dos rondas y `design-auditor` en dos pasadas, ambas cerradas tras correcciones.
 - [x] Aceptación del usuario el 2026-11-04 en escritorio y móvil, con y sin sesión; pidió un ajuste de espaciado, ya corregido y revalidado.
 - [x] `handoff.md` completo.
-- [x] Tablero actualizado: F20 en `accepted`, pendiente del cierre operativo.
+- [x] Tablero actualizado: F20 en `done`.
 - [x] Bitácora y cobertura actualizadas.
-- [ ] Commit propuesto (sin ejecutar). No hay commit ni PR todavía.
+- [x] Cierre operativo ejecutado el 2026-11-04: rama `feat/F20-invitation-ssr`, commits `ab5159c` y `74e30ec`, PR #30, merge `19a8485` en `main`, CI de la PR run #67 y CI de `main` run #68, ambos `completed/success`.
