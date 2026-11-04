@@ -251,6 +251,9 @@ describe('startup', () => {
       SESSION_SECRET: TEST_SESSION_SECRET,
       DATABASE_URL: 'postgresql://memora:memora@127.0.0.1:5432/memora',
       APP_URL: 'https://memora.example',
+      EMAIL_FROM: 'Memora <no-reply@memora.example>',
+      EMAIL_PROVIDER: 'resend',
+      RESEND_API_KEY: 're_test_key',
     });
 
     await expect(startServer(config)).rejects.toThrow(/adaptadores reales/);
@@ -262,6 +265,9 @@ describe('startup', () => {
       SESSION_SECRET: TEST_SESSION_SECRET,
       DATABASE_URL: 'postgresql://memora:memora@127.0.0.1:5432/memora',
       APP_URL: 'https://memora.example',
+      EMAIL_FROM: 'Memora <no-reply@memora.example>',
+      EMAIL_PROVIDER: 'resend',
+      RESEND_API_KEY: 're_test_key',
     });
 
     await expect(

@@ -1,8 +1,9 @@
-import type { EmailService } from './email.ts';
+import type { AppConfig } from '../config.ts';
+import { createEmailService, type EmailService } from './email/index.ts';
 import type { GeocodingService } from './geocoding.ts';
 import type { StorageService } from './storage.ts';
 
-export type { EmailMessage, EmailService } from './email.ts';
+export type { EmailMessage, EmailService } from './email/index.ts';
 export type { GeocodingService, ReverseGeocodingInput } from './geocoding.ts';
 export type { StorageService, StoredObject } from './storage.ts';
 
@@ -59,6 +60,18 @@ export function createUnavailableServices(): Services {
   };
 
   return services;
+}
+
+/**
+ * Services for a real process: email is a real adapter (Mailpit or Resend),
+ * while storage and geocoding keep failing closed until F25 ships adapters.
+ *
+ * `kind` stays `'unavailable'` on purpose: `buildApp()` only accepts `'real'`
+ * in production, so the process still refuses to boot until every external
+ * service has a real adapter. Do not flip it here.
+ */
+export function createRuntimeServices(config: AppConfig): Services {
+  return { ...createUnavailableServices(), email: createEmailService(config) };
 }
 
 declare module 'fastify' {

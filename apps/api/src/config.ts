@@ -6,6 +6,18 @@ const NODE_ENVIRONMENTS = ['development', 'test', 'production'] as const;
 
 const LOG_LEVELS = ['fatal', 'error', 'warn', 'info', 'debug', 'trace', 'silent'] as const;
 
+const EMAIL_PROVIDERS = ['mailpit', 'resend'] as const;
+
+export type EmailProvider = (typeof EMAIL_PROVIDERS)[number];
+
+/** Local Mailpit defaults; production must set `EMAIL_FROM` explicitly. */
+export const DEFAULT_EMAIL_FROM = 'Memora <no-reply@memora.local>';
+
+export const DEFAULT_SMTP_HOST = 'localhost';
+
+/** Mailpit's SMTP port inside `docker-compose.yml`. */
+export const DEFAULT_SMTP_PORT = 1025;
+
 /**
  * Treats an empty variable as absent.
  *
@@ -63,6 +75,62 @@ const optionalCookieDomainSchema = z.preprocess(
   z.string().min(1, 'COOKIE_DOMAIN no puede estar vacía.').optional(),
 );
 
+/**
+ * Accepts either a bare address (`no-reply@memora.local`) or the
+ * `Nombre <email>` form used by `EMAIL_FROM`.
+ */
+function isValidEmailFrom(value: string): boolean {
+  const bracketed = /^([^<>]*)<([^<>]+)>$/.exec(value);
+  const address = bracketed === null ? value : bracketed[2];
+
+  return address !== undefined && z.email().safeParse(address.trim()).success;
+}
+
+/** Optional sender; `EMAIL_FROM` defaults outside production. */
+const optionalEmailFromSchema = z.preprocess(
+  emptyToUndefined,
+  z
+    .string()
+    .trim()
+    .min(1, 'EMAIL_FROM no puede estar vacía.')
+    .max(254)
+    .refine(
+      isValidEmailFrom,
+      'EMAIL_FROM debe ser una dirección de email o tener el formato "Nombre <email>".',
+    )
+    .optional(),
+);
+
+/** Optional provider secret; required only when `EMAIL_PROVIDER=resend`. */
+const optionalResendApiKeySchema = z.preprocess(
+  emptyToUndefined,
+  z.string().min(1, 'RESEND_API_KEY no puede estar vacía.').optional(),
+);
+
+const optionalSmtpHostSchema = z.preprocess(
+  emptyToUndefined,
+  z.string().min(1, 'SMTP_HOST no puede estar vacío.').optional(),
+);
+
+const optionalSmtpPortSchema = z.preprocess(
+  emptyToUndefined,
+  z.coerce
+    .number()
+    .int('SMTP_PORT debe ser un número entero.')
+    .min(1, 'SMTP_PORT debe estar entre 1 y 65535.')
+    .max(65_535, 'SMTP_PORT debe estar entre 1 y 65535.')
+    .optional(),
+);
+
+const emailProviderSchema = z.preprocess(
+  emptyToUndefined,
+  z
+    .enum(EMAIL_PROVIDERS, {
+      error: `EMAIL_PROVIDER debe ser uno de: ${EMAIL_PROVIDERS.join(', ')}.`,
+    })
+    .default('mailpit'),
+);
+
 /** Raw environment contract. Every variable the API reads is declared here. */
 export const envSchema = z
   .object({
@@ -79,6 +147,11 @@ export const envSchema = z
     DATABASE_URL: optionalDatabaseUrlSchema,
     APP_URL: optionalAppUrlSchema,
     COOKIE_DOMAIN: optionalCookieDomainSchema,
+    EMAIL_PROVIDER: emailProviderSchema,
+    EMAIL_FROM: optionalEmailFromSchema,
+    RESEND_API_KEY: optionalResendApiKeySchema,
+    SMTP_HOST: optionalSmtpHostSchema,
+    SMTP_PORT: optionalSmtpPortSchema,
   })
   .superRefine((value, ctx) => {
     if (value.NODE_ENV === 'production' && value.SESSION_SECRET === undefined) {
@@ -117,6 +190,39 @@ export const envSchema = z
         message: 'APP_URL debe usar https en producción.',
       });
     }
+
+    if (value.NODE_ENV === 'production' && value.EMAIL_FROM === undefined) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['EMAIL_FROM'],
+        message: 'EMAIL_FROM es obligatoria en producción.',
+      });
+    }
+
+    if (value.NODE_ENV === 'production' && value.EMAIL_PROVIDER !== 'resend') {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['EMAIL_PROVIDER'],
+        message:
+          'En producción EMAIL_PROVIDER debe ser resend; mailpit solo está disponible en local.',
+      });
+    }
+
+    if (value.EMAIL_PROVIDER === 'resend' && value.RESEND_API_KEY === undefined) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['RESEND_API_KEY'],
+        message: 'RESEND_API_KEY es obligatoria con EMAIL_PROVIDER=resend.',
+      });
+    }
+
+    if (value.EMAIL_PROVIDER !== 'resend' && value.RESEND_API_KEY !== undefined) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['RESEND_API_KEY'],
+        message: 'RESEND_API_KEY solo se admite con EMAIL_PROVIDER=resend.',
+      });
+    }
   });
 
 export type NodeEnvironment = (typeof NODE_ENVIRONMENTS)[number];
@@ -139,6 +245,13 @@ export interface AppConfig {
   readonly appUrl: string;
   /** Parent domain for cookies. Absent means host-only (development/test). */
   readonly cookieDomain: string | undefined;
+  readonly emailProvider: EmailProvider;
+  /** Sender shown in invitation emails; defaults outside production. */
+  readonly emailFrom: string;
+  /** Only present when `emailProvider === 'resend'`. */
+  readonly resendApiKey: string | undefined;
+  readonly smtpHost: string;
+  readonly smtpPort: number;
 }
 
 function formatIssues(error: z.ZodError): string {
@@ -178,5 +291,10 @@ export function loadConfig(source: NodeJS.ProcessEnv = process.env): AppConfig {
     databaseUrl: env.DATABASE_URL,
     appUrl: new URL(env.APP_URL ?? DEFAULT_APP_URL).origin,
     cookieDomain: env.COOKIE_DOMAIN,
+    emailProvider: env.EMAIL_PROVIDER,
+    emailFrom: env.EMAIL_FROM ?? DEFAULT_EMAIL_FROM,
+    resendApiKey: env.RESEND_API_KEY,
+    smtpHost: env.SMTP_HOST ?? DEFAULT_SMTP_HOST,
+    smtpPort: env.SMTP_PORT ?? DEFAULT_SMTP_PORT,
   };
 }

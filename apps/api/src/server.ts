@@ -1,5 +1,6 @@
 import { buildApp, type BuildAppOptions } from './app.ts';
 import { loadConfig, type AppConfig } from './config.ts';
+import { createRuntimeServices } from './services/index.ts';
 import type { MemoraServer } from './types.ts';
 
 /** Closes Prisma only if a query ever created the client. */
@@ -19,7 +20,14 @@ export async function startServer(
   config: AppConfig = loadConfig(),
   options: Omit<BuildAppOptions, 'config'> = {},
 ): Promise<MemoraServer> {
-  const app = await buildApp({ ...options, config });
+  const app = await buildApp({
+    ...options,
+    config,
+    // Email is a real adapter in every process; storage/geocoding still fail
+    // closed, so `kind` remains `'unavailable'` and the production guard keeps
+    // rejecting the boot until F25. Tests inject fakes through `options`.
+    services: options.services ?? createRuntimeServices(config),
+  });
 
   let shuttingDown = false;
 
