@@ -45,6 +45,8 @@
 - [x] Revisión independiente de nivel A (1 Mayor, 10 Menores y 6 Nits; corregidos los aplicables).
 - [x] Aceptación del usuario (2026-11-05).
 - [x] `handoff.md` completo.
-- [x] Tablero actualizado (fila en `review`).
+- [x] Tablero actualizado (fila en `done`).
 - [x] Bitácora y cobertura actualizadas.
-- [ ] Commit propuesto (sin ejecutar).
+- [x] Commit propuesto y ejecutado (`1833dca`, `ebc57d3`).
+- [x] PR #40 y merge en `main` (`44ac7a9`).
+- [x] CI en verde en la PR (run `42109962179`) y en `main` (run `42110522832`).

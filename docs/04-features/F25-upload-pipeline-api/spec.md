@@ -3,7 +3,7 @@ id: F25
 title: "Upload pipeline API"
 milestone: M3
 size: L
-status: accepted
+status: done
 spec: complete
 depends_on:
   - "F07"
@@ -21,7 +21,7 @@ decisions:
 
 # F25 — Upload pipeline API
 
-> **Milestone:** M3 · **Talla:** L · **Estado:** accepted · **Spec:** completa
+> **Milestone:** M3 · **Talla:** L · **Estado:** done · **Spec:** completa
 > **Depende de:** F07, F08, F23 · **Bloquea:** F26, F35
 
 > **Invariante de portada (F24, 2026-11-05).** La portada no es un objeto aparte. F26 sube la imagen como una foto más del álbum y F29 la elige entre las fotos del álbum y la marca como `coverPhotoId`. F25 debe permitir que esa foto se suba como cualquier otra; el contrato de F23 ya exige que `coverPhotoId` sea una foto del mismo álbum.
@@ -211,4 +211,13 @@ Veredicto inicial: **cambios requeridos**, sin bloqueantes. **1 Mayor, 10 Menore
 - **[Nit]** `randomUUID` para `Photo.id` frente al `@default(cuid())` del esquema. Aceptado.
 - **[Nit]** No se destruye el `S3Client` al cerrar la aplicación.
 - **[Nit]** `CREATE INDEX` no concurrente (F42).
-- **No verificado:** R2/AWS S3 real (solo Silo), Nominatim real por red (`fetch` inyectado), OpenAPI renderizado, `pnpm build` y `pnpm audit`.
+- **No verificado:** R2/AWS S3 real (solo Silo), Nominatim real por red (`fetch` inyectado) y OpenAPI renderizado. `pnpm audit` se ejecutó: **2 vulnerabilidades moderadas preexistentes** en `@fastify/swagger-ui > @fastify/static > glob/minimatch`, ajenas a F25.
+
+## Cierre operativo (2026-11-05)
+
+- **PR de feature:** [#40](https://github.com/Luceir0/lab-final--memora/pull/40), mergeada en `main`.
+- **Merge commit:** `44ac7a9ac8ee473d0239804b422fd1ae5bde45a3`.
+- **Commits:** `1833dca` (`feat(api): add upload pipeline with S3, sharp and idempotency (F25)`) y `ebc57d3` (`docs: record F25 implementation, review and acceptance`).
+- **CI:** run `42109962179` en la PR y run `42110522832` en `main` sobre el merge, ambos `completed/success`.
+- **Verificación de cierre:** `pnpm test` **8/8 tareas**, `pnpm build` **5/5** con 5 rutas prerenderizadas, typecheck OK, `lint` 6/6, `format:check` OK, `docs:check` 191 archivos y 545 enlaces con 0 rotos (**553** tras este cierre documental), `agents:check` 43 specs y 43 filas, y las integraciones de Silo y S3 con 1 passed cada una y sin restos.
+- **Estado:** F25 pasa a **`done`**.
