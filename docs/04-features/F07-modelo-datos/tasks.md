@@ -57,3 +57,15 @@
 - [x] `done` (2026-11-01).
 
 Notas: F07 cerrada. El cierre documental de esta entrada lo commiteará el orquestador; este agente no hace commit ni push.
+
+## Ajuste de semilla (2026-11-04)
+
+Ejecutado en la rama de F22 (2026-11-04); no reabre el cierre histórico de F07. Evidencia: `apps/api/prisma/seed.ts` y los tests de re-seed de `apps/api/src/db.integration.test.ts`.
+
+- [x] Círculos: «Familia Ferrer» y «Danza» (amistades), sin «Viaje a Lisboa».
+- [x] «Danza» mantiene los permisos de solo lectura del antiguo círculo de viaje.
+- [x] «Lisboa en primavera» y sus fotos pasan a «Familia Ferrer».
+- [x] «Verano en la costa» y «Lisboa en primavera» quedan como álbumes de la familia.
+- [x] «Danza» con un álbum sencillo o ninguno.
+- [x] Se mantienen la invitación pendiente y las etiquetas de la familia.
+- [x] Seed determinista e idempotente: test «runs the seed twice with identical rows, timestamps and counts» y test de renombrado en sitio del círculo heredado; `DATABASE_URL=…/memora_test pnpm test` → `@memora/api` **219** tests en 12 archivos, sin skips.
