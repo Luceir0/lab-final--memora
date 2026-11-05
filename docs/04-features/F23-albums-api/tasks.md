@@ -44,4 +44,6 @@
 - [x] `handoff.md` completo.
 - [x] Tablero actualizado.
 - [x] Bitácora y cobertura actualizadas.
-- [ ] Commit propuesto y **no ejecutado**: pendiente de autorización del usuario. Tampoco se ha abierto PR.
+- [x] Commit ejecutado: `34c71cd` (`feat(api): add albums API with pagination, cover and safe delete (F23)`) y `6ad8226` (`docs: record F23 implementation, review and acceptance`).
+- [x] PR [#36](https://github.com/Luceir0/lab-final--memora/pull/36) mergeada en `main` con el merge commit `dca7a60bf386bd898c55d6ae8cf82b70166b68dd`.
+- [x] CI en verde: run `42018373439` en la PR y run `42018611662` en `main`, ambos `completed/success`.

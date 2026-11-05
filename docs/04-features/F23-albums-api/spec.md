@@ -146,7 +146,7 @@ Al terminar, completa `handoff.md` y actualiza el tablero. No hagas commit ni pu
   - Índices `(circleId, createdAt, id)` en `Photo` y `(circleId, joinedAt)` en `Membership` → **F25** (requieren migración y permiso).
   - **N-01** (`coverPhoto: true` carga la fila `Photo` completa), **m-04** (timeout de la transacción de borrado: `P2028`/500 si el lock dura más de 5 s) y **N-02** (robustez del test de concurrencia con `Promise.race`). Son menores/nits y no reabren la revisión.
   - Nota para F25: no actualizar `Album` en la misma transacción que inserta `Photo`, o mantener un orden de locks consistente, para evitar un ciclo de upgrade con el `FOR UPDATE` del borrado.
-  - Commit y PR pendientes de autorización del usuario; no ejecutados.
+  - **Cierre operativo:** commits `34c71cd` (`feat(api): add albums API with pagination, cover and safe delete (F23)`) y `6ad8226` (`docs: record F23 implementation, review and acceptance`) en `feat/F23-albums-api`; [PR #36](https://github.com/Luceir0/lab-final--memora/pull/36) mergeada en `main` con el merge commit `dca7a60bf386bd898c55d6ae8cf82b70166b68dd`; CI run `42018373439` en la PR y run `42018611662` en `main`, ambos `completed/success`.
 
 ## Preguntas abiertas
 
