@@ -14,7 +14,7 @@
 - [ ] Buscador
 - [ ] Solo miembros
 - [ ] Optimistic update
-- [ ] Fotos de persona
+- [ ] Filtro por persona en el visor y la galería
 - [ ] Estados
 
 ## Criterios de aceptación

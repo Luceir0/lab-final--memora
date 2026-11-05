@@ -13,7 +13,6 @@ design_refs:
   - "assets/design/screens/etiquetar-movil.png"
   - "assets/design/screens/etiquetar-movil-sin-resultados.png"
   - "assets/design/screens/etiquetar-escritorio-guardando.png"
-  - "assets/design/screens/fotos-de-una-persona-movil.png"
 contracts:
   - "docs/03-architecture/api-contract.md"
   - "docs/03-architecture/data-model.md"
@@ -28,7 +27,9 @@ decisions:
 
 ## Objetivo
 
-Etiquetar miembros en fotos y filtrar “fotos de esta persona”.
+Etiquetar miembros en fotos y mantener el filtro por persona en el visor y la galería.
+
+> **Nota (2026-11-04):** la página «Fotos de esta persona» vive en F29. F32 solo etiqueta y mantiene el filtro por persona en el visor/galería; no construye esa página.
 
 ## Contexto mínimo
 
@@ -42,7 +43,6 @@ Etiquetar miembros en fotos y filtrar “fotos de esta persona”.
 - [assets/design/screens/etiquetar-movil.png](../../../assets/design/screens/etiquetar-movil.png)
 - [assets/design/screens/etiquetar-movil-sin-resultados.png](../../../assets/design/screens/etiquetar-movil-sin-resultados.png)
 - [assets/design/screens/etiquetar-escritorio-guardando.png](../../../assets/design/screens/etiquetar-escritorio-guardando.png)
-- [assets/design/screens/fotos-de-una-persona-movil.png](../../../assets/design/screens/fotos-de-una-persona-movil.png)
 
 ### Contratos
 
@@ -62,7 +62,6 @@ Etiquetar miembros en fotos y filtrar “fotos de esta persona”.
 - Buscador
 - Solo miembros
 - Optimistic update
-- Fotos de persona
 - Estados
 
 ### No incluye

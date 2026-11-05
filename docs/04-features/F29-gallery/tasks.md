@@ -3,7 +3,7 @@
 ## Antes de empezar
 
 - [ ] Leer `AGENTS.md` y `spec.md`.
-- [ ] Comprobar dependencias: F24, F26.
+- [ ] Comprobar dependencias: F21, F24, F26.
 - [ ] Comprobar Definition of Ready.
 - [ ] Proponer plan y esperar confirmación.
 
@@ -19,6 +19,7 @@
 - [ ] PersonFilter
 - [ ] Scroll restaurado
 - [ ] Estados
+- [ ] Página «Fotos de esta persona»: ruta, cabecera con total y álbumes, chips por álbum, estado vacío, enlace de vuelta y entrada «Ver sus fotos»
 
 ## Criterios de aceptación
 
@@ -28,6 +29,11 @@
 - [ ] AC-04: Selección con clic/Shift/Ctrl.
 - [ ] AC-05: Scroll restaurado.
 - [ ] AC-06: Imágenes adaptadas.
+- [ ] AC-07: Página de persona solo con fotos del círculo, cabecera y vuelta.
+- [ ] AC-08: Chips «Todos» y por álbum con conteo.
+- [ ] AC-09: Estado vacío de persona.
+- [ ] AC-10: Scroll infinito y teclado en la página de persona.
+- [ ] AC-11: F29 añade la entrada «Ver sus fotos» en la fila de miembro o en su cabecera.
 
 ## Verificación
 

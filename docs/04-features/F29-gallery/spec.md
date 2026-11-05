@@ -6,6 +6,7 @@ size: M
 status: draft
 spec: complete
 depends_on:
+  - "F21"
   - "F24"
   - "F26"
 blocks:
@@ -15,6 +16,9 @@ design_refs:
   - "assets/design/screens/album-movil-subiendo.png"
   - "assets/design/screens/album-movil-vacio.png"
   - "assets/design/screens/album-escritorio-seleccion-multiple.png"
+  - "assets/design/screens/fotos-de-una-persona-movil.png"
+  - "assets/design/screens/fotos-de-una-persona-movil-vacio.png"
+  - "assets/design/screens/fotos-de-una-persona-escritorio.png"
 contracts:
   - "docs/03-architecture/api-contract.md"
   - "docs/03-architecture/uploads.md"
@@ -25,11 +29,13 @@ decisions:
 # F29 — Galería
 
 > **Milestone:** M4 · **Talla:** M · **Estado:** draft · **Spec:** completa
-> **Depende de:** F24, F26 · **Bloquea:** F30, F33
+> **Depende de:** F21, F24, F26 · **Bloquea:** F30, F33
 
 ## Objetivo
 
-Construir la galería con scroll infinito, selección y filtro por persona.
+Construir la galería con scroll infinito, selección, filtro por persona y la página «Fotos de esta persona».
+
+> **Nota (2026-11-04):** la página «Fotos de esta persona» se movió desde F22. El visor sigue en F30 y las descargas en F33. F22 no deja un enlace muerto: es F29 quien añade la entrada «Ver sus fotos» en la fila del miembro o en la cabecera de la página.
 
 ## Contexto mínimo
 
@@ -43,6 +49,9 @@ Construir la galería con scroll infinito, selección y filtro por persona.
 - [assets/design/screens/album-movil-subiendo.png](../../../assets/design/screens/album-movil-subiendo.png)
 - [assets/design/screens/album-movil-vacio.png](../../../assets/design/screens/album-movil-vacio.png)
 - [assets/design/screens/album-escritorio-seleccion-multiple.png](../../../assets/design/screens/album-escritorio-seleccion-multiple.png)
+- [assets/design/screens/fotos-de-una-persona-movil.png](../../../assets/design/screens/fotos-de-una-persona-movil.png)
+- [assets/design/screens/fotos-de-una-persona-movil-vacio.png](../../../assets/design/screens/fotos-de-una-persona-movil-vacio.png)
+- [assets/design/screens/fotos-de-una-persona-escritorio.png](../../../assets/design/screens/fotos-de-una-persona-escritorio.png)
 
 ### Contratos
 
@@ -67,11 +76,14 @@ Construir la galería con scroll infinito, selección y filtro por persona.
 - PersonFilter
 - Scroll restaurado
 - Estados
+- Página «Fotos de esta persona» (`/circles/:circleId/people/:userId/photos`) con cabecera (total y álbumes), chips por álbum, grid infinito con `srcset`, estado vacío y enlace de vuelta
 
 ### No incluye
 
 - Visor (F30)
 - Descargas (F33)
+
+La página de persona no incluye visor ni descargas: hereda el visor de F30 y la descarga de F33, y solo lista fotos del círculo.
 
 ## Entregables
 
@@ -79,11 +91,13 @@ Construir la galería con scroll infinito, selección y filtro por persona.
 - PhotoTile
 - SelectionBar
 - PersonFilter
+- Página «Fotos de esta persona» y su ruta
 - tests
 
 ## UX y estados
 
 - vacío
+- vacío de persona
 - cargando
 - error
 - seleccionada
@@ -97,6 +111,11 @@ Construir la galería con scroll infinito, selección y filtro por persona.
 - **AC-04.** Selección con clic/Shift/Ctrl.
 - **AC-05.** Scroll restaurado.
 - **AC-06.** Imágenes adaptadas.
+- **AC-07.** La página «Fotos de esta persona» muestra solo fotos del círculo, con la cabecera (total y álbumes) y el enlace de vuelta.
+- **AC-08.** Chips «Todos» y uno por álbum con su conteo; el filtro no mezcla fotos de otros círculos.
+- **AC-09.** Estado vacío propio cuando la persona no aparece en ninguna foto del círculo.
+- **AC-10.** Scroll infinito y recorrido con teclado en la página de persona.
+- **AC-11.** F29 añade la entrada «Ver sus fotos» en la fila del miembro o en su propia cabecera; no se espera un enlace de F22.
 
 ## Pruebas
 
@@ -105,10 +124,12 @@ Construir la galería con scroll infinito, selección y filtro por persona.
 - Filtro
 - Selección
 - Responsive
+- Página de persona: chips, vacío y solo del círculo
 
 ## Archivos previstos
 
 - `apps/web/src/features/photos/**`
+- `apps/web/src/routes/_app.circles.$circleId.people.$userId.photos.tsx`
 
 ## Verificación
 
