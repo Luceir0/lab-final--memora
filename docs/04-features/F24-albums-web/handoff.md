@@ -1,17 +1,17 @@
 # Handoff — F24 Albums web
 
-- **Estado:** `done` (aceptada por el usuario el 2026-11-05; cierre operativo pendiente de permiso)
+- **Estado:** `done` (aceptada por el usuario el 2026-11-05; PR #38 en curso)
 - **Rama:** `feat/F24-albums-web`
 - **Fecha:** 2026-11-05
 - **Nivel de auditoría:** B
 - **Aceptación:** usuario, 2026-11-05, tras los cinco cambios de aceptación; pidió expresamente cerrar
-- **Cierre:** 2026-11-05 (documental; commits locales `1a40ca3` y `b964e16`, sin push ni PR)
-- **Implementado por:** sesión de implementación de F24 (`web` y `shared`), commits locales `1a40ca3` y `b964e16`
+- **Cierre:** 2026-11-05 (PR #38; commits `1a40ca3`, `b964e16` y `4ce5043`; CI en curso)
+- **Implementado por:** sesión de implementación de F24 (`web` y `shared`), commits `1a40ca3`, `b964e16` y `4ce5043`; PR #38
 - **Revisado por:** revisión independiente de nivel B; auditorías de diseño y accesibilidad del delta
 
 ## Resultado
 
-Creación, detalle y cabecera de álbum sobre la API real de F23: formulario de alta y edición con RHF y los schemas compartidos, rejilla de álbumes, detalle con metadatos, estados vacío/carga/error/guardando/validación, y acciones de vaciar y eliminar con confirmación. **113 tests en 7 archivos** de álbumes y **491 tests** en `apps/web`; **27 tests** de álbumes en la API, **150** en `shared` y **246** en la API. Revisión independiente de nivel B **aprobada** en la ronda de cambios, con Menores/Nits; auditorías de diseño y accesibilidad del delta **aptas**. El usuario probó la feature, pidió cinco cambios —altura uniforme de cards, permisos de creador, vaciado solo con fotos, portada F26/F29 y mes actual en el alta—, todos aplicados y verificados, y **aceptó y pidió cerrar F24 el 2026-11-05**. Queda pendiente solo el push, PR, merge y CI; los commits locales son `1a40ca3` (feature) y `b964e16` (documentación).
+Creación, detalle y cabecera de álbum sobre la API real de F23: formulario de alta y edición con RHF y los schemas compartidos, rejilla de álbumes, detalle con metadatos, estados vacío/carga/error/guardando/validación, y acciones de vaciar y eliminar con confirmación. **113 tests en 7 archivos** de álbumes y **491 tests** en `apps/web`; **27 tests** de álbumes en la API, **150** en `shared` y **246** en la API. Revisión independiente de nivel B **aprobada** en la ronda de cambios, con Menores/Nits; auditorías de diseño y accesibilidad del delta **aptas**. El usuario probó la feature, pidió cinco cambios —altura uniforme de cards, permisos de creador, vaciado solo con fotos, portada F26/F29 y mes actual en el alta—, todos aplicados y verificados, y **aceptó y pidió cerrar F24 el 2026-11-05**. Queda pendiente el merge y CI de la PR #38; los commits son `1a40ca3` (feature), `b964e16` y `4ce5043` (documentación).
 
 ## Cambios
 
@@ -89,11 +89,11 @@ pnpm agents:check → OK (43 specs, 43 filas)
 - **Aceptación:** el usuario aceptó F24 el **2026-11-05**, tras los cinco cambios de aceptación, y pidió expresamente cerrar la feature.
 - **Login:** la API estaba en un bucle de `node --watch` y devolvía 500; se reinició limpia (`node src/index.ts` con `DATABASE_URL=…/memora`) y `health`, `login` y la web respondieron 200. El usuario debe recargar con `Ctrl+Shift+R` o en incógnito para evitar la sesión o los assets cacheados.
 - **Datos de prueba:** con autorización del usuario se borraron cuatro álbumes de prueba («Álbum de prueba», «Un título larguísimo…», «Auditoría vacío» y «Auditoría creada»). Quedan solo los dos de seed: «Verano en la costa» y «Lisboa en primavera».
-- **Cierre operativo:** commits locales `1a40ca3` (feature) y `b964e16` (documentación) en `feat/F24-albums-web`. No hay push, PR, merge ni CI.
+- **Cierre operativo:** PR #38 abierta desde `feat/F24-albums-web`; commits `1a40ca3` (feature), `b964e16` y `4ce5043` (documentación). CI en curso; merge pendiente de verde.
 
 ## Pendiente
 
-- Cierre operativo: push, PR, merge y CI. Requiere permiso.
+- Cierre operativo: merge y CI de la PR #38.
 - Lector de pantalla real (NVDA/VoiceOver): no probado; axe y teclado no lo sustituyen.
 - Zoom solo-texto al 200 %: medido el reflow, no el zoom de texto aislado.
 - Portada: F26 sube la imagen como foto del álbum y F29 la elige entre sus fotos y marca `coverPhotoId`.
@@ -131,6 +131,6 @@ pnpm agents:check → OK (43 specs, 43 filas)
 
 ## Siguiente paso propuesto
 
-1. Con permiso del usuario: push de `feat/F24-albums-web`, PR, merge y CI; después, F24 queda cerrada operativamente.
+1. Merge de la PR #38 cuando CI esté en verde; después, F25/F26.
 2. Abrir **F25 — Upload pipeline API**, que recoge además los objetos de storage, los índices y el orden de locks.
 3. Trasladar a F26 la subida de la portada como foto del álbum y a F29 su elección con `coverPhotoId`.
