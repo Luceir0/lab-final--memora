@@ -66,5 +66,6 @@
 - [x] Verificación final repetida el 2026-11-05: álbumes 7/113, web 491, shared 150, API 246, suite 8/8, typecheck 9/9, lint 6/6, format OK, build 5 rutas, docs 191/538/0 y agents 43/43.
 - [x] Login comprobado tras reiniciar la API limpia (`health=200`, `login=200`, web `200`); el usuario debe recargar con `Ctrl+Shift+R` o en incógnito.
 - [x] Álbumes de prueba borrados con autorización del usuario; quedan los dos de seed.
-- [ ] Commit, PR, merge y CI: requieren permiso.
+- [x] Commit local (`1a40ca3` feature, `b964e16` documentación).
+- [ ] Push, PR, merge y CI: requieren permiso.
 - [ ] Pendientes técnicos del handoff: lector de pantalla real, zoom solo-texto, portada F26/F29, subidas F26, descargas F33, doble anuncio de validación, cuerpo genérico del 403 en la API, Mateo creador con fotos, paginación >24 y cursor inválido.
