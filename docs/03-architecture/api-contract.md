@@ -147,7 +147,7 @@ Semántica cerrada en F19:
 | GET | `/albums/:albumId` | Detalle |
 | PATCH | `/albums/:albumId` | Editar |
 | DELETE | `/albums/:albumId` | Borrar: owner o creador, solo si está vacío; si no, `409 ALBUM_NOT_EMPTY` |
-| DELETE | `/albums/:albumId/photos` | Vaciar álbum (owner o creador, confirmación; borra fotos y etiquetas; objetos de almacenamiento diferidos a F25) |
+| DELETE | `/albums/:albumId/photos` | Vaciar álbum (owner o creador, confirmación; borra fotos, etiquetas y objetos) |
 
 Semántica cerrada en F23:
 
@@ -157,7 +157,7 @@ Semántica cerrada en F23:
 - Crear exige owner o miembro con `membersCanCreateAlbums`. Editar exige owner o el creador del álbum mientras la flag siga activa. Vaciar y eliminar exigen owner o el creador del álbum, **sin depender de la flag**.
 - `coverPhotoId` debe ser una foto **del mismo álbum**; si no existe, es de otro álbum o de otro círculo → `404 NOT_FOUND`. `null` limpia la portada.
 - `DELETE /albums/:albumId` lo permite el owner o el creador del álbum, y solo si el álbum está vacío; responde `204`. Con fotos → `409 ALBUM_NOT_EMPTY`, también para el creador.
-- `DELETE /albums/:albumId/photos` lo permite el owner o el creador del álbum y responde `200 { deletedCount }`. Borra fotos y `PhotoTag` en una transacción; los eventos de `Activity` se conservan con `photoId = null`. **La eliminación de objetos de almacenamiento se difiere a F25**, cuando exista el adaptador real. Un álbum ya vacío devuelve `{ deletedCount: 0 }` (idempotente).
+- `DELETE /albums/:albumId/photos` lo permite el owner o el creador del álbum y responde `200 { deletedCount }`. Borra fotos y `PhotoTag` en una transacción; los eventos de `Activity` se conservan con `photoId = null`. **Desde F25 borra también los objetos de almacenamiento**: el servicio devuelve las claves y la ruta las elimina tras el commit con un pool de 8, de forma best-effort; si el storage falla, la respuesta sigue siendo `200` con un aviso en el log. Un álbum ya vacío devuelve `{ deletedCount: 0 }` (idempotente).
 
 ## Fotos
 
@@ -221,11 +221,26 @@ La API puede agrupar eventos de subida por actor/álbum/intervalo; el contrato d
 
 ## Subidas
 
-- `multipart/form-data`: `file`, `clientUploadId`, `takenAt?`, `description?`.
-- El `file` no se modela en Zod: el contrato compartido valida solo los campos de texto y el binario lo valida F25 (MIME por magic bytes, tamaño y píxeles). La respuesta `201` es un `PhotoDto`.
-- Un archivo por petición; el cliente controla concurrencia.
-- Errores por archivo con `code` y `message`.
-- Idempotencia por `(uploaderId, clientUploadId)`: si se repite, se devuelve la foto existente con `200`.
+`POST /api/albums/:albumId/photos`, `multipart/form-data`:
+
+- Campos: `file`, `clientUploadId` (obligatorio, máx. 128), `takenAt?`, `description?`.
+- Un **archivo por petición**; el cliente controla la concurrencia (3).
+- El `file` no se modela en Zod: el contrato compartido valida solo los campos de texto y el binario lo valida el pipeline (MIME por magic bytes, tamaño y píxeles). La respuesta correcta es `201` con un `PhotoDto`.
+- Autorización: sesión, `Origin`, CSRF, membresía al álbum (`404` si no es miembro) y `photo.upload` (`403`). Rate limit de **60/min por usuario**, no por IP.
+- `Content-Type` declarado por el cliente no es fuente de verdad: manda el magic bytes.
+
+Semántica cerrada en F25:
+
+- Formatos aceptados: **JPEG, PNG y WebP**. SVG, GIF, HEIC, HEIF y AVIF → `415 UNSUPPORTED_MEDIA_TYPE`. Archivo corrupto o ilegible → `422 INVALID_IMAGE`.
+- Límites: más de **25 MB** → `413 FILE_TOO_LARGE`; más de **50 MP** → `422 INVALID_IMAGE`; cuota del círculo de **2 GB** → `413 QUOTA_EXCEEDED`. La cuota se pre-chequea con el tamaño crudo y se confirma con el tamaño ya procesado bajo `SELECT … FOR UPDATE` de `Circle`.
+- `takenAt`: si el formulario lo envía, manda; si no, se usa `DateTimeOriginal` de EXIF interpretado como UTC; si no hay ninguno, `null`.
+- Privacidad: el GPS de EXIF se usa **solo en memoria** para resolver `placeName` y no se persiste ni se loguea. `placeName` se trunca a 200 caracteres; si la geocodificación falla, es `null` y la subida sigue con `201`.
+- Salida: original sin redimensionar (con orientación aplicada y sin metadatos) en su formato, a calidad 95 si es JPEG o WebP; `display` WebP de 1600 px máximos; `thumb` WebP de 400 × 400. Las variantes se generan desde el archivo crudo para no recomprimir.
+- Efectos: `Photo` y `Activity` `photo_uploaded` (`metadata: { count: 1 }`) se escriben en **la misma transacción**. La subida **no actualiza `Album`**.
+- Idempotencia por `(uploaderId, clientUploadId)`: si se repite, se devuelve la foto existente con `200` (también si la repetición llega por **otro álbum** del mismo círculo). Si el usuario ya no pertenece al círculo de la foto existente → `409 CONFLICT`. Una carrera de dos subidas con el mismo par queda cubierta por `P2002`: una sola fila, sin objetos huérfanos.
+- Fallo de storage, de `sharp` o de base de datos: no se publica la foto y se borran los objetos ya escritos. Las claves se registran antes del `put` para poder limpiarlas.
+
+Errores por archivo con `code` y `message`.
 
 ## Imágenes
 

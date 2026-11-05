@@ -49,9 +49,11 @@ const ERROR_CODE_OVERRIDES: Readonly<Record<string, { code: ErrorCode; statusCod
     code: 'FILE_TOO_LARGE',
     statusCode: ERROR_HTTP_STATUS.FILE_TOO_LARGE,
   },
+  // One file per upload is a contract rule, not a payload-size limit: the
+  // upload module returns 400 VALIDATION_ERROR for an extra file.
   FST_FILES_LIMIT: {
-    code: 'PAYLOAD_TOO_LARGE',
-    statusCode: ERROR_HTTP_STATUS.PAYLOAD_TOO_LARGE,
+    code: 'VALIDATION_ERROR',
+    statusCode: ERROR_HTTP_STATUS.VALIDATION_ERROR,
   },
   FST_FIELDS_LIMIT: {
     code: 'PAYLOAD_TOO_LARGE',

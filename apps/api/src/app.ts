@@ -15,6 +15,7 @@ import { registerAuthRoutes } from './modules/auth/routes.ts';
 import { registerCircleRoutes } from './modules/circles/routes.ts';
 import { registerInvitationRoutes } from './modules/invitations/routes.ts';
 import { registerMemberRoutes } from './modules/members/routes.ts';
+import { registerPhotoRoutes } from './modules/photos/routes.ts';
 import { registerCookie } from './plugins/cookie.ts';
 import { registerCsrf } from './plugins/csrf.ts';
 import { registerHelmet } from './plugins/helmet.ts';
@@ -143,6 +144,7 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<MemoraSer
   registerAlbumRoutes(app, config);
   registerCircleRoutes(app, config);
   registerMemberRoutes(app, config);
+  registerPhotoRoutes(app, config);
   registerInvitationRoutes(app, config);
   await registerDocsRoutes(app, config);
 

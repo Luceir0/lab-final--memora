@@ -66,7 +66,7 @@ Invitar, expulsar, cambiar permisos y borrar el círculo es **siempre solo del p
 | role | Role | owner/member |
 | joinedAt | DateTime | |
 
-Único `(circleId, userId)`. Índice `(userId)`.
+Único `(circleId, userId)`. Índices `(userId)` y `(circleId, joinedAt)`, este último para el listado de miembros con keyset `(joinedAt, id)` (F25).
 
 `MemberDto.photosCount` no se persiste: se deriva por consulta agrupada sobre `PhotoTag` filtrada por `Photo.circleId` al listar miembros (F21). No existe todavía un endpoint que lo use fuera del listado.
 
@@ -116,17 +116,21 @@ Invitar, expulsar, cambiar permisos y borrar el círculo es **siempre solo del p
 | displayKey | String | |
 | thumbKey | String | |
 | mimeType | String | image/jpeg, image/png, image/webp |
-| size | Int | bytes del original |
-| width | Int | |
-| height | Int | |
-| takenAt | DateTime? | de EXIF o manual |
-| placeName | String? | “Lisboa, Portugal” |
+| size | Int | bytes del original procesado y almacenado |
+| width | Int | píxeles del original procesado, con la orientación ya aplicada |
+| height | Int | ídem |
+| takenAt | DateTime? | del formulario, si no de `DateTimeOriginal` (UTC), si no `null` |
+| placeName | String? | “Lisboa, Portugal”; máx. 200 |
 | description | String? | máx. 1000 |
 | createdAt | DateTime | |
 | updatedAt | DateTime | |
 
-Único `(uploaderId, clientUploadId)`. Índice `(albumId, createdAt)`, `(circleId)`, `(uploaderId)`.
+Único `(uploaderId, clientUploadId)`. Índices `(albumId, createdAt)`, `(circleId, createdAt, id)` y `(uploaderId)`.
 **No hay latitude/longitude.**
+
+`Photo.size` son los bytes del **original procesado** (orientado, sin metadatos y reencodeado a calidad 95 si es JPEG o WebP), no los del archivo recibido. Es el valor que cuenta para la cuota del círculo, y por eso la comprobación autoritativa se hace con el tamaño procesado.
+
+`Photo.id` lo genera la API con `randomUUID` y no el `@default(cuid())` del esquema; es una desviación aceptada en la revisión de F25 y no afecta al contrato.
 
 ### PhotoTag
 
@@ -202,8 +206,9 @@ ActivityType: photo.uploaded | album.created | member.joined
 
 ## Índices y rendimiento
 
-- Galería: `(albumId, createdAt desc)`.
+- Galería: `(albumId, createdAt desc)` y, para el listado por círculo, `(circleId, createdAt, id)`.
 - Fotos de persona: `(taggedUserId, photoId)` + join a Photo.
+- Miembros: `(circleId, joinedAt)` para el listado keyset `(joinedAt, id)`.
 - Actividad: `(circleId, createdAt desc)`.
 - Invitaciones: `(circleId, createdAt desc)`.
 - Búsqueda futura: fuera del MVP.
@@ -212,5 +217,6 @@ ActivityType: photo.uploaded | album.created | member.joined
 
 - `prisma migrate dev` en local; `prisma migrate deploy` en CI/producción.
 - Migración inicial única: `apps/api/prisma/migrations/20261031224916_init` (la migración de spike y `SpikeNote` se eliminaron).
+- `apps/api/prisma/migrations/20261105190000_f25_photo_membership_indexes` (F25): añade `Photo_circleId_createdAt_id_idx` y `Membership_circleId_joinedAt_idx` y elimina `Photo_circleId_idx`, porque el compuesto cubre el prefijo. Usa `CREATE INDEX` **no concurrente**; con la tabla vacía o pequeña es aceptable y queda como deuda de F42 para tablas grandes.
 - Seed determinista en `apps/api/prisma/seed.ts`; ejecutable con `pnpm --filter @memora/api db:seed`.
 - Tests contra una base real separada, `memora_test`; los helpers rechazan cualquier base cuyo nombre no acabe en `_test`. Detalle y comando de creación en [monorepo.md](monorepo.md#base-de-datos-de-test).

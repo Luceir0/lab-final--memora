@@ -73,6 +73,8 @@ MAILPIT_UI_PORT=
 
 `APP_URL` se usa para enlaces de invitación y Open Graph. `COOKIE_DOMAIN` debe ser el dominio común de web y API. `SESSION_SECRET`, `RESEND_API_KEY` y `CONTENT_ISLAND_ACCESS_TOKEN` van vacíos a propósito. `CONTENT_ISLAND_PROJECT_ID` es opcional. Cambiar las variables de infraestructura local obliga a actualizar `DATABASE_URL` y `S3_*` en consecuencia.
 
+**Storage y geocodificación son obligatorios en producción.** `buildApp()` rechaza el arranque con `NODE_ENV=production` si `S3_*` o `GEOCODING_*` están incompletos, porque el pipeline de subida de F25 necesita adaptadores reales y falla cerrado con los fakes. En local se mantienen los valores de `.env.example` contra Silo y Nominatim; no se cambian aquí.
+
 ## Producción opcional
 
 ### Opción A — VPS único

@@ -1,7 +1,15 @@
 import sharp from 'sharp';
 import { describe, expect, it } from 'vitest';
 
-import { DISPLAY_MAX_SIZE, THUMB_SIZE, processImage } from './images.ts';
+import {
+  assertPixelBudget,
+  DISPLAY_MAX_SIZE,
+  MAX_INPUT_PIXELS,
+  processImage,
+  processOriginal,
+  readImageDimensions,
+  THUMB_SIZE,
+} from './images.ts';
 
 async function buildOrientedFixture(): Promise<Buffer> {
   return sharp({
@@ -147,6 +155,30 @@ describe('processImage', () => {
     await expect(processImage(oversized)).rejects.toThrow(/pixel limit/i);
   });
 
+  it('rejects an oversized declared size through readImageDimensions', async () => {
+    const input = await sharp({
+      create: {
+        width: 100,
+        height: 100,
+        channels: 3,
+        background: { r: 10, g: 20, b: 30 },
+      },
+    })
+      .jpeg()
+      .toBuffer();
+
+    await expect(readImageDimensions(patchJpegDimensions(input, 10_000, 6_000))).rejects.toThrow(
+      /píxeles|límite|limit/i,
+    );
+  });
+
+  it('validates the pixel budget explicitly', () => {
+    expect(() => assertPixelBudget(4_000, 4_000)).not.toThrow();
+    expect(() => assertPixelBudget(0, 100)).toThrow(/dimensiones/);
+    expect(() => assertPixelBudget(10_000, 6_000)).toThrow(/píxeles/);
+    expect(10_000 * 6_000).toBeGreaterThan(MAX_INPUT_PIXELS);
+  });
+
   it('drops ICC profiles from both variants', async () => {
     const input = await sharp({
       create: {
@@ -169,5 +201,41 @@ describe('processImage', () => {
       const metadata = await sharp(variant.buffer).metadata();
       expect(metadata.icc).toBeUndefined();
     }
+  });
+});
+
+describe('processOriginal', () => {
+  it('applies EXIF orientation, keeps the format and removes metadata', async () => {
+    const input = await buildOrientedFixture();
+    const result = await processOriginal(input, 'image/jpeg');
+    const metadata = await sharp(result.buffer).metadata();
+
+    expect(result.mimeType).toBe('image/jpeg');
+    expect(result.extension).toBe('jpg');
+    expect(result.width).toBe(400);
+    expect(result.height).toBe(900);
+    expect(metadata.format).toBe('jpeg');
+    expect(metadata.width).toBe(400);
+    expect(metadata.height).toBe(900);
+    expect(metadata.orientation).toBeUndefined();
+    expect(metadata.exif).toBeUndefined();
+  });
+
+  it('keeps PNG output as PNG', async () => {
+    const input = await sharp({
+      create: {
+        width: 80,
+        height: 60,
+        channels: 3,
+        background: { r: 1, g: 2, b: 3 },
+      },
+    })
+      .png()
+      .toBuffer();
+    const result = await processOriginal(input, 'image/png');
+
+    expect(result.mimeType).toBe('image/png');
+    expect(result.extension).toBe('png');
+    expect((await sharp(result.buffer).metadata()).format).toBe('png');
   });
 });

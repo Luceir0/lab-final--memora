@@ -6,6 +6,7 @@ import {
   type Membership,
   type PrismaClient,
 } from '../../generated/prisma/client.ts';
+import type { PhotoObjectKeys } from '../photos/objects.ts';
 import { encodeAlbumCursor, type AlbumCursor } from './cursor.ts';
 import { toAlbumDto, type AlbumWithRelations, type PublicUser } from './dto.ts';
 
@@ -249,13 +250,20 @@ export async function deleteAlbumIfEmpty(
   });
 }
 
+export interface EmptiedAlbum {
+  readonly deletedCount: number;
+  /** Storage keys captured before the delete, for best-effort cleanup. */
+  readonly objects: ReadonlyArray<PhotoObjectKeys>;
+}
+
 /**
  * Empties the album: deletes its photos and their tags in one transaction.
  *
  * `PhotoTag` rows are removed by the database cascade and `Activity.photoId`
  * becomes `null` through `SetNull`, so the historical events survive with their
- * album reference intact. Storage objects are intentionally **not** deleted
- * here: the real storage adapter arrives in F25 (G1 decision 3).
+ * album reference intact. The transaction also returns the three storage keys
+ * of every deleted photo; the route removes those objects after the commit,
+ * best-effort, so a storage failure cannot turn a successful delete into a 5xx.
  *
  * Returns `null` when the album no longer exists, so the route can answer
  * `404` instead of a misleading `{ deletedCount: 0 }`.
@@ -264,8 +272,18 @@ export async function emptyAlbum(
   prisma: PrismaClient,
   albumId: string,
   circleId: string,
-): Promise<number | null> {
+): Promise<EmptiedAlbum | null> {
   return prisma.$transaction(async (tx) => {
+    // Same lock the upload takes before inserting: no photo can appear between
+    // the key snapshot below and the delete, which would leave an orphan object.
+    const locked = await tx.$queryRaw<Array<{ id: string }>>`
+      SELECT "id" FROM "Circle" WHERE "id" = ${circleId} FOR UPDATE
+    `;
+
+    if (locked.length === 0) {
+      return null;
+    }
+
     const album = await tx.album.findFirst({
       where: { id: albumId, circleId },
       select: { id: true },
@@ -275,6 +293,10 @@ export async function emptyAlbum(
       return null;
     }
 
+    const photos = await tx.photo.findMany({
+      where: { albumId, circleId },
+      select: { originalKey: true, displayKey: true, thumbKey: true },
+    });
     const deleted = await tx.photo.deleteMany({ where: { albumId, circleId } });
 
     // The album could have been deleted by another request after the read.
@@ -285,7 +307,7 @@ export async function emptyAlbum(
       select: { id: true },
     });
 
-    return stillExists === null ? null : deleted.count;
+    return stillExists === null ? null : { deletedCount: deleted.count, objects: photos };
   });
 }
 

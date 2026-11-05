@@ -113,6 +113,7 @@ model Membership {
 
   @@unique([circleId, userId])
   @@index([userId])
+  @@index([circleId, joinedAt])
 }
 
 model Invitation {
@@ -185,7 +186,7 @@ model Photo {
 
   @@unique([uploaderId, clientUploadId])
   @@index([albumId, createdAt])
-  @@index([circleId])
+  @@index([circleId, createdAt, id])
   @@index([uploaderId])
 }
 

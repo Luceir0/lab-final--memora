@@ -278,4 +278,110 @@ describe('loadConfig', () => {
     expect(() => loadConfig({ SMTP_PORT: 'not-a-port' })).toThrow(/SMTP_PORT/);
     expect(() => loadConfig({ SMTP_PORT: '70000' })).toThrow(/SMTP_PORT/);
   });
+
+  it('leaves storage and geocoding unconfigured by default outside production', () => {
+    const config = loadConfig({});
+
+    expect(config.s3Endpoint).toBeUndefined();
+    expect(config.s3Region).toBeUndefined();
+    expect(config.s3Bucket).toBeUndefined();
+    expect(config.s3AccessKeyId).toBeUndefined();
+    expect(config.s3SecretAccessKey).toBeUndefined();
+    expect(config.s3ForcePathStyle).toBe(false);
+    expect(config.geocodingProvider).toBe('nominatim');
+    expect(config.geocodingBaseUrl).toBeUndefined();
+    expect(config.geocodingUserAgent).toBeUndefined();
+  });
+
+  it('parses the S3 and geocoding adapter variables', () => {
+    const config = loadConfig({
+      S3_ENDPOINT: 'http://localhost:9000',
+      S3_REGION: 'us-east-1',
+      S3_BUCKET: 'memora-test',
+      S3_ACCESS_KEY_ID: 'memora',
+      S3_SECRET_ACCESS_KEY: 'memora123',
+      S3_FORCE_PATH_STYLE: 'true',
+      GEOCODING_PROVIDER: 'nominatim',
+      GEOCODING_BASE_URL: 'https://nominatim.openstreetmap.org',
+      GEOCODING_USER_AGENT: 'Memora-local/0.1 (dev@memora.local)',
+    });
+
+    expect(config.s3Endpoint).toBe('http://localhost:9000');
+    expect(config.s3Region).toBe('us-east-1');
+    expect(config.s3Bucket).toBe('memora-test');
+    expect(config.s3AccessKeyId).toBe('memora');
+    expect(config.s3SecretAccessKey).toBe('memora123');
+    expect(config.s3ForcePathStyle).toBe(true);
+    expect(config.geocodingProvider).toBe('nominatim');
+    expect(config.geocodingBaseUrl).toBe('https://nominatim.openstreetmap.org');
+    expect(config.geocodingUserAgent).toBe('Memora-local/0.1 (dev@memora.local)');
+  });
+
+  it('parses S3_FORCE_PATH_STYLE=false literally', () => {
+    expect(loadConfig({ S3_FORCE_PATH_STYLE: 'false' }).s3ForcePathStyle).toBe(false);
+    expect(loadConfig({ S3_FORCE_PATH_STYLE: 'true' }).s3ForcePathStyle).toBe(true);
+  });
+
+  it('rejects invalid S3 endpoints, buckets and booleans', () => {
+    expect(() => loadConfig({ S3_ENDPOINT: 'not-a-url' })).toThrow(/S3_ENDPOINT/);
+    expect(() => loadConfig({ S3_ENDPOINT: 'ftp://localhost:9000' })).toThrow(/S3_ENDPOINT/);
+    expect(() => loadConfig({ S3_BUCKET: 'ab' })).toThrow(/S3_BUCKET/);
+    expect(() => loadConfig({ S3_BUCKET: 'Memora_Bucket' })).toThrow(/S3_BUCKET/);
+    expect(() => loadConfig({ S3_FORCE_PATH_STYLE: 'yes' })).toThrow(/S3_FORCE_PATH_STYLE/);
+    expect(() => loadConfig({ S3_FORCE_PATH_STYLE: '1' })).toThrow(/S3_FORCE_PATH_STYLE/);
+    expect(() => loadConfig({ S3_FORCE_PATH_STYLE: 'FALSE' })).toThrow(/S3_FORCE_PATH_STYLE/);
+  });
+
+  it('rejects invalid geocoding variables', () => {
+    expect(() => loadConfig({ GEOCODING_PROVIDER: 'google' })).toThrow(/GEOCODING_PROVIDER/);
+    expect(() => loadConfig({ GEOCODING_BASE_URL: 'not-a-url' })).toThrow(/GEOCODING_BASE_URL/);
+    expect(() => loadConfig({ GEOCODING_BASE_URL: 'ftp://nominatim.example' })).toThrow(
+      /GEOCODING_BASE_URL/,
+    );
+    expect(loadConfig({ GEOCODING_USER_AGENT: '' }).geocodingUserAgent).toBeUndefined();
+  });
+
+  it('treats empty storage and geocoding values as absent', () => {
+    const config = loadConfig({
+      S3_ENDPOINT: '',
+      S3_REGION: '',
+      S3_BUCKET: '',
+      S3_ACCESS_KEY_ID: '',
+      S3_SECRET_ACCESS_KEY: '',
+      S3_FORCE_PATH_STYLE: '',
+      GEOCODING_BASE_URL: '',
+      GEOCODING_USER_AGENT: '',
+    });
+
+    expect(config.s3Endpoint).toBeUndefined();
+    expect(config.s3Region).toBeUndefined();
+    expect(config.s3Bucket).toBeUndefined();
+    expect(config.s3AccessKeyId).toBeUndefined();
+    expect(config.s3SecretAccessKey).toBeUndefined();
+    expect(config.s3ForcePathStyle).toBe(false);
+    expect(config.geocodingBaseUrl).toBeUndefined();
+    expect(config.geocodingUserAgent).toBeUndefined();
+  });
+
+  it('does not echo S3 or geocoding secrets in the error message', () => {
+    const longSecret = 's3-secret-value-'.repeat(64);
+
+    try {
+      loadConfig({ S3_SECRET_ACCESS_KEY: longSecret });
+      throw new Error('loadConfig should have thrown');
+    } catch (error) {
+      expect((error as Error).message).toContain('S3_SECRET_ACCESS_KEY');
+      expect((error as Error).message).not.toContain(longSecret);
+    }
+
+    const userAgent = 'x'.repeat(300);
+
+    try {
+      loadConfig({ GEOCODING_USER_AGENT: userAgent });
+      throw new Error('loadConfig should have thrown');
+    } catch (error) {
+      expect((error as Error).message).toContain('GEOCODING_USER_AGENT');
+      expect((error as Error).message).not.toContain(userAgent);
+    }
+  });
 });
