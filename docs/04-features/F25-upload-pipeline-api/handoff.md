@@ -85,7 +85,7 @@ Veredicto inicial: **cambios requeridos**, sin bloqueantes. **1 Mayor, 10 Menore
 - **Commits de la rama:** `1833dca` (`feat(api): add upload pipeline with S3, sharp and idempotency (F25)`) y `ebc57d3` (`docs: record F25 implementation, review and acceptance`).
 - **CI:** run `42109962179` en la PR y run `42110522832` en `main` sobre el merge, ambos `completed/success`.
 - **Verificación de cierre:** `pnpm test` **8/8 tareas**, `pnpm build` **5/5** con 5 rutas prerenderizadas, typecheck OK, `lint` 6/6, `format:check` OK, `docs:check` 191 archivos y 545 enlaces con 0 rotos (**553** tras el cierre documental), `agents:check` 43 specs y 43 filas, y las integraciones de Silo y S3 con 1 passed cada una y sin restos.
-- **Cierre documental:** rama `docs/F25-done`; el commit y el push los hace el orquestador.
+- **Cierre documental:** rama `docs/F25-done`, PR de documentación [#41](https://github.com/Luceir0/lab-final--memora/pull/41).
 
 ## Riesgos y limitaciones
 
