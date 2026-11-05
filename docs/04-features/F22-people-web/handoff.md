@@ -1,11 +1,12 @@
 # Handoff — F22 People web
 
-- **Estado:** accepted
-- **Rama:** `feat/F22-people-web` (árbol sin commitear)
-- **Fecha:** 2026-11-04 / aceptación 2026-11-05
+- **Estado:** done
+- **Rama:** `feat/F22-people-web`, mergeada en `main`; cierre documental en `docs/F22-done`
+- **Fecha:** 2026-11-04 / aceptación y cierre 2026-11-05
 - **Implementado por:** agentes de la sesión con el orquestador (web, UI y API)
 - **Revisado por:** `reviewer` independiente (nivel **A**, dos rondas), auditoría de accesibilidad en navegador (tres rondas) y `design-auditor` independiente **con visión** (2026-11-05)
-- **Aceptado por:** el usuario el **2026-11-05**, en escritorio y móvil, claro y oscuro, tras las correcciones G4-01 a G4-07. G5 (commits, PR y merge) pendiente.
+- **Aceptado por:** el usuario el **2026-11-05**, en escritorio y móvil, claro y oscuro, tras las correcciones G4-01 a G4-07.
+- **Cierre operativo:** PR **#34** `feat(web): People web with shared circle chrome (F22)` mergeada en `main` con el merge commit `7ee702f82f1f1715517cbc891fab5b1d369c082f`. CI en la PR run **42004835096** y en `main` run **42006326244**, ambos `completed/success`.
 
 ## Resultado
 
@@ -17,7 +18,7 @@ La sesión de continuación del 2026-11-05 cerró los huecos que la anterior dej
 
 La **aceptación (G4) del 2026-11-05** no cerró la feature en la primera pasada: el usuario revisó la pantalla y pidió **siete correcciones** de producto y de coherencia visual. Todas se aplicaron y verificaron: card «Pendientes» visible con 0 para el owner, `member` a ancho completo, alineación vertical de la columna derecha, acciones del héroe abajo a la derecha, sidebar con el círculo resaltado en ambas secciones y un único `aria-current`, migas con la sección siempre y «Tus círculos» con el destacado incluido. Web sube a **378 tests** y el total a **1062**, con las **4 pasadas nuevas de axe** y 0 violaciones.
 
-Tras esa ronda, el usuario probó F22 en escritorio y móvil, en claro y oscuro, y **aceptó la feature el 2026-11-05**. El estado es **`accepted`**, no `done`: queda el **G5** (commits, PR y merge), que no se ejecuta sin permiso.
+Tras esa ronda, el usuario probó F22 en escritorio y móvil, en claro y oscuro, y **aceptó la feature el 2026-11-05**. El cierre operativo (G5) se completó el mismo día: PR **#34** mergeada en `main` con el merge commit `7ee702f`, CI en verde en la PR (run `42004835096`) y en `main` (run `42006326244`). La feature queda en **`done`**.
 
 ## Cambios
 
@@ -138,7 +139,7 @@ Después de esta auditoría, la aceptación del mismo día añadió las correcci
 Cierre documental (2026-11-05), tras estas ediciones:
 
 ```text
-pnpm docs:check   → 191 archivos, 510 enlaces, 0 rotos
+pnpm docs:check   → 191 archivos, 516 enlaces, 0 rotos
 pnpm agents:check → 43 specs, 43 filas
 ```
 
@@ -192,11 +193,11 @@ Todos verificados y **aceptados por el usuario el 2026-11-05** en escritorio y m
 
 ## Documentación actualizada
 
-- `docs/04-features/F22-people-web/spec.md`: `status: accepted`, M-01, AC-03 tras B-01, AC-05 con total en escritorio, AC-08 con píldora, 42 px y sidebar con un único `aria-current`, decisiones del 2026-11-05 (auditoría de diseño con visión, correcciones G4-01 a G4-07 y aceptación), tablas de correcciones D y G4, desviaciones, pruebas y limitaciones de la verificación.
-- `docs/04-features/F22-people-web/tasks.md`: estado `accepted`, implementación y verificación marcadas con evidencia; secciones de la auditoría de diseño, de la verificación en navegador de estados y de la ronda de aceptación; aceptación marcada y G5 pendiente.
+- `docs/04-features/F22-people-web/spec.md`: `status: done`, encabezado y decisión de cierre operativo con PR #34, merge `7ee702f` y runs de CI.
+- `docs/04-features/F22-people-web/tasks.md`: estado `done`, implementación y verificación marcadas con evidencia; secciones de la auditoría de diseño, de la verificación en navegador de estados y de la ronda de aceptación; G5 cerrado con commits, PR y CI.
 - `docs/04-features/F22-people-web/handoff.md`: este documento.
-- `docs/04-features/README.md`: fila de F22 en `accepted` y situación con la aceptación.
-- `docs/06-process/ai-log.md`: entradas del 2026-11-05 (auditoría de diseño, ronda de aceptación y aceptación) y nota de superación en la del 2026-11-04/05.
+- `docs/04-features/README.md`: fila de F22 en `done` y situación con el cierre operativo.
+- `docs/06-process/ai-log.md`: entradas del 2026-11-05 (auditoría de diseño, ronda de aceptación, aceptación y cierre) y nota de superación en la del 2026-11-04/05.
 - `docs/07-curriculum/coverage-map.md`: competencias de auditoría de diseño con visión, verificación de estados en navegador y cifras al día.
 - `docs/04-features/F07-modelo-datos/tasks.md`: ajuste de semilla marcado.
 - `docs/04-features/F19-invitations-api/handoff.md`: nota de la corrección B-01.
@@ -204,26 +205,19 @@ Todos verificados y **aceptados por el usuario el 2026-11-05** en escritorio y m
 
 ## Siguiente paso propuesto
 
-G5, cierre operativo: con permiso explícito, los cuatro commits propuestos —`feat(web)` de F22 con `TabLinks`, `feat(api)` de la semilla de F07, `fix(api)` del enlace del email de F19 y `docs` del cierre—, la PR y el merge. No hay commit ni push hasta que se autorice; después, el tablero puede pasar la fila a `done`.
+Cerrar F22 en el tablero (hecho: `done`) y abrir **F23 — Albums API** (milestone M3, nivel **B**), que es la siguiente del orden recomendado y desbloquea F24/F25. No hay commit ni push desde este cierre documental: el orquestador ejecutará el commit de la rama `docs/F22-done`.
 
 ## Estado al 2026-11-05
 
-La rama `feat/F22-people-web` sigue **sin commitear** y el tablero marca F22 en **`accepted`**. Nada se ha commiteado ni empujado.
+F22 está **`done`**: `feat/F22-people-web` se mergeó en `main` con el merge commit `7ee702f` y la documentación de cierre va en la rama `docs/F22-done`. El árbol de trabajo no tiene cambios de código de F22 sin commitear.
 
-Comprobado hoy, tras las correcciones de la aceptación:
+Comprobado en el cierre:
 
 - `pnpm test` con `memora_test` → 8/8 tareas y **1062 tests** (shared 145, api-client 39, ui 281, web 378, api 219), sin skips.
 - `typecheck` 9/9, `lint` 6/6, `format:check` limpio, `build` 5/5 con cinco rutas prerenderizadas.
 - `docs:check` y `agents:check` en verde (ver Verificación).
-- Auditoría de diseño con visión cerrada en apto con correcciones y correcciones verificadas en navegador.
-- G4 revisada por el usuario: siete correcciones aplicadas y verificadas con 4 pasadas nuevas de axe sin violaciones; **aceptada el 2026-11-05** en escritorio y móvil, claro y oscuro.
-- Las 10 invitaciones de prueba del 429 real (`rate-limit-*@memora.test`) se borraron de la base de desarrollo con permiso del usuario.
+- **16 pasadas de axe con 0 violaciones** (12 de la ronda de estados y 4 de la aceptación).
+- CI en verde en la PR (run `42004835096`) y en `main` (run `42006326244`), ambos `completed/success`.
+- Commits de la rama: `56fca50`, `3e719ed`, `8219d1f`, `97b45be` y el merge `7ee702f`.
 
-Para reanudar el cierre:
-
-```bash
-docker compose up -d                                   # postgres, minio y mailpit
-DATABASE_URL=postgresql://memora:memora@127.0.0.1:5432/memora pnpm dev
-```
-
-Después, G5 con los cuatro commits propuestos, la PR y el merge. Sin `push` hasta que se autorice.
+Pendientes que no bloquean el cierre y quedan registrados para otras features: lector de pantalla real (F39), zoom de texto al 200 % en la nav sticky, nits D-06 y D-07, duplicidad intencional del círculo destacado y revisión de `activeOptions={{ exact: true }}` si aparece un enlace a un subpath.

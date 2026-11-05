@@ -1,6 +1,6 @@
 # Tasks — F22 People web
 
-**Estado:** `accepted` el 2026-11-05. G5 (commits, PR y merge) pendiente.
+**Estado:** `done` el 2026-11-05. PR #34 mergeada en `main` (`7ee702f`) con CI en verde en la PR y en `main`.
 
 ## Antes de empezar
 
@@ -52,7 +52,7 @@
 - [x] `pnpm lint` → **6/6**.
 - [x] `pnpm format:check` → limpio.
 - [x] `pnpm build` → **5/5**, con `/help`, `/circles`, `/profile`, `/privacy` y `/uploads` prerenderizadas.
-- [x] `pnpm docs:check` → **191 archivos y 510 enlaces**, 0 rotos.
+- [x] `pnpm docs:check` → **191 archivos y 516 enlaces**, 0 rotos.
 - [x] `pnpm agents:check` → **43 specs y 43 filas**, OK.
 - [x] `pnpm --filter @memora/web test members` → **51** tests en 3 archivos.
 - [x] `pnpm --filter @memora/web test circle-detail` → **17** tests en 2 archivos.
@@ -109,8 +109,8 @@
 - [x] Revisión independiente: dos rondas (primera **no apto** por B-01, segunda **apto con correcciones** con solo **D-01 del reviewer**, que es este cierre).
 - [x] Auditoría de diseño independiente **con visión**: **apto con correcciones**, sin bloqueantes; mayores y menores corregidos. Los `D-0x` de esta sección son de la auditoría de diseño y no coinciden con el `D-01` del reviewer.
 - [x] Revisión de aceptación del usuario (G4, 2026-11-05): siete correcciones pedidas, aplicadas y verificadas.
-- [x] Aceptación del usuario el 2026-11-05 tras las correcciones, en escritorio y móvil, claro y oscuro. Estado `accepted`.
+- [x] Aceptación del usuario el 2026-11-05 tras las correcciones, en escritorio y móvil, claro y oscuro (estado `accepted` hasta el cierre operativo).
 - [x] `handoff.md` completo.
 - [x] Tablero actualizado.
 - [x] Bitácora y cobertura actualizadas.
-- [ ] G5 — cierre operativo: commits, PR y merge. Sin ejecutar; requiere permiso.
+- [x] G5 — cierre operativo: commits `56fca50`, `3e719ed`, `8219d1f`, `97b45be` y merge `7ee702f`; PR #34 `feat(web): People web with shared circle chrome (F22)`; CI en la PR run `42004835096` y en `main` run `42006326244`, ambos `completed/success`. F22 queda en `done`.
