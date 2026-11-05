@@ -170,21 +170,26 @@ describe('member with every flag off', () => {
 
   it('can only view the circle', () => {
     for (const action of PERMISSION_ACTIONS) {
-      const allowed =
-        action === 'album.delete'
-          ? can(memberActor, action, circle, albumResource(0))
-          : can(memberActor, action, circle);
+      // `album.delete` and `album.empty` have a creator exception, covered in
+      // its own block below.
+      if (action === 'album.delete' || action === 'album.empty') {
+        continue;
+      }
 
-      expect(allowed).toBe(action === 'circle.view');
+      expect(can(memberActor, action, circle)).toBe(action === 'circle.view');
     }
+
+    expect(can(memberActor, 'circle.view', circle)).toBe(true);
   });
 
-  it('cannot delete its own photo or album without the flag-independent exception', () => {
+  it('can delete its own photo and its own empty album without flags', () => {
     // Photo deletion is uploader-based and does not depend on flags: the uploader
-    // may delete its own photo even when every flag is off.
+    // may delete its own photo even when every flag is off. The same applies to
+    // an album its creator wants to undo.
     expect(can(memberActor, 'photo.delete', circle, photoResource(MEMBER_ID))).toBe(true);
     expect(can(memberActor, 'photo.delete', circle, photoResource(OTHER_ID))).toBe(false);
-    expect(can(memberActor, 'album.delete', circle, albumResource(0))).toBe(false);
+    expect(can(memberActor, 'album.delete', circle, albumResource(0, MEMBER_ID))).toBe(true);
+    expect(can(memberActor, 'album.delete', circle, albumResource(0, OTHER_ID))).toBe(false);
   });
 });
 
@@ -219,8 +224,8 @@ describe.each(FLAG_ACTIONS)('flag %s', (flag, enabledActions) => {
     expect(can(memberActor, 'circle.delete', circle)).toBe(false);
     expect(can(memberActor, 'member.invite', circle)).toBe(false);
     expect(can(memberActor, 'member.remove', circle)).toBe(false);
-    expect(can(memberActor, 'album.delete', circle, albumResource(0))).toBe(false);
-    expect(can(memberActor, 'album.empty', circle, albumResource(1))).toBe(false);
+    expect(can(memberActor, 'album.delete', circle, albumResource(0, OTHER_ID))).toBe(false);
+    expect(can(memberActor, 'album.empty', circle, albumResource(1, OTHER_ID))).toBe(false);
   });
 });
 
@@ -247,11 +252,11 @@ describe('member with every flag on', () => {
     expect(can(memberActor, 'photo.delete', circle, photoResource(OTHER_ID))).toBe(false);
   });
 
-  it('cannot delete or empty an album', () => {
-    expect(can(memberActor, 'album.delete', circle, albumResource(0))).toBe(false);
-    expect(can(memberActor, 'album.delete', circle, albumResource(3))).toBe(false);
-    expect(can(memberActor, 'album.empty', circle, albumResource(0))).toBe(false);
-    expect(can(memberActor, 'album.empty', circle, albumResource(3))).toBe(false);
+  it('cannot delete or empty an album created by someone else', () => {
+    expect(can(memberActor, 'album.delete', circle, albumResource(0, OTHER_ID))).toBe(false);
+    expect(can(memberActor, 'album.delete', circle, albumResource(3, OTHER_ID))).toBe(false);
+    expect(can(memberActor, 'album.empty', circle, albumResource(0, OTHER_ID))).toBe(false);
+    expect(can(memberActor, 'album.empty', circle, albumResource(3, OTHER_ID))).toBe(false);
     expect(can(memberActor, 'album.empty', circle)).toBe(false);
   });
 
@@ -263,6 +268,40 @@ describe('member with every flag on', () => {
 
   it('cannot edit an album created by someone else', () => {
     expect(can(memberActor, 'album.update', circle, albumResource(0, OTHER_ID))).toBe(false);
+  });
+});
+
+describe('album creator can undo its album even with every flag off', () => {
+  const circle = makeCircle(ALL_FLAGS_OFF);
+
+  it('can empty its own album whether it is empty or full', () => {
+    expect(can(memberActor, 'album.empty', circle, albumResource(0, MEMBER_ID))).toBe(true);
+    expect(can(memberActor, 'album.empty', circle, albumResource(3, MEMBER_ID))).toBe(true);
+  });
+
+  it('can delete its own album only when it is empty', () => {
+    expect(can(memberActor, 'album.delete', circle, albumResource(0, MEMBER_ID))).toBe(true);
+    expect(can(memberActor, 'album.delete', circle, albumResource(3, MEMBER_ID))).toBe(false);
+  });
+
+  it('cannot empty or delete an album created by another member', () => {
+    expect(can(memberActor, 'album.empty', circle, albumResource(0, OTHER_ID))).toBe(false);
+    expect(can(memberActor, 'album.empty', circle, albumResource(3, OTHER_ID))).toBe(false);
+    expect(can(memberActor, 'album.delete', circle, albumResource(0, OTHER_ID))).toBe(false);
+  });
+
+  it('needs the album facts: a missing resource is denied', () => {
+    expect(can(memberActor, 'album.empty', circle)).toBe(false);
+    expect(can(memberActor, 'album.delete', circle)).toBe(false);
+  });
+
+  it('does not depend on settings', () => {
+    for (const settings of [ALL_FLAGS_OFF, ALL_FLAGS_ON]) {
+      const configured = makeCircle(settings);
+
+      expect(can(memberActor, 'album.empty', configured, albumResource(3, MEMBER_ID))).toBe(true);
+      expect(can(memberActor, 'album.delete', configured, albumResource(0, MEMBER_ID))).toBe(true);
+    }
   });
 });
 
@@ -373,5 +412,6 @@ describe('defensive inputs', () => {
     expect(can(memberActor, 'photo.delete', circle)).toBe(false);
     expect(can(memberActor, 'album.update', circle)).toBe(false);
     expect(can(memberActor, 'album.delete', circle)).toBe(false);
+    expect(can(memberActor, 'album.empty', circle)).toBe(false);
   });
 });

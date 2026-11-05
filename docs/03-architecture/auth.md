@@ -78,8 +78,8 @@ Reglas:
 - Descargar: si el flag `membersCanDownload` está activo. Ese mismo flag controla el acceso a `original`; `display` y `thumb` están disponibles para miembros.
 - Editar foto: quien la subió o el owner. Ningún otro miembro.
 - Borrar foto: quien la subió o el owner. Ningún otro miembro.
-- Borrar álbum: solo owner y solo si está vacío; si tiene fotos, `409 ALBUM_NOT_EMPTY`.
-- Vaciar álbum: solo owner y sin condición de fotos, con confirmación explícita; elimina todas las fotos y sus objetos. Es distinto de borrar el álbum: `album.empty` no exige que esté vacío y devuelve cuántas fotos borró; `album.delete` exige que ya esté vacío.
+- Borrar álbum: owner o el miembro que lo creó, y solo si está vacío; si tiene fotos, `409 ALBUM_NOT_EMPTY`. No depende de `membersCanCreateAlbums`.
+- Vaciar álbum: owner o el miembro que lo creó, sin condición de fotos, con confirmación explícita; elimina las fotos y sus etiquetas en una transacción. Los objetos de almacenamiento se difieren a F25, cuando exista el adaptador real. No depende de `membersCanCreateAlbums`. Es distinto de borrar el álbum: `album.empty` no exige que esté vacío y devuelve cuántas fotos borró; `album.delete` exige que ya esté vacío. El creador puede deshacer lo que crea aunque el admin revoque después la flag.
 - No se confía en IDs del cliente.
 
 ## Permisos puros
@@ -110,10 +110,10 @@ function can(...): boolean
 
 - Deniega acciones desconocidas (aunque el actor sea owner) y entradas ausentes.
 - Deniega recursos cuyo `circleId` no coincide con el círculo, incluso para el owner.
-- `album.delete` es la única excepción a «el owner puede todo»: exige un recurso de tipo álbum con `photosCount` 0.
+- `album.delete` es la única excepción a «el owner puede todo»: exige un recurso de tipo álbum con `photosCount` 0. `album.delete` y `album.empty` aceptan además al creador del álbum, sin depender de `Circle.settings`.
 - `photo.download` cubre también la imagen `original`; `thumb` y `display` no pasan por esta acción.
 
-Tests unitarios sin mocks para todas las combinaciones rol × flag × acción, incluidos `photo.update`, `photo.delete`, `album.update`, `album.delete`, `album.empty` (owner siempre; member nunca, con o sin fotos), descarga de `original`, `member.invite` (siempre owner), acciones desconocidas y recursos de otro círculo. Evidencia: `packages/shared/src/permissions.test.ts`.
+Tests unitarios sin mocks para todas las combinaciones rol × flag × acción, incluidos `photo.update`, `photo.delete`, `album.update`, `album.delete`, `album.empty` (owner siempre; creador con o sin fotos y con cualquier flag; no creador nunca), descarga de `original`, `member.invite` (siempre owner), acciones desconocidas y recursos de otro círculo. Evidencia: `packages/shared/src/permissions.test.ts`.
 
 ## Rutas protegidas
 

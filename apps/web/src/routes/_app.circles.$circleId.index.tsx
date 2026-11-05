@@ -9,10 +9,10 @@ export const Route = createFileRoute('/_app/circles/$circleId/')({
 
 function CircleAlbumsRoute() {
   const { circleId } = Route.useParams();
-  const { created } = Route.useSearch();
+  const { created, albumDeleted } = Route.useSearch();
   const router = useRouter();
 
-  const closeCreatedToast = () => {
+  const clearSearch = () => {
     void router.navigate({
       to: '/circles/$circleId',
       params: { circleId },
@@ -21,5 +21,12 @@ function CircleAlbumsRoute() {
     });
   };
 
-  return <CircleDetailPage created={created} onCreatedToastClose={closeCreatedToast} />;
+  return (
+    <CircleDetailPage
+      created={created}
+      onCreatedToastClose={clearSearch}
+      albumDeleted={albumDeleted}
+      onAlbumDeletedToastClose={clearSearch}
+    />
+  );
 }

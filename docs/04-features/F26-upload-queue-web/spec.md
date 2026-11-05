@@ -26,6 +26,8 @@ decisions:
 > **Milestone:** M3 · **Talla:** L · **Estado:** draft · **Spec:** completa
 > **Depende de:** F24, F25 · **Bloquea:** F27, F29
 
+> **Invariante de portada (F24, 2026-11-05).** F26 sube la imagen de portada **como una foto más del álbum**, con el mismo pipeline y los mismos límites; no crea un objeto de portada aparte ni un endpoint distinto. La elección entre las fotos del álbum y la marca `coverPhotoId` son de F29.
+
 ## Objetivo
 
 Implementar la cola de subida con progreso, reintento, cancelación y drag & drop.

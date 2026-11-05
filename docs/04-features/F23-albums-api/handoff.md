@@ -56,7 +56,7 @@ pnpm agents:check → ver «Documentación actualizada»
 | AC-01 Álbum pertenece a un círculo | Pasa | `circleId` persistido; listado filtrado; test de CRUD. |
 | AC-02 Solo miembros ven | Pasa | Miembro ve; extraño `404`; sin sesión `401`. |
 | AC-03 Crear requiere permiso | Pasa | Owner y miembro con flag crean; sin flag `403`. |
-| AC-04 Editar owner o permiso; borrar solo owner | Pasa | Creador con flag edita; tercero `403`; borrar como miembro `403`. |
+| AC-04 Editar owner o permiso; borrar owner o creador | Pasa | Creador con flag edita; tercero `403`; un miembro que no creó el álbum recibe `403` al borrar; el creador sin flag borra si está vacío y recibe `409` con fotos (cambio posterior del 2026-11-05). |
 | AC-05 Portada validada | Pasa | Solo foto del mismo álbum; inexistente, otro álbum u otro círculo `404`; `null` limpia. |
 | AC-06 No se filtra información | Pasa | DTO sin claves de almacenamiento, coordenadas ni email. |
 | AC-07 Borrar con fotos → `409` | Pasa | `409 ALBUM_NOT_EMPTY`; vacío `204`; inexistente `404`; test de concurrencia de B-01. |
@@ -85,6 +85,16 @@ Cerrados también en la revisión:
 - **CI:** run `42018373439` en la PR y run `42018611662` en `main` sobre el merge, ambos `completed/success`.
 - **Aceptación:** usuario, 2026-11-05.
 - No quedan commits, push ni PR pendientes por este cierre.
+
+## Cambio posterior (2026-11-05)
+
+F23 se cerró con vaciar y eliminar **solo del owner**. Durante la aceptación de F24 el usuario autorizó ampliar la regla: el **owner o el miembro que creó el álbum** pueden vaciarlo y eliminarlo, sin depender de `membersCanCreateAlbums`. Eliminar sigue exigiendo un álbum vacío; con fotos, también el creador recibe `409 ALBUM_NOT_EMPTY`.
+
+- **Motivo:** el creador debe poder deshacer lo que crea aunque el admin revoque después la flag.
+- **Alcance:** `can()` en `packages/shared/src/permissions.ts`; editar no cambia. La UI de F24 muestra las acciones al owner y al creador.
+- **Contrato:** [api-contract.md](../../03-architecture/api-contract.md) describe `DELETE /albums/:albumId` y `DELETE /albums/:albumId/photos` como owner o creador.
+- **Tests:** `apps/api/src/modules/albums/albums.test.ts` pasa de 24 a **27 tests**, todos verdes; `packages/shared/src/permissions.test.ts` cubre creador con y sin flag y con y sin fotos.
+- **Historial:** el cierre original de F23 y sus cifras (24 tests, 1086 en el monorepo) se conservan sin reescribir.
 
 ## Pendiente
 

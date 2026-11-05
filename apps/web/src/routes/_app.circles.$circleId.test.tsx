@@ -12,6 +12,7 @@ import { Route } from './_app.circles.$circleId';
 
 const server = createAuthTestServer();
 const DETAIL_URL = `${AUTH_TEST_API_BASE}/circles/cir_familia`;
+const INVITATIONS_URL = `${DETAIL_URL}/invitations`;
 
 beforeAll(() => {
   startAuthTestServer(server);
@@ -52,7 +53,11 @@ describe('ruta /circles/$circleId', () => {
   });
 
   it('resuelve el layout con la sección hija en un router de test', async () => {
-    server.use(http.get(DETAIL_URL, () => HttpResponse.json(circleDetail(circleWithCover))));
+    server.use(
+      http.get(DETAIL_URL, () => HttpResponse.json(circleDetail(circleWithCover))),
+      // El círculo es owner: el layout pide las invitaciones pendientes.
+      http.get(INVITATIONS_URL, () => HttpResponse.json({ items: [], nextCursor: null })),
+    );
 
     const { router } = renderWithRouter(
       <CircleDetailLayout circleId="cir_familia">

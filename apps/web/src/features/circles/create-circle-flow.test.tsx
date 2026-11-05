@@ -141,6 +141,10 @@ function useCreateFlow() {
         }),
       ),
     ),
+    // El detalle monta la pestaña Álbumes; el círculo recién creado es owner,
+    // así que el layout también pide las invitaciones pendientes.
+    http.get(`${DETAIL_URL}/albums`, () => HttpResponse.json({ items: [], nextCursor: null })),
+    http.get(`${DETAIL_URL}/invitations`, () => HttpResponse.json({ items: [], nextCursor: null })),
   );
 }
 

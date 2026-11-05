@@ -31,6 +31,8 @@ decisions:
 > **Milestone:** M4 · **Talla:** M · **Estado:** draft · **Spec:** completa
 > **Depende de:** F21, F24, F26 · **Bloquea:** F30, F33
 
+> **Invariante de portada (F24, 2026-11-05).** F29 elige la portada **entre las fotos del álbum** y la marca con `coverPhotoId` mediante el `PATCH` existente. No sube un objeto aparte (eso es F26) ni necesita un endpoint nuevo: el contrato de F23 ya valida que la foto sea del mismo álbum.
+
 ## Objetivo
 
 Construir la galería con scroll infinito, selección, filtro por persona y la página «Fotos de esta persona».

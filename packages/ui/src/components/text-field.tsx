@@ -3,7 +3,8 @@ import { forwardRef, useId, type InputHTMLAttributes, type ReactNode } from 'rea
 import { controlBorderClasses, FieldLabel, FieldMessages } from './field';
 import { cn } from './utils';
 
-export type TextFieldType = 'text' | 'email' | 'password' | 'url' | 'tel' | 'search' | 'number';
+export type TextFieldType =
+  'text' | 'email' | 'password' | 'url' | 'tel' | 'search' | 'number' | 'month';
 
 export interface TextFieldProps extends Omit<
   InputHTMLAttributes<HTMLInputElement>,

@@ -24,6 +24,8 @@ decisions:
 > **Milestone:** M3 · **Talla:** L · **Estado:** draft · **Spec:** completa
 > **Depende de:** F07, F08, F23 · **Bloquea:** F26, F35
 
+> **Invariante de portada (F24, 2026-11-05).** La portada no es un objeto aparte. F26 sube la imagen como una foto más del álbum y F29 la elige entre las fotos del álbum y la marca como `coverPhotoId`. F25 debe permitir que esa foto se suba como cualquier otra; el contrato de F23 ya exige que `coverPhotoId` sea una foto del mismo álbum.
+
 ## Objetivo
 
 Implementar el pipeline completo de subida y procesamiento de imágenes.
