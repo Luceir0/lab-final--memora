@@ -1,7 +1,7 @@
 # Handoff — F25 Upload pipeline API
 
-- **Estado:** `accepted` (aceptación del usuario el 2026-11-05; commit y PR en curso)
-- **Rama:** `feat/F25-upload-pipeline-api`
+- **Estado:** `done` (aceptada el 2026-11-05 y mergeada en `main` con la PR #40)
+- **Rama:** `feat/F25-upload-pipeline-api` (mergeada)
 - **Fecha:** 2026-11-05
 - **Implementado por:** `api-dev` (dos sesiones: adaptadores y configuración; pipeline, deudas y tests)
 - **Revisado por:** `reviewer` independiente, nivel **A**
@@ -35,7 +35,7 @@ La API ya sube y procesa imágenes de extremo a extremo: multipart de un archivo
 | `pnpm format:check` | OK |
 | `DATABASE_URL=… pnpm test` | **8/8 tareas**; API 322 passed / 2 skipped; el resto de paquetes sin cambios |
 | `pnpm build` | **5/5 tareas**, 5 rutas prerenderizadas |
-| `pnpm docs:check` | 191 archivos, 545 enlaces, 0 rotos |
+| `pnpm docs:check` | 191 archivos, 545 enlaces, 0 rotos (553 tras el cierre documental) |
 | `pnpm agents:check` | 43 specs y 43 filas |
 | `prisma migrate status` | Al día; índices nuevos presentes y `Photo_circleId_idx` eliminado |
 | `SILO_INTEGRATION=1 … photos-silo.integration.test.ts` | **1 passed**; 0 objetos y 0 filas de prueba después |
@@ -77,7 +77,15 @@ Veredicto inicial: **cambios requeridos**, sin bloqueantes. **1 Mayor, 10 Menore
 - **[Nit]** `CREATE INDEX` no concurrente (F42).
 - **No verificado:** R2/AWS S3 real (solo Silo), Nominatim real por red (`fetch` inyectado) y OpenAPI renderizado.
 - **[Menor, preexistente] `pnpm audit`:** 2 vulnerabilidades moderadas en `@fastify/swagger-ui > @fastify/static > glob/minimatch`. No las introduce F25; requieren actualizar la cadena de Swagger UI y no se ha hecho sin permiso.
-- **Aceptación del usuario** (G4) y cierre operativo (commit, PR, CI): pendientes, no ejecutados.
+
+## Cierre operativo (2026-11-05)
+
+- **PR de feature:** [#40](https://github.com/Luceir0/lab-final--memora/pull/40) `feat(api): Upload pipeline API (F25)`, mergeada en `main`.
+- **Merge commit:** `44ac7a9ac8ee473d0239804b422fd1ae5bde45a3`.
+- **Commits de la rama:** `1833dca` (`feat(api): add upload pipeline with S3, sharp and idempotency (F25)`) y `ebc57d3` (`docs: record F25 implementation, review and acceptance`).
+- **CI:** run `42109962179` en la PR y run `42110522832` en `main` sobre el merge, ambos `completed/success`.
+- **Verificación de cierre:** `pnpm test` **8/8 tareas**, `pnpm build` **5/5** con 5 rutas prerenderizadas, typecheck OK, `lint` 6/6, `format:check` OK, `docs:check` 191 archivos y 545 enlaces con 0 rotos (**553** tras el cierre documental), `agents:check` 43 specs y 43 filas, y las integraciones de Silo y S3 con 1 passed cada una y sin restos.
+- **Cierre documental:** rama `docs/F25-done`; el commit y el push los hace el orquestador.
 
 ## Riesgos y limitaciones
 
@@ -92,7 +100,7 @@ Veredicto inicial: **cambios requeridos**, sin bloqueantes. **1 Mayor, 10 Menore
 - [x] `docs/04-features/F25-upload-pipeline-api/spec.md` — implementación, verificación, AC y revisión.
 - [x] `docs/04-features/F25-upload-pipeline-api/tasks.md` — implementación, AC, verificación y revisión marcados.
 - [x] `docs/04-features/F25-upload-pipeline-api/handoff.md` — este documento.
-- [x] `docs/04-features/README.md` — «Situación actual» con F25 en `review`.
+- [x] `docs/04-features/README.md` — «Situación actual» con F25 y su cierre operativo.
 - [x] `docs/03-architecture/api-contract.md` — semántica de subidas y vaciado.
 - [x] `docs/03-architecture/uploads.md` — variantes, EXIF, geocodificación, idempotencia y limpieza.
 - [x] `docs/03-architecture/external-services.md` — S3 y Nominatim.
@@ -103,4 +111,4 @@ Veredicto inicial: **cambios requeridos**, sin bloqueantes. **1 Mayor, 10 Menore
 
 ## Siguiente paso propuesto
 
-Aceptación del usuario (G4) probando una subida real contra la API local con Silo. Si acepta, cierre operativo con commit, PR y CI, y después abrir **F26 — Upload queue web**, que consume este contrato.
+Abrir **F26 — Upload queue web** desde `main`, que consume el contrato de subidas ya mergeado. Pendientes trasladados (menores y nits, no bloqueantes): timeout real de `sharp`, test de `sharp` sin depender de un JPEG truncado, `randomUUID` frente a `cuid()`, `destroy` del `S3Client` al cerrar y `CREATE INDEX` concurrente en F42.
