@@ -20,6 +20,7 @@ import { Route as DetailFileRoute } from '../../routes/_app.circles.$circleId';
 import { AUTH_TEST_API_BASE } from '../../test/auth-fixtures';
 import { createAuthTestServer, startAuthTestServer } from '../../test/auth-server';
 import { circleDetail, circleWithCover, testMeResponse } from '../../test/circles-fixtures';
+import { CircleDetailLayout } from './circle-detail-layout';
 import { CreateCircleScreen } from './create-circle-screen';
 import { CircleDetailPage } from './circle-detail-page';
 
@@ -61,18 +62,19 @@ function DetailRoute() {
   const router = useRouter();
 
   return (
-    <CircleDetailPage
-      circleId={params.circleId}
-      created={created}
-      onCreatedToastClose={() => {
-        void router.navigate({
-          to: '/circles/$circleId',
-          params: { circleId: params.circleId },
-          search: {},
-          replace: true,
-        });
-      }}
-    />
+    <CircleDetailLayout circleId={params.circleId}>
+      <CircleDetailPage
+        created={created}
+        onCreatedToastClose={() => {
+          void router.navigate({
+            to: '/circles/$circleId',
+            params: { circleId: params.circleId },
+            search: {},
+            replace: true,
+          });
+        }}
+      />
+    </CircleDetailLayout>
   );
 }
 

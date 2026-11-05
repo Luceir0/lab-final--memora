@@ -41,7 +41,6 @@ export function CircleListPage({ now: nowProp }: CircleListPageProps = {}) {
   const empty = !loading && !failed && circles.length === 0;
 
   const featured = circles.find((circle) => circle.coverPhoto !== null) ?? circles[0];
-  const rest = featured ? circles.filter((circle) => circle.id !== featured.id) : [];
   const statsFailed = statsError !== null && !unauthorized;
   const hasNextPage =
     listQuery.data?.pages.at(-1)?.nextCursor !== null &&
@@ -139,7 +138,8 @@ export function CircleListPage({ now: nowProp }: CircleListPageProps = {}) {
             </div>
 
             <ul className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
-              {rest.map((circle) => (
+              {/* Todos los círculos, también el destacado de arriba. */}
+              {circles.map((circle) => (
                 <CircleCard
                   key={circle.id}
                   circle={circle}

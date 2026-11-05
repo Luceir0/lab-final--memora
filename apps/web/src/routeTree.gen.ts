@@ -23,6 +23,8 @@ import { Route as InviteTokenRouteImport } from './routes/invite.$token'
 import { Route as AppCirclesIndexRouteImport } from './routes/_app.circles.index'
 import { Route as AppCirclesCircleIdRouteImport } from './routes/_app.circles.$circleId'
 import { Route as AppCirclesNewRouteImport } from './routes/_app.circles.new'
+import { Route as AppCirclesCircleIdIndexRouteImport } from './routes/_app.circles.$circleId.index'
+import { Route as AppCirclesCircleIdPeopleRouteImport } from './routes/_app.circles.$circleId.people'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -93,6 +95,17 @@ const AppCirclesNewRoute = AppCirclesNewRouteImport.update({
   path: '/new',
   getParentRoute: () => AppCirclesRoute,
 } as any)
+const AppCirclesCircleIdIndexRoute = AppCirclesCircleIdIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppCirclesCircleIdRoute,
+} as any)
+const AppCirclesCircleIdPeopleRoute =
+  AppCirclesCircleIdPeopleRouteImport.update({
+    id: '/people',
+    path: '/people',
+    getParentRoute: () => AppCirclesCircleIdRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -105,9 +118,11 @@ export interface FileRoutesByFullPath {
   '/profile': typeof AppProfileRoute
   '/uploads': typeof AppUploadsRoute
   '/invite/$token': typeof InviteTokenRoute
-  '/circles/$circleId': typeof AppCirclesCircleIdRoute
+  '/circles/$circleId': typeof AppCirclesCircleIdRouteWithChildren
   '/circles/new': typeof AppCirclesNewRoute
   '/circles/': typeof AppCirclesIndexRoute
+  '/circles/$circleId/people': typeof AppCirclesCircleIdPeopleRoute
+  '/circles/$circleId/': typeof AppCirclesCircleIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -119,9 +134,10 @@ export interface FileRoutesByTo {
   '/profile': typeof AppProfileRoute
   '/uploads': typeof AppUploadsRoute
   '/invite/$token': typeof InviteTokenRoute
-  '/circles/$circleId': typeof AppCirclesCircleIdRoute
   '/circles/new': typeof AppCirclesNewRoute
   '/circles': typeof AppCirclesIndexRoute
+  '/circles/$circleId/people': typeof AppCirclesCircleIdPeopleRoute
+  '/circles/$circleId': typeof AppCirclesCircleIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -136,9 +152,11 @@ export interface FileRoutesById {
   '/_app/profile': typeof AppProfileRoute
   '/_app/uploads': typeof AppUploadsRoute
   '/invite/$token': typeof InviteTokenRoute
-  '/_app/circles/$circleId': typeof AppCirclesCircleIdRoute
+  '/_app/circles/$circleId': typeof AppCirclesCircleIdRouteWithChildren
   '/_app/circles/new': typeof AppCirclesNewRoute
   '/_app/circles/': typeof AppCirclesIndexRoute
+  '/_app/circles/$circleId/people': typeof AppCirclesCircleIdPeopleRoute
+  '/_app/circles/$circleId/': typeof AppCirclesCircleIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -156,6 +174,8 @@ export interface FileRouteTypes {
     | '/circles/$circleId'
     | '/circles/new'
     | '/circles/'
+    | '/circles/$circleId/people'
+    | '/circles/$circleId/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -167,9 +187,10 @@ export interface FileRouteTypes {
     | '/profile'
     | '/uploads'
     | '/invite/$token'
-    | '/circles/$circleId'
     | '/circles/new'
     | '/circles'
+    | '/circles/$circleId/people'
+    | '/circles/$circleId'
   id:
     | '__root__'
     | '/'
@@ -186,6 +207,8 @@ export interface FileRouteTypes {
     | '/_app/circles/$circleId'
     | '/_app/circles/new'
     | '/_app/circles/'
+    | '/_app/circles/$circleId/people'
+    | '/_app/circles/$circleId/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -297,17 +320,44 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppCirclesNewRouteImport
       parentRoute: typeof AppCirclesRoute
     }
+    '/_app/circles/$circleId/': {
+      id: '/_app/circles/$circleId/'
+      path: '/'
+      fullPath: '/circles/$circleId/'
+      preLoaderRoute: typeof AppCirclesCircleIdIndexRouteImport
+      parentRoute: typeof AppCirclesCircleIdRoute
+    }
+    '/_app/circles/$circleId/people': {
+      id: '/_app/circles/$circleId/people'
+      path: '/people'
+      fullPath: '/circles/$circleId/people'
+      preLoaderRoute: typeof AppCirclesCircleIdPeopleRouteImport
+      parentRoute: typeof AppCirclesCircleIdRoute
+    }
   }
 }
 
+interface AppCirclesCircleIdRouteChildren {
+  AppCirclesCircleIdPeopleRoute: typeof AppCirclesCircleIdPeopleRoute
+  AppCirclesCircleIdIndexRoute: typeof AppCirclesCircleIdIndexRoute
+}
+
+const AppCirclesCircleIdRouteChildren: AppCirclesCircleIdRouteChildren = {
+  AppCirclesCircleIdPeopleRoute: AppCirclesCircleIdPeopleRoute,
+  AppCirclesCircleIdIndexRoute: AppCirclesCircleIdIndexRoute,
+}
+
+const AppCirclesCircleIdRouteWithChildren =
+  AppCirclesCircleIdRoute._addFileChildren(AppCirclesCircleIdRouteChildren)
+
 interface AppCirclesRouteChildren {
-  AppCirclesCircleIdRoute: typeof AppCirclesCircleIdRoute
+  AppCirclesCircleIdRoute: typeof AppCirclesCircleIdRouteWithChildren
   AppCirclesNewRoute: typeof AppCirclesNewRoute
   AppCirclesIndexRoute: typeof AppCirclesIndexRoute
 }
 
 const AppCirclesRouteChildren: AppCirclesRouteChildren = {
-  AppCirclesCircleIdRoute: AppCirclesCircleIdRoute,
+  AppCirclesCircleIdRoute: AppCirclesCircleIdRouteWithChildren,
   AppCirclesNewRoute: AppCirclesNewRoute,
   AppCirclesIndexRoute: AppCirclesIndexRoute,
 }

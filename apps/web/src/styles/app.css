@@ -28,6 +28,18 @@
    * que ocupa la barra cuando el texto crece (zoom de texto al 200 %).
    */
   --app-bottom-nav-height: calc(var(--app-bottom-nav-min-height) + env(safe-area-inset-bottom));
+  /*
+   * Chrome de las secciones de círculo. La cabecera compacta y la barra de
+   * pestañas son sticky en móvil; el foco no debe quedar tapado por ambas.
+   */
+  --app-circle-compact-header-height: 4rem;
+  --app-circle-section-nav-height: 3.8125rem;
+  --app-circle-sticky-offset: calc(
+    var(--app-circle-compact-header-height) + env(safe-area-inset-top)
+  );
+  --app-circle-scroll-offset: calc(
+    var(--app-circle-sticky-offset) + var(--app-circle-section-nav-height)
+  );
 }
 
 @layer base {
@@ -38,11 +50,24 @@
    */
   html {
     scroll-padding-top: calc(var(--app-topbar-height) + env(safe-area-inset-top));
+    /*
+     * La barra inferior es fija: al enfocar un control cercano al final, el
+     * navegador debe reservar su altura para que el foco no quede tapado.
+     */
+    scroll-padding-bottom: var(--app-bottom-nav-height);
   }
 
   @media (min-width: 64rem) {
     html {
       scroll-padding-top: 0;
+      scroll-padding-bottom: 0;
+    }
+  }
+
+  /* En móvil, el foco de una sección de círculo reserva cabecera + pestañas. */
+  @media (max-width: 63.999rem) {
+    html:has([data-circle-compact-header]) {
+      scroll-padding-top: var(--app-circle-scroll-offset);
     }
   }
 }

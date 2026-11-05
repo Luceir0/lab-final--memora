@@ -6,14 +6,20 @@ export function circlePath(circleId: string): string {
   return `/circles/${encodeURIComponent(circleId)}`;
 }
 
+/** Ruta de Personas de un círculo con el id codificado. */
+export function circlePeoplePath(circleId: string): string {
+  return `${circlePath(circleId)}/people`;
+}
+
 /**
- * Indica si la ruta es el detalle exacto de un círculo (`/circles/:id`).
+ * Indica si la ruta pertenece a un círculo (`/circles/:id` y sus subrutas).
  *
- * Excluye `/circles` y `/circles/new`; las rutas hijas futuras (álbumes,
- * personas, ajustes) no son el detalle y no deben ocultar la cabecera móvil.
+ * Excluye `/circles` y `/circles/new`. Las secciones (`/people`, `/albums`,
+ * `/settings`…) también cuentan: todas ocultan la cabecera móvil del shell
+ * porque el círculo compone su propio chrome.
  */
-export function isCircleDetailPath(pathname: string): boolean {
-  const match = /^\/circles\/([^/]+)\/?$/.exec(pathname);
+export function isCircleSectionPath(pathname: string): boolean {
+  const match = /^\/circles\/([^/]+)(?:\/.*)?$/.exec(pathname);
 
   return match !== null && match[1] !== 'new';
 }

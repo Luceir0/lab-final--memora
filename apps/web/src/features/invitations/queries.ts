@@ -1,11 +1,8 @@
-import {
-  csrfResponseSchema,
-  acceptInvitationResponseSchema,
-  type AcceptInvitationResponse,
-} from '@memora/shared';
-import { useMutation, useQueryClient, type QueryClient } from '@tanstack/react-query';
+import { acceptInvitationResponseSchema, type AcceptInvitationResponse } from '@memora/shared';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { apiClient } from '../../lib/api-client';
+import { CSRF_QUERY_KEY, fetchCsrfToken } from '../../lib/csrf';
 
 /**
  * Claves de React Query de invitaciones.
@@ -17,21 +14,11 @@ import { apiClient } from '../../lib/api-client';
  */
 export const invitationKeys = {
   preview: (token: string) => ['invitation', token] as const,
-  csrf: ['csrf'] as const,
+  csrf: CSRF_QUERY_KEY,
   circles: ['circles'] as const,
   circle: (circleId: string) => ['circle', circleId] as const,
   me: ['me'] as const,
 };
-
-async function fetchCsrfToken(queryClient: QueryClient): Promise<string> {
-  const { csrfToken } = await queryClient.fetchQuery({
-    queryKey: invitationKeys.csrf,
-    queryFn: () => apiClient.get('/auth/csrf', { schema: csrfResponseSchema }),
-    staleTime: 0,
-  });
-
-  return csrfToken;
-}
 
 /**
  * Acepta una invitación.

@@ -1,17 +1,12 @@
-import { Breadcrumb, Toast, ToastViewport } from '@memora/ui';
-import { useEffect, useRef } from 'react';
+import type { CircleDetailDto } from '@memora/shared';
+import { Button, EmptyState, Toast, ToastViewport, VisuallyHidden } from '@memora/ui';
+import { Layers, Plus } from 'lucide-react';
+import { useEffect, useId } from 'react';
 
-import { CircleCompactHeader } from './circle-compact-header';
-import { CircleDetailHero } from './circle-detail-hero';
-import { CircleDetailError, CircleDetailLoading } from './circle-detail-states';
-import { CircleDetailTabs } from './circle-detail-tabs';
-import { CircleNoAccess } from './circle-no-access';
-import { useCircleDetailQuery, useMeQuery } from './queries';
-import { isNotFoundError, isUnauthorizedError, useUnauthorizedRedirect } from './session';
-import { useCompactHeader } from './use-compact-header';
+import { useCircleDetail } from './circle-detail-context';
+import { formatPlural } from './format';
 
 export interface CircleDetailPageProps {
-  readonly circleId: string;
   /** Marca `?created=true` heredada del alta. */
   readonly created?: boolean | undefined;
   /** Limpia la marca de la URL con `replace` al cerrar el toast. */
@@ -19,81 +14,23 @@ export interface CircleDetailPageProps {
 }
 
 /**
- * Página de detalle de un círculo.
+ * Sección Álbumes.
  *
- * - `['circle', id]` comparte caché con el N+1 de la lista: abrir un círculo
- *   no repite la petición.
- * - Un 404 se resuelve como «sin acceso» y no pinta datos cacheados.
- * - Un 401 lo gestiona el helper común de sesión.
- * - En móvil oculta la `TopBar` del shell y muestra una cabecera compacta al
- *   salir el héroe.
+ * El chrome (migas, héroe, cabecera compacta y pestañas) vive en
+ * `CircleDetailLayout`; aquí solo queda el panel de álbumes y el toast del alta.
  */
-export function CircleDetailPage({
-  circleId,
-  created = false,
-  onCreatedToastClose,
-}: CircleDetailPageProps) {
-  const titleRef = useRef<HTMLHeadingElement>(null);
-  const detailQuery = useCircleDetailQuery(circleId);
-  const notFound = isNotFoundError(detailQuery.error);
-  const unauthorized = isUnauthorizedError(detailQuery.error);
-  const meQuery = useMeQuery(notFound);
-
-  useUnauthorizedRedirect(detailQuery.error);
-  useUnauthorizedRedirect(meQuery.error);
-
-  const { ref: heroRef, compact } = useCompactHeader<HTMLElement>();
-  const hasData = detailQuery.data !== undefined;
+export function CircleDetailPage({ created = false, onCreatedToastClose }: CircleDetailPageProps) {
+  const { circle, focusTitle } = useCircleDetail();
 
   useEffect(() => {
-    if (created && hasData) {
-      titleRef.current?.focus();
+    if (created) {
+      focusTitle();
     }
-  }, [created, hasData]);
-
-  if (unauthorized) {
-    return <CircleDetailLoading />;
-  }
-
-  if (notFound) {
-    return <CircleNoAccess email={meQuery.data?.user.email} />;
-  }
-
-  if (detailQuery.isError) {
-    return (
-      <CircleDetailError
-        error={detailQuery.error}
-        onRetry={() => {
-          void detailQuery.refetch();
-        }}
-      />
-    );
-  }
-
-  if (detailQuery.isPending || detailQuery.data === undefined) {
-    return <CircleDetailLoading />;
-  }
-
-  const circle = detailQuery.data;
+  }, [created, focusTitle]);
 
   return (
-    <div className="mx-auto w-full max-w-7xl lg:px-8 lg:py-10">
-      {compact ? <CircleCompactHeader circle={circle} /> : null}
-
-      <div className="mb-6 hidden lg:block">
-        <Breadcrumb
-          items={[{ label: 'Mis círculos', href: '/circles' }, { label: circle.name }]}
-          label="Ruta del círculo"
-        />
-      </div>
-
-      <section className="lg:overflow-hidden lg:rounded-xl">
-        <CircleDetailHero circle={circle} compact={compact} heroRef={heroRef} titleRef={titleRef} />
-      </section>
-
-      <div className="pb-10 lg:pb-0">
-        <CircleDetailTabs circle={circle} compact={compact} />
-      </div>
+    <>
+      <AlbumsPanel circle={circle} />
 
       {created && onCreatedToastClose ? (
         <ToastViewport>
@@ -106,6 +43,51 @@ export function CircleDetailPage({
           />
         </ToastViewport>
       ) : null}
+    </>
+  );
+}
+
+interface AlbumsPanelProps {
+  readonly circle: CircleDetailDto;
+}
+
+function AlbumsPanel({ circle }: AlbumsPanelProps) {
+  const noteId = useId();
+  const hasAlbums = circle.stats.albumsCount > 0;
+
+  return (
+    <div className="mt-2 lg:mt-4">
+      <EmptyState
+        icon={<Layers />}
+        iconShape="square"
+        title={
+          hasAlbums
+            ? 'La lista de álbumes estará disponible próximamente'
+            : 'Todavía no hay álbumes'
+        }
+        description={
+          hasAlbums
+            ? `Este círculo tiene ${formatPlural(
+                circle.stats.albumsCount,
+                'álbum',
+                'álbumes',
+              )}. La lista se mostrará aquí cuando esté disponible.`
+            : 'Crea el primer álbum del viaje o invita a quienes fueron para que aporten sus fotos.'
+        }
+        headingLevel={2}
+        action={
+          <div className="flex flex-col items-center gap-2">
+            <Button variant="secondary" disabled icon={<Plus />} aria-describedby={noteId}>
+              {hasAlbums ? 'Crear álbum' : 'Crear el primer álbum'}
+              <VisuallyHidden>Próximamente</VisuallyHidden>
+            </Button>
+            <p id={noteId} className="text-caption text-muted">
+              La creación de álbumes estará disponible próximamente.
+            </p>
+          </div>
+        }
+        className="py-8"
+      />
     </div>
   );
 }
