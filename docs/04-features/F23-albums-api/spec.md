@@ -53,8 +53,8 @@ Implementar CRUD de álbumes con permisos y paginación.
 ### Incluye
 
 - Listar/crear/detalle/editar/borrar
-- Borrar solo owner y solo si está vacío
-- Vaciar álbum owner con confirmación
+- Borrar owner o creador y solo si está vacío (en el cierre de F23 era solo owner; ver cambio posterior)
+- Vaciar álbum owner o creador con confirmación (en el cierre de F23 era solo owner; ver cambio posterior)
 - Pertenencia al círculo
 - Portada
 - Fecha
@@ -76,7 +76,9 @@ Confirmadas por el usuario antes de implementar:
 4. **Actividad.** `POST /circles/:circleId/albums` escribe `album.created` en la **misma transacción** que el alta, con `actorId`, `circleId`, `albumId` y `metadata: { albumTitle }`, según [activity.md](../../03-architecture/activity.md). F35 solo lee.
 5. **Sin migración en F23.** El índice existente `(circleId, createdAt)` cubre la lista de álbumes. La deuda de índices de `Photo` y `Membership` se resuelve en F25, donde la galería paginada la necesita.
 
-Semántica de permisos, ya implementada en `can()`: listar y ver exige pertenencia al círculo (un no miembro recibe `404`, nunca `403`); crear exige owner o miembro con `membersCanCreateAlbums`; editar exige owner o su creador con esa flag; borrar exige owner y que el álbum esté vacío; vaciar exige owner.
+Semántica de permisos, ya implementada en `can()`: listar y ver exige pertenencia al círculo (un no miembro recibe `404`, nunca `403`); crear exige owner o miembro con `membersCanCreateAlbums`; editar exige owner o su creador con esa flag; borrar exige owner o creador y que el álbum esté vacío; vaciar exige owner o creador (actualizado el 2026-11-05, ver nota).
+
+> **Cambio posterior (2026-11-05).** Autorizado por el usuario durante F24: vaciar y eliminar un álbum dejan de ser solo del owner. F23 se cerró con la regla de **solo owner**; F24 la amplía. Ahora los permite el owner **o el miembro que creó el álbum**, sin depender de `membersCanCreateAlbums`, para que el creador pueda deshacer lo que crea aunque el admin revoque después la flag. Eliminar sigue exigiendo que el álbum esté vacío (`409 ALBUM_NOT_EMPTY`); un creador con fotos recibe `409`, no `403`. Editar no cambia. Implementado en `can()` y probado en `packages/shared/src/permissions.test.ts` y `apps/api/src/modules/albums/albums.test.ts`.
 
 ## Entregables
 
@@ -91,7 +93,7 @@ Semántica de permisos, ya implementada en `can()`: listar y ver exige pertenenc
 - **AC-01.** Álbum pertenece a un círculo.
 - **AC-02.** Solo miembros ven.
 - **AC-03.** Crear requiere permiso.
-- **AC-04.** Editar requiere owner o permiso; borrar solo owner.
+- **AC-04.** Editar requiere owner o permiso; borrar owner o creador (vacío).
 - **AC-05.** Portada validada.
 - **AC-06.** No se filtra información.
 - **AC-07.** Borrar álbum con fotos devuelve `409 ALBUM_NOT_EMPTY`.
