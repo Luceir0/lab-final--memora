@@ -207,8 +207,11 @@ describe.skipIf(!hasDatabase)('invitations API', () => {
       expect(email?.subject).toBe('Te han invitado a un círculo en Memora');
       expect(email?.subject).not.toContain(circle.name);
       expect(email?.subject).not.toContain('ana@example.com');
-      expect(email?.text).toContain(`${TEST_APP_URL}/invitations/${body.token}`);
-      expect(email?.html).toContain(`/invitations/${body.token}`);
+      // `/invite/:token` is the public web route; `/invitations/` would 404.
+      expect(email?.text).toContain(`${TEST_APP_URL}/invite/${body.token}`);
+      expect(email?.html).toContain(`/invite/${body.token}`);
+      expect(email?.text).not.toContain('/invitations/');
+      expect(email?.html).not.toContain('/invitations/');
     });
 
     it('permite crear un enlace sin email y no envía correo', async () => {
