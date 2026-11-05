@@ -120,10 +120,12 @@ function denyUnreachable(action: never): false {
  * - Creating albums and uploading photos: owner, or members while the matching
  *   `Circle.settings` flag is enabled.
  * - Editing an album: owner, or its creator while members can create albums.
- * - Emptying an album: owner only, regardless of how many photos it has.
+ * - Emptying an album: owner, or its creator, regardless of how many photos it
+ *   has and regardless of `Circle.settings`.
  * - Editing or deleting a photo: owner, or the uploader. No other member.
  * - Tagging and downloading: owner, or members while the flag is enabled.
- * - Deleting an album: owner only, and only when it has no photos.
+ * - Deleting an album: owner, or its creator, and only when it has no photos.
+ *   The creator exception does not depend on `Circle.settings`.
  * - `original` images reuse `photo.download`.
  *
  * Unknown actions and resources from another circle always return `false`.
@@ -166,9 +168,18 @@ export function can(
     case 'circle.delete':
     case 'member.invite':
     case 'member.remove':
-    case 'album.delete':
-    case 'album.empty':
       return false;
+    case 'album.delete':
+      // The creator can undo its own album even after the flag is revoked, but
+      // only when it is empty; emptiness is re-checked in the service.
+      return (
+        resource?.type === 'album' &&
+        resource.createdById === actor.id &&
+        resource.photosCount === 0
+      );
+    case 'album.empty':
+      // The creator can always empty its own album, whatever the settings say.
+      return resource?.type === 'album' && resource.createdById === actor.id;
     case 'album.create':
       return circle.settings.membersCanCreateAlbums;
     case 'album.update':

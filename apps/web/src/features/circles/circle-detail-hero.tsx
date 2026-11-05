@@ -1,5 +1,5 @@
 import type { CircleDetailDto } from '@memora/shared';
-import { Button, VisuallyHidden } from '@memora/ui';
+import { Button } from '@memora/ui';
 import { Link } from '@tanstack/react-router';
 import { ArrowLeft, FolderPlus, UserPlus, UsersRound } from 'lucide-react';
 import { useId, useState, type Ref } from 'react';
@@ -18,6 +18,8 @@ export interface CircleDetailHeroProps {
   readonly titleRef?: Ref<HTMLHeadingElement> | undefined;
   /** Abre el diálogo de invitación. Solo el owner lo recibe. */
   readonly onInvite?: (() => void) | undefined;
+  /** Abre el diálogo de crear álbum. Solo se recibe con permiso para crear. */
+  readonly onCreateAlbum?: (() => void) | undefined;
   /** Invitaciones pendientes visibles para el owner. */
   readonly pendingCount?: number | undefined;
   /** Hay más de una página de pendientes: se anuncia «100+». */
@@ -29,8 +31,7 @@ export interface CircleDetailHeroProps {
  *
  * Un solo bloque de título cambia de tarjeta solapada en móvil a contenido
  * sobre la portada en escritorio. `Invitar` está activo para el owner desde
- * F22; la creación de álbumes sigue deshabilitada hasta F24 y su nota solo
- * habla de álbumes.
+ * F22 y `Nuevo álbum` desde F24 cuando la cuenta puede crear.
  */
 export function CircleDetailHero({
   circle,
@@ -38,11 +39,11 @@ export function CircleDetailHero({
   heroRef,
   titleRef,
   onInvite,
+  onCreateAlbum,
   pendingCount,
   pendingOverflow = false,
 }: CircleDetailHeroProps) {
   const titleId = useId();
-  const albumNoteId = useId();
   // El scrim de escritorio solo tiene sentido sobre una foto. Si no hay
   // portada —o la imagen falla y se ve el degradado de reserva— se retira y
   // el texto pasa a los tonos normales para no quedar blanco sobre claro.
@@ -166,26 +167,12 @@ export function CircleDetailHero({
                 Invitar
               </Button>
             )}
-            <Button
-              variant="secondary"
-              disabled
-              icon={<FolderPlus />}
-              aria-describedby={albumNoteId}
-            >
-              Nuevo álbum
-              <VisuallyHidden>Próximamente</VisuallyHidden>
-            </Button>
-          </div>
-
-          <p
-            id={albumNoteId}
-            className={cx(
-              'mt-3 text-caption text-muted lg:col-start-1 lg:row-start-2',
-              desktopMutedTone,
+            {onCreateAlbum === undefined ? null : (
+              <Button variant="secondary" icon={<FolderPlus />} onClick={onCreateAlbum}>
+                Nuevo álbum
+              </Button>
             )}
-          >
-            La creación de álbumes estará disponible próximamente.
-          </p>
+          </div>
         </div>
       </div>
     </section>

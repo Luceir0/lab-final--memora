@@ -545,20 +545,48 @@ describe.skipIf(!hasDatabase)('albums API', () => {
       expectError(response, 'FORBIDDEN');
     });
 
-    it('borrar es solo del owner: un miembro recibe 403', async () => {
-      const { circle } = await seedCircle();
-      const member = await addMember(circle.id);
-      const album = await seedAlbum(circle.id, member.id);
-      const response = await deleteAlbum(await makeAuth(member.id), album.id);
+    it('un miembro creador borra su álbum vacío aunque la flag esté apagada', async () => {
+      const { circle } = await seedCircle({ membersCanCreateAlbums: false });
+      const creator = await addMember(circle.id);
+      const album = await seedAlbum(circle.id, creator.id);
+
+      const response = await deleteAlbum(await makeAuth(creator.id), album.id);
+
+      expect(response.statusCode).toBe(204);
+      expect(await prisma.album.findUnique({ where: { id: album.id } })).toBeNull();
+    });
+
+    it('un miembro creador con fotos recibe 409 ALBUM_NOT_EMPTY, no 403', async () => {
+      const { circle } = await seedCircle({ membersCanCreateAlbums: false });
+      const creator = await addMember(circle.id);
+      const album = await seedAlbum(circle.id, creator.id);
+
+      await makePhoto(prisma, { circleId: circle.id, albumId: album.id, uploaderId: creator.id });
+
+      const response = await deleteAlbum(await makeAuth(creator.id), album.id);
+
+      expect(response.statusCode).toBe(409);
+      expectError(response, 'ALBUM_NOT_EMPTY');
+      expect(await prisma.album.findUnique({ where: { id: album.id } })).not.toBeNull();
+    });
+
+    it('un miembro que no creó el álbum recibe 403 al borrarlo', async () => {
+      const { owner, circle } = await seedCircle();
+      const otherMember = await addMember(circle.id);
+      const album = await seedAlbum(circle.id, owner.id);
+
+      const response = await deleteAlbum(await makeAuth(otherMember.id), album.id);
 
       expect(response.statusCode).toBe(403);
       expectError(response, 'FORBIDDEN');
       expect(await prisma.album.findUnique({ where: { id: album.id } })).not.toBeNull();
     });
     it('una membresía con rol owner falsificado no permite borrar ni vaciar', async () => {
-      const { circle } = await seedCircle();
+      const { owner, circle } = await seedCircle();
       const forged = await addMember(circle.id);
-      const album = await seedAlbum(circle.id, forged.id);
+      // The album belongs to the real owner, so the forged member is neither
+      // owner nor creator and cannot use the creator exception.
+      const album = await seedAlbum(circle.id, owner.id);
 
       await prisma.membership.update({
         where: { circleId_userId: { circleId: circle.id, userId: forged.id } },
@@ -851,17 +879,37 @@ describe.skipIf(!hasDatabase)('albums API', () => {
       expect(repeated.json<EmptyAlbumResponse>()).toEqual({ deletedCount: 0 });
     });
 
-    it('un miembro no puede vaciar el álbum aunque sea su creador', async () => {
-      const { circle } = await seedCircle();
-      const member = await addMember(circle.id);
-      const album = await seedAlbum(circle.id, member.id);
+    it('un miembro creador vacía su álbum aunque la flag esté apagada', async () => {
+      const { circle } = await seedCircle({ membersCanCreateAlbums: false });
+      const creator = await addMember(circle.id);
+      const album = await seedAlbum(circle.id, creator.id);
+
+      for (let index = 0; index < 2; index += 1) {
+        await makePhoto(prisma, {
+          circleId: circle.id,
+          albumId: album.id,
+          uploaderId: creator.id,
+        });
+      }
+
+      const response = await emptyAlbumRequest(await makeAuth(creator.id), album.id);
+
+      expect(response.statusCode).toBe(200);
+      expect(response.json<EmptyAlbumResponse>()).toEqual({ deletedCount: 2 });
+      expect(await prisma.photo.count({ where: { albumId: album.id } })).toBe(0);
+    });
+
+    it('un miembro que no creó el álbum recibe 403 al vaciarlo', async () => {
+      const { owner, circle } = await seedCircle();
+      const otherMember = await addMember(circle.id);
+      const album = await seedAlbum(circle.id, owner.id);
       const photo = await makePhoto(prisma, {
         circleId: circle.id,
         albumId: album.id,
-        uploaderId: member.id,
+        uploaderId: owner.id,
       });
 
-      const response = await emptyAlbumRequest(await makeAuth(member.id), album.id);
+      const response = await emptyAlbumRequest(await makeAuth(otherMember.id), album.id);
 
       expect(response.statusCode).toBe(403);
       expectError(response, 'FORBIDDEN');

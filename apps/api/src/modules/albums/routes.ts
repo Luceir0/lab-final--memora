@@ -259,11 +259,12 @@ export function registerAlbumRoutes(app: MemoraServer, config: AppConfig): void 
         tags: [ALBUMS_TAG],
         summary: 'Borrar álbum',
         description:
-          'Borra un álbum vacío. Solo el propietario y solo si no tiene fotos: con fotos responde ' +
-          '`409 ALBUM_NOT_EMPTY` y un miembro sin permiso `403 FORBIDDEN`. La transacción bloquea la fila ' +
-          'del álbum con `SELECT … FOR UPDATE`, así que una foto concurrente espera al bloqueo y, al ' +
-          'confirmarse, el recuento devuelve `409` en lugar de perderse por la cascada. Responde `204`; un ' +
-          'álbum ya inexistente → `404 NOT_FOUND`.',
+          'Borra un álbum vacío. Lo permite el propietario o el miembro que creó el álbum, sin depender de ' +
+          '`membersCanCreateAlbums`, y solo si no tiene fotos: con fotos responde `409 ALBUM_NOT_EMPTY` y un ' +
+          'miembro que no lo creó `403 FORBIDDEN`. La transacción bloquea la fila del álbum con ' +
+          '`SELECT … FOR UPDATE`, así que una foto concurrente espera al bloqueo y, al confirmarse, el recuento ' +
+          'devuelve `409` en lugar de perderse por la cascada. Responde `204`; un álbum ya inexistente → ' +
+          '`404 NOT_FOUND`.',
         security: sessionSecurity,
         headers: csrfHeaderSchema,
         params: albumParamsSchema,
@@ -311,7 +312,8 @@ export function registerAlbumRoutes(app: MemoraServer, config: AppConfig): void 
         summary: 'Vaciar álbum',
         description:
           'Elimina todas las fotos del álbum y sus etiquetas en una transacción y responde ' +
-          '`200 { deletedCount }`. Solo el propietario; un miembro recibe `403 FORBIDDEN` y un extraño ' +
+          '`200 { deletedCount }`. Lo permite el propietario o el miembro que creó el álbum, sin depender de ' +
+          '`membersCanCreateAlbums`; un miembro que no lo creó recibe `403 FORBIDDEN` y un extraño ' +
           '`404 NOT_FOUND`. Es idempotente: un álbum vacío devuelve `{ deletedCount: 0 }`. Los eventos de ' +
           'actividad se conservan con `photoId = null`. **Los objetos de almacenamiento no se borran en F23**: ' +
           'esa eliminación se difiere a F25.',
@@ -412,7 +414,9 @@ function assertAlbumCreatePermission(userId: string, membership: CircleMembershi
  * Checks a permission for the loaded album.
  *
  * Ownership is decided solely by `Circle.ownerId` inside `can()`: a forged
- * `role: 'owner'` in the membership row cannot escalate.
+ * `role: 'owner'` in the membership row cannot escalate. `album.empty` and
+ * `album.update` also accept the album creator; only `album.update` is gated by
+ * `membersCanCreateAlbums`.
  */
 function assertAlbumPermission(
   userId: string,
@@ -432,14 +436,15 @@ function assertAlbumPermission(
 }
 
 /**
- * Delete is owner-only; emptiness is decided later, inside the locked
- * transaction.
+ * Delete is allowed for the owner or the album creator; emptiness is decided
+ * later, inside the locked transaction.
  *
  * `can()` is the single source of the permission. It receives an empty-album
  * snapshot (`photosCount: 0`) on purpose: that makes it answer the ownership
- * question only, so a non-owner always gets `403 FORBIDDEN` regardless of the
- * current photo count. The service then answers `409 ALBUM_NOT_EMPTY` if the
- * album still has photos.
+ * question only, so a member who did not create the album always gets
+ * `403 FORBIDDEN` regardless of the current photo count. The creator of a
+ * non-empty album passes this check and then the service answers
+ * `409 ALBUM_NOT_EMPTY`, never `403`.
  */
 function assertAlbumDeletePermission(userId: string, target: AlbumMembership): void {
   const actor: PermissionActor = { id: userId, role: target.membership.role };
