@@ -2,7 +2,7 @@ import { Outlet, createFileRoute, useRouterState } from '@tanstack/react-router'
 
 import { AppShell } from '../components/layout/app-shell';
 import { CircleSidebarNav } from '../features/circles/circle-sidebar-nav';
-import { isCircleDetailPath } from '../features/circles/paths';
+import { isCircleSectionPath } from '../features/circles/paths';
 import { PrivateLoadingState, PrivateSessionError } from '../features/circles/private-states';
 import { useMeQuery } from '../features/circles/queries';
 import {
@@ -56,7 +56,7 @@ function AppLayout() {
   return (
     <AppShell
       currentPath={pathname}
-      hideTopBar={isCircleDetailPath(pathname)}
+      hideTopBar={isCircleSectionPath(pathname)}
       circleList={
         hasSession && protectedRoute ? <CircleSidebarNav currentPath={pathname} /> : undefined
       }

@@ -446,15 +446,36 @@ describe.skipIf(!hasDatabase)('database model integration', () => {
       '2025-01-15T12:00:00.000Z',
     ]);
 
-    const restrictedCircle = firstSnapshot.circles.find(
-      (circle) => circle.id === 'seed_circle_trip',
-    );
-    expect(restrictedCircle?.settings).toEqual({
+    const familyCircle = firstSnapshot.circles.find((circle) => circle.id === 'seed_circle_family');
+    expect(familyCircle?.name).toBe('Familia Ferrer');
+    expect(familyCircle?.coverPhotoId).toBe('seed_photo_coast_01');
+
+    // Circles are groups of people, not trips: «Danza» is the friends circle
+    // and keeps the read-only settings so the permissions case survives.
+    const readOnlyCircle = firstSnapshot.circles.find((circle) => circle.name === 'Danza');
+    expect(readOnlyCircle?.coverPhotoId).toBeNull();
+    expect(readOnlyCircle?.settings).toEqual({
       membersCanCreateAlbums: false,
       membersCanUpload: false,
       membersCanDownload: false,
       membersCanTag: false,
     });
+    expect(firstSnapshot.circles.map((circle) => circle.name).sort()).toEqual([
+      'Danza',
+      'Familia Ferrer',
+    ]);
+
+    // Trips are albums: both albums and all six photos belong to the family
+    // circle, so no photo straddles circles.
+    const albumIds = new Set(firstSnapshot.albums.map((album) => album.id));
+    expect(firstSnapshot.albums.map((album) => album.circleId)).toEqual([
+      'seed_circle_family',
+      'seed_circle_family',
+    ]);
+    expect(firstSnapshot.photos.every((photo) => photo.circleId === 'seed_circle_family')).toBe(
+      true,
+    );
+    expect(firstSnapshot.photos.every((photo) => albumIds.has(photo.albumId))).toBe(true);
 
     const tags = firstSnapshot.tags;
     expect(tags).toHaveLength(2);
@@ -463,9 +484,39 @@ describe.skipIf(!hasDatabase)('database model integration', () => {
         .filter((membership) => membership.circleId === 'seed_circle_family')
         .map((membership) => membership.userId),
     );
+    const taggedPhotoIds = new Set(
+      firstSnapshot.photos
+        .filter((photo) => photo.circleId === 'seed_circle_family')
+        .map((photo) => photo.id),
+    );
     expect(
-      tags.every((tag) => memberIds.has(tag.taggedUserId) && memberIds.has(tag.createdBy)),
+      tags.every(
+        (tag) =>
+          memberIds.has(tag.taggedUserId) &&
+          memberIds.has(tag.createdBy) &&
+          taggedPhotoIds.has(tag.photoId),
+      ),
     ).toBe(true);
+  });
+
+  it('renames the legacy read-only circle in place when re-seeding', async () => {
+    const prisma = getTestPrismaClient();
+
+    await seedDatabase(prisma);
+
+    // Emulates a development database seeded before trips became albums: the
+    // old «Viaje a Lisboa» row kept its cover pointing at the Lisbon photo.
+    await prisma.circle.update({
+      where: { id: 'seed_circle_trip' },
+      data: { name: 'Viaje a Lisboa', coverPhotoId: 'seed_photo_lisbon_01' },
+    });
+
+    const summary = await seedDatabase(prisma);
+    const circle = await prisma.circle.findUnique({ where: { id: 'seed_circle_trip' } });
+
+    expect(circle).toMatchObject({ name: 'Danza', coverPhotoId: null });
+    expect(summary.circles).toBe(2);
+    expect(await prisma.circle.count({ where: { name: 'Viaje a Lisboa' } })).toBe(0);
   });
 
   it('produces identical rows when seeding two fresh databases', async () => {

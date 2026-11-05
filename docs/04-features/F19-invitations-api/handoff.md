@@ -126,6 +126,10 @@ Rama `feat/F19-invitations-api` con dos commits: `1250e29` (feature) y `2d3cfc5`
 
 Con esto F19 pasa de `accepted` a **`done`**.
 
+## Corrección posterior (2026-11-05)
+
+**B-01.** En F22 se detectó que el enlace del correo de invitación apuntaba a `/invitations/<token>`, una ruta de API que el navegador no puede renderizar (404 en la web), en lugar de `/invite/<token>`, la página SSR de F20. Se corrigió en `apps/api/src/modules/invitations/routes.ts` con `new URL(`/invite/${encodeURIComponent(input.token)}`, config.appUrl)`, **sin cambio del contrato de API**: el `POST` sigue devolviendo el token y la web sigue construyendo el enlace con el mismo helper. Test de regresión en `apps/api/src/modules/invitations/invitations.test.ts`, que comprueba `/invite/<token>` en el texto y en el HTML del mensaje. El arreglo viaja en la rama `feat/F22-people-web` como corrección transversal, no como alcance de F19 ni de F22.
+
 ## Riesgos y limitaciones
 
 - **Revocar una invitación aceptada no la desactiva** (decisión del usuario: no-op `204`). Como el enlace es reutilizable hasta caducar, el propietario no puede impedir nuevas uniones tras la primera aceptación. Recomendación: confirmar en **F20** si revocar debe marcar `revokedAt` sin expulsar al miembro.

@@ -2,7 +2,7 @@ import { screen } from '@testing-library/react';
 import { HttpResponse, http } from 'msw';
 import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest';
 
-import { CircleDetailPage } from '../features/circles/circle-detail-page';
+import { CircleDetailLayout } from '../features/circles/circle-detail-layout';
 import { AUTH_TEST_API_BASE } from '../test/auth-fixtures';
 import { createAuthTestServer, startAuthTestServer } from '../test/auth-server';
 import { renderWithRouter } from '../test/circles-harness';
@@ -51,15 +51,17 @@ describe('ruta /circles/$circleId', () => {
     expect(validateSearch({})).toEqual({});
   });
 
-  it('resuelve el detalle en un router de test', async () => {
+  it('resuelve el layout con la sección hija en un router de test', async () => {
     server.use(http.get(DETAIL_URL, () => HttpResponse.json(circleDetail(circleWithCover))));
 
     const { router } = renderWithRouter(
-      <CircleDetailPage circleId="cir_familia" />,
+      <CircleDetailLayout circleId="cir_familia">
+        <p>Contenido de la sección</p>
+      </CircleDetailLayout>,
       '/circles/cir_familia',
     );
 
     expect(router.state.location.pathname).toBe('/circles/cir_familia');
-    expect(await screen.findByRole('heading', { level: 1, name: 'Familia García' })).toBeTruthy();
+    expect(await screen.findByText('Contenido de la sección')).toBeTruthy();
   });
 });

@@ -71,6 +71,7 @@ export {
 } from './components/skeleton';
 export { Spinner, type SpinnerProps, type SpinnerSize } from './components/spinner';
 export { Switch, type SwitchProps } from './components/switch';
+export { TabLinks, type TabLinkItem, type TabLinksProps } from './components/tab-links';
 export { Tabs, type TabIcon, type TabItem, type TabsProps } from './components/tabs';
 export { TextArea, type TextAreaProps } from './components/text-area';
 export { TextField, type TextFieldProps, type TextFieldType } from './components/text-field';

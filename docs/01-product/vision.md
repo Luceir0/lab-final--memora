@@ -4,6 +4,8 @@
 
 Un archivo privado y colaborativo de recuerdos fotográficos. Personas de confianza crean un **círculo**, organizan **álbumes** y suben fotos. Pueden etiquetar a quién aparece, buscar “fotos de esta persona” y descargar recuerdos.
 
+Un **círculo** es un grupo de personas —familia, amistades, pareja o una afición como danza—; los viajes, bodas y eventos son **álbumes** dentro de ese círculo.
+
 No es una red social:
 
 - no hay perfiles públicos;
@@ -35,7 +37,7 @@ No es una red social:
 
 ## Perfiles
 
-- Quien crea un círculo familiar, de amistades, pareja o viaje.
+- Quien crea un círculo para su familia, sus amistades, su pareja o una afición como danza.
 - Quien es invitado y aporta fotos desde el móvil.
 - Quien busca fotos de esta persona o descarga un álbum.
 

@@ -36,42 +36,90 @@ describe('CircleSidebarNav', () => {
   it('lista los círculos y despliega el subnav del activo', async () => {
     useCircles();
 
-    const { container } = renderWithRouter(<CircleSidebarNav currentPath="/circles/cir_familia" />);
+    const { container } = renderWithRouter(
+      <CircleSidebarNav currentPath="/circles/cir_familia" />,
+      '/circles/cir_familia',
+    );
 
     const family = await screen.findByRole('link', { name: /Familia García/ });
 
     expect(family.getAttribute('href')).toBe('/circles/cir_familia');
     expect(family.getAttribute('aria-current')).toBe('page');
+    expect(family.className).toContain('bg-primary-soft');
     expect(screen.getByRole('link', { name: /Lisboa 2026/ })).toBeTruthy();
     expect(screen.getByRole('link', { name: /Amigas de la uni/ })).toBeTruthy();
 
     const albums = screen.getByRole('link', { name: 'Álbumes' });
+    const people = screen.getByRole('link', { name: /^Personas/ });
 
     expect(albums.getAttribute('href')).toBe('/circles/cir_familia');
     expect(albums.getAttribute('aria-current')).toBeNull();
+    expect(albums.closest('ul')?.className).not.toContain('border-l');
+    // La sección actual va en negrita, sin píldora.
+    expect(albums.className).toContain('font-semibold');
+    expect(albums.className).toContain('text-primary-text');
+    expect(albums.className).not.toContain('bg-primary-soft');
+    expect(people.getAttribute('href')).toBe('/circles/cir_familia/people');
+    expect(people.getAttribute('aria-current')).toBeNull();
+    expect(people.getAttribute('aria-disabled')).toBeNull();
+    expect(people.className).not.toContain('font-semibold');
 
     await expectNoAxeViolations(container);
   });
 
-  it('anuncia Personas y Ajustes como deshabilitados, sin href roto', async () => {
+  it('marca Personas como página activa en su sección sin duplicar aria-current', async () => {
+    useCircles();
+
+    renderWithRouter(
+      <CircleSidebarNav currentPath="/circles/cir_familia/people" />,
+      '/circles/cir_familia/people',
+    );
+
+    const family = await screen.findByRole('link', { name: /Familia García/ });
+
+    // El círculo se resalta en todas sus secciones, pero el `aria-current`
+    // sigue siendo único y en esta sección lo lleva Personas.
+    expect(family.getAttribute('aria-current')).toBeNull();
+    expect(family.className).toContain('bg-primary-soft');
+    expect(family.className).toContain('font-semibold');
+    expect(family.className).toContain('text-primary-text');
+
+    const people = screen.getByRole('link', { name: /^Personas/ });
+
+    expect(people.getAttribute('href')).toBe('/circles/cir_familia/people');
+    expect(people.getAttribute('aria-current')).toBe('page');
+    expect(people.className).toContain('font-semibold');
+    expect(people.className).toContain('text-primary-text');
+    expect(people.className).not.toContain('bg-primary-soft');
+    expect(people.getAttribute('aria-disabled')).toBeNull();
+
+    const albums = screen.getByRole('link', { name: 'Álbumes' });
+
+    expect(albums.getAttribute('aria-current')).toBeNull();
+    expect(albums.className).not.toContain('font-semibold');
+    expect(albums.className).not.toContain('bg-primary-soft');
+    expect(
+      screen.getAllByRole('link').filter((link) => link.getAttribute('aria-current') === 'page'),
+    ).toHaveLength(1);
+  });
+
+  it('anuncia Ajustes como deshabilitado, sin href roto', async () => {
     useCircles();
 
     renderWithRouter(<CircleSidebarNav currentPath="/circles/cir_familia" />);
 
     await screen.findByRole('link', { name: /Familia García/ });
 
-    for (const label of ['Personas', 'Ajustes']) {
-      const item = screen.getByRole('link', { name: new RegExp(`^${label}`) });
+    const item = screen.getByRole('link', { name: /^Ajustes/ });
 
-      expect(item.getAttribute('aria-disabled')).toBe('true');
-      expect(item.getAttribute('href')).toBeNull();
-      expect(item.getAttribute('tabindex')).toBe('0');
+    expect(item.getAttribute('aria-disabled')).toBe('true');
+    expect(item.getAttribute('href')).toBeNull();
+    expect(item.getAttribute('tabindex')).toBe('0');
 
-      const descriptionId = item.getAttribute('aria-describedby');
+    const descriptionId = item.getAttribute('aria-describedby');
 
-      expect(descriptionId).toBeTruthy();
-      expect(document.getElementById(descriptionId ?? '')?.textContent).toContain('Disponible');
-    }
+    expect(descriptionId).toBeTruthy();
+    expect(document.getElementById(descriptionId ?? '')?.textContent).toContain('Disponible');
   });
 
   it('no muestra subnav fuera de un círculo', async () => {

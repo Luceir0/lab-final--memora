@@ -63,8 +63,9 @@ describe('CircleListPage', () => {
     const featured = await screen.findByRole('link', { name: /Destacado.*Familia García/ });
     expect(featured.getAttribute('href')).toBe('/circles/cir_familia');
 
-    // El destacado no se repite en la lista; los otros dos sí.
-    expect(screen.getAllByRole('link', { name: /Familia García/ })).toHaveLength(1);
+    // «Tus círculos» lista todos, también el destacado: tres cards y un
+    // contador de tres.
+    expect(screen.getAllByRole('link', { name: /Familia García/ })).toHaveLength(2);
     expect(screen.getByRole('link', { name: /Lisboa 2026/ })).toBeTruthy();
     expect(screen.getByRole('link', { name: /Amigas de la uni/ })).toBeTruthy();
     expect(screen.getByText('3 círculos')).toBeTruthy();
@@ -126,7 +127,7 @@ describe('CircleListPage', () => {
     expect(container.querySelector('[aria-busy="true"]')).toBeTruthy();
     expect(screen.queryByRole('heading', { level: 2, name: 'Tus círculos' })).toBeNull();
 
-    expect(await screen.findByText('Familia García')).toBeTruthy();
+    expect((await screen.findAllByText('Familia García')).length).toBeGreaterThan(0);
   });
 
   it('pide la página siguiente con «Cargar más» y respeta el cursor', async () => {
@@ -196,7 +197,7 @@ describe('CircleListPage', () => {
         screen.queryByRole('heading', { name: 'No hemos podido cargar tus círculos' }),
       ).toBeNull();
     });
-    expect(await screen.findByText('Familia García')).toBeTruthy();
+    expect((await screen.findAllByText('Familia García')).length).toBeGreaterThan(0);
   });
 
   it('mantiene los datos y avisa si falla una actualización', async () => {
@@ -204,7 +205,7 @@ describe('CircleListPage', () => {
 
     const { queryClient } = renderWithRouter(<CircleListPage now={NOW} />);
 
-    await screen.findByText('Familia García');
+    await screen.findAllByText('Familia García');
 
     server.use(
       http.get(CIRCLES_URL, () =>
@@ -218,7 +219,7 @@ describe('CircleListPage', () => {
     await queryClient.invalidateQueries({ queryKey: circleKeys.list });
 
     expect(await screen.findByText('No hemos podido actualizar la lista')).toBeTruthy();
-    expect(screen.getByText('Familia García')).toBeTruthy();
+    expect(screen.getAllByText('Familia García').length).toBeGreaterThan(0);
     expect(screen.getByRole('button', { name: 'Reintentar' })).toBeTruthy();
   });
 
@@ -258,7 +259,7 @@ describe('CircleListPage', () => {
 
     renderWithRouter(<CircleListPage now={NOW} />);
 
-    const image = await screen.findByRole('link', { name: /Familia García/ });
+    const image = await screen.findByRole('link', { name: /Destacado.*Familia García/ });
     const img = image.querySelector('img');
 
     expect(img).toBeTruthy();

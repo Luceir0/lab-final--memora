@@ -471,8 +471,10 @@ async function sendInvitationEmail(
   request: FastifyRequest,
   input: InvitationEmailInput,
 ): Promise<void> {
+  // `/invite/:token` is the real public page of the web app (SSR); the API
+  // route `/api/invitations/:token` is not something a browser can render.
   const invitationUrl = new URL(
-    `/invitations/${encodeURIComponent(input.token)}`,
+    `/invite/${encodeURIComponent(input.token)}`,
     config.appUrl,
   ).toString();
 

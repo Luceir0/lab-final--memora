@@ -2,6 +2,8 @@
 
 Inventario de la segunda iteración. Las imágenes están en `assets/design/screens/` y los nombres originales se conservan en el manifest. La etiqueta canónica de producto es **“Fotos de esta persona”**; algunos nombres de archivo conservan “Fotos de una persona”.
 
+> **Nota (2026-11-04):** los datos de ejemplo de los PNG («Lisboa 2026», «Boda de Ana y Leo» como círculos) son mock y no el modelo de producto: los círculos son grupos de personas y los viajes o eventos son álbumes.
+
 - Índice visual: [indice-de-pantallas.png](../../assets/design/indice-de-pantallas.png)
 - Sistema de diseño: [design-system-v0.1.png](../../assets/design/design-system-v0.1.png)
 - Manifest: [manifest.json](../../assets/design/manifest.json)

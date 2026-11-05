@@ -9,6 +9,12 @@ export interface CircleCoverProps {
   readonly photo?: PhotoSummary | null | undefined;
   readonly className?: string | undefined;
   readonly initialsClassName?: string | undefined;
+  /**
+   * Avisa de que la foto no ha cargado y se está viendo la portada de reserva.
+   * El héroe lo usa para retirar el scrim de escritorio y no oscurecer las
+   * iniciales.
+   */
+  readonly onImageError?: (() => void) | undefined;
 }
 
 /**
@@ -19,7 +25,13 @@ export interface CircleCoverProps {
  * con iniciales, nunca por el icono de imagen rota del navegador. Es decorativa
  * porque el nombre del círculo siempre está en texto al lado.
  */
-export function CircleCover({ name, photo, className, initialsClassName }: CircleCoverProps) {
+export function CircleCover({
+  name,
+  photo,
+  className,
+  initialsClassName,
+  onImageError,
+}: CircleCoverProps) {
   const [failedUrl, setFailedUrl] = useState<string | null>(null);
   const showImage = photo !== null && photo !== undefined && failedUrl !== photo.thumbUrl;
 
@@ -32,7 +44,10 @@ export function CircleCover({ name, photo, className, initialsClassName }: Circl
           loading="lazy"
           decoding="async"
           draggable={false}
-          onError={() => setFailedUrl(photo.thumbUrl)}
+          onError={() => {
+            setFailedUrl(photo.thumbUrl);
+            onImageError?.();
+          }}
           className="size-full object-cover"
         />
       ) : (

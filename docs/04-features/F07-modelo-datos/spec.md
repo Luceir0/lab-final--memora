@@ -64,6 +64,18 @@ Implementar el esquema Prisma, migraciones, restricciones, índices y datos de p
 - UI
 - Datos demo definitivos
 
+### Semilla vigente (2026-11-04)
+
+Los círculos son **grupos de personas**; los viajes y eventos son **álbumes**. El resultado esperado del seed es:
+
+- Círculos: **«Familia Ferrer»** (familia) y **«Danza»** (amistades, con los permisos de solo lectura que tenía el círculo de viaje).
+- Álbumes de «Familia Ferrer»: **«Verano en la costa»** y **«Lisboa en primavera»**.
+- **«Viaje a Lisboa» deja de existir como círculo**; sus fotos pasan a «Familia Ferrer» y al álbum «Lisboa en primavera».
+- «Danza» puede tener un álbum sencillo o ninguno.
+- Se mantienen la invitación pendiente y las etiquetas de la familia.
+
+Los IDs, descripciones y estructura final del seed los ajusta `api-dev` en `seed.ts`. El seed sigue siendo determinista e idempotente (AC-05).
+
 ## Entregables
 
 - apps/api/prisma/schema.prisma

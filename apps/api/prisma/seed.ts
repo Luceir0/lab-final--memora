@@ -62,7 +62,16 @@ const USER_LUCIA_ID = 'seed_user_lucia';
 const USER_MATEO_ID = 'seed_user_mateo';
 
 const CIRCLE_FAMILY_ID = 'seed_circle_family';
-const CIRCLE_TRIP_ID = 'seed_circle_trip';
+
+/**
+ * Friends circle, kept read-only on purpose so the permissions case survives.
+ *
+ * The id keeps its historical `trip` slug. Re-seeding an existing development
+ * database then renames the former «Viaje a Lisboa» row in place instead of
+ * leaving an orphan circle (and a duplicated membership) behind. Tests start
+ * from `resetDb`, so they never depend on the slug's meaning.
+ */
+const CIRCLE_DANCE_ID = 'seed_circle_trip';
 
 const ALBUM_COAST_ID = 'seed_album_coast';
 const ALBUM_LISBON_ID = 'seed_album_lisbon';
@@ -148,7 +157,7 @@ const PHOTOS: readonly SeedPhotoInput[] = [
   },
   {
     id: 'seed_photo_lisbon_01',
-    circleId: CIRCLE_TRIP_ID,
+    circleId: CIRCLE_FAMILY_ID,
     albumId: ALBUM_LISBON_ID,
     uploaderId: USER_LUCIA_ID,
     clientUploadId: 'seed-upload-lisbon-01',
@@ -162,7 +171,7 @@ const PHOTOS: readonly SeedPhotoInput[] = [
   },
   {
     id: 'seed_photo_lisbon_02',
-    circleId: CIRCLE_TRIP_ID,
+    circleId: CIRCLE_FAMILY_ID,
     albumId: ALBUM_LISBON_ID,
     uploaderId: USER_LUCIA_ID,
     clientUploadId: 'seed-upload-lisbon-02',
@@ -176,7 +185,7 @@ const PHOTOS: readonly SeedPhotoInput[] = [
   },
   {
     id: 'seed_photo_lisbon_03',
-    circleId: CIRCLE_TRIP_ID,
+    circleId: CIRCLE_FAMILY_ID,
     albumId: ALBUM_LISBON_ID,
     uploaderId: USER_LUCIA_ID,
     clientUploadId: 'seed-upload-lisbon-03',
@@ -258,21 +267,25 @@ export async function seedDatabase(prisma: PrismaClient): Promise<SeedSummary> {
   });
 
   await prisma.circle.upsert({
-    where: { id: CIRCLE_TRIP_ID },
+    where: { id: CIRCLE_DANCE_ID },
     update: {
       ownerId: USER_LUCIA_ID,
-      name: 'Viaje a Lisboa',
-      description: 'Círculo de solo lectura para invitados.',
+      name: 'Danza',
+      description: 'Amistades del grupo de danza.',
       settings: READ_ONLY_CIRCLE_SETTINGS,
+      // Clears the cover inherited from the former «Viaje a Lisboa» circle: the
+      // Lisbon photo now belongs to the family circle.
+      coverPhotoId: null,
       createdAt: SEED_TIMESTAMP,
       updatedAt: SEED_TIMESTAMP,
     },
     create: {
-      id: CIRCLE_TRIP_ID,
+      id: CIRCLE_DANCE_ID,
       ownerId: USER_LUCIA_ID,
-      name: 'Viaje a Lisboa',
-      description: 'Círculo de solo lectura para invitados.',
+      name: 'Danza',
+      description: 'Amistades del grupo de danza.',
       settings: READ_ONLY_CIRCLE_SETTINGS,
+      coverPhotoId: null,
       createdAt: SEED_TIMESTAMP,
       updatedAt: SEED_TIMESTAMP,
     },
@@ -303,11 +316,11 @@ export async function seedDatabase(prisma: PrismaClient): Promise<SeedSummary> {
   });
 
   await prisma.membership.upsert({
-    where: { circleId_userId: { circleId: CIRCLE_TRIP_ID, userId: USER_LUCIA_ID } },
+    where: { circleId_userId: { circleId: CIRCLE_DANCE_ID, userId: USER_LUCIA_ID } },
     update: { role: 'owner', joinedAt: SEED_TIMESTAMP },
     create: {
-      id: 'seed_membership_trip_lucia',
-      circleId: CIRCLE_TRIP_ID,
+      id: 'seed_membership_dance_lucia',
+      circleId: CIRCLE_DANCE_ID,
       userId: USER_LUCIA_ID,
       role: 'owner',
       joinedAt: SEED_TIMESTAMP,
@@ -315,11 +328,11 @@ export async function seedDatabase(prisma: PrismaClient): Promise<SeedSummary> {
   });
 
   await prisma.membership.upsert({
-    where: { circleId_userId: { circleId: CIRCLE_TRIP_ID, userId: USER_MATEO_ID } },
+    where: { circleId_userId: { circleId: CIRCLE_DANCE_ID, userId: USER_MATEO_ID } },
     update: { role: 'member', joinedAt: SEED_TIMESTAMP },
     create: {
-      id: 'seed_membership_trip_mateo',
-      circleId: CIRCLE_TRIP_ID,
+      id: 'seed_membership_dance_mateo',
+      circleId: CIRCLE_DANCE_ID,
       userId: USER_MATEO_ID,
       role: 'member',
       joinedAt: SEED_TIMESTAMP,
@@ -352,7 +365,7 @@ export async function seedDatabase(prisma: PrismaClient): Promise<SeedSummary> {
   await prisma.album.upsert({
     where: { id: ALBUM_LISBON_ID },
     update: {
-      circleId: CIRCLE_TRIP_ID,
+      circleId: CIRCLE_FAMILY_ID,
       title: 'Lisboa en primavera',
       description: 'Cuatro días de tranvías y azulejos.',
       date: new Date('2025-04-03T00:00:00.000Z'),
@@ -362,7 +375,7 @@ export async function seedDatabase(prisma: PrismaClient): Promise<SeedSummary> {
     },
     create: {
       id: ALBUM_LISBON_ID,
-      circleId: CIRCLE_TRIP_ID,
+      circleId: CIRCLE_FAMILY_ID,
       title: 'Lisboa en primavera',
       description: 'Cuatro días de tranvías y azulejos.',
       date: new Date('2025-04-03T00:00:00.000Z'),
@@ -406,11 +419,6 @@ export async function seedDatabase(prisma: PrismaClient): Promise<SeedSummary> {
   await prisma.circle.update({
     where: { id: CIRCLE_FAMILY_ID },
     data: { coverPhotoId: 'seed_photo_coast_01', updatedAt: SEED_TIMESTAMP },
-  });
-
-  await prisma.circle.update({
-    where: { id: CIRCLE_TRIP_ID },
-    data: { coverPhotoId: 'seed_photo_lisbon_01', updatedAt: SEED_TIMESTAMP },
   });
 
   await prisma.album.update({
@@ -513,7 +521,7 @@ export async function seedDatabase(prisma: PrismaClient): Promise<SeedSummary> {
     },
     {
       id: 'seed_activity_lisbon_photo',
-      circleId: CIRCLE_TRIP_ID,
+      circleId: CIRCLE_FAMILY_ID,
       actorId: USER_LUCIA_ID,
       type: 'photo_uploaded' as const,
       albumId: ALBUM_LISBON_ID,

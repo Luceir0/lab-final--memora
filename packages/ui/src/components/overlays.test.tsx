@@ -502,11 +502,13 @@ describe('BottomSheet', () => {
 
     expect(panel?.className).toContain('overflow-hidden');
     expect(panel?.className).not.toContain('overflow-y-auto');
-    expect(panel?.className).toContain('px-5');
+    expect(panel?.className).toContain('px-4');
+    expect(panel?.className).toContain('sm:px-5');
     expect(panel?.className).toContain("[[data-theme='dark']_&]:border-border-strong");
     expect(body.getAttribute('tabindex')).toBe('0');
     expect(body?.className).toContain('min-h-0');
     expect(body?.className).toContain('overflow-y-auto');
+    expect(body?.className).toContain('px-1');
     expect(footer?.className).toContain('shrink-0');
     expect(footer?.className).toContain('flex-row');
   });

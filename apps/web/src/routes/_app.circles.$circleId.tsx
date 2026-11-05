@@ -1,12 +1,15 @@
-import { createFileRoute, useRouter } from '@tanstack/react-router';
+import { Outlet, createFileRoute } from '@tanstack/react-router';
 
-import { CircleDetailPage } from '../features/circles/circle-detail-page';
+import { CircleDetailLayout } from '../features/circles/circle-detail-layout';
 
 /**
- * Detalle de un círculo.
+ * Layout estructural de un círculo.
  *
- * Contenido privado: SPA (`ssr: false`) y componente en `features/circles/`.
- * El wrapper solo lee el parámetro de la ruta; no exporta nada más.
+ * Contenido privado: SPA (`ssr: false`). Pide el círculo, resuelve 401/404/error
+ * y comparte los datos por contexto con la sección hija. El chrome compartido
+ * (migas, héroe, cabecera compacta, pestañas y diálogo de invitar) lo pinta
+ * `CircleDetailLayout` alrededor del `<Outlet/>`: así el héroe y el modal no se
+ * remontan al cambiar de pestaña. La sección hija solo aporta su contenido.
  */
 export const Route = createFileRoute('/_app/circles/$circleId')({
   ssr: false,
@@ -22,23 +25,10 @@ export const Route = createFileRoute('/_app/circles/$circleId')({
 
 function CircleDetailRoute() {
   const { circleId } = Route.useParams();
-  const { created } = Route.useSearch();
-  const router = useRouter();
-
-  const closeCreatedToast = () => {
-    void router.navigate({
-      to: '/circles/$circleId',
-      params: { circleId },
-      search: {},
-      replace: true,
-    });
-  };
 
   return (
-    <CircleDetailPage
-      circleId={circleId}
-      created={created}
-      onCreatedToastClose={closeCreatedToast}
-    />
+    <CircleDetailLayout circleId={circleId}>
+      <Outlet />
+    </CircleDetailLayout>
   );
 }

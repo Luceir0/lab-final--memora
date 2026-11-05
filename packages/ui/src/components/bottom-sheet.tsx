@@ -176,7 +176,7 @@ export function BottomSheet({
           ...(dragging ? { transform: `translateY(${dragOffset}px)` } : {}),
         }}
         className={cn(
-          'relative flex w-full max-w-lg flex-col overflow-hidden rounded-t-2xl border border-border bg-surface px-5 pb-[max(1.5rem,env(safe-area-inset-bottom))] shadow-lg',
+          'relative flex w-full max-w-lg flex-col overflow-hidden rounded-t-2xl border border-border bg-surface px-4 pb-[max(1.5rem,env(safe-area-inset-bottom))] shadow-lg sm:px-5',
           "[[data-theme='dark']_&]:border-border-strong",
           dragging
             ? 'transition-none'
@@ -213,7 +213,7 @@ export function BottomSheet({
               role="region"
               aria-label={bodyLabel}
               tabIndex={0}
-              className="mt-4 min-h-0 flex-1 overflow-y-auto text-body text-text"
+              className="mt-4 min-h-0 flex-1 overflow-y-auto px-1 text-body text-text"
             >
               {children}
             </div>

@@ -161,7 +161,9 @@ describe('AppShell', () => {
     const skip = screen.getByRole('link', { name: 'Saltar al contenido' });
 
     expect(skip.getAttribute('href')).toBe('#main-content');
-    expect(skip.className).toContain('focus:translate-y-0');
+    // El foco anula la traslación que lo esconde; con `translate-y-0` el
+    // desplazamiento negativo seguía aplicándose en algunos navegadores.
+    expect(skip.className).toContain('focus:[translate:none]');
 
     const main = screen.getByRole('main');
 
