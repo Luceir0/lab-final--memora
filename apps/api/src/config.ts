@@ -10,6 +10,10 @@ const EMAIL_PROVIDERS = ['mailpit', 'resend'] as const;
 
 export type EmailProvider = (typeof EMAIL_PROVIDERS)[number];
 
+const GEOCODING_PROVIDERS = ['nominatim'] as const;
+
+export type GeocodingProvider = (typeof GEOCODING_PROVIDERS)[number];
+
 /** Local Mailpit defaults; production must set `EMAIL_FROM` explicitly. */
 export const DEFAULT_EMAIL_FROM = 'Memora <no-reply@memora.local>';
 
@@ -131,6 +135,90 @@ const emailProviderSchema = z.preprocess(
     .default('mailpit'),
 );
 
+/** S3-compatible endpoint (Silo/MinIO, R2 or AWS S3). */
+const optionalS3EndpointSchema = z.preprocess(
+  emptyToUndefined,
+  z
+    .url('S3_ENDPOINT debe ser una URL válida.')
+    .refine(
+      (value) => value.startsWith('http://') || value.startsWith('https://'),
+      'S3_ENDPOINT debe usar http o https.',
+    )
+    .optional(),
+);
+
+const optionalS3RegionSchema = z.preprocess(
+  emptyToUndefined,
+  z.string().trim().min(1, 'S3_REGION no puede estar vacía.').max(64).optional(),
+);
+
+/** Private bucket name. The API never exposes public URLs. */
+const optionalS3BucketSchema = z.preprocess(
+  emptyToUndefined,
+  z
+    .string()
+    .trim()
+    .min(3, 'S3_BUCKET debe tener entre 3 y 63 caracteres.')
+    .max(63, 'S3_BUCKET debe tener entre 3 y 63 caracteres.')
+    .regex(
+      /^[a-z0-9][a-z0-9.-]*[a-z0-9]$/,
+      'S3_BUCKET debe usar minúsculas, números, puntos o guiones y empezar y terminar por letra o número.',
+    )
+    .optional(),
+);
+
+const optionalS3AccessKeyIdSchema = z.preprocess(
+  emptyToUndefined,
+  z.string().trim().min(1, 'S3_ACCESS_KEY_ID no puede estar vacía.').max(256).optional(),
+);
+
+const optionalS3SecretAccessKeySchema = z.preprocess(
+  emptyToUndefined,
+  z.string().min(1, 'S3_SECRET_ACCESS_KEY no puede estar vacía.').max(512).optional(),
+);
+
+/**
+ * Strict boolean parser: only the literal `true`/`false` are accepted.
+ *
+ * `z.coerce.boolean()` would turn any non-empty string, including `"false"`,
+ * into `true`, silently flipping Silo's required path-style addressing.
+ */
+const optionalS3ForcePathStyleSchema = z.preprocess(
+  emptyToUndefined,
+  z
+    .enum(['true', 'false'], {
+      error: 'S3_FORCE_PATH_STYLE debe ser "true" o "false".',
+    })
+    .transform((value) => value === 'true')
+    .optional(),
+);
+
+const geocodingProviderSchema = z.preprocess(
+  emptyToUndefined,
+  z
+    .enum(GEOCODING_PROVIDERS, {
+      error: `GEOCODING_PROVIDER debe ser uno de: ${GEOCODING_PROVIDERS.join(', ')}.`,
+    })
+    .default('nominatim'),
+);
+
+const optionalGeocodingBaseUrlSchema = z.preprocess(
+  emptyToUndefined,
+  z
+    .url('GEOCODING_BASE_URL debe ser una URL válida.')
+    .refine(
+      (value) => value.startsWith('http://') || value.startsWith('https://'),
+      'GEOCODING_BASE_URL debe usar http o https.',
+    )
+    .optional(),
+);
+
+/** Nominatim requires an identifiable User-Agent with contact information. */
+const optionalGeocodingUserAgentSchema = z.preprocess(
+  emptyToUndefined,
+  z.string().trim().min(1, 'GEOCODING_USER_AGENT no puede estar vacío.').max(256).optional(),
+);
+
 /** Raw environment contract. Every variable the API reads is declared here. */
 export const envSchema = z
   .object({
@@ -152,6 +240,15 @@ export const envSchema = z
     RESEND_API_KEY: optionalResendApiKeySchema,
     SMTP_HOST: optionalSmtpHostSchema,
     SMTP_PORT: optionalSmtpPortSchema,
+    S3_ENDPOINT: optionalS3EndpointSchema,
+    S3_REGION: optionalS3RegionSchema,
+    S3_BUCKET: optionalS3BucketSchema,
+    S3_ACCESS_KEY_ID: optionalS3AccessKeyIdSchema,
+    S3_SECRET_ACCESS_KEY: optionalS3SecretAccessKeySchema,
+    S3_FORCE_PATH_STYLE: optionalS3ForcePathStyleSchema,
+    GEOCODING_PROVIDER: geocodingProviderSchema,
+    GEOCODING_BASE_URL: optionalGeocodingBaseUrlSchema,
+    GEOCODING_USER_AGENT: optionalGeocodingUserAgentSchema,
   })
   .superRefine((value, ctx) => {
     if (value.NODE_ENV === 'production' && value.SESSION_SECRET === undefined) {
@@ -252,6 +349,23 @@ export interface AppConfig {
   readonly resendApiKey: string | undefined;
   readonly smtpHost: string;
   readonly smtpPort: number;
+  /**
+   * S3-compatible storage. Every field is optional outside production; the
+   * runtime only builds the real adapter when all of them are present, so a
+   * missing value keeps storage failing closed instead of half-configured.
+   */
+  readonly s3Endpoint: string | undefined;
+  readonly s3Region: string | undefined;
+  readonly s3Bucket: string | undefined;
+  readonly s3AccessKeyId: string | undefined;
+  readonly s3SecretAccessKey: string | undefined;
+  /** Path-style addressing is mandatory for Silo/MinIO; AWS SDK default is virtual-hosted. */
+  readonly s3ForcePathStyle: boolean;
+  readonly geocodingProvider: GeocodingProvider;
+  /** Base URL of the reverse-geocoding service; absent keeps geocoding unavailable. */
+  readonly geocodingBaseUrl: string | undefined;
+  /** Identifiable User-Agent required by Nominatim's usage policy. */
+  readonly geocodingUserAgent: string | undefined;
 }
 
 function formatIssues(error: z.ZodError): string {
@@ -296,5 +410,14 @@ export function loadConfig(source: NodeJS.ProcessEnv = process.env): AppConfig {
     resendApiKey: env.RESEND_API_KEY,
     smtpHost: env.SMTP_HOST ?? DEFAULT_SMTP_HOST,
     smtpPort: env.SMTP_PORT ?? DEFAULT_SMTP_PORT,
+    s3Endpoint: env.S3_ENDPOINT,
+    s3Region: env.S3_REGION,
+    s3Bucket: env.S3_BUCKET,
+    s3AccessKeyId: env.S3_ACCESS_KEY_ID,
+    s3SecretAccessKey: env.S3_SECRET_ACCESS_KEY,
+    s3ForcePathStyle: env.S3_FORCE_PATH_STYLE ?? false,
+    geocodingProvider: env.GEOCODING_PROVIDER,
+    geocodingBaseUrl: env.GEOCODING_BASE_URL,
+    geocodingUserAgent: env.GEOCODING_USER_AGENT,
   };
 }

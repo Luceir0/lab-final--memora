@@ -23,9 +23,9 @@ export async function startServer(
   const app = await buildApp({
     ...options,
     config,
-    // Email is a real adapter in every process; storage/geocoding still fail
-    // closed, so `kind` remains `'unavailable'` and the production guard keeps
-    // rejecting the boot until F25. Tests inject fakes through `options`.
+    // Storage and geocoding are real only when their configuration is complete;
+    // otherwise they fail closed and `kind` stays `'unavailable'`, so the
+    // production guard rejects the boot. Tests inject fakes through `options`.
     services: options.services ?? createRuntimeServices(config),
   });
 

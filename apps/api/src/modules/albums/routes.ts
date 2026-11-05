@@ -27,6 +27,7 @@ import { assertTrustedOrigin } from '../auth/origin.ts';
 import { resolveSession } from '../auth/session.ts';
 import { toCircleSettings } from '../circles/dto.ts';
 import { findCircleForMember, type CircleMembership } from '../circles/service.ts';
+import { deleteObjects, photoObjectKeys } from '../photos/objects.ts';
 import { decodeAlbumCursor } from './cursor.ts';
 import { toAlbumDto, type AlbumWithRelations } from './dto.ts';
 import {
@@ -315,8 +316,8 @@ export function registerAlbumRoutes(app: MemoraServer, config: AppConfig): void 
           '`200 { deletedCount }`. Lo permite el propietario o el miembro que creó el álbum, sin depender de ' +
           '`membersCanCreateAlbums`; un miembro que no lo creó recibe `403 FORBIDDEN` y un extraño ' +
           '`404 NOT_FOUND`. Es idempotente: un álbum vacío devuelve `{ deletedCount: 0 }`. Los eventos de ' +
-          'actividad se conservan con `photoId = null`. **Los objetos de almacenamiento no se borran en F23**: ' +
-          'esa eliminación se difiere a F25.',
+          'actividad se conservan con `photoId = null`. Tras el commit borra los tres objetos de cada foto de ' +
+          'forma best-effort: si storage falla, registra un aviso y responde `200` igualmente.',
         security: sessionSecurity,
         headers: csrfHeaderSchema,
         params: albumParamsSchema,
@@ -340,13 +341,23 @@ export function registerAlbumRoutes(app: MemoraServer, config: AppConfig): void 
 
       assertAlbumPermission(user.id, target, 'album.empty');
 
-      const deletedCount = await emptyAlbum(prisma, target.album.id, target.album.circleId);
+      const emptied = await emptyAlbum(prisma, target.album.id, target.album.circleId);
 
-      if (deletedCount === null) {
+      if (emptied === null) {
         throw new ApiError('NOT_FOUND');
       }
 
-      return { deletedCount };
+      const keys = emptied.objects.flatMap(photoObjectKeys);
+      const cleanup = await deleteObjects(app.services.storage, keys);
+
+      if (cleanup.failures > 0) {
+        request.log.warn(
+          { code: 'STORAGE_CLEANUP_FAILED', failed: cleanup.failures, total: cleanup.total },
+          'No se pudieron borrar todos los objetos del álbum vaciado',
+        );
+      }
+
+      return { deletedCount: emptied.deletedCount };
     },
   );
 }

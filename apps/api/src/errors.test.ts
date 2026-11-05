@@ -89,8 +89,15 @@ describe('mapError', () => {
     expect(mapped.body.code).toBe('FILE_TOO_LARGE');
   });
 
-  it('maps multipart part limits to PAYLOAD_TOO_LARGE', () => {
-    for (const code of ['FST_FILES_LIMIT', 'FST_FIELDS_LIMIT', 'FST_PARTS_LIMIT']) {
+  it('maps an extra multipart file to VALIDATION_ERROR', () => {
+    const mapped = mapError({ code: 'FST_FILES_LIMIT', statusCode: 413 });
+
+    expect(mapped.statusCode).toBe(400);
+    expect(mapped.body.code).toBe('VALIDATION_ERROR');
+  });
+
+  it('maps multipart field and part limits to PAYLOAD_TOO_LARGE', () => {
+    for (const code of ['FST_FIELDS_LIMIT', 'FST_PARTS_LIMIT']) {
       const mapped = mapError({ code, statusCode: 413 });
 
       expect(mapped.statusCode).toBe(413);
