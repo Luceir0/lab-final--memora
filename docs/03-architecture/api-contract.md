@@ -147,7 +147,17 @@ Semántica cerrada en F19:
 | GET | `/albums/:albumId` | Detalle |
 | PATCH | `/albums/:albumId` | Editar |
 | DELETE | `/albums/:albumId` | Borrar solo owner y solo si está vacío; si no, `409 ALBUM_NOT_EMPTY` |
-| DELETE | `/albums/:albumId/photos` | Vaciar álbum (owner, confirmación; borra fotos y objetos) |
+| DELETE | `/albums/:albumId/photos` | Vaciar álbum (owner, confirmación; borra fotos y etiquetas; objetos de almacenamiento diferidos a F25) |
+
+Semántica cerrada en F23:
+
+- `GET /circles/:circleId/albums` exige pertenencia al círculo. Orden `createdAt desc` con desempate `id desc`; keyset opaco sobre `(createdAt, id)`, `limit` 1–100 (defecto 24). Cursor inválido → `400 VALIDATION_ERROR`. Cada `AlbumDto` incluye `coverPhoto`, `photosCount` y `createdBy`, sin claves de almacenamiento.
+- `POST /circles/:circleId/albums` responde `201` con el `AlbumDto`. No acepta portada: se edita con `PATCH`. Escribe `Activity` `album.created` en la misma transacción, con `metadata: { albumTitle }`.
+- `GET /albums/:albumId` y `PATCH`/`DELETE` exigen pertenencia. Un no miembro recibe `404 NOT_FOUND`, nunca `403`, para no confirmar que el álbum existe. Un miembro sin permiso recibe `403 FORBIDDEN`.
+- Crear exige owner o miembro con `membersCanCreateAlbums`. Editar exige owner o el creador del álbum mientras la flag siga activa.
+- `coverPhotoId` debe ser una foto **del mismo álbum**; si no existe, es de otro álbum o de otro círculo → `404 NOT_FOUND`. `null` limpia la portada.
+- `DELETE /albums/:albumId` solo lo permite el owner y solo si el álbum está vacío; responde `204`. Con fotos → `409 ALBUM_NOT_EMPTY`.
+- `DELETE /albums/:albumId/photos` solo lo permite el owner y responde `200 { deletedCount }`. Borra fotos y `PhotoTag` en una transacción; los eventos de `Activity` se conservan con `photoId = null`. **La eliminación de objetos de almacenamiento se difiere a F25**, cuando exista el adaptador real. Un álbum ya vacío devuelve `{ deletedCount: 0 }` (idempotente).
 
 ## Fotos
 
