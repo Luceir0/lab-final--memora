@@ -5,7 +5,7 @@
 - **Fecha:** 2026-11-05
 - **Nivel de auditoría:** B
 - **Aceptación:** usuario, 2026-11-05, tras los cinco cambios de aceptación; pidió expresamente cerrar
-- **Cierre:** 2026-11-05 (PR #38 mergeada; merge `8c04be8d5a60ec6d93e8fc3a816f37b60c67acda`; CI PR `42072093665` y `main` `42072660244` en verde)
+- **Cierre:** 2026-11-05 (PR #38 mergeada; merge `8c04be8d5a60ec6d93e8fc3a816f37b60c67acda`; CI PR `42072093665` y `main` `42072660244` en verde; PR de documentación #39)
 - **Implementado por:** sesión de implementación de F24 (`web` y `shared`), commits `1a40ca3`, `b964e16`, `4ce5043` y `f6e65d4`; PR #38 mergeada
 - **Revisado por:** revisión independiente de nivel B; auditorías de diseño y accesibilidad del delta
 
@@ -89,11 +89,11 @@ pnpm agents:check → OK (43 specs, 43 filas)
 - **Aceptación:** el usuario aceptó F24 el **2026-11-05**, tras los cinco cambios de aceptación, y pidió expresamente cerrar la feature.
 - **Login:** la API estaba en un bucle de `node --watch` y devolvía 500; se reinició limpia (`node src/index.ts` con `DATABASE_URL=…/memora`) y `health`, `login` y la web respondieron 200. El usuario debe recargar con `Ctrl+Shift+R` o en incógnito para evitar la sesión o los assets cacheados.
 - **Datos de prueba:** con autorización del usuario se borraron cuatro álbumes de prueba («Álbum de prueba», «Un título larguísimo…», «Auditoría vacío» y «Auditoría creada»). Quedan solo los dos de seed: «Verano en la costa» y «Lisboa en primavera».
-- **Cierre operativo:** PR #38 mergeada en `main` con `8c04be8d5a60ec6d93e8fc3a816f37b60c67acda`; commits `1a40ca3`, `b964e16`, `4ce5043` y `f6e65d4`; CI PR `42072093665` y `main` `42072660244`, ambos `completed/success`.
+- **Cierre operativo:** PR #38 mergeada en `main` con `8c04be8d5a60ec6d93e8fc3a816f37b60c67acda`; commits `1a40ca3`, `b964e16`, `4ce5043` y `f6e65d4`; CI PR `42072093665` y `main` `42072660244`, ambos `completed/success`; PR de documentación #39.
 
 ## Pendiente
 
-- Sin pendientes operativos: PR #38 mergeada y CI en verde.
+- Sin pendientes operativos: PR #38 mergeada, CI en verde y PR de documentación #39.
 - Lector de pantalla real (NVDA/VoiceOver): no probado; axe y teclado no lo sustituyen.
 - Zoom solo-texto al 200 %: medido el reflow, no el zoom de texto aislado.
 - Portada: F26 sube la imagen como foto del álbum y F29 la elige entre sus fotos y marca `coverPhotoId`.

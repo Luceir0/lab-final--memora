@@ -69,4 +69,5 @@
 - [x] Commit local (`1a40ca3` feature, `b964e16` y `4ce5043` documentación).
 - [x] Push y PR #38.
 - [x] Merge y CI de la PR #38 (`8c04be8`; PR `42072093665`; `main` `42072660244`).
+- [x] PR de documentación #39.
 - [ ] Pendientes técnicos del handoff: lector de pantalla real, zoom solo-texto, portada F26/F29, subidas F26, descargas F33, doble anuncio de validación, cuerpo genérico del 403 en la API, Mateo creador con fotos, paginación >24 y cursor inválido.
