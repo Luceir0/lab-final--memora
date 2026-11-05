@@ -512,3 +512,13 @@ Registro de usos relevantes de IA. No es un chat completo: es evidencia para el 
 - **Estado:** F22 pasa de `review` a **`accepted`**, no a `done`: el **G5** (commits, PR y merge) queda pendiente y no se ejecuta sin permiso.
 - **Tema del temario:** cierre de un ciclo de aceptación con correcciones de producto, trazabilidad del estado en el tablero, la spec, el handoff y la bitácora, y separación explícita entre aceptación funcional y cierre operativo.
 - **Evidencia:** [spec](../04-features/F22-people-web/spec.md), [tasks](../04-features/F22-people-web/tasks.md), [handoff](../04-features/F22-people-web/handoff.md) y [tablero](../04-features/README.md).
+
+### 2026-11-05 — F22 People web: cierre operativo y paso a `done`
+
+- **Prompt representativo:** cerrar F22 en la documentación tras la merge de la PR, con el estado `done`, los commits, la PR, los runs de CI y las cifras reales, sin tocar código ni hacer commit desde esta rama.
+- **Cierre operativo:** PR **#34** `feat(web): People web with shared circle chrome (F22)` mergeada en `main` con el merge commit `7ee702f82f1f1715517cbc891fab5b1d369c082f`. Commits de la rama: `56fca50`, `3e719ed`, `8219d1f` y `97b45be`, más el merge `7ee702f`. CI en la PR run **42004835096** y en `main` tras el merge run **42006326244**, ambos `completed/success`.
+- **Estado:** F22 pasa de `accepted` a **`done`**. El cierre documental va en la rama `docs/F22-done`; el commit lo hace el orquestador.
+- **Cifras del cierre:** 8/8 tareas y **1062 tests** (shared 145, api-client 39, ui 281, web 378, api 219), typecheck 9/9, lint 6/6, build 5/5 con cinco rutas prerenderizadas, `docs:check` OK y `agents:check` 43/43; **16 pasadas de axe con 0 violaciones** (12 de la ronda de estados y 4 de la aceptación).
+- **Pendientes trasladados:** lector de pantalla real (F39), zoom de texto al 200 % en la nav sticky, nits D-06 y D-07 y la duplicidad intencional del círculo destacado en «Tus círculos».
+- **Tema del temario:** cierre operativo de una feature (commits, PR, merge y CI), trazabilidad del estado en tablero, spec, tasks, handoff y bitácora, y separación entre aceptación funcional y cierre técnico.
+- **Evidencia:** [spec](../04-features/F22-people-web/spec.md), [tasks](../04-features/F22-people-web/tasks.md), [handoff](../04-features/F22-people-web/handoff.md), [tablero](../04-features/README.md) y [README](../../README.md).

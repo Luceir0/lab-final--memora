@@ -3,7 +3,7 @@ id: F22
 title: "People web"
 milestone: M2
 size: M
-status: accepted
+status: done
 spec: complete
 depends_on:
   - "F18"
@@ -23,7 +23,7 @@ decisions: []
 
 # F22 — People web
 
-> **Milestone:** M2 · **Talla:** M · **Estado:** accepted · **Spec:** completa
+> **Milestone:** M2 · **Talla:** M · **Estado:** done · **Spec:** completa
 > **Depende de:** F18, F19, F20, F21 · **Bloquea:** F32
 
 ## Objetivo
@@ -209,7 +209,7 @@ Resultados reales en [handoff.md](handoff.md).
 
 ## Handoff
 
-Aceptada por el usuario el 2026-11-05. El handoff completo, con la verificación real y los pendientes, está en [handoff.md](handoff.md). El cierre operativo (G5: commits, PR y merge) queda pendiente y no se hace sin permiso.
+Aceptada por el usuario el 2026-11-05 y cerrada en `done` el mismo día tras el G5: PR #34, merge `7ee702f` en `main` y CI en verde en la PR (run `42004835096`) y en `main` (run `42006326244`). El handoff completo, con la verificación real y los pendientes, está en [handoff.md](handoff.md).
 
 ## Decisiones del 2026-11-05
 
@@ -228,6 +228,7 @@ Aceptada por el usuario el 2026-11-05. El handoff completo, con la verificación
 13. **Migas con la sección siempre (G4-06).** «Mis círculos / Danza / Álbumes» y «Mis círculos / Danza / Personas».
 14. **«Tus círculos» incluye el destacado (G4-07).** La lista pinta todos los círculos, también el destacado: 2 cards + «Crear un círculo» y el contador «2 círculos» cuadra. Antes `rest` filtraba el destacado y con 2 círculos solo se pintaba uno.
 15. **Aceptación de G4 (2026-11-05).** El usuario probó la feature en escritorio y móvil, claro y oscuro, y la **aceptó** después de la ronda G4-01 a G4-07. El estado pasa a `accepted`; el G5 (commits, PR y merge) queda pendiente y no se ejecuta sin permiso.
+16. **Cierre operativo y `done` (2026-11-05).** G5 completado en la rama `docs/F22-done`: PR #34 `feat(web): People web with shared circle chrome (F22)` mergeada en `main` con el merge commit `7ee702f82f1f1715517cbc891fab5b1d369c082f`; CI en la PR run **42004835096** y CI en `main` tras el merge run **42006326244**, ambos `completed/success`. Commits de la rama: `56fca50`, `3e719ed`, `8219d1f`, `97b45be` y el merge `7ee702f`. La feature pasa a `done` con las cifras del cierre: 8/8 tareas, **1062 tests** (shared 145, api-client 39, ui 281, web 378, api 219), typecheck 9/9, lint 6/6, build 5/5, docs:check y agents:check en verde, y 16 pasadas de axe con 0 violaciones.
 
 ## Correcciones de la auditoría de diseño (2026-11-05)
 
