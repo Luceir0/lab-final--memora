@@ -1,14 +1,17 @@
 # Handoff — F23 Albums API
 
 - **Estado:** `done`
-- **Rama:** `feat/F23-albums-api` (sin commit; el árbol de trabajo contiene los cambios de código y de documentación)
+- **Rama:** `feat/F23-albums-api`, mergeada en `main`
+- **PR:** [#36](https://github.com/Luceir0/lab-final--memora/pull/36)
+- **Merge en `main`:** `dca7a60bf386bd898c55d6ae8cf82b70166b68dd`
+- **CI:** PR run `42018373439` y `main` run `42018611662`, ambos `completed/success`
 - **Fecha:** 2026-11-05
 - **Nivel de auditoría:** B
 - **Aceptación:** usuario, 2026-11-05. Feature de backend: no hay prueba en navegador.
 
 ## Resultado
 
-CRUD completo de álbumes sobre la API real de Memora: seis endpoints con autorización por recurso y por flag, listado paginado con cursor keyset `(createdAt, id)`, portada validada contra fotos del propio álbum, alta transaccional con actividad `album.created` y borrado con bloqueo pesimista para que una foto recién insertada no se pierda por la cascada. **24 tests de integración reales** contra PostgreSQL, **243 tests de API** y **1086 tests** en el monorepo. Revisión independiente de nivel B en dos rondas: la primera fue **no apto** por B-01 y la segunda **apto**, sin bloqueantes nuevos. El usuario aceptó la feature el 2026-11-05. **Commit y PR pendientes de autorización.**
+CRUD completo de álbumes sobre la API real de Memora: seis endpoints con autorización por recurso y por flag, listado paginado con cursor keyset `(createdAt, id)`, portada validada contra fotos del propio álbum, alta transaccional con actividad `album.created` y borrado con bloqueo pesimista para que una foto recién insertada no se pierda por la cascada. **24 tests de integración reales** contra PostgreSQL, **243 tests de API** y **1086 tests** en el monorepo. Revisión independiente de nivel B en dos rondas: la primera fue **no apto** por B-01 y la segunda **apto**, sin bloqueantes nuevos. El usuario aceptó la feature el 2026-11-05 y el cierre operativo quedó completo con la PR #36, el merge `dca7a60` y CI en verde.
 
 ## Cambios
 
@@ -74,6 +77,15 @@ Cerrados también en la revisión:
 - **m-02:** desempate del keyset con `createdAt` idéntico.
 - **m-03:** `403` decidido por `can()`; test con rol `owner` falsificado.
 
+## Cierre operativo (2026-11-05)
+
+- **Commits** en `feat/F23-albums-api`: `34c71cd` (`feat(api): add albums API with pagination, cover and safe delete (F23)`) y `6ad8226` (`docs: record F23 implementation, review and acceptance`).
+- **PR:** [#36](https://github.com/Luceir0/lab-final--memora/pull/36), mergeada en `main`.
+- **Merge commit:** `dca7a60bf386bd898c55d6ae8cf82b70166b68dd`.
+- **CI:** run `42018373439` en la PR y run `42018611662` en `main` sobre el merge, ambos `completed/success`.
+- **Aceptación:** usuario, 2026-11-05.
+- No quedan commits, push ni PR pendientes por este cierre.
+
 ## Pendiente
 
 - **F25:** eliminación de los objetos de almacenamiento al vaciar un álbum (decisión de G1; el adaptador real llega en F25).
@@ -82,7 +94,6 @@ Cerrados también en la revisión:
 - **N-01:** `coverPhoto: true` carga la fila `Photo` completa en memoria (no se serializa).
 - **m-04:** timeout de la transacción de borrado: `P2028`/500 si el lock dura más de 5 s.
 - **N-02:** robustez del test de concurrencia con `Promise.race`.
-- **Commit y PR:** propuestos y **no ejecutados**; pendientes de autorización del usuario.
 
 ## Riesgos y limitaciones
 
@@ -106,6 +117,5 @@ Cerrados también en la revisión:
 
 ## Siguiente paso propuesto
 
-1. Autorizar el commit de la rama `feat/F23-albums-api` y la PR; no se ha ejecutado nada.
-2. Abrir **F24 — Albums web** (nivel B), que consume estos endpoints.
-3. Trasladar a **F25** las tres deudas registradas: objetos de storage, índices y orden de locks.
+1. Abrir **F24 — Albums web** (nivel B), que consume estos endpoints.
+2. Trasladar a **F25** las tres deudas registradas: objetos de storage, índices y orden de locks.
