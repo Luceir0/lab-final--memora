@@ -15,7 +15,9 @@ Variables: `S3_ENDPOINT`, `S3_REGION`, `S3_BUCKET`, `S3_ACCESS_KEY_ID`, `S3_SECR
 - Bucket privado.
 - La API sirve las imágenes; no hay URLs públicas.
 - Claves generadas por el servidor.
-- Borrado de objetos al borrar fotos.
+- Borrado de objetos al borrar fotos y al vaciar un álbum.
+- Adaptador S3 con **`maxAttempts: 2`** y **timeout de 15 s por operación**; los objetos se registran antes del `put` para poder limpiarlos si el pipeline falla después.
+- En producción el storage debe ser un adaptador real: `buildApp()` rechaza arrancar si el almacenamiento no está configurado.
 
 En local se usa **Silo** (`pgsty/silo`), fork mantenido de MinIO tras el cierre de la edición comunitaria upstream. Conserva la API S3, las variables `MINIO_*` y el formato de datos; la imagen va fijada por tag y digest (ver [ADR-0014](adr/ADR-0014-local-storage.md) y `docs/08-delivery/deployment.md`). En producción no se usa: el bucket es R2/S3 gestionado.
 
@@ -44,9 +46,11 @@ Variables: `EMAIL_PROVIDER`, `EMAIL_FROM`, `RESEND_API_KEY`, `SMTP_HOST`, `SMTP_
 Variables: `GEOCODING_PROVIDER`, `GEOCODING_BASE_URL`, `GEOCODING_USER_AGENT`.
 
 - Reverse geocoding desde GPS transitorio.
-- Caché y rate limit.
+- Caché en memoria por coordenadas redondeadas a 3 decimales.
+- **1 req/s** de límite de frecuencia y **deadline total de 3 s** por consulta, incluida la espera en cola; cota de cola de 32. Agotado el deadline, `placeName` queda `null` y la subida responde `201`.
 - Si falla, `placeName` null.
 - No se persisten coordenadas.
+- En producción la geocodificación debe ser un adaptador real; si falta la configuración, la aplicación no arranca.
 
 ## Content Island
 

@@ -79,7 +79,7 @@ Reglas:
 - Editar foto: quien la subió o el owner. Ningún otro miembro.
 - Borrar foto: quien la subió o el owner. Ningún otro miembro.
 - Borrar álbum: owner o el miembro que lo creó, y solo si está vacío; si tiene fotos, `409 ALBUM_NOT_EMPTY`. No depende de `membersCanCreateAlbums`.
-- Vaciar álbum: owner o el miembro que lo creó, sin condición de fotos, con confirmación explícita; elimina las fotos y sus etiquetas en una transacción. Los objetos de almacenamiento se difieren a F25, cuando exista el adaptador real. No depende de `membersCanCreateAlbums`. Es distinto de borrar el álbum: `album.empty` no exige que esté vacío y devuelve cuántas fotos borró; `album.delete` exige que ya esté vacío. El creador puede deshacer lo que crea aunque el admin revoque después la flag.
+- Vaciar álbum: owner o el miembro que lo creó, sin condición de fotos, con confirmación explícita; elimina las fotos y sus etiquetas en una transacción y, desde F25, también sus objetos de almacenamiento (best-effort tras el commit). No depende de `membersCanCreateAlbums`. Es distinto de borrar el álbum: `album.empty` no exige que esté vacío y devuelve cuántas fotos borró; `album.delete` exige que ya esté vacío. El creador puede deshacer lo que crea aunque el admin revoque después la flag.
 - No se confía en IDs del cliente.
 
 ## Permisos puros
