@@ -17,14 +17,25 @@ El nivel de cada feature se fija por tabla en `docs/04-features/README.md` y **s
 
 | Exigencia | A | B | C | V |
 | --- | --- | --- | --- | --- |
-| Revisión independiente | Completa | Una pasada | No | Contra su propia spec |
+| Revisión independiente | Una pasada sobre el diff | **No** (CI + aceptación) | No | Contra su propia spec |
 | Casos negativos 401/403/acceso cruzado | Obligatorios | Solo si hay endpoint nuevo | No aplica | No aplica |
 | Checklist de seguridad | Completo | Se hereda del API | No | Completo |
-| Barrido de anchos | 320, 375, 768, 1024 y 1440 | 375 y 1440 | 375 y 1440 | Según su spec |
-| Claro y oscuro | Sí | Sí | Sí | Según su spec |
+| Barrido de anchos | **Se centraliza en F39** | **Se centraliza en F39** | **Se centraliza en F39** | Según su spec |
+| Claro y oscuro | En los tests de la feature | En los tests de la feature | En los tests de la feature | Según su spec |
 | Contraste y áreas táctiles | Se citan las evidencias de F10–F12 | Se citan las evidencias de F10–F12 | Se citan las evidencias de F10–F12 | Según su spec |
-| axe | Navegador real | Navegador real | CI | Navegador real |
+| axe | jsdom en la feature; navegador real solo en F39 | jsdom | CI | Navegador real |
 | `handoff.md` | Completo | Completo | Resumido | Completo |
+
+### Modo entrega (decisión del usuario, 2026-11-06)
+
+El producto ya está validado y las revisiones son lo que más tiempo consume. Hasta F43:
+
+- **Una sola revisión por feature y solo del diff.** Nunca se relanza la revisión de la pantalla entera.
+- **Nivel B sin `reviewer`.** Basta CI, `axe` en jsdom y la aceptación del usuario. F29, F30, F31 y F32 dejan de tener revisión independiente.
+- **Nivel A**: una pasada del `reviewer` con foco en autorización, acceso cruzado y datos. Sin barrido de navegador por feature.
+- **`design-auditor` solo si la pantalla se aparta del diseño canónico** o lo pide el usuario. No es un paso fijo.
+- **`a11y-auditor` una vez, en F39**, sobre las pantallas ya cerradas. No se repite por feature.
+- **Nada de auditorías de cierre** sobre lo ya aceptado: si un cambio posterior toca un archivo, se verifica ese archivo y su test.
 
 ### Una ronda por defecto
 
