@@ -1,11 +1,12 @@
 # Handoff — F26 Upload queue web
 
-- **Estado:** `review` — implementada, revisada y auditada; **pendiente de la revisión B de cierre del delta y de la aceptación del usuario (G4)**
-- **Rama:** `feat/f26-upload-queue-web` (árbol de trabajo, **sin commit ni push**)
+- **Estado:** `done` — aceptada por el usuario (G4) el 2026-11-06 y cerrada en `main`
+- **Rama:** `feat/f26-upload-queue-web`, mergeada con la PR #42; este cierre documental se prepara en `main` sin commit
 - **Fecha:** 2026-11-06
 - **Implementado por:** `ui-dev` en dos sesiones (cola, transporte y componentes; integración en el álbum y correcciones de auditoría), más un **delta de UI global** aprobado por el usuario
-- **Revisado por:** `reviewer` independiente, nivel **B**: **aprobada** en la revisión previa; el **delta de UI global** tiene axe en verde y deja la **revisión B de cierre** en `Pendiente`
+- **Revisado por:** `reviewer` independiente, nivel **B**: **aprobada**, incluida la revisión de cierre del delta de UI global
 - **Contratos:** [uploads.md](../../03-architecture/uploads.md) · [ADR-0007](../../03-architecture/adr/ADR-0007-uploads.md)
+- **Cierre operativo:** [PR #42](https://github.com/Luceir0/lab-final--memora/pull/42) · commits `9362d42` y `130be9d` · merge `86692300887bdd8d712073ba745ea87bc2674787` en `main` · CI en la PR run `42194933113` y en `main` run `42195282791`, ambos `completed/success`
 
 ## Resultado
 
@@ -13,7 +14,7 @@ La cola de subida web está implementada sobre el contrato de F25. El delta de U
 
 La UI es una hoja inferior modal en móvil/tablet y un panel flotante no modal desde 1024 px, titulado «Subidas», sin filtro por ruta ni por álbum; el álbum por archivo solo aparece si la cola mezcla más de un álbum. La barra compacta es global en todas las rutas privadas mientras haya items (`data-upload-bar`), con reserva de espacio en `main` y `scroll-padding-bottom`; el panel de escritorio usa `--upload-queue-panel-height: min(32rem, calc(100dvh - 3rem))` y también reserva espacio al abrirse (WCAG 2.2, 2.4.11). Tras cualquier acción de la cola, el foco vuelve al cuerpo del panel/hoja (`role="group"`, «Subidas»). El álbum conserva acciones reales en cabecera, estado vacío y FAB móvil, dropzone de ventana y selector cámara/galería con `capture`.
 
-Toda la verificación es automatizada: no se ha probado en navegador real ni con Playwright, así que la aceptación visual (375/1440, claro/oscuro, zoom 200 %, arrastre real, `capture`, aviso nativo de recarga y lector de pantalla) queda en G4 y en F37/F38/F39.
+La verificación es automatizada. El usuario aceptó la feature el 2026-11-06 (G4): «Todo bien, cambios aprobados.» No se ha probado en navegador real ni con Playwright: el barrido 375/1440, claro/oscuro, el layout a 200 % con el panel abierto, arrastre real, `capture`, aviso nativo de recarga y lector de pantalla quedan como pendientes reales en F37/F38/F39.
 
 ## Cambios (archivos)
 
@@ -65,6 +66,8 @@ Toda la verificación es automatizada: no se ha probado en navegador real ni con
 | `pnpm --filter @memora/web test uploads` | **19 archivos, 141 tests** |
 | `pnpm --filter @memora/web test -- --maxWorkers=3` | **82 archivos, 649 tests** |
 | `pnpm format:check` | OK |
+| `pnpm --filter @memora/web build` | OK, **5 rutas prerenderizadas** |
+| `pnpm docs:check` / `pnpm agents:check` | 191 archivos, **574 enlaces** tras este cierre documental (568 en la verificación previa), 0 rotos / 43 specs y 43 filas |
 | axe en `upload-queue-bar.test.tsx` y `upload-queue-risk.test.tsx` | Pasan |
 
 Notas sobre la verificación:
@@ -72,7 +75,7 @@ Notas sobre la verificación:
 - `upload-xhr-msw.test.tsx` usa **MSW 3.0.3 sobre XHR real**: 500 → `error` y reintento 201 → `done` **con el mismo `clientUploadId`**. También cubre la normalización de un 500 sin cuerpo contractual.
 - `album-upload-exit.test.tsx` cubre la navegación interna real: no aparece el diálogo eliminado, el pathname cambia, la petición no se aborta y la barra/panel siguen montados; con el panel cerrado, la barra sigue visible y usable en la nueva ruta. No se prueba el aviso nativo porque jsdom no muestra el diálogo del navegador.
 - `upload-exit-guard.test.tsx` despacha un `beforeunload` sintético: se previene con subidas pendientes o en curso y no se previene con la cola vacía, en `done`, en `error` o en `cancelled`. El diálogo nativo del navegador no se puede verificar en jsdom.
-- **No hay verificación en navegador real ni Playwright:** no se midieron 375/1440, claro/oscuro, zoom 200 %, el layout con el panel abierto, arrastre real, `capture` ni lector de pantalla. El `build` se verificó en la revisión previa y **no se ha re-ejecutado tras el delta**.
+- **No hay verificación en navegador real ni Playwright:** no se midieron 375/1440, claro/oscuro, zoom 200 %, el layout con el panel abierto, arrastre real, `capture` ni lector de pantalla. El `build` final se ejecutó antes del cierre con **5 rutas prerenderizadas**.
 
 ## Criterios de aceptación
 
@@ -88,21 +91,26 @@ Notas sobre la verificación:
 
 ## Revisión, auditorías y aceptación
 
-- **Revisión independiente nivel B (implementación base): aprobada**, sin bloqueantes ni mayores.
-- **Accesibilidad de la base: aprobada** tras corregir la región viva dentro de `inert`, el foco al cerrar y el foco de reserva; axe sin violaciones en la hoja móvil, el panel de escritorio y la barra.
-- **Delta de UI global (2026-11-06):** revisado en lo funcional y con axe en verde en `upload-queue-bar.test.tsx` y `upload-queue-risk.test.tsx`; el foco tras cada acción vuelve al cuerpo del panel/hoja y el panel y la barra reservan espacio (2.4.11). Queda **pendiente la revisión B de cierre** del delta.
-- **Diseño: mayores resueltos** (reapertura en escritorio y copy veraz de la barra); quedan nits.
-- **G4 pendiente:** el usuario no ha probado todavía la feature en navegador. F26 **no** pasa a `accepted` ni a `done` en este cierre.
+- **Revisión independiente nivel B: aprobada**, incluida la revisión de cierre del delta, sin bloqueantes ni mayores.
+- **Accesibilidad: aprobada** tras corregir la región viva dentro de `inert` y el foco; axe sin violaciones en la hoja móvil, el panel de escritorio y la barra, y también en las pruebas de barra y riesgo del delta.
+- **Delta de UI global (2026-11-06):** aprobado; el foco tras cada acción vuelve al cuerpo del panel/hoja y el panel y la barra reservan espacio (2.4.11). Queda como pendiente la comprobación manual a 200 % y con el panel abierto.
+- **Diseño: mayores resueltos** (reapertura en escritorio y copy veraz de la barra); quedan nits no bloqueantes.
+- **G4 aceptada (2026-11-06):** el usuario revisó la feature y aprobó los cambios: «Todo bien, cambios aprobados.» **F26 queda en `done`.**
+
+## Cierre operativo
+
+- [PR #42](https://github.com/Luceir0/lab-final--memora/pull/42), commits `9362d42` (`feat(web): add upload queue with global cross-route card (F26)`) y `130be9d` (`docs: record F26 implementation and review`).
+- Merge en `main`: `86692300887bdd8d712073ba745ea87bc2674787` (`Merge pull request #42 from Luceir0/feat/f26-upload-queue-web`).
+- CI en la PR: run `42194933113`, `completed/success`. CI en `main` sobre el merge: run `42195282791`, `completed/success`.
 
 ## Pendiente
 
-- **G4 (usuario):** probar la feature en móvil y escritorio, claro y oscuro. La aceptación no sustituye a la revisión B de cierre del delta.
-- **G5:** commit y PR, solo con permiso. Nada está commiteado.
-- **Revisión B de cierre del delta:** pendiente sobre el árbol actual (host global, barra global, `beforeunload` y foco tras acciones).
+- **Verificación con lector de pantalla:** comprobar que el anunciador, portaleado fuera del diálogo, sigue anunciando con la hoja modal abierta.
 - **Layout a 200 % de texto y con el panel abierto:** verificación manual en navegador real de la reserva de `main`, el `scroll-padding-bottom` y el foco no tapado por la barra ni por el panel.
-- **Región viva con lector de pantalla:** comprobar que el anunciador, portaleado fuera del diálogo, sigue anunciando con la hoja modal abierta.
 - **`ProgressBar` determinado sin `motion-reduce` en `packages/ui`:** el componente no respeta la preferencia de movimiento reducido; se corrige en **F39**.
 - **Posible pérdida de cola en logout o `401`:** esas navegaciones desmontan el provider y abortan las subidas; `beforeunload` no las cubre.
+- **Reserva estática del panel:** la altura del panel se reserva con `--upload-queue-panel-height` y no se mide; con contenido largo o texto ampliado puede no coincidir con la altura real.
+- **Posible salto de scroll al enfocar la cola tras una acción:** el foco al cuerpo del panel/hoja puede desplazar la vista; revisar en navegador real.
 - **Sin navegador real ni Playwright:** falta barrido 375/1440, claro/oscuro, arrastre real, `capture`, aviso nativo de `beforeunload` y lector de pantalla. E2E queda para **F37/F38** y el lector de pantalla para **F39**.
 - **Altura de la barra aproximada:** `5.5rem` está duplicado entre la variable CSS, el `scroll-padding-bottom` y las reglas de `main`; a 200 % podría solaparse. Recomendado medirla con `ResizeObserver`, como la barra inferior del shell.
 - **Reconciliación al descartar un error de red:** si se perdió un 2xx, el álbum puede no reflejar la foto hasta el siguiente refetch; el reintento idempotente es el camino seguro.
@@ -136,15 +144,15 @@ Notas sobre la verificación:
 - [x] `docs/04-features/F26-upload-queue-web/spec.md` — decisiones base + delta de UI global, **AC-07 reescrito** y limitación de logout/`401`.
 - [x] `docs/04-features/F26-upload-queue-web/tasks.md` — tareas y verificación reales del delta.
 - [x] `docs/04-features/F26-upload-queue-web/handoff.md` — este documento.
-- [x] `docs/04-features/README.md` — fila de F26 en `review`, situación con cifras nuevas y nota de la F27 reducida.
-- [x] `docs/04-features/F27-subidas-globales/spec.md` — alcance reducido a `/uploads`, recientes y contador.
-- [x] `docs/05-quality/test-matrix.md` — sección F26 y filas de subidas con 19/141 y 82/649.
-- [x] `docs/06-process/ai-log.md` — entrada de la sesión del delta.
+- [x] `docs/04-features/README.md` — fila de F26 en `done`, situación **F01–F26 `done`** y F27 recomendada con alcance reducido.
+- [x] `docs/04-features/F27-subidas-globales/spec.md` — dependencia de F26 `done` y alcance reducido a `/uploads`, recientes y contador.
+- [x] `docs/05-quality/test-matrix.md` — sección F26 con 19/141, 82/649 y cierre.
+- [x] `docs/06-process/ai-log.md` — entrada de la sesión del delta y entrada de cierre.
 - [x] `docs/03-architecture/uploads.md` — aviso nativo y alcance de la supervivencia de la cola.
-- [x] `docs/07-curriculum/coverage-map.md` — filas de F26 actualizadas (sin modal eliminado).
+- [x] `docs/07-curriculum/coverage-map.md` — F26 en `done`, filas y cifras finales.
 - [x] `docs/02-design/components.md` — nota de la cola alineada con el host global.
 - [ ] `README.md` raíz — sin cambios: la estructura del repo no cambia.
 
 ## Siguiente paso propuesto
 
-Cerrar la **revisión B del delta** y pasar a **G4**: probar en móvil y escritorio, claro y oscuro, la navegación con subidas en curso (sin diálogo), la recarga con subidas activas (aviso nativo), la barra en rutas distintas del álbum y el panel abierto con texto al 200 %. Si el usuario acepta, cerrar en `accepted` y abrir G5 con permiso explícito para commit y PR. La ruta `/uploads`, las recientes y el contador pasan a **F27**; los placeholders de la rejilla, a **F29**; el barrido de navegador y el lector de pantalla, a **F37/F38/F39**.
+Abrir **F27 (Subidas globales)**: ruta `/uploads` real, subidas recientes y contador del sidebar, con el alcance ya reducido porque F26 dejó entregados el panel global, la cola transversal y la persistencia visual. F27 sigue en `draft`; antes de empezar hay que cumplir su Definition of Ready. Los pendientes visuales y de lector de pantalla de F26 pasan a **F37/F38/F39** y no bloquean el cierre.

@@ -131,7 +131,7 @@
 
 - `corepack pnpm --filter @memora/web test uploads` → **19 archivos y 141 tests**: `reducer.test.ts`, `reducer-transitions.test.ts`, `use-upload-queue.test.tsx`, `use-upload-queue-risks.test.tsx`, `transport.test.ts`, `transport-contract.test.ts`, `upload-xhr-msw.test.tsx`, `validation.test.ts`, `errors.test.ts`, `format.test.ts`, `album-refresh.test.ts`, `upload-dropzone.test.tsx`, `upload-source-picker.test.tsx`, `upload-queue.test.tsx`, `upload-queue-risk.test.tsx`, `upload-queue-bar.test.tsx`, `upload-queue-host.test.tsx`, `upload-announcer.test.tsx` y `upload-exit-guard.test.tsx`.
 - `corepack pnpm --filter @memora/web test -- --maxWorkers=3` → **82 archivos y 649 tests**.
-- `corepack pnpm --filter @memora/web typecheck` y `lint` → OK; `corepack pnpm format:check` → OK. El `build` se verificó en la revisión previa (5 rutas prerenderizadas) y **no se ha re-ejecutado tras el delta**.
+- `corepack pnpm --filter @memora/web typecheck` y `lint` → OK; `corepack pnpm format:check` → OK; `corepack pnpm --filter @memora/web build` → OK con **5 rutas prerenderizadas**.
 - **Progreso y transporte:** `upload-xhr-msw.test.tsx` usa **MSW 3.0.3 sobre XHR real**: 500 → `error` y reintento 201 → `done` con el mismo `clientUploadId`; también normaliza un 500 sin cuerpo contractual. `transport-contract.test.ts` fija el contrato del puerto inyectable.
 - **Estado y concurrencia:** reducer puro con unión discriminada y transiciones inválidas descartadas; resumen global ponderado por bytes; `use-upload-queue.test.tsx` y `use-upload-queue-risks.test.tsx` cubren arranque por huecos, concurrencia 3, retry, cancel y un error que no pierde a los demás.
 - **Dropzone y selector:** `upload-dropzone.test.tsx` cubre drop válido, cancelación del default con archivos (también dentro de la cola o deshabilitado) y drops ignorados dentro de overlays; `upload-source-picker.test.tsx` cubre cámara/galería con `capture`.
@@ -140,7 +140,8 @@
 - **Aviso nativo:** `upload-exit-guard.test.tsx` despacha un `beforeunload` sintético: se previene con subidas pendientes o en curso y no con la cola vacía, en `done`, en `error` o en `cancelled`. El diálogo nativo del navegador no se prueba: jsdom no lo muestra.
 - **Anuncios:** `upload-announcer.test.tsx` cubre añadida, completada, error con motivo y cancelada, y que el progreso no se anuncia; la región se portalea al overlay superior para no caer en `inert`.
 - **Axe:** las pasadas de `upload-queue-bar.test.tsx` y `upload-queue-risk.test.tsx` **pasan**.
-- **No cubierto:** no hay navegador real ni Playwright; quedan el barrido 375/1440, claro/oscuro, zoom 200 % de texto y con el panel abierto, arrastre real, `capture`, aviso nativo de `beforeunload`, lector de pantalla de la región viva fuera del diálogo y la medición real de la barra. Pasa a **G4** y a **F37/F38/F39**.
+- **No cubierto:** no hay navegador real ni Playwright; quedan el barrido 375/1440, claro/oscuro, zoom 200 % de texto y con el panel abierto, arrastre real, `capture`, aviso nativo de `beforeunload`, lector de pantalla de la región viva fuera del diálogo y la medición real de la barra. Pasa a **F37/F38/F39**.
+- **Cierre:** aceptación del usuario el 2026-11-06 («Todo bien, cambios aprobados»), PR #42, merge `86692300887bdd8d712073ba745ea87bc2674787` y CI en verde en la PR (run `42194933113`) y en `main` (run `42195282791`).
 
 ## Flujo E2E principal
 
