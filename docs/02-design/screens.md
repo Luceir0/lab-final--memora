@@ -69,6 +69,11 @@ Inventario de la segunda iteración. Las imágenes están en `assets/design/scre
 | Crear álbum · escritorio · validación y error | [crear-album-escritorio-validacion-y-error.png](../../assets/design/screens/crear-album-escritorio-validacion-y-error.png) |
 | Crear álbum · móvil · guardando | [crear-album-movil-guardando.png](../../assets/design/screens/crear-album-movil-guardando.png) |
 
+> **`/uploads` (F27).** No existe PNG canónico de la página «Mis subidas». Su diseño es
+> **inferido** a partir de las vistas de esta sección y de la rejilla de «Fotos de una persona»;
+> ver la tabla de [diseño inferido](#diseño-inferido). Ninguna vista de `/uploads` se presenta
+> como canónica.
+
 ## Fotos y etiquetas
 
 | Vista | Archivo |
@@ -188,6 +193,7 @@ La segunda iteración no incluye algunas vistas base o variantes. Se construirá
 | Crear círculo · estado base | `Crear círculo · móvil · validación` + formularios de Ajustes |
 | Crear álbum · estado base | `Crear álbum · móvil · guardando` + formularios de Ajustes |
 | Álbum · móvil · estado normal | `Álbum · móvil · vacío` + `Álbum · móvil · subiendo` + `Álbum · escritorio · selección múltiple` |
+| Subidas · página y agrupación | `Mis círculos · escritorio` (secciones y enlaces) + `Fotos de una persona` (rejilla) + `Cola de subida · móvil` (bloque en curso) + tokens |
 | Acceso · escritorio · estado base | `Acceso · escritorio · enviando` |
 | Etiquetar · escritorio · estado base | `Etiquetar · escritorio · guardando` + `Etiquetar · móvil` |
 | Ajustes · escritorio · estado base | `Ajustes · escritorio · guardando` + `Ajustes · móvil` |

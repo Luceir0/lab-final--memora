@@ -8,7 +8,6 @@ import { routeTree } from '../routeTree.gen';
 
 import { Route as PrivacyRoute } from './_app.privacy';
 import { Route as ProfileRoute } from './_app.profile';
-import { Route as UploadsRoute } from './_app.uploads';
 
 /**
  * El Perfil provisional usa `Link` para Ayuda y Privacidad. Estas pruebas
@@ -38,7 +37,6 @@ vi.mock('@tanstack/react-router', async (importOriginal) => {
 
 const PLACEHOLDERS = [
   { path: '/profile', title: 'Perfil', Route: ProfileRoute },
-  { path: '/uploads', title: 'Subidas', Route: UploadsRoute },
   { path: '/privacy', title: 'Privacidad', Route: PrivacyRoute },
 ] as const;
 
@@ -72,5 +70,21 @@ describe('pantallas provisionales', () => {
 
     expect(routeIds).toContain('/_app');
     expect(routeIds.at(-1)).toBe(`/_app${path}`);
+  });
+
+  it('/uploads resuelve a su ruta real y no al 404', async () => {
+    const router = createRouter({
+      routeTree,
+      context: { queryClient: createQueryClient() },
+      history: createMemoryHistory({ initialEntries: ['/uploads'] }),
+      scrollRestoration: false,
+    });
+
+    await router.load();
+
+    const routeIds = router.state.matches.map((match) => match.routeId);
+
+    expect(routeIds).toContain('/_app');
+    expect(routeIds.at(-1)).toBe('/_app/uploads');
   });
 });

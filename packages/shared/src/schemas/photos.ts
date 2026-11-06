@@ -87,12 +87,14 @@ export const photoImageSizeSchema = z.enum(['thumb', 'display', 'original']);
 export type PhotoImageSize = z.infer<typeof photoImageSizeSchema>;
 
 /**
- * `GET /photos/:photoId/image?size=`. `original` requires `membersCanDownload`;
- * `thumb` and `display` are available to every circle member. The response is
- * binary, so it has no JSON schema.
+ * `GET /photos/:photoId/image?size=`. `size` is mandatory: the server picks the
+ * object key from it and never falls back to a variant the caller did not ask
+ * for. `original` requires `membersCanDownload`; `thumb` and `display` are
+ * available to every circle member. The response is binary, so it has no JSON
+ * schema.
  */
 export const photoImageQuerySchema = z.object({
-  size: photoImageSizeSchema.default('display'),
+  size: photoImageSizeSchema,
 });
 
 export type PhotoImageQuery = z.infer<typeof photoImageQuerySchema>;

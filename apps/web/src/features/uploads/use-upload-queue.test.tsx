@@ -5,6 +5,7 @@ import type { ReactNode } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { UploadTransportError } from './errors';
+import { uploadHistoryKeys } from './history/queries';
 import type { UploadTransport, UploadTransportRequest } from './transport';
 import { useUploadQueue } from './upload-queue-context';
 import { UploadProvider } from './upload-provider';
@@ -143,6 +144,28 @@ describe('useUploadQueue', () => {
 
     // Un token CSRF por lote, reutilizado por los cinco archivos.
     expect(fetchCsrfTokenMock).toHaveBeenCalledTimes(1);
+  });
+
+  it('invalida «Mis subidas» al completar una subida', async () => {
+    const { result, fake, queryClient } = renderQueue();
+    const invalidate = vi.spyOn(queryClient, 'invalidateQueries');
+
+    act(() => {
+      result.current.enqueue([imageFile()], {
+        albumId: 'album-1',
+        albumTitle: 'Verano',
+        source: 'gallery',
+      });
+    });
+
+    await waitFor(() => expect(fake.upload).toHaveBeenCalledTimes(1));
+
+    await act(async () => {
+      fake.deferreds[0]?.resolve(photo);
+    });
+
+    await waitFor(() => expect(result.current.summary.completed).toBe(1));
+    expect(invalidate).toHaveBeenCalledWith({ queryKey: uploadHistoryKeys.all });
   });
 
   it('retry reutiliza el clientUploadId y relanza la petición', async () => {

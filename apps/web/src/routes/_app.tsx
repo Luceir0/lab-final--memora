@@ -12,6 +12,7 @@ import {
 } from '../features/circles/session';
 import { UploadProvider } from '../features/uploads/upload-provider';
 import { UploadExitGuard } from '../features/uploads/upload-exit-guard';
+import { UploadNavBadge } from '../features/uploads/upload-nav-badge';
 import { UploadQueueHost } from '../features/uploads/upload-queue-host';
 import { getErrorMessage } from '../lib/error-message';
 
@@ -62,6 +63,7 @@ function AppLayout() {
       <AppShell
         currentPath={pathname}
         hideTopBar={isCircleSectionPath(pathname)}
+        uploadsBadge={<UploadNavBadge />}
         circleList={
           hasSession && protectedRoute ? <CircleSidebarNav currentPath={pathname} /> : undefined
         }

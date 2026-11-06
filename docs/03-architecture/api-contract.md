@@ -77,7 +77,16 @@ Longitudes en caracteres. Fuente: `packages/shared/src/schemas/**`. Los valores 
 | GET | `/auth/csrf` | Token CSRF |
 | GET | `/me` | Usuario actual |
 | PATCH | `/me` | Nombre y tema; el email es inmutable y el avatar no se edita en el MVP |
-| GET | `/me/uploads` | Subidas recientes del usuario |
+| GET | `/me/uploads` | Resumen de mis subidas agrupado por círculo y álbum |
+| GET | `/me/uploads/photos?albumId=&cursor=&limit=` | Mis fotos de un álbum, paginadas |
+
+Semántica de subidas propias cerrada en F27:
+
+- `GET /me/uploads` devuelve `{ total, circles: [{ circle, photosCount, albums: [{ album, photosCount, lastUploadAt, preview }] }] }`. `preview` son como máximo **4** `PhotoSummary` (`id`, `thumbUrl`, `width`, `height`) de las fotos más recientes del álbum. `total` es la suma de todos los `photosCount`.
+- Solo cuenta fotos con `uploaderId` = usuario autenticado **y** membresía vigente en el círculo de la foto. Las fotos de un círculo del que salió o fue expulsado no aparecen.
+- Orden: círculos por su `lastUploadAt` más reciente descendente (desempate `circle.id asc`); álbumes por `lastUploadAt` descendente (desempate `album.id asc`).
+- `GET /me/uploads/photos` exige `albumId`; `cursor` opaco (máx. 512) y `limit` 1–100 (defecto 24), keyset sobre `(createdAt, id) desc`. Devuelve `{ items: PhotoDto[], nextCursor, total }` y solo fotos propias de ese álbum. Álbum inexistente, de otro círculo o sin membresía → `404 NOT_FOUND`.
+- Ambas respuestas llevan `Cache-Control: private, no-store`. Sin rate limit propio.
 
 ## Círculos
 
@@ -175,7 +184,7 @@ Semántica cerrada en F23:
 
 `PhotoDto` incluye `clientUploadId` (string o `null`) para que el cliente reconcilie su cola tras un reintento. No incluye claves de almacenamiento ni coordenadas: solo `placeName`.
 
-`GET /circles/:circleId/members/:userId/photos` (F21) lista solo fotos de **ese círculo** en las que el miembro indicado está etiquetado, con `PhotoDto` completo (`uploader`, `tags`, `thumbUrl` y `displayUrl`). Orden `createdAt desc` con desempate `id desc`, keyset opaco y `limit` 1–100 (defecto 24). Tanto el llamante como el objetivo deben pertenecer al círculo; si cualquiera de los dos no es miembro, la respuesta es `404 NOT_FOUND`, para no revelar usuarios de otros círculos. Las URLs apuntan a `GET /photos/:photoId/image?size=thumb|display`; ese endpoint llega en **F29**, así que en F21 solo se construyen las URLs.
+`GET /circles/:circleId/members/:userId/photos` (F21) lista solo fotos de **ese círculo** en las que el miembro indicado está etiquetado, con `PhotoDto` completo (`uploader`, `tags`, `thumbUrl` y `displayUrl`). Orden `createdAt desc` con desempate `id desc`, keyset opaco y `limit` 1–100 (defecto 24). Tanto el llamante como el objetivo deben pertenecer al círculo; si cualquiera de los dos no es miembro, la respuesta es `404 NOT_FOUND`, para no revelar usuarios de otros círculos. Las URLs apuntan a `GET /photos/:photoId/image?size=thumb|display`, que **existe desde F27** (antes asignado a F29).
 
 
 ## Descargas
@@ -244,11 +253,16 @@ Errores por archivo con `code` y `message`.
 
 ## Imágenes
 
-- Cookie obligatoria; sin acceso anónimo.
-- `Cache-Control: private, max-age=3600`.
-- `ETag` y `Content-Type` correctos.
-- `original` solo si `membersCanDownload` está activo; `display` y `thumb` para miembros.
+`GET /photos/:photoId/image?size=thumb|display|original` (implementado en **F27**, adelantado desde F29; ADR-0006).
+
+- Cookie obligatoria; sin acceso anónimo. Foto inexistente, de otro círculo o sin membresía → `404`, sin distinguir casos.
+- `size` obligatorio. `thumb` y `display` para miembros; `original` solo si `membersCanDownload` está activo (si no, `403`).
+- La clave del objeto se elige en servidor; nunca llega del cliente ni se devuelve.
+- `Content-Type` real (`image/webp` en `thumb` y `display`, `mimeType` de la foto en `original`), `Content-Length` y `Content-Disposition: inline`.
+- `Cache-Control: private, max-age=3600`, `Vary: Cookie`, `X-Content-Type-Options: nosniff` y `ETag` débil estable por `(photoId, size, updatedAt)`. `If-None-Match` coincidente → `304` sin cuerpo, resuelto antes de leer el objeto: el validador gana a un objeto ausente de forma intencional (el cliente ya tiene la representación) y no se descarga el binario. Sin `If-None-Match`, un objeto ausente es `404`.
+- Objeto ausente en storage → `404`; fallo de storage → `500 INTERNAL_ERROR` con log sin PII.
 - Nunca se sirve el bucket directamente.
+- Sin límite de peticiones propio: el límite de descargas de 10/min por usuario es de F33 y se aplicará a este endpoint compartido cuando exista.
 
 ## OpenAPI
 

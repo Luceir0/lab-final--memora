@@ -33,6 +33,8 @@ decisions:
 
 > **Invariante de portada (F24, 2026-11-05).** F29 elige la portada **entre las fotos del álbum** y la marca con `coverPhotoId` mediante el `PATCH` existente. No sube un objeto aparte (eso es F26) ni necesita un endpoint nuevo: el contrato de F23 ya valida que la foto sea del mismo álbum.
 
+> **Nota (2026-11-06).** `GET /photos/:photoId/image?size=thumb|display|original` **ya no llega con esta feature**: F27 lo adelantó (auditoría A) para mostrar miniaturas en «Mis subidas». F29 usa el endpoint existente y añade `srcset`/`sizes`, el scroll infinito, la selección y el filtro por persona.
+
 ## Objetivo
 
 Construir la galería con scroll infinito, selección, filtro por persona y la página «Fotos de esta persona».

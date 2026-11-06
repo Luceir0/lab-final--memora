@@ -28,12 +28,6 @@ export interface NavDestination {
   readonly icon: LucideIcon;
   readonly label: NavLabel;
   readonly visibility: NavVisibility;
-  /**
-   * Palabra extra que solo se anuncia en móvil, dentro de la etiqueta visible
-   * correspondiente. Sirve para desambiguar acciones («Subir» → «Subir fotos»)
-   * sin cambiar el texto visible ni duplicar enlaces.
-   */
-  readonly mobileAccessibleSuffix?: string;
 }
 
 export const NAV_DESTINATIONS: readonly NavDestination[] = [
@@ -48,11 +42,8 @@ export const NAV_DESTINATIONS: readonly NavDestination[] = [
     id: 'uploads',
     path: '/uploads',
     icon: Upload,
-    label: { mobile: 'Subir', desktop: 'Subidas' },
+    label: { mobile: 'Subidas', desktop: 'Subidas' },
     visibility: 'all',
-    // «Subir» a secas es ambiguo fuera de contexto. El sufijo forma
-    // «Subir fotos» en el nombre accesible móvil y no toca el texto visible.
-    mobileAccessibleSuffix: 'fotos',
   },
   {
     id: 'profile',

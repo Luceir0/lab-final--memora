@@ -15,6 +15,8 @@ export interface SidebarProps {
   readonly currentPath?: string | undefined;
   readonly circleList?: ReactNode | undefined;
   readonly user?: ShellUser | undefined;
+  /** Insignia de subidas activas del destino `/uploads`. */
+  readonly uploadsBadge?: ReactNode | undefined;
 }
 
 /**
@@ -30,7 +32,7 @@ export interface SidebarProps {
  * `<section aria-label="Cuenta y apariencia">`, que se oculta con CSS en móvil;
  * así cada nombre describe lo que de verdad hay en el árbol de accesibilidad.
  */
-export function Sidebar({ currentPath = '', circleList, user }: SidebarProps) {
+export function Sidebar({ currentPath = '', circleList, user, uploadsBadge }: SidebarProps) {
   const profileActive = isDestinationActive(currentPath, '/profile');
 
   return (
@@ -42,7 +44,7 @@ export function Sidebar({ currentPath = '', circleList, user }: SidebarProps) {
         <Logo />
       </div>
 
-      <PrimaryNav currentPath={currentPath} circleList={circleList} />
+      <PrimaryNav currentPath={currentPath} circleList={circleList} uploadsBadge={uploadsBadge} />
 
       {/* `hidden lg:block`: la sección de cuenta no existe en móvil. */}
       <section

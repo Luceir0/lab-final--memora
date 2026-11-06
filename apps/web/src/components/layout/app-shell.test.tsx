@@ -50,6 +50,7 @@ function renderShell(
     readonly currentPath?: string;
     readonly circleList?: ReactNode;
     readonly user?: { name: string };
+    readonly uploadsBadge?: ReactNode;
   } = {},
 ) {
   return render(
@@ -58,6 +59,7 @@ function renderShell(
         currentPath={options.currentPath}
         circleList={options.circleList}
         user={options.user}
+        uploadsBadge={options.uploadsBadge}
       >
         <h1>Contenido de la página</h1>
       </AppShell>
@@ -100,26 +102,47 @@ describe('AppShell', () => {
     expect(new Set(links.map((link) => link.getAttribute('href'))).size).toBe(5);
   });
 
+  it('mantiene tres destinos visibles en la barra inferior móvil', () => {
+    renderShell();
+
+    const nav = getNav();
+    const items = Array.from(nav.querySelectorAll('li')).filter(
+      (item) => !item.classList.contains('hidden'),
+    );
+
+    expect(items).toHaveLength(3);
+    expect(nav.querySelector('ul')?.className).toContain('grid-cols-3');
+  });
+
+  it('pinta la insignia de subidas dentro del enlace de /uploads y solo ahí', () => {
+    renderShell({ uploadsBadge: <span data-testid="uploads-badge">3</span> });
+
+    const badge = screen.getByTestId('uploads-badge');
+    const upload = within(getNav()).getByRole('link', { name: /Subidas/ });
+
+    expect(upload.contains(badge)).toBe(true);
+    expect(screen.getAllByTestId('uploads-badge')).toHaveLength(1);
+  });
+
   it('muestra las etiquetas móviles y las de escritorio en el mismo árbol', () => {
     renderShell();
 
     const nav = getNav();
 
-    for (const label of ['Círculos', 'Subir', 'Perfil', 'Ayuda', 'Privacidad']) {
+    for (const label of ['Círculos', 'Subidas', 'Perfil', 'Ayuda', 'Privacidad']) {
       expect(within(nav).getAllByText(label).length).toBeGreaterThan(0);
     }
 
     expect(within(nav).getByText('Mis círculos')).toBeTruthy();
-    expect(within(nav).getByText('Subidas')).toBeTruthy();
   });
 
-  it('da a «Subir» un nombre accesible desambiguado sin cambiar su etiqueta visible', () => {
+  it('usa «Subidas» como nombre del enlace sin contador', () => {
     renderShell();
 
-    const upload = within(getNav()).getByRole('link', { name: /Subir fotos/ });
+    const upload = within(getNav()).getByRole('link', { name: 'Subidas' });
 
     expect(upload.getAttribute('href')).toBe('/uploads');
-    expect(upload.textContent).toContain('Subir');
+    expect(upload.textContent).toBe('Subidas');
   });
 
   it('marca con aria-current únicamente el destino activo', () => {
@@ -196,10 +219,10 @@ describe('AppShell', () => {
     expect(header.className).toContain('env(safe-area-inset-right)');
   });
 
-  it('trata «Subir» como un destino más, con 44 px de área táctil', () => {
+  it('trata «Subidas» como un destino más, con 44 px de área táctil', () => {
     renderShell();
 
-    const upload = within(getNav()).getByRole('link', { name: /Subir fotos/ });
+    const upload = within(getNav()).getByRole('link', { name: 'Subidas' });
     const iconShape = upload.querySelector('span');
     const icon = iconShape?.querySelector('svg');
 
@@ -213,10 +236,10 @@ describe('AppShell', () => {
     expect(icon?.getAttribute('class')).toContain('size-5');
   });
 
-  it('marca «Subir» activo con la misma píldora que el resto de destinos', () => {
+  it('marca «Subidas» activo con la misma píldora que el resto de destinos', () => {
     renderShell({ currentPath: '/uploads' });
 
-    const upload = within(getNav()).getByRole('link', { name: /Subir fotos/ });
+    const upload = within(getNav()).getByRole('link', { name: 'Subidas' });
     const iconShape = upload.querySelector('span');
 
     expect(upload.getAttribute('aria-current')).toBe('page');

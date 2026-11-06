@@ -12,6 +12,7 @@ import {
 import { fetchCsrfToken } from '../../lib/csrf';
 import { invalidateAlbumAfterUpload } from './album-refresh';
 import { isCsrfFailure, isUploadCancelledError, toUploadError } from './errors';
+import { invalidateUploadHistoryAfterUpload } from './history-refresh';
 import { createClientUploadId, createUploadItemId } from './ids';
 import { createPreviewUrl, revokePreviewUrl } from './preview';
 import { INITIAL_UPLOAD_QUEUE_STATE, summarizeUploadQueue, uploadQueueReducer } from './reducer';
@@ -129,6 +130,7 @@ export function UploadProvider({ children, transport }: UploadProviderProps) {
         }
 
         invalidateAlbumAfterUpload(queryClient, item.albumId);
+        invalidateUploadHistoryAfterUpload(queryClient);
 
         if (controller.signal.aborted) {
           return;

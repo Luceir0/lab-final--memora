@@ -14,6 +14,12 @@ export interface AppShellProps {
   /** Persona autenticada, cuando F34 la conecte. */
   readonly user?: ShellUser | undefined;
   /**
+   * Insignia de subidas activas. El shell no conoce la cola: `_app` pasa el
+   * componente ya conectado dentro de `UploadProvider`, sin que `layout`
+   * importe features.
+   */
+  readonly uploadsBadge?: ReactNode | undefined;
+  /**
    * Oculta la cabecera móvil en pantallas inmersivas (detalle de círculo).
    * En escritorio la cabecera ya no se pinta.
    */
@@ -39,6 +45,7 @@ export function AppShell({
   currentPath,
   circleList,
   user,
+  uploadsBadge,
   hideTopBar = false,
 }: AppShellProps) {
   return (
@@ -47,7 +54,12 @@ export function AppShell({
 
       {hideTopBar ? null : <TopBar />}
 
-      <Sidebar currentPath={currentPath} circleList={circleList} user={user} />
+      <Sidebar
+        currentPath={currentPath}
+        circleList={circleList}
+        user={user}
+        uploadsBadge={uploadsBadge}
+      />
 
       <div className="flex min-w-0 flex-col">
         <main

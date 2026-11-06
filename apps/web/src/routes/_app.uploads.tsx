@@ -1,21 +1,11 @@
 import { createFileRoute } from '@tanstack/react-router';
 
-import { SectionPlaceholder } from '../components/layout/section-placeholder';
+import { UploadHistoryPage } from '../features/uploads/history';
 
-/** Provisional hasta F27 (Subidas). Hoy es el destino de la acción «Subir». */
+/** «Mis subidas»: todas las fotos propias agrupadas por círculo y carpeta. */
 export const Route = createFileRoute('/_app/uploads')({
   head: () => ({
     meta: [{ title: 'Subidas · Memora' }],
   }),
-  component: UploadsPage,
+  component: UploadHistoryPage,
 });
-
-function UploadsPage() {
-  return (
-    <SectionPlaceholder
-      eyebrow="Tus fotos"
-      title="Subidas"
-      description="Aquí podrás subir fotos y seguir el estado de cada subida."
-    />
-  );
-}

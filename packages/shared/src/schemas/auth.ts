@@ -1,6 +1,5 @@
 import { z } from 'zod';
 
-import { createPageSchema, pageQuerySchema } from '../pagination.js';
 import { VALIDATION_MESSAGES } from '../validation-messages.js';
 import {
   displayNameSchema,
@@ -9,7 +8,7 @@ import {
   passwordSchema,
   themePreferenceSchema,
 } from './common.js';
-import { currentUserDtoSchema, photoDtoSchema } from './dto.js';
+import { currentUserDtoSchema } from './dto.js';
 
 export const registerRequestSchema = z.object({
   name: displayNameSchema,
@@ -72,11 +71,3 @@ export const updateMeRequestSchema = z
   });
 
 export type UpdateMeRequest = z.infer<typeof updateMeRequestSchema>;
-
-export const meUploadsQuerySchema = pageQuerySchema;
-
-export type MeUploadsQuery = z.infer<typeof meUploadsQuerySchema>;
-
-export const meUploadsResponseSchema = createPageSchema(photoDtoSchema);
-
-export type MeUploadsResponse = z.infer<typeof meUploadsResponseSchema>;
