@@ -277,3 +277,13 @@ Cuatro rondas sobre el mismo componente no fueron cuatro correcciones: fueron **
 - Commit, PR y merge (cierre operativo, G5). **Cerrado:** rama `feat/F28-circle-settings`, commit `e99a4b1`, [PR #46](https://github.com/Luceir0/lab-final--memora/pull/46) con CI en verde (run `42289840796`), merge `e6d2a3c5b1df0fb58b45937f3b817d121d9be50d` en `main`.
 - Los menores y nits no aplicados siguen en `Pendiente` del [handoff](handoff.md); ninguno bloquea la entrega.
 - El barrido de navegador 320/375/768/1024/1440 en claro/oscuro y la comprobación con lector de pantalla siguen diferidos a **F37/F38/F39**, como en F26 y F27.
+
+## Seguimiento posterior al cierre (2026-11-06)
+
+El subagente que el usuario dio por detenido escribió dos archivos más a las 21:41–21:42, **después** del commit `e99a4b1` y durante el cierre operativo. Los cambios eran coherentes (código y test a la vez) y pasaron la verificación acotada —`test settings` → **37 tests**—, así que **no se descartaron**; van en un PR de seguimiento explícito, nunca en un `--amend`:
+
+- El aviso de error usa `scroll-mt-[var(--app-circle-scroll-offset)]` y `scrollIntoView({ block: 'start' })` para quedar bajo el chrome fijo en vez de centrado.
+- La barra deja de repetir el texto del error: solo queda el aviso completo del formulario.
+- Los botones usan `min-w-fit` y `sm:flex-none` para conservar su ancho natural en escritorio.
+
+Es la quinta pasada sobre la misma barra. La regla de «un fix = un hallazgo» no se rompe por esto: se verificó solo `settings`, no la batería completa.

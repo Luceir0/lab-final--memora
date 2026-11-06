@@ -571,10 +571,12 @@ describe('ruta /circles/$circleId/settings', () => {
     expect(actions?.className).toContain('w-full');
     expect(actions?.className).toContain('sm:w-auto');
     expect(actions?.contains(save)).toBe(true);
-    expect(discard.className).toContain('min-w-0');
-    expect(save.className).toContain('min-w-0');
+    expect(discard.className).toContain('min-w-fit');
+    expect(save.className).toContain('min-w-fit');
     expect(discard.className).toContain('flex-1');
     expect(save.className).toContain('flex-1');
+    expect(discard.className).toContain('sm:flex-none');
+    expect(save.className).toContain('sm:flex-none');
     expect(discard.className).toContain('h-auto!');
     expect(save.className).toContain('whitespace-normal');
     expect(discard.className).toContain('px-3');
@@ -614,6 +616,7 @@ describe('ruta /circles/$circleId/settings', () => {
     });
 
     expect(alert.getAttribute('title') ?? '').toContain('No hemos podido guardar los ajustes');
+    expect(alert.className).toContain('scroll-mt-[var(--app-circle-scroll-offset)]');
     expect(within(alert).getByText(/No hemos podido guardar los ajustes/)).toBeTruthy();
     expect(within(alert).getByText(/Parece un problema del servidor/)).toBeTruthy();
     expect(screen.getAllByRole('alert')).toHaveLength(1);
@@ -624,7 +627,8 @@ describe('ruta /circles/$circleId/settings', () => {
       throw new Error('La barra de guardado debería estar montada');
     }
 
-    expect(within(bar).getByText('No se pudo guardar. Revisa el aviso.')).toBeTruthy();
+    expect(within(bar).queryByText(/No se pudo guardar/)).toBeNull();
+    expect(within(bar).queryByRole('alert')).toBeNull();
     expect(bar.textContent).not.toContain('Parece un problema del servidor');
 
     await expectNoAxeViolations(container);
