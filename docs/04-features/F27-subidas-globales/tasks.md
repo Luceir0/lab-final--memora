@@ -65,12 +65,16 @@
 - [x] `pnpm lint`
 - [x] `pnpm format:check`
 - [x] `pnpm --filter @memora/api test`
-- [ ] Prueba manual móvil/escritorio, claro/oscuro y segunda cuenta sin acceso (G4).
+- [ ] Prueba manual móvil/escritorio, claro/oscuro y segunda cuenta sin acceso: la aceptación
+  del usuario (G4) se cerró el 2026-11-06 y AC-09 queda **parcial** (barrido 320/375/768/1024/1440
+  y lector de pantalla sin documentar).
 
 ## Cierre
 
 - [x] Aceptación del usuario (G4) el 2026-11-06.
 - [x] `handoff.md` completo.
 - [x] Tablero actualizado.
-- [ ] Bitácora y cobertura actualizadas (G5).
-- [x] Commit propuesto (sin ejecutar).
+- [x] Bitácora y cobertura actualizadas (G5): `docs/06-process/ai-log.md` y
+  `docs/07-curriculum/coverage-map.md`.
+- [x] Commit, PR y merge: `784df87`, `944e2ab`, [PR #44](https://github.com/Luceir0/lab-final--memora/pull/44)
+  y merge `a848c93a82f7d7e83910e5d1fefb7cf38c759750` en `main`.

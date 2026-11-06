@@ -30,14 +30,14 @@
 | Círculos | F17, F18 | crear, editar, borrar, permisos, settings | API + componente |
 | Álbumes | F23, F24 | crear, editar, borrar vacío, `ALBUM_NOT_EMPTY`, vaciar, pertenencia | API + componente |
 | Subidas | F25 | formato, tamaño, cuota, píxeles, HEIC, idempotencia, fallo S3 | API |
-| Subidas UI | F26, F27 | progreso, error, retry, cancel, dropzone, cámara, navegación sin bloqueo, aviso nativo, barra y panel globales | Componente/hook/E2E |
+| Subidas UI | F26, F27 | progreso, error, retry, cancel, dropzone, cámara, navegación sin bloqueo, aviso nativo, barra y panel globales; en F27, bloque «En curso», insignia y etiqueta móvil | Componente/hook/E2E |
 | Galería | F29 | paginación, filtro persona, selección, scroll restaurado | Componente + E2E |
 | Visor | F30, F31 | teclado, swipe, Escape, foco, imagen no disponible, metadatos | Componente + E2E |
 | Etiquetas | F32 | solo miembros, duplicado, quitar, optimista, error | API + componente |
 | Descargas | F33 | individual, álbum, selección, límite, expiración, acceso, `membersCanDownload` | API + E2E |
 | Perfil y preferencias | F34 | nombre, email inmutable, iniciales, tema, logout | Componente + E2E |
 | Actividad | F35 | evento por acción, orden, paginación, privacidad | API + componente |
-| Subidas globales | F27 | ruta `/uploads`, subidas recientes, contador y estados de la página (la cola y el panel globales son de F26) | Componente + E2E |
+| Subidas globales | F27 | solo mis fotos agrupadas por círculo y álbum; keyset por álbum; `404` de círculo abandonado o álbum ajeno; resumen con 4 previews; imágenes con permisos, `ETag` y `304`; contador, estados y divulgación accesible | API + componente + axe (E2E en F38) |
 | Tema | F10, F34 | claro/oscuro/sistema, persistencia, sin destello | Componente + E2E |
 | UI kit I: controles y datos | F11 | 18 componentes con estados y roles nativos; label/hint/error; loading con `aria-disabled`; `SegmentedControl` por flechas; áreas táctiles de 44 px; contraste sobre tokens; catálogo dev-only fuera del bundle | Componente (RTL) + axe + auditoría en navegador real |
 | UI kit II: overlays y feedback | F12 | 12 componentes; `Dialog` con `aria-modal`, trampa de foco, `Esc`, retorno, fondo inerte y scroll bloqueado; apilado por apertura; `BottomSheet` con botón y `Esc` además del arrastre; `ResponsiveDialog` por `matchMedia`; `Menu`/`Tabs`/`Accordion` con flechas y `Home`/`End`; `Toast`/`InlineAlert` con `status`/`alert` y 2.4.11; `Tooltip` con `aria-describedby`; áreas táctiles y contraste; axe en 32 pasadas de navegador real | Componente (RTL) + axe + auditoría en navegador real |
@@ -142,6 +142,18 @@
 - **Axe:** las pasadas de `upload-queue-bar.test.tsx` y `upload-queue-risk.test.tsx` **pasan**.
 - **No cubierto:** no hay navegador real ni Playwright; quedan el barrido 375/1440, claro/oscuro, zoom 200 % de texto y con el panel abierto, arrastre real, `capture`, aviso nativo de `beforeunload`, lector de pantalla de la región viva fuera del diálogo y la medición real de la barra. Pasa a **F37/F38/F39**.
 - **Cierre:** aceptación del usuario el 2026-11-06 («Todo bien, cambios aprobados»), PR #42, merge `86692300887bdd8d712073ba745ea87bc2674787` y CI en verde en la PR (run `42194933113`) y en `main` (run `42195282791`).
+
+## Evidencia ejecutada (F27, 2026-11-06)
+
+- `DATABASE_URL=… pnpm --filter @memora/api test uploads image` → **34 tests**.
+- `DATABASE_URL=… pnpm --filter @memora/api test` → **347 tests**; **2 archivos skipped** (`storage-s3.integration` y `photos-silo.integration`, por entorno).
+- `pnpm --filter @memora/web test uploads --maxWorkers=2` → **178 tests**; `pnpm --filter @memora/web test app-shell --maxWorkers=2` → **29 tests**; `pnpm --filter @memora/web exec vitest run --maxWorkers=2` → **687 tests en 86 archivos**. La suite web completa sin `--maxWorkers=2` sufre timeouts de jsdom en Windows; CI (Linux) ejecuta la suite completa.
+- `pnpm typecheck` → **9/9 tareas**; `pnpm lint` → **6/6**; `pnpm format:check` → **OK**; `pnpm docs:check` → **191 archivos, 581 enlaces y 0 rotos**; `pnpm agents:check` → **OK**.
+- **Acceso cruzado:** `uploads.test.ts` excluye círculos abandonados, responde `404` a álbum ajeno o sin membresía y cubre cursores, orden y totales; `image.test.ts` cubre `401`, `403` de `original` sin `photo.download`, `404` sin distinguir inexistente/ajeno/objeto ausente, cabeceras de `200`, `304` sin lectura de storage y `size` inválido.
+- **Prueba real con sesión:** `GET /api/me/uploads` → **16 fotos** en «Familia Ferrer» (5 en «Verano en la costa» y 11 en «Lisboa en primavera»); `GET /api/photos/:id/image?size=thumb` → `200 image/webp` de **3.952 bytes** con `ETag`, `Cache-Control: private, max-age=3600`, `Vary: Cookie`, `X-Content-Type-Options: nosniff` y `Content-Disposition: inline`.
+- **Incidencia de aceptación:** la API local estaba lanzada sin watcher y devolvía `404 Route not found` para las rutas nuevas; se reinició con `node --watch src/index.ts` y la página cargó los datos reales. No era un fallo de código.
+- **No cubierto:** sin Playwright; el barrido 320/375/768/1024/1440, claro/oscuro y lector de pantalla queda pendiente (AC-09 parcial) y pasa a **F37/F38/F39**. axe cubre carga y vacío, no error ni error de paginación.
+- **Cierre:** aceptación del usuario el 2026-11-06, commits `784df87` y `944e2ab`, PR #44, merge `a848c93a82f7d7e83910e5d1fefb7cf38c759750` y CI en verde en la PR (run `42224616978`, tras reintentar un flake preexistente de F26 en `upload-exit-guard.test.tsx`) y en `main` (run `42225410112`).
 
 ## Flujo E2E principal
 
