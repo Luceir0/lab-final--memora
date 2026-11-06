@@ -35,6 +35,8 @@ decisions:
 
 > **Nota (2026-11-06).** `GET /photos/:photoId/image?size=thumb|display|original` **ya no llega con esta feature**: F27 lo adelantó (auditoría A) para mostrar miniaturas en «Mis subidas». F29 usa el endpoint existente y añade `srcset`/`sizes`, el scroll infinito, la selección y el filtro por persona.
 
+> **Nota (2026-11-06, F28).** El **selector de portada del círculo** se traslada a esta feature: F28 deja la portada en solo lectura y F29 añade la elección entre las fotos del círculo, reutilizando `PATCH /circles/:circleId` con `coverPhotoId` (contrato de F17). No se sube un objeto aparte ni se añade endpoint nuevo. Al abrir F29 hay que incorporar esta decisión a su alcance y a sus AC.
+
 ## Objetivo
 
 Construir la galería con scroll infinito, selección, filtro por persona y la página «Fotos de esta persona».

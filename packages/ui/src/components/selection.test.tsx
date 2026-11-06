@@ -107,6 +107,23 @@ describe('Switch', () => {
     expect(control.getAttribute('aria-describedby')).toBe(description.id);
   });
 
+  it('permite encoger y partir etiqueta y descripción', () => {
+    render(
+      <Switch
+        label="Etiquetar personas"
+        description="Marcar quién aparece en cada foto del círculo."
+      />,
+    );
+
+    const label = screen.getByText('Etiquetar personas');
+    const description = screen.getByText('Marcar quién aparece en cada foto del círculo.');
+    const textWrapper = label.parentElement;
+
+    expect(textWrapper?.className).toContain('min-w-0');
+    expect(label.className).toContain('break-words');
+    expect(description.className).toContain('break-words');
+  });
+
   it('fusiona el aria-describedby del consumidor con la descripción', () => {
     render(
       <>

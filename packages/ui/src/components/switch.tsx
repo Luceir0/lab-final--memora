@@ -49,12 +49,12 @@ export const Switch = forwardRef<HTMLInputElement, SwitchProps>(function Switch(
         className,
       )}
     >
-      <span className="flex flex-col gap-0.5 text-body">
-        <span id={labelId} className="text-text">
+      <span className="flex min-w-0 flex-col gap-0.5 text-body">
+        <span id={labelId} className="break-words text-text">
           {label}
         </span>
         {description && (
-          <span id={descriptionId} className="text-body-sm text-muted">
+          <span id={descriptionId} className="break-words text-body-sm text-muted">
             {description}
           </span>
         )}

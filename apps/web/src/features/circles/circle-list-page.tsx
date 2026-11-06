@@ -1,4 +1,12 @@
-import { Avatar, Button, EmptyState, InlineAlert, Skeleton } from '@memora/ui';
+import {
+  Avatar,
+  Button,
+  EmptyState,
+  InlineAlert,
+  Skeleton,
+  Toast,
+  ToastViewport,
+} from '@memora/ui';
 import { Link, useRouter } from '@tanstack/react-router';
 import { Plus, TriangleAlert, UsersRound } from 'lucide-react';
 
@@ -14,6 +22,12 @@ import { isUnauthorizedError, useUnauthorizedRedirect } from './session';
 export interface CircleListPageProps {
   /** Fecha de referencia inyectable en tests. */
   readonly now?: Date | undefined;
+  /** Marca `?deleted=true` tras borrar un círculo. */
+  readonly deleted?: boolean | undefined;
+  /** Marca `?left=true` tras salir de un círculo. */
+  readonly left?: boolean | undefined;
+  /** Limpia la marca de la URL con `replace` al cerrar el aviso. */
+  readonly onNoticeClose?: (() => void) | undefined;
 }
 
 /**
@@ -22,7 +36,12 @@ export interface CircleListPageProps {
  * El guard de `_app` ya ha resuelto `/me`; esta página solo pinta. Los stats
  * llegan por el N+1 acordado y comparten clave de caché con el futuro detalle.
  */
-export function CircleListPage({ now: nowProp }: CircleListPageProps = {}) {
+export function CircleListPage({
+  now: nowProp,
+  deleted = false,
+  left = false,
+  onNoticeClose,
+}: CircleListPageProps = {}) {
   const now = nowProp ?? new Date();
   const router = useRouter();
   const meQuery = useMeQuery();
@@ -174,6 +193,29 @@ export function CircleListPage({ now: nowProp }: CircleListPageProps = {}) {
             Crear círculo
           </Link>
         </>
+      ) : null}
+
+      {deleted || left ? (
+        <ToastViewport>
+          {deleted ? (
+            <Toast
+              tone="success"
+              title="Círculo eliminado"
+              description="El círculo se ha eliminado para todas las personas."
+              duration={6000}
+              onClose={onNoticeClose ?? (() => undefined)}
+            />
+          ) : null}
+          {left ? (
+            <Toast
+              tone="success"
+              title="Has salido del círculo"
+              description="Ya no verás sus fotos en Mis círculos."
+              duration={6000}
+              onClose={onNoticeClose ?? (() => undefined)}
+            />
+          ) : null}
+        </ToastViewport>
       ) : null}
     </PageContainer>
   );

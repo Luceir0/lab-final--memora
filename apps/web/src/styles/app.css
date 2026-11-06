@@ -47,6 +47,39 @@
   --app-circle-scroll-offset: calc(
     var(--app-circle-sticky-offset) + var(--app-circle-section-nav-height)
   );
+  /*
+   * Barra fija de guardado de Ajustes. La altura la publica `OwnerSettings`
+   * con `ResizeObserver` mientras la barra está montada; en reposo vale `0px`.
+   * No es un token visual: es una medida de layout con una única fuente.
+   */
+  --settings-save-bar-height: 0px;
+  /* Posición inferior según el chrome visible (barra de subidas o no). */
+  --settings-save-bar-bottom: var(--app-bottom-nav-height);
+  --settings-save-bar-bottom-with-upload: calc(
+    var(--app-bottom-nav-height) + var(--upload-queue-bar-height) + 0.75rem
+  );
+  /*
+   * En escritorio la barra ocupa el ancho útil del contenido. Si la píldora de
+   * subidas está visible, se recorta por la derecha para dejar los botones a
+   * su izquierda. 25rem = ancho de la píldora (22rem) + margen derecho (3rem).
+   */
+  --settings-save-bar-right: 0px;
+}
+
+@media (min-width: 64rem) {
+  :root {
+    --settings-save-bar-bottom: 0px;
+    --settings-save-bar-bottom-with-upload: 0px;
+  }
+
+  html[data-upload-bar='visible'] {
+    --settings-save-bar-right: 25rem;
+  }
+
+  /* El panel es más ancho que la píldora: 26rem + margen derecho + holgura. */
+  html[data-upload-panel='open'] {
+    --settings-save-bar-right: 28rem;
+  }
 }
 
 @layer base {
@@ -89,6 +122,37 @@
   }
 
   /*
+   * Barra de guardado de Ajustes: mientras está montada publica su altura real
+   * (`--settings-save-bar-height`) y el foco no debe quedar debajo de ella
+   * (WCAG 2.2 AA 2.4.11). Si además hay subidas, la barra se apila encima en
+   * móvil y se recorta por la derecha en escritorio, así que se reservan ambas.
+   */
+  html[data-save-bar='visible'] {
+    scroll-padding-bottom: calc(
+      var(--app-bottom-nav-height) + var(--settings-save-bar-height) + 0.75rem
+    );
+  }
+
+  html[data-upload-bar='visible'][data-save-bar='visible'] {
+    scroll-padding-bottom: calc(
+      var(--app-bottom-nav-height) + var(--upload-queue-bar-height) +
+        var(--settings-save-bar-height) + 1.5rem
+    );
+  }
+
+  @media (min-width: 64rem) {
+    html[data-save-bar='visible'] {
+      scroll-padding-bottom: calc(var(--settings-save-bar-height) + 1rem);
+    }
+
+    html[data-upload-bar='visible'][data-save-bar='visible'] {
+      scroll-padding-bottom: calc(
+        var(--upload-queue-bar-height) + var(--settings-save-bar-height) + 1rem
+      );
+    }
+  }
+
+  /*
    * Con el panel de escritorio abierto, el foco debe poder desplazarse por
    * encima de él. Esta regla va después de la de la barra para ganar cuando
    * ambas marcas estén activas.
@@ -96,6 +160,12 @@
   @media (min-width: 64rem) {
     html[data-upload-panel='open'] {
       scroll-padding-bottom: calc(var(--upload-queue-panel-height) + 2.25rem);
+    }
+
+    html[data-upload-panel='open'][data-save-bar='visible'] {
+      scroll-padding-bottom: calc(
+        var(--upload-queue-panel-height) + var(--settings-save-bar-height) + 2.25rem
+      );
     }
   }
 
@@ -115,6 +185,17 @@
  * especificidad, sin sumar dos veces ni tapar el último control.
  */
 @layer utilities {
+  /*
+   * Con cambios pendientes, la nav de secciones deja de ser sticky en móvil:
+   * si sigue fija, el control enfocado puede quedar entre la nav y la barra de
+   * guardado (B1-r a 200 %). No se oculta; solo vuelve al flujo.
+   */
+  @media (max-width: 63.9375rem) {
+    html[data-save-bar='visible'] [data-circle-section-nav] {
+      position: static;
+    }
+  }
+
   html[data-upload-bar='visible'] main {
     padding-bottom: calc(var(--app-bottom-nav-height) + var(--upload-queue-bar-height) + 0.75rem);
   }

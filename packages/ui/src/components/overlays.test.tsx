@@ -305,6 +305,7 @@ describe('ConfirmDialog', () => {
     readonly onConfirm?: () => void;
     readonly onClose?: () => void;
     readonly confirmPhrase?: string | undefined;
+    readonly loading?: boolean | undefined;
   }) {
     return render(
       <ConfirmDialog
@@ -316,6 +317,7 @@ describe('ConfirmDialog', () => {
         danger
         confirmLabel="Eliminar recuerdo"
         confirmPhrase={options.confirmPhrase}
+        loading={options.loading}
       >
         <p>El recuerdo se borrará para todos los miembros.</p>
       </ConfirmDialog>,
@@ -377,6 +379,15 @@ describe('ConfirmDialog', () => {
     fireEvent.change(input, { target: { value: 'eliminar' } });
 
     expect(confirm).toHaveProperty('disabled', false);
+  });
+
+  it('deshabilita Cancelar mientras la operación está en curso', () => {
+    renderConfirm({ loading: true });
+
+    expect(screen.getByRole('button', { name: 'Cancelar' }).hasAttribute('disabled')).toBe(true);
+    expect(
+      screen.getByRole('button', { name: 'Eliminar recuerdo' }).getAttribute('aria-busy'),
+    ).toBe('true');
   });
 
   it('se presenta como hoja en móvil', () => {

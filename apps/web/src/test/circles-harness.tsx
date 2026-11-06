@@ -16,7 +16,8 @@ import { ThemeProvider } from '../components/theme-provider';
  * Router mínimo para probar componentes de `features/circles` sin arrastrar
  * el documento SSR de Start. Incluye los destinos a los que navegan o enlazan
  * las pantallas: `/`, `/circles`, `/circles/new`, `/circles/$circleId`,
- * `/circles/$circleId/people`, `/help` y `/login`.
+ * `/circles/$circleId/people`, `/circles/$circleId/settings`, `/help` y
+ * `/login`.
  */
 export interface RenderWithRouterOptions {
   readonly queryClient?: QueryClient;
@@ -76,6 +77,12 @@ export function renderWithRouter(
     component: page(ui),
   });
 
+  const circleSettingsRoute = createRoute({
+    getParentRoute: () => rootRoute,
+    path: '/circles/$circleId/settings',
+    component: page(ui),
+  });
+
   const helpRoute = createRoute({
     getParentRoute: () => rootRoute,
     path: '/help',
@@ -96,6 +103,7 @@ export function renderWithRouter(
       newCircleRoute,
       circleDetailRoute,
       circlePeopleRoute,
+      circleSettingsRoute,
       helpRoute,
       loginRoute,
     ]),
