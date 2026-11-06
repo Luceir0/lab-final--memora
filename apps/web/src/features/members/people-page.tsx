@@ -196,6 +196,7 @@ export function PeoplePage() {
 
             <MemberList
               members={members}
+              circleId={circle.id}
               meId={meId}
               isOwner={isOwner}
               totalCount={circle.stats.membersCount}

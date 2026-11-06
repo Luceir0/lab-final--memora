@@ -77,6 +77,12 @@ export function renderWithRouter(
     component: page(ui),
   });
 
+  const circlePersonPhotosRoute = createRoute({
+    getParentRoute: () => rootRoute,
+    path: '/circles/$circleId/people/$userId/photos',
+    component: page(ui),
+  });
+
   const circleSettingsRoute = createRoute({
     getParentRoute: () => rootRoute,
     path: '/circles/$circleId/settings',
@@ -103,6 +109,7 @@ export function renderWithRouter(
       newCircleRoute,
       circleDetailRoute,
       circlePeopleRoute,
+      circlePersonPhotosRoute,
       circleSettingsRoute,
       helpRoute,
       loginRoute,

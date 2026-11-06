@@ -20,6 +20,7 @@ import { useCircleDetail } from '../circles/circle-detail-context';
 import { circlePath } from '../circles/paths';
 import { useMeQuery } from '../circles/queries';
 import { isNotFoundError, isUnauthorizedError, useUnauthorizedRedirect } from '../circles/session';
+import { AlbumGallery } from '../photos/album-gallery';
 import { UploadDropzone } from '../uploads/upload-dropzone';
 import { UploadSourcePicker } from '../uploads/upload-source-picker';
 import { useUploadQueue } from '../uploads/upload-queue-context';
@@ -51,7 +52,7 @@ interface ToastState {
  *
  * El layout del círculo detecta esta ruta y no pinta héroe, cabecera compacta
  * ni pestañas (D7); aquí vive la página completa con migas, cabecera y
- * contenido. La galería real y la elección de portada llegan en F29.
+ * contenido. La galería real (F29) se monta dentro de `AlbumContent`.
  */
 export function AlbumDetailPage({ circleId, albumId }: AlbumDetailPageProps) {
   const { circle } = useCircleDetail();
@@ -547,28 +548,7 @@ function AlbumContent({ album, emptyRef, canUpload, onFiles }: AlbumContentProps
     );
   }
 
-  return (
-    <section
-      aria-label="Galería del álbum"
-      className="mt-8 rounded-xl border border-dashed border-border-strong bg-surface-2 px-5 py-10 text-center"
-    >
-      <span
-        aria-hidden="true"
-        className="inline-flex size-14 items-center justify-center rounded-lg bg-primary-soft text-on-primary-soft"
-      >
-        <Images className="size-6" />
-      </span>
-      <h2 className="mt-4 text-h3 font-bold text-text">La galería llega en la siguiente entrega</h2>
-      <p className="mx-auto mt-2 max-w-prose text-body text-muted">
-        Este álbum guarda {formatAlbumPhotos(album.photosCount)}. Podrás verlas aquí muy pronto.
-      </p>
-      {canUpload ? null : (
-        <p className="mx-auto mt-2 max-w-prose text-caption text-muted">
-          Las subidas están desactivadas en este círculo.
-        </p>
-      )}
-    </section>
-  );
+  return <AlbumGallery album={album} />;
 }
 
 function AlbumNoAccess() {

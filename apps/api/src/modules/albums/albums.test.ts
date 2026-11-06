@@ -1,6 +1,7 @@
 import { PrismaPg } from '@prisma/adapter-pg';
 import {
   DEFAULT_CIRCLE_SETTINGS,
+  type AlbumPhotosResponse,
   type AlbumResponse,
   type CircleSettings,
   type EmptyAlbumResponse,
@@ -197,6 +198,14 @@ describe.skipIf(!hasDatabase)('albums API', () => {
       method: 'DELETE',
       url: `/api/albums/${albumId}/photos`,
       headers: headers(auth),
+    });
+  }
+
+  function listAlbumPhotos(auth: AuthFixture | null, albumId: string, query = '') {
+    return testApp.app.inject({
+      method: 'GET',
+      url: `/api/albums/${albumId}/photos${query}`,
+      headers: headers(auth, { withCsrf: false }),
     });
   }
 
@@ -1032,6 +1041,211 @@ describe.skipIf(!hasDatabase)('albums API', () => {
 
       expect(await prisma.album.count({ where: { circleId: circle.id } })).toBe(1);
       expect((await prisma.album.findUnique({ where: { id: album.id } }))?.title).toBe(album.title);
+    });
+  });
+
+  describe('F29 — galería del álbum', () => {
+    it('sin sesión responde 401', async () => {
+      const { owner, circle } = await seedCircle();
+      const album = await seedAlbum(circle.id, owner.id);
+
+      const response = await listAlbumPhotos(null, album.id);
+
+      expect(response.statusCode).toBe(401);
+      expectError(response, 'UNAUTHENTICATED');
+    });
+
+    it('un usuario de otro círculo recibe 404', async () => {
+      const mine = await seedCircle();
+      const foreign = await seedCircle();
+      const foreignAlbum = await seedAlbum(foreign.circle.id, foreign.owner.id);
+
+      await makePhoto(prisma, {
+        circleId: foreign.circle.id,
+        albumId: foreignAlbum.id,
+        uploaderId: foreign.owner.id,
+      });
+
+      const response = await listAlbumPhotos(await makeAuth(mine.owner.id), foreignAlbum.id);
+
+      expect(response.statusCode).toBe(404);
+      expectError(response, 'NOT_FOUND');
+    });
+
+    it('pagina con cursor keyset sin solaparse', async () => {
+      const { owner, circle } = await seedCircle();
+      const album = await seedAlbum(circle.id, owner.id);
+      const auth = await makeAuth(owner.id);
+
+      for (let index = 0; index < 5; index += 1) {
+        await makePhoto(prisma, {
+          id: `gallery-photo-${index}`,
+          circleId: circle.id,
+          albumId: album.id,
+          uploaderId: owner.id,
+          createdAt: at(index * 1_000),
+        });
+      }
+
+      const first = await listAlbumPhotos(auth, album.id, '?limit=2');
+
+      expect(first.statusCode).toBe(200);
+
+      const firstBody = first.json<AlbumPhotosResponse>();
+
+      expect(firstBody.items.map((item) => item.id)).toEqual([
+        'gallery-photo-4',
+        'gallery-photo-3',
+      ]);
+      expect(firstBody.nextCursor).not.toBeNull();
+      expect(first.body).not.toContain('originalKey');
+      expect(first.body).not.toContain('displayKey');
+      expect(first.body).not.toContain('thumbKey');
+      expect(first.body).not.toContain('latitude');
+      expect(first.body).not.toContain('longitude');
+
+      const second = await listAlbumPhotos(
+        auth,
+        album.id,
+        `?limit=2&cursor=${encodeURIComponent(firstBody.nextCursor ?? '')}`,
+      );
+
+      expect(second.statusCode).toBe(200);
+
+      const secondBody = second.json<AlbumPhotosResponse>();
+
+      expect(secondBody.items.map((item) => item.id)).toEqual([
+        'gallery-photo-2',
+        'gallery-photo-1',
+      ]);
+      expect(secondBody.nextCursor).not.toBeNull();
+
+      const third = await listAlbumPhotos(
+        auth,
+        album.id,
+        `?limit=2&cursor=${encodeURIComponent(secondBody.nextCursor ?? '')}`,
+      );
+
+      expect(third.statusCode).toBe(200);
+
+      const thirdBody = third.json<AlbumPhotosResponse>();
+
+      expect(thirdBody.items.map((item) => item.id)).toEqual(['gallery-photo-0']);
+      expect(thirdBody.nextCursor).toBeNull();
+
+      const collected = [...firstBody.items, ...secondBody.items, ...thirdBody.items].map(
+        (item) => item.id,
+      );
+
+      expect(new Set(collected).size).toBe(5);
+    });
+
+    it('filtra por personId solo sus fotos del álbum y del círculo', async () => {
+      const { owner, circle } = await seedCircle();
+      const member = await addMember(circle.id);
+      const album = await seedAlbum(circle.id, owner.id);
+      const sibling = await seedAlbum(circle.id, owner.id);
+      const foreign = await seedCircle();
+      const foreignAlbum = await seedAlbum(foreign.circle.id, foreign.owner.id);
+
+      const taggedOld = await makePhoto(prisma, {
+        id: 'tagged-old',
+        circleId: circle.id,
+        albumId: album.id,
+        uploaderId: owner.id,
+        createdAt: at(1_000),
+      });
+      const taggedNew = await makePhoto(prisma, {
+        id: 'tagged-new',
+        circleId: circle.id,
+        albumId: album.id,
+        uploaderId: owner.id,
+        createdAt: at(2_000),
+      });
+      const untagged = await makePhoto(prisma, {
+        id: 'untagged',
+        circleId: circle.id,
+        albumId: album.id,
+        uploaderId: owner.id,
+        createdAt: at(3_000),
+      });
+      const siblingPhoto = await makePhoto(prisma, {
+        id: 'sibling-photo',
+        circleId: circle.id,
+        albumId: sibling.id,
+        uploaderId: owner.id,
+        createdAt: at(4_000),
+      });
+      const foreignPhoto = await makePhoto(prisma, {
+        id: 'foreign-photo',
+        circleId: foreign.circle.id,
+        albumId: foreignAlbum.id,
+        uploaderId: foreign.owner.id,
+        createdAt: at(5_000),
+      });
+
+      for (const photo of [taggedOld, taggedNew, siblingPhoto, foreignPhoto]) {
+        await makeTag(prisma, {
+          photoId: photo.id,
+          taggedUserId: member.id,
+          createdBy: owner.id,
+        });
+      }
+
+      const response = await listAlbumPhotos(
+        await makeAuth(owner.id),
+        album.id,
+        `?personId=${encodeURIComponent(member.id)}`,
+      );
+
+      expect(response.statusCode).toBe(200);
+
+      const body = response.json<AlbumPhotosResponse>();
+
+      expect(body.items.map((item) => item.id)).toEqual(['tagged-new', 'tagged-old']);
+      expect(body.nextCursor).toBeNull();
+      expect(body.items.every((item) => item.tags.some((tag) => tag.id === member.id))).toBe(true);
+      expect(body.items.map((item) => item.id)).not.toContain(untagged.id);
+      expect(body.items.map((item) => item.id)).not.toContain(foreignPhoto.id);
+    });
+
+    it('un personId de otro círculo recibe 404', async () => {
+      const { owner, circle } = await seedCircle();
+      const foreign = await seedCircle();
+      const album = await seedAlbum(circle.id, owner.id);
+
+      const response = await listAlbumPhotos(
+        await makeAuth(owner.id),
+        album.id,
+        `?personId=${encodeURIComponent(foreign.owner.id)}`,
+      );
+
+      expect(response.statusCode).toBe(404);
+      expectError(response, 'NOT_FOUND');
+    });
+
+    it('rechaza límites inválidos con 400', async () => {
+      const { owner, circle } = await seedCircle();
+      const album = await seedAlbum(circle.id, owner.id);
+      const auth = await makeAuth(owner.id);
+
+      for (const query of ['?limit=0', '?limit=101', '?limit=abc']) {
+        const response = await listAlbumPhotos(auth, album.id, query);
+
+        expect(response.statusCode).toBe(400);
+        expectError(response, 'VALIDATION_ERROR');
+      }
+    });
+
+    it('un álbum vacío responde 200 con lista vacía', async () => {
+      const { owner, circle } = await seedCircle();
+      const album = await seedAlbum(circle.id, owner.id);
+
+      const response = await listAlbumPhotos(await makeAuth(owner.id), album.id);
+
+      expect(response.statusCode).toBe(200);
+      expect(response.headers['cache-control']).toBe('private, no-store');
+      expect(response.json<AlbumPhotosResponse>()).toEqual({ items: [], nextCursor: null });
     });
   });
 

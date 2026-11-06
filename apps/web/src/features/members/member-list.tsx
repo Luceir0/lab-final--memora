@@ -9,6 +9,7 @@ import {
   Skeleton,
   VisuallyHidden,
 } from '@memora/ui';
+import { Link } from '@tanstack/react-router';
 import { UserMinus, Users } from 'lucide-react';
 import { useId, type RefObject } from 'react';
 
@@ -19,6 +20,8 @@ import { formatJoinedAt, formatMemberPhotos, formatRole } from './format';
 
 export interface MemberListProps {
   readonly members: readonly MemberDto[];
+  /** Id del círculo, para enlazar «Ver sus fotos». */
+  readonly circleId: string;
   /** Id de la persona autenticada, para «(tú)» y para ocultar quitarse a sí misma. */
   readonly meId: string | null;
   readonly isOwner: boolean;
@@ -125,6 +128,7 @@ function MemberSkeleton() {
  */
 export function MemberList({
   members,
+  circleId,
   meId,
   isOwner,
   totalCount,
@@ -209,6 +213,13 @@ export function MemberList({
                     >
                       {formatMemberPhotos(member.photosCount)}
                     </span>
+                    <Link
+                      to="/circles/$circleId/people/$userId/photos"
+                      params={{ circleId, userId: member.user.id }}
+                      className="inline-flex min-h-11 shrink-0 items-center text-body-sm font-semibold text-primary-text hover:underline"
+                    >
+                      Ver sus fotos
+                    </Link>
                     {/*
                      * Hueco fijo de 44 px (el tamaño de `IconButton`) también
                      * cuando no hay menú: así los contadores de fotos quedan
@@ -233,6 +244,7 @@ export function MemberList({
                   <col className="w-36" />
                   <col className="w-28" />
                   <col className="w-20" />
+                  <col className="w-32" />
                   <col className="w-14" />
                 </colgroup>
                 <thead>
@@ -248,6 +260,9 @@ export function MemberList({
                     </th>
                     <th scope="col" className="whitespace-nowrap px-3 py-3 font-semibold">
                       Se unió
+                    </th>
+                    <th scope="col" className="whitespace-nowrap px-3 py-3 font-semibold">
+                      Fotos
                     </th>
                     <th scope="col" className="whitespace-nowrap px-2 py-3">
                       <VisuallyHidden>Acciones</VisuallyHidden>
@@ -287,6 +302,15 @@ export function MemberList({
                         </td>
                         <td className="whitespace-nowrap px-3 py-3 text-body-sm text-muted">
                           {formatJoinedAt(member.joinedAt)}
+                        </td>
+                        <td className="whitespace-nowrap px-3 py-3">
+                          <Link
+                            to="/circles/$circleId/people/$userId/photos"
+                            params={{ circleId, userId: member.user.id }}
+                            className="text-body-sm font-semibold text-primary-text hover:underline"
+                          >
+                            Ver sus fotos
+                          </Link>
                         </td>
                         <td className="px-2 py-3 text-right">
                           {removable ? <MemberMenu member={member} onRemove={onRemove} /> : null}

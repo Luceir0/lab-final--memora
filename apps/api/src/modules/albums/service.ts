@@ -1,4 +1,4 @@
-import type { ListAlbumsResponse } from '@memora/shared';
+import type { AlbumPhotosResponse, ListAlbumsResponse } from '@memora/shared';
 
 import {
   Prisma,
@@ -6,6 +6,7 @@ import {
   type Membership,
   type PrismaClient,
 } from '../../generated/prisma/client.ts';
+import { toPhotoDto, type PhotoWithRelations } from '../members/dto.ts';
 import type { PhotoObjectKeys } from '../photos/objects.ts';
 import { encodeAlbumCursor, type AlbumCursor } from './cursor.ts';
 import { toAlbumDto, type AlbumWithRelations, type PublicUser } from './dto.ts';
@@ -46,6 +47,17 @@ export interface AlbumMembership {
 export interface AlbumPageParams {
   readonly cursor: AlbumCursor | null;
   readonly limit: number;
+}
+
+export interface AlbumPhotoPageParams {
+  /**
+   * Same `(createdAt, id)` shape as the album list, so the existing opaque
+   * cursor is reused instead of inventing a second wire format.
+   */
+  readonly cursor: AlbumCursor | null;
+  readonly limit: number;
+  /** When set, only photos tagged with this circle member are returned. */
+  readonly personId: string | null;
 }
 
 export interface NewAlbumInput {
@@ -136,6 +148,66 @@ export async function listAlbumsPage(
 
   return {
     items: page.map((row) => toAlbumDto(row)),
+    nextCursor:
+      hasMore && last !== undefined
+        ? encodeAlbumCursor({ createdAt: last.createdAt, id: last.id })
+        : null,
+  };
+}
+
+/**
+ * Keyset page of an album's photos, newest first.
+ *
+ * Scoping is done with both `albumId` and `circleId`: the album already belongs
+ * to the circle, but keeping the circle predicate here makes it impossible for
+ * a future caller to read a photo of another circle through an album id.
+ *
+ * `personId` is optional and filters on `PhotoTag.taggedUserId`. The route has
+ * already checked that the person belongs to the circle, so a tag of a foreign
+ * user can never be used as a probe. Storage keys and coordinates are never
+ * selected: `toPhotoDto` only emits public fields and authenticated URLs.
+ */
+export async function listAlbumPhotosPage(
+  prisma: PrismaClient,
+  albumId: string,
+  circleId: string,
+  { cursor, limit, personId }: AlbumPhotoPageParams,
+): Promise<AlbumPhotosResponse> {
+  const rows = await prisma.photo.findMany({
+    where: {
+      albumId,
+      circleId,
+      ...(personId === null ? {} : { tags: { some: { taggedUserId: personId } } }),
+      // `(createdAt, id)` keyset: strictly older timestamps first, and for the
+      // same timestamp the id must be smaller (descending tie-break).
+      ...(cursor === null
+        ? {}
+        : {
+            OR: [
+              { createdAt: { lt: cursor.createdAt } },
+              { createdAt: cursor.createdAt, id: { lt: cursor.id } },
+            ],
+          }),
+    },
+    include: {
+      uploader: { select: publicUserSelect },
+      // Stable tag order: the client compares lists between renders.
+      tags: {
+        select: { taggedUser: { select: publicUserSelect } },
+        orderBy: { createdAt: 'asc' },
+      },
+    },
+    orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
+    // One extra row only signals whether another page exists.
+    take: limit + 1,
+  });
+
+  const hasMore = rows.length > limit;
+  const page: PhotoWithRelations[] = hasMore ? rows.slice(0, limit) : rows;
+  const last = page.at(-1);
+
+  return {
+    items: page.map((row) => toPhotoDto(row)),
     nextCursor:
       hasMore && last !== undefined
         ? encodeAlbumCursor({ createdAt: last.createdAt, id: last.id })
