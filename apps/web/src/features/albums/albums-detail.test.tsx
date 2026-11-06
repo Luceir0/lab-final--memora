@@ -20,6 +20,9 @@ import { circleDetail, circleWithCover, testMeResponse } from '../../test/circle
 import { CircleDetailProvider } from '../circles/circle-detail-context';
 import { CircleDetailLayout } from '../circles/circle-detail-layout';
 import { CircleDetailPage } from '../circles/circle-detail-page';
+import type { UploadTransport } from '../uploads/transport';
+import { UploadProvider } from '../uploads/upload-provider';
+import { UploadQueueHost } from '../uploads/upload-queue-host';
 
 import { AlbumDetailPage } from './album-detail-page';
 
@@ -57,6 +60,14 @@ function memberCircle(membersCanCreateAlbums: boolean): CircleDetailDto {
   });
 }
 
+function memberCircleWithoutUpload(): CircleDetailDto {
+  return circleDetail({
+    ...circleWithCover,
+    role: 'member',
+    settings: { ...circleWithCover.settings, membersCanUpload: false },
+  });
+}
+
 interface DetailOptions {
   readonly circle?: CircleDetailDto;
   readonly album?: AlbumDto;
@@ -66,6 +77,8 @@ interface DetailOptions {
   readonly circleRoute?: ReactNode;
   /** Contenido de la ruta de detalle según el `pathname` (redirección canónica). */
   readonly albumDetailRoute?: (pathname: string) => ReactNode | undefined;
+  /** Transporte falso para probar la integración de subida. */
+  readonly transport?: UploadTransport;
 }
 
 function renderDetail(options: DetailOptions = {}) {
@@ -85,9 +98,17 @@ function renderDetail(options: DetailOptions = {}) {
   options.setup?.();
 
   return renderAlbumsRouter(
-    <CircleDetailProvider circle={circle} openInvite={vi.fn()} focusTitle={vi.fn()} canCreateAlbum>
-      <AlbumDetailPage circleId={circle.id} albumId={album.id} />
-    </CircleDetailProvider>,
+    <UploadProvider {...(options.transport === undefined ? {} : { transport: options.transport })}>
+      <UploadQueueHost />
+      <CircleDetailProvider
+        circle={circle}
+        openInvite={vi.fn()}
+        focusTitle={vi.fn()}
+        canCreateAlbum
+      >
+        <AlbumDetailPage circleId={circle.id} albumId={album.id} />
+      </CircleDetailProvider>
+    </UploadProvider>,
     `/circles/${circle.id}/albums/${album.id}`,
     {
       ...(options.circleRoute === undefined ? {} : { circleRoute: options.circleRoute }),
@@ -130,7 +151,7 @@ describe('AlbumDetailPage · metadatos', () => {
 });
 
 describe('AlbumDetailPage · contenido según fotos', () => {
-  it('con 0 fotos pinta el vacío y deshabilita «Subir fotos» con nota', async () => {
+  it('con 0 fotos pinta el vacío y una acción real de subida', async () => {
     renderDetail({ album: albumEmpty });
 
     expect(await screen.findByText('Este álbum todavía no tiene fotos')).toBeTruthy();
@@ -143,13 +164,28 @@ describe('AlbumDetailPage · contenido según fotos', () => {
     expect(uploadButtons.length).toBeGreaterThanOrEqual(1);
 
     for (const button of uploadButtons) {
-      expect((button as HTMLButtonElement).disabled).toBe(true);
+      expect((button as HTMLButtonElement).disabled).toBe(false);
     }
 
-    expect(
-      screen.getAllByText('La subida de fotos llegará en la siguiente entrega.').length,
-    ).toBeGreaterThanOrEqual(1);
+    const emptyRegion = screen.getByRole('region', { name: 'Álbum vacío' });
+
+    expect(within(emptyRegion).getAllByRole('button', { name: 'Subir fotos' })).toHaveLength(1);
+    expect(document.querySelector('[data-upload-fab]')).toBeNull();
+
+    expect(screen.queryByText(/llegará en la siguiente entrega/)).toBeNull();
     expect(screen.queryByText('La galería llega en la siguiente entrega')).toBeNull();
+  });
+
+  it('sin permiso de subida no muestra la acción y explica por qué', async () => {
+    renderDetail({ album: albumEmpty, circle: memberCircleWithoutUpload() });
+
+    expect(await screen.findByText('Este álbum todavía no tiene fotos')).toBeTruthy();
+    expect(
+      screen.getByText(
+        'Las subidas están desactivadas en este círculo. Pídele a quien lo creó que las active.',
+      ),
+    ).toBeTruthy();
+    expect(screen.queryByRole('button', { name: 'Subir fotos' })).toBeNull();
   });
 
   it('con fotos pinta el panel de galería futura con el recuento', async () => {
@@ -167,7 +203,7 @@ describe('AlbumDetailPage · contenido según fotos', () => {
     expect(screen.queryByText('Este álbum todavía no tiene fotos')).toBeNull();
   });
 
-  it('mantiene «Descargar álbum» y «Subir fotos» deshabilitados en la cabecera', async () => {
+  it('mantiene «Descargar álbum» deshabilitado y habilita «Subir fotos»', async () => {
     renderDetail();
 
     await screen.findByRole('heading', { level: 1, name: 'Verano en Mallorca' });
@@ -175,9 +211,33 @@ describe('AlbumDetailPage · contenido según fotos', () => {
     expect(
       (screen.getByRole('button', { name: 'Descargar álbum' }) as HTMLButtonElement).disabled,
     ).toBe(true);
-    expect(
-      (screen.getByRole('button', { name: 'Subir fotos' }) as HTMLButtonElement).disabled,
-    ).toBe(true);
+
+    const uploadButtons = screen.getAllByRole('button', { name: 'Subir fotos' });
+
+    expect(uploadButtons.length).toBeGreaterThanOrEqual(1);
+
+    for (const button of uploadButtons) {
+      expect((button as HTMLButtonElement).disabled).toBe(false);
+    }
+  });
+
+  it('al elegir un archivo lo encola y abre la cola global', async () => {
+    const upload = vi.fn(() => new Promise<never>(() => {}));
+    renderDetail({ transport: { upload } });
+
+    await screen.findByRole('heading', { level: 1, name: 'Verano en Mallorca' });
+
+    const galleryInputs = screen.getAllByLabelText('Elegir fotos de la galería');
+    const firstInput = galleryInputs[0];
+
+    if (firstInput === undefined) {
+      throw new Error('No se ha montado el selector de galería');
+    }
+
+    await userEvent.upload(firstInput, new File(['x'], 'playa.jpg', { type: 'image/jpeg' }));
+
+    await waitFor(() => expect(upload).toHaveBeenCalledTimes(1));
+    expect(await screen.findByRole('heading', { name: 'Subidas' })).toBeTruthy();
   });
 });
 

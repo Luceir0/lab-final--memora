@@ -7,12 +7,13 @@ import {
   createRoute,
   createRouter,
 } from '@tanstack/react-router';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, fireEvent, screen, waitFor } from '@testing-library/react';
 import { HttpResponse, delay, http } from 'msw';
-import type { ReactElement } from 'react';
+import { useEffect, type ReactElement } from 'react';
 import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
 
 import { ThemeProvider } from '../components/theme-provider';
+import { useUploadQueue } from '../features/uploads/upload-queue-context';
 import { AUTH_TEST_API_BASE } from '../test/auth-fixtures';
 import { createAuthTestServer, startAuthTestServer } from '../test/auth-server';
 import { defaultCircles, testMeResponse } from '../test/circles-fixtures';
@@ -41,6 +42,24 @@ function page(title: string) {
   return function Page() {
     return <h1>{title}</h1>;
   };
+}
+
+/**
+ * Página de prueba que encola un archivo inválido en cliente: así la cola
+ * queda visible sin depender de la red ni del transporte XHR.
+ */
+function QueueOrderPage() {
+  const { enqueue } = useUploadQueue();
+
+  useEffect(() => {
+    enqueue([new File(['x'], 'animado.gif', { type: 'image/gif' })], {
+      albumId: 'album-1',
+      albumTitle: 'Verano',
+      source: 'desktop',
+    });
+  }, [enqueue]);
+
+  return <h1>Orden de la cola</h1>;
 }
 
 function renderAt(path: string) {
@@ -88,6 +107,12 @@ function renderAt(path: string) {
     component: page('Privacidad'),
   });
 
+  const queueOrderRoute = createRoute({
+    getParentRoute: () => appInnerRoute,
+    path: '/queue-order',
+    component: QueueOrderPage,
+  });
+
   const loginRoute = createRoute({
     getParentRoute: () => rootRoute,
     path: '/login',
@@ -103,6 +128,7 @@ function renderAt(path: string) {
         profileRoute,
         helpRoute,
         privacyRoute,
+        queueOrderRoute,
       ]),
       loginRoute,
     ]),
@@ -215,6 +241,25 @@ describe('guard de sesión de _app', () => {
 
     expect(await screen.findByRole('heading', { name: 'Privacidad' })).toBeTruthy();
     expect(screen.queryByText('Cargando tu sesión…')).toBeNull();
+  });
+
+  it('la barra global queda después del SkipLink y de <main> en el DOM', async () => {
+    renderAt('/queue-order');
+
+    expect(await screen.findByRole('heading', { name: 'Orden de la cola' })).toBeTruthy();
+
+    fireEvent.click(await screen.findByRole('button', { name: 'Cerrar' }));
+
+    const bar = await screen.findByRole('button', { name: /Abrir subidas\./ });
+    const skipLink = screen.getByRole('link', { name: 'Saltar al contenido' });
+    const main = document.getElementById('main-content');
+
+    if (main === null) {
+      throw new Error('No se ha montado <main>');
+    }
+
+    expect(skipLink.compareDocumentPosition(bar) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(main.compareDocumentPosition(bar) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
 
   it('muestra un error recuperable si /me falla por red', async () => {

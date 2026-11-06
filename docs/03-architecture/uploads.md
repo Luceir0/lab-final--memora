@@ -29,7 +29,7 @@ Si algo falla después del primer `put`, se borran los objetos ya escritos y no 
 | Archivos por lote | 20 |
 | Píxeles máximos | 50 MP |
 | Concurrencia cliente | 3 |
-| Reintentos | 2 con backoff |
+| Reintentos | Manuales, con el mismo `clientUploadId`; sin reintentos automáticos ni backoff |
 | Formatos | JPEG, PNG, WebP |
 | HEIC | No asumido: `sharp@0.35.5` no anuncia `.heic`; ver nota de HEIC en Validación |
 
@@ -97,7 +97,7 @@ circles/{circleId}/photos/{photoId}/thumb.webp
 - **Cross-álbum:** repetir el mismo par desde otro álbum del mismo círculo también devuelve `200` con la foto ya creada; no se mueve ni se duplica.
 - Si el usuario ya no pertenece al círculo de la foto existente → `409 CONFLICT`.
 - La carrera de dos peticiones simultáneas con el mismo par está cubierta por la unique y `P2002`: queda una fila y no quedan objetos huérfanos.
-- Evita duplicados por reintentos de red.
+- Evita duplicados cuando el cliente reintenta de forma manual tras un fallo de red. No hay reintentos automáticos con backoff.
 
 ## Errores
 
@@ -118,9 +118,11 @@ circles/{circleId}/photos/{photoId}/thumb.webp
 - `useUploadQueue` con reducer y unión discriminada:
   `pending | uploading | done | error | cancelled`.
 - Progreso por archivo y global.
-- Retry individual; cancelación con `AbortController`.
-- Aviso al salir con subidas en curso.
-- La cola sobrevive a la navegación, no a la recarga.
+- Reintento individual **manual**, disparado por el usuario y con el mismo `clientUploadId`; la cola no reintenta sola ni aplica backoff.
+- Cancelación con `AbortController`.
+- **Aviso al recargar o cerrar:** `beforeunload` nativo mientras haya subidas pendientes o en curso. La navegación interna **no** se bloquea y no hay diálogo propio; el navegador no permite personalizar ese aviso.
+- La cola sobrevive a la navegación **dentro de la zona privada**, no a la recarga. Salir de la zona privada, el logout o un `401` desmontan el provider y **abortan** la cola.
+- **UI única y global:** el provider, el guard y el host de la cola viven en el layout privado; una sola barra, un solo panel y una sola región viva para toda la zona privada. El panel no filtra por ruta ni por álbum.
 - Sin subidas en segundo plano.
 
 ## Limpieza

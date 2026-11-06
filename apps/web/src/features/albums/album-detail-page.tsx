@@ -13,22 +13,17 @@ import {
   type MenuItem,
 } from '@memora/ui';
 import { Link, useRouter } from '@tanstack/react-router';
-import {
-  ArrowLeft,
-  Download,
-  Eraser,
-  ImagePlus,
-  Images,
-  Pencil,
-  Trash2,
-  Upload,
-} from 'lucide-react';
+import { ArrowLeft, Download, Eraser, ImagePlus, Images, Pencil, Plus, Trash2 } from 'lucide-react';
 import { useEffect, useId, useRef, useState, type RefObject } from 'react';
 
 import { useCircleDetail } from '../circles/circle-detail-context';
 import { circlePath } from '../circles/paths';
 import { useMeQuery } from '../circles/queries';
 import { isNotFoundError, isUnauthorizedError, useUnauthorizedRedirect } from '../circles/session';
+import { UploadDropzone } from '../uploads/upload-dropzone';
+import { UploadSourcePicker } from '../uploads/upload-source-picker';
+import { useUploadQueue } from '../uploads/upload-queue-context';
+import type { UploadSource } from '../uploads/types';
 
 import { AlbumFormDialog } from './album-form-dialog';
 import { getAlbumsErrorCopy, isAlbumNotEmptyError } from './errors';
@@ -38,7 +33,7 @@ import {
   formatDeletedPhotos,
   formatWillDeletePhotos,
 } from './format';
-import { canEditAlbum, canManageAlbum } from './permissions';
+import { canEditAlbum, canManageAlbum, canUploadPhotos } from './permissions';
 import { useAlbumDetailQuery, useDeleteAlbumMutation, useEmptyAlbumMutation } from './queries';
 
 export interface AlbumDetailPageProps {
@@ -65,6 +60,7 @@ export function AlbumDetailPage({ circleId, albumId }: AlbumDetailPageProps) {
   const router = useRouter();
   const emptyMutation = useEmptyAlbumMutation(albumId, circle.id);
   const deleteMutation = useDeleteAlbumMutation(albumId, circle.id);
+  const { enqueue, items: uploadItems, isPanelOpen } = useUploadQueue();
 
   const titleRef = useRef<HTMLHeadingElement>(null);
   const emptyRef = useRef<HTMLDivElement>(null);
@@ -84,6 +80,15 @@ export function AlbumDetailPage({ circleId, albumId }: AlbumDetailPageProps) {
 
   const album = detailQuery.data;
   const meId = meQuery.data?.user.id ?? null;
+  const canUpload = canUploadPhotos(circle);
+
+  const handleUploadFiles = (files: readonly File[], source: UploadSource): void => {
+    if (!canUpload || album === undefined || files.length === 0) {
+      return;
+    }
+
+    enqueue(files, { albumId, albumTitle: album.title, source });
+  };
 
   useEffect(() => {
     if (album === undefined || (album.circleId === circleId && album.circleId === circle.id)) {
@@ -235,12 +240,22 @@ export function AlbumDetailPage({ circleId, albumId }: AlbumDetailPageProps) {
       : null;
 
   return (
-    <div className="mx-auto w-full max-w-7xl px-5 py-6 lg:px-8 lg:py-10">
+    <div className="mx-auto w-full max-w-7xl px-5 pb-6 pt-6 lg:px-8 lg:pb-10 lg:pt-10">
+      <UploadDropzone
+        albumTitle={album.title}
+        enabled={canUpload}
+        onFiles={(files) => {
+          handleUploadFiles(files, 'desktop');
+        }}
+      />
+
       <AlbumHeader
         album={album}
         circle={circle}
         meId={meId}
         titleRef={titleRef}
+        canUpload={canUpload}
+        onFiles={handleUploadFiles}
         onEdit={() => {
           setEditing(true);
         }}
@@ -254,7 +269,29 @@ export function AlbumDetailPage({ circleId, albumId }: AlbumDetailPageProps) {
         }}
       />
 
-      <AlbumContent album={album} emptyRef={emptyRef} />
+      <AlbumContent
+        album={album}
+        emptyRef={emptyRef}
+        canUpload={canUpload}
+        onFiles={handleUploadFiles}
+      />
+
+      {canUpload && album.photosCount > 0 ? (
+        <div className="lg:hidden" data-upload-fab="">
+          <UploadSourcePicker
+            albumTitle={album.title}
+            onFiles={handleUploadFiles}
+            icon={<Plus />}
+            className={`fixed right-[max(1.5rem,env(safe-area-inset-right))] z-nav rounded-full! shadow-lg ${
+              uploadItems.length > 0 && !isPanelOpen
+                ? 'bottom-[calc(var(--app-bottom-nav-height)+var(--upload-queue-bar-height)+0.75rem)]'
+                : 'bottom-[calc(var(--app-bottom-nav-height)+1rem)]'
+            }`}
+          >
+            Subir fotos
+          </UploadSourcePicker>
+        </div>
+      ) : null}
 
       <AlbumFormDialog
         open={editing}
@@ -365,6 +402,8 @@ interface AlbumHeaderProps {
   readonly circle: CircleDetailDto;
   readonly meId: string | null;
   readonly titleRef: RefObject<HTMLHeadingElement | null>;
+  readonly canUpload: boolean;
+  readonly onFiles: (files: readonly File[], source: UploadSource) => void;
   readonly onEdit: () => void;
   readonly onEmpty: () => void;
   readonly onDelete: () => void;
@@ -375,6 +414,8 @@ function AlbumHeader({
   circle,
   meId,
   titleRef,
+  canUpload,
+  onFiles,
   onEdit,
   onEmpty,
   onDelete,
@@ -459,9 +500,7 @@ function AlbumHeader({
             >
               Descargar álbum
             </Button>
-            <Button disabled icon={<Upload />} aria-describedby={actionsNoteId}>
-              Subir fotos
-            </Button>
+            {canUpload ? <UploadSourcePicker albumTitle={album.title} onFiles={onFiles} /> : null}
           </div>
           {items.length === 0 ? null : (
             <Menu label="Acciones del álbum" items={items} align="end" />
@@ -469,7 +508,7 @@ function AlbumHeader({
         </div>
 
         <p id={actionsNoteId} className="hidden text-caption text-muted lg:col-span-2 lg:block">
-          Las subidas y descargas llegarán en las próximas entregas.
+          La descarga del álbum llegará en una próxima entrega.
         </p>
       </div>
     </header>
@@ -479,11 +518,11 @@ function AlbumHeader({
 interface AlbumContentProps {
   readonly album: AlbumDto;
   readonly emptyRef: RefObject<HTMLDivElement | null>;
+  readonly canUpload: boolean;
+  readonly onFiles: (files: readonly File[], source: UploadSource) => void;
 }
 
-function AlbumContent({ album, emptyRef }: AlbumContentProps) {
-  const uploadNoteId = useId();
-
+function AlbumContent({ album, emptyRef, canUpload, onFiles }: AlbumContentProps) {
   if (album.photosCount === 0) {
     return (
       <div ref={emptyRef} tabIndex={-1} role="region" aria-label="Álbum vacío" className="mt-8">
@@ -491,18 +530,17 @@ function AlbumContent({ album, emptyRef }: AlbumContentProps) {
           icon={<ImagePlus />}
           iconShape="square"
           title="Este álbum todavía no tiene fotos"
-          description="Sube las primeras desde la galería o la cámara. Las verá todo el círculo."
+          description={
+            canUpload
+              ? 'Sube las primeras desde la galería o la cámara. Las verá todo el círculo.'
+              : 'Las subidas están desactivadas en este círculo. Pídele a quien lo creó que las active.'
+          }
           headingLevel={2}
           className="rounded-xl border border-dashed border-border-strong px-5 py-10"
           action={
-            <div className="flex flex-col items-center gap-2">
-              <Button disabled icon={<Upload />} aria-describedby={uploadNoteId}>
-                Subir fotos
-              </Button>
-              <p id={uploadNoteId} className="text-caption text-muted">
-                La subida de fotos llegará en la siguiente entrega.
-              </p>
-            </div>
+            canUpload ? (
+              <UploadSourcePicker albumTitle={album.title} onFiles={onFiles} />
+            ) : undefined
           }
         />
       </div>
@@ -524,6 +562,11 @@ function AlbumContent({ album, emptyRef }: AlbumContentProps) {
       <p className="mx-auto mt-2 max-w-prose text-body text-muted">
         Este álbum guarda {formatAlbumPhotos(album.photosCount)}. Podrás verlas aquí muy pronto.
       </p>
+      {canUpload ? null : (
+        <p className="mx-auto mt-2 max-w-prose text-caption text-muted">
+          Las subidas están desactivadas en este círculo.
+        </p>
+      )}
     </section>
   );
 }

@@ -10,6 +10,9 @@ import {
   isUnauthorizedError,
   useUnauthorizedRedirect,
 } from '../features/circles/session';
+import { UploadProvider } from '../features/uploads/upload-provider';
+import { UploadExitGuard } from '../features/uploads/upload-exit-guard';
+import { UploadQueueHost } from '../features/uploads/upload-queue-host';
 import { getErrorMessage } from '../lib/error-message';
 
 /**
@@ -54,22 +57,26 @@ function AppLayout() {
   }
 
   return (
-    <AppShell
-      currentPath={pathname}
-      hideTopBar={isCircleSectionPath(pathname)}
-      circleList={
-        hasSession && protectedRoute ? <CircleSidebarNav currentPath={pathname} /> : undefined
-      }
-      user={
-        user === undefined
-          ? undefined
-          : {
-              name: user.name,
-              ...(user.avatarUrl === null ? {} : { avatarUrl: user.avatarUrl }),
-            }
-      }
-    >
-      {content}
-    </AppShell>
+    <UploadProvider>
+      <UploadExitGuard />
+      <AppShell
+        currentPath={pathname}
+        hideTopBar={isCircleSectionPath(pathname)}
+        circleList={
+          hasSession && protectedRoute ? <CircleSidebarNav currentPath={pathname} /> : undefined
+        }
+        user={
+          user === undefined
+            ? undefined
+            : {
+                name: user.name,
+                ...(user.avatarUrl === null ? {} : { avatarUrl: user.avatarUrl }),
+              }
+        }
+      >
+        {content}
+      </AppShell>
+      <UploadQueueHost />
+    </UploadProvider>
   );
 }

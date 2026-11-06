@@ -12,6 +12,16 @@ export function canCreateAlbum(circle: AlbumCircle): boolean {
   return circle.role === 'owner' || circle.settings.membersCanCreateAlbums;
 }
 
+/**
+ * Subir fotos: owner o miembro mientras `membersCanUpload` siga activo.
+ *
+ * Espejo de la regla del servidor (`photo.upload`), solo para decidir si se
+ * muestra la acción. La API vuelve a comprobarlo.
+ */
+export function canUploadPhotos(circle: AlbumCircle): boolean {
+  return circle.role === 'owner' || circle.settings.membersCanUpload;
+}
+
 /** Vaciar y eliminar: owner o creador del álbum, sin depender de la flag. */
 export function canManageAlbum(
   circle: Pick<CircleDetailDto, 'role'>,
