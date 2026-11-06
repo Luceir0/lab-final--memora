@@ -15,8 +15,10 @@ abajo existen para que eso no se repita.
 1. **Una sesión = un worktree = una rama.** Nunca dos sesiones en el mismo árbol.
 2. **Un fix = un hallazgo.** Tras corregir: solo el test afectado, el `axe` del estado
    tocado y el viewport que falló.
-3. **Auditoría del delta**, no de la pantalla entera. Una revisión y una auditoría por
-   feature; la segunda ronda solo con bloqueante.
+3. **Auditoría del delta**, no de la pantalla entera. **Una sola revisión por feature y solo
+   del diff.** Nivel B sin `reviewer` (CI + `axe` jsdom + aceptación); nivel A con una pasada
+   centrada en autorización y datos; `a11y-auditor` una vez en F39 y `design-auditor` solo si
+   hay desviación del diseño canónico.
 4. **La batería completa, una vez**, antes del commit.
 5. **Nada de encadenar features** sin permiso: al cerrar una, se para y se reporta.
 
