@@ -3,10 +3,12 @@ import {
   errorResponseSchema,
   photoParamsSchema,
   photoResponseSchema,
+  updatePhotoRequestSchema,
   uploadPhotoParamsSchema,
   uploadPhotoResponseSchema,
   type PermissionActor,
   type PermissionCircle,
+  type PermissionResource,
 } from '@memora/shared';
 import type { FastifyRequest } from 'fastify';
 
@@ -22,6 +24,7 @@ import { resolveSession } from '../auth/session.ts';
 import { toCircleSettings } from '../circles/dto.ts';
 import { toPhotoDto } from '../members/dto.ts';
 import { findPhotoForMember, storePhoto } from './service.ts';
+import { findPhotoUpdateTarget, updatePhoto, type PhotoUpdateTarget } from './update.ts';
 import { readUploadRequest } from './upload-request.ts';
 
 const PHOTOS_TAG = 'Photos';
@@ -40,6 +43,31 @@ function assertUploadPermission(userId: string, target: AlbumMembership): void {
   };
 
   if (!can(actor, 'photo.upload', circle)) {
+    throw new ApiError('FORBIDDEN');
+  }
+}
+
+/**
+ * Checks `photo.update` for the loaded photo.
+ *
+ * Only the author (uploader) or the circle owner may edit. Ownership is decided
+ * by `Circle.ownerId` inside `can()`, using the membership already loaded for
+ * the request, so a forged `role: 'owner'` cannot escalate.
+ */
+function assertPhotoUpdatePermission(userId: string, target: PhotoUpdateTarget): void {
+  const actor: PermissionActor = { id: userId, role: target.membership.role };
+  const circle: PermissionCircle = {
+    id: target.circle.id,
+    ownerId: target.circle.ownerId,
+    settings: toCircleSettings(target.circle.settings),
+  };
+  const resource: PermissionResource = {
+    type: 'photo',
+    circleId: target.photo.circleId,
+    uploaderId: target.photo.uploaderId,
+  };
+
+  if (!can(actor, 'photo.update', circle, resource)) {
     throw new ApiError('FORBIDDEN');
   }
 }
@@ -190,6 +218,72 @@ export function registerPhotoRoutes(app: MemoraServer, config: AppConfig): void 
       setPrivateNoStore(reply);
 
       return toPhotoDto(photo);
+    },
+  );
+
+  /**
+   * `PATCH /api/photos/:photoId` — edit description, date and place (F31).
+   *
+   * Requires a session and a current membership in the photo's circle: a
+   * non-member, a photo from another circle and a missing photo answer `404`,
+   * never `403`. Only the author or the circle owner may edit; any other member
+   * gets `403 FORBIDDEN`. The body is the frozen `updatePhotoRequestSchema`:
+   * every field is optional, `null` clears it, an empty body is `400` and
+   * unknown fields are dropped before reaching the database. Coordinates and
+   * storage keys are never read from the client nor returned.
+   */
+  app.patch(
+    '/api/photos/:photoId',
+    {
+      preValidation: trustedOrigin,
+      schema: {
+        tags: [PHOTOS_TAG],
+        summary: 'Editar metadatos de foto',
+        description:
+          'Edita `description`, `takenAt` y `placeName` de una foto. Requiere sesión, `Origin`/`Referer` ' +
+          'permitido, CSRF y membresía vigente en el círculo: un no miembro, una foto de otro círculo y un id ' +
+          'inexistente responden `404 NOT_FOUND`. Solo el autor de la foto o el propietario del círculo pueden ' +
+          'editar; cualquier otro miembro recibe `403 FORBIDDEN`. Los tres campos son opcionales y anulables: ' +
+          '`null` limpia el valor y un cuerpo vacío es `400 VALIDATION_ERROR`. No acepta coordenadas ni claves ' +
+          'de almacenamiento y responde `200` con el `PhotoDto` actualizado.',
+        security: sessionSecurity,
+        headers: csrfHeaderSchema,
+        params: photoParamsSchema,
+        body: updatePhotoRequestSchema,
+        response: {
+          200: photoResponseSchema,
+          400: errorResponseSchema,
+          401: errorResponseSchema,
+          403: errorResponseSchema,
+          404: errorResponseSchema,
+          429: errorResponseSchema,
+        },
+      },
+    },
+    async (request, reply) => {
+      const prisma = requirePrisma(app);
+      const { user, token } = await resolveSession(prisma, config, request, reply);
+
+      assertCsrfToken(request, app, token);
+
+      const target = await findPhotoUpdateTarget(prisma, request.params.photoId, user.id);
+
+      if (target === null) {
+        throw new ApiError('NOT_FOUND');
+      }
+
+      assertPhotoUpdatePermission(user.id, target);
+
+      const { description, takenAt, placeName } = request.body;
+      const updated = await updatePhoto(prisma, target.photo.id, {
+        description,
+        takenAt: takenAt === undefined ? undefined : takenAt === null ? null : new Date(takenAt),
+        placeName,
+      });
+
+      setPrivateNoStore(reply);
+
+      return toPhotoDto(updated);
     },
   );
 }

@@ -27,7 +27,7 @@ const PUBLIC_USER_SELECT = {
   avatarUrl: true,
 } as const;
 
-const PHOTO_INCLUDE = {
+export const PHOTO_INCLUDE = {
   uploader: { select: PUBLIC_USER_SELECT },
   tags: { include: { taggedUser: { select: PUBLIC_USER_SELECT } } },
 } as const satisfies Prisma.PhotoInclude;

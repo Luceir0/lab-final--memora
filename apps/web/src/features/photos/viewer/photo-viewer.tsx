@@ -1,4 +1,4 @@
-import type { PhotoDto } from '@memora/shared';
+import type { PhotoDto, Role } from '@memora/shared';
 import { Button, IconButton, InlineAlert, Skeleton, Spinner } from '@memora/ui';
 import { useNavigate } from '@tanstack/react-router';
 import { ChevronLeft, ChevronRight, ImageOff, X } from 'lucide-react';
@@ -30,6 +30,10 @@ export interface PhotoViewerProps {
    * `srcset` se queda en `display` y no se pide una variante prohibida.
    */
   readonly allowOriginal?: boolean;
+  /** Rol de la cuenta en el círculo. Decide si se ofrece editar metadatos. */
+  readonly circleRole?: Role;
+  /** Cuenta autenticada; `null` mientras `/me` carga. */
+  readonly currentUserId?: string | null;
 }
 
 /** Umbral de swipe. Es un gesto, no una medida de diseño. */
@@ -53,6 +57,8 @@ export function PhotoViewer({
   albumId,
   photoId,
   allowOriginal = false,
+  circleRole = 'member',
+  currentUserId = null,
 }: PhotoViewerProps) {
   const navigate = useNavigate();
   const photoQuery = usePhotoQuery(photoId);
@@ -329,6 +335,10 @@ export function PhotoViewer({
 
           <PhotoDetailsPanel
             photo={photo}
+            circleId={circleId}
+            albumId={albumId}
+            circleRole={circleRole}
+            meId={currentUserId}
             className="max-h-[55dvh] shrink-0 overflow-y-auto rounded-t-2xl border-t border-border bg-surface p-5 md:h-auto md:max-h-none md:w-[380px] md:rounded-none md:border-l md:border-t-0 md:p-6"
           />
         </div>
