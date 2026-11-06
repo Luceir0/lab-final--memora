@@ -111,3 +111,4 @@ quedó anulada por decisión del usuario.
 - No cambies contratos sin avisar.
 - Actualiza tu fila al cerrar.
 - Un subagente = una feature = una rama = un handoff.
+- El orden del resto del proyecto (F29–F43), los tres tracks con worktrees y las reglas para no repetir el bucle de F28 están en [remaining-plan.md](../06-process/remaining-plan.md).
