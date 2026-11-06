@@ -185,7 +185,7 @@ export function OwnerSettings({ circle }: OwnerSettingsProps) {
     }
 
     alert.focus();
-    alert.scrollIntoView?.({ block: 'center' });
+    alert.scrollIntoView?.({ block: 'start' });
   }, [saveError]);
 
   const invitations =
@@ -333,7 +333,7 @@ export function OwnerSettings({ circle }: OwnerSettingsProps) {
             role="alert"
             tabIndex={-1}
             title={`${saveError.title}. ${saveError.description}`}
-            className="mb-5 flex items-start gap-3 rounded-lg border border-border bg-danger-soft p-4 text-danger-text"
+            className="mb-5 flex scroll-mt-[var(--app-circle-scroll-offset)] items-start gap-3 rounded-lg border border-border bg-danger-soft p-4 text-danger-text"
           >
             <TriangleAlert aria-hidden="true" className="mt-0.5 size-5 shrink-0" />
             <div className="min-w-0">
@@ -505,15 +505,10 @@ export function OwnerSettings({ circle }: OwnerSettingsProps) {
           >
             <div className="mx-auto flex w-full max-w-7xl flex-col gap-2">
               {/*
-               * La barra solo lleva una línea compacta y no viva: el aviso
-               * completo (con `role="alert"`) vive al principio del formulario
-               * para no hacer crecer la barra a 200 % (M2/N-D/B1-r).
+               * El error completo vive al principio del formulario con
+               * `role="alert"`; la barra no repite texto ni región viva para no
+               * crecer a 200 % (M2/N-D/B1-r).
                */}
-              {saveError ? (
-                <p className="truncate text-body-sm font-semibold text-danger-text">
-                  No se pudo guardar. Revisa el aviso.
-                </p>
-              ) : null}
               <div className="flex flex-wrap items-center gap-3">
                 <p
                   aria-live="polite"
@@ -530,7 +525,7 @@ export function OwnerSettings({ circle }: OwnerSettingsProps) {
                     variant="secondary"
                     onClick={discard}
                     disabled={busy}
-                    className="h-auto! min-h-11 min-w-0 flex-1 whitespace-normal px-3 py-2"
+                    className="h-auto! min-h-11 min-w-fit flex-1 whitespace-normal px-3 py-2 sm:flex-none"
                   >
                     Descartar
                   </Button>
@@ -538,7 +533,7 @@ export function OwnerSettings({ circle }: OwnerSettingsProps) {
                     type="submit"
                     form={formId}
                     loading={pending}
-                    className="h-auto! min-h-11 min-w-0 flex-1 whitespace-normal px-3 py-2"
+                    className="h-auto! min-h-11 min-w-fit flex-1 whitespace-normal px-3 py-2 sm:flex-none"
                   >
                     {pending ? 'Guardando…' : 'Guardar cambios'}
                   </Button>
