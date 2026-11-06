@@ -25,4 +25,13 @@ describe('rutas de círculos', () => {
     expect(await headTitle(CirclesIndexRoute)).toBe('Mis círculos · Memora');
     expect(await headTitle(NewCircleRoute)).toBe('Nuevo círculo · Memora');
   });
+
+  it('la lista valida las marcas de borrado y salida', () => {
+    const validateSearch = CirclesIndexRoute.options.validateSearch as (
+      search: Record<string, unknown>,
+    ) => { deleted?: boolean; left?: boolean };
+
+    expect(validateSearch({ deleted: '1', left: 'true' })).toEqual({ deleted: true, left: true });
+    expect(validateSearch({ deleted: '0', left: false })).toEqual({});
+  });
 });

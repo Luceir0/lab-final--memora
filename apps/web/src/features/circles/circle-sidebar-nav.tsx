@@ -1,13 +1,13 @@
-import { Skeleton, VisuallyHidden } from '@memora/ui';
+import { Skeleton } from '@memora/ui';
 import { Link, useRouter } from '@tanstack/react-router';
-import { useId } from 'react';
 
 import { cx } from '../../components/layout/class-names';
 import { CircleCover } from './circle-cover';
 import { isPlainLeftClick } from './link-click';
-import { circleIdFromPath, circlePath, circlePeoplePath } from './paths';
+import { circleIdFromPath, circlePath, circlePeoplePath, circleSettingsPath } from './paths';
 import { flattenCirclePages, useCircleListQuery } from './queries';
 import { useUnauthorizedRedirect } from './session';
+import { sectionNavigationState } from './use-section-focus';
 
 export interface CircleSidebarNavProps {
   /** Ruta actual, aportada por el layout `_app`. */
@@ -20,13 +20,12 @@ export interface CircleSidebarNavProps {
  * - Solo existe en escritorio: el `PrimaryNav` lo oculta en móvil.
  * - La lista reutiliza la clave `['circles','list']` de la página, así que no
  *   duplica peticiones.
- * - El subnav aparece bajo el círculo abierto. Álbumes y Personas son enlaces
- *   reales; Ajustes se anuncia como deshabilitado hasta F28, sin `href` que
- *   pueda acabar en un 404.
+ * - El subnav aparece bajo el círculo abierto. Álbumes, Personas y Ajustes son
+ *   enlaces reales.
  * - El nombre del círculo se resalta en todas sus secciones (`bg-primary-soft`
  *   y `text-primary-text`); la sección actual va en negrita, sin píldora.
  * - `aria-current="page"` es único: en el overview lo lleva el enlace del
- *   círculo y en Personas el enlace de Personas.
+ *   círculo y en Personas/Ajustes el enlace de esa sección.
  */
 export function CircleSidebarNav({ currentPath }: CircleSidebarNavProps) {
   const router = useRouter();
@@ -91,7 +90,9 @@ export function CircleSidebarNav({ currentPath }: CircleSidebarNavProps) {
                 circleId={circle.id}
                 currentPath={currentPath}
                 onNavigate={(href) => {
-                  void router.navigate({ href });
+                  // La marca de historial mueve el foco al H1 de la sección,
+                  // igual que las pestañas (M-02/AC-10).
+                  void router.navigate({ href, state: sectionNavigationState });
                 }}
               />
             ) : null}
@@ -111,8 +112,10 @@ interface CircleSubnavProps {
 function CircleSubnav({ circleId, currentPath, onNavigate }: CircleSubnavProps) {
   const overviewPath = circlePath(circleId);
   const peoplePath = circlePeoplePath(circleId);
+  const settingsPath = circleSettingsPath(circleId);
   const albumsActive = currentPath === overviewPath;
   const peopleActive = currentPath === peoplePath;
+  const settingsActive = currentPath === settingsPath;
 
   return (
     <ul className="mb-1 ml-7 mt-1 flex flex-col gap-0.5 pl-3">
@@ -165,40 +168,27 @@ function CircleSubnav({ circleId, currentPath, onNavigate }: CircleSubnavProps) 
         </a>
       </li>
       <li>
-        <DisabledSubnavItem
-          label="Ajustes"
-          explanation="Disponible cuando lleguen los ajustes del círculo."
-        />
+        <a
+          href={settingsPath}
+          aria-current={settingsActive ? 'page' : undefined}
+          onClick={(event) => {
+            if (!isPlainLeftClick(event)) {
+              return;
+            }
+
+            event.preventDefault();
+            onNavigate(settingsPath);
+          }}
+          className={cx(
+            'flex min-h-11 items-center rounded-md px-2 text-body-sm transition-colors',
+            settingsActive
+              ? 'font-semibold text-primary-text'
+              : 'text-muted hover:bg-surface-2 hover:text-text active:bg-surface-active',
+          )}
+        >
+          Ajustes
+        </a>
       </li>
     </ul>
-  );
-}
-
-interface DisabledSubnavItemProps {
-  readonly label: string;
-  readonly explanation: string;
-}
-
-/**
- * Elemento de navegación que todavía no lleva a ninguna parte.
- *
- * Se anuncia como enlace deshabilitado y es enfocable para que la explicación
- * `aria-describedby` se pueda leer con teclado y lector de pantalla.
- */
-function DisabledSubnavItem({ label, explanation }: DisabledSubnavItemProps) {
-  const explanationId = useId();
-
-  return (
-    <span
-      role="link"
-      aria-disabled="true"
-      aria-describedby={explanationId}
-      tabIndex={0}
-      className="flex min-h-11 cursor-not-allowed items-center rounded-md px-2 text-body-sm text-muted opacity-60"
-    >
-      {label}
-      <VisuallyHidden>Próximamente</VisuallyHidden>
-      <VisuallyHidden id={explanationId}>{explanation}</VisuallyHidden>
-    </span>
   );
 }

@@ -33,7 +33,8 @@ export interface ConfirmDialogProps {
  * Confirmación modal sobre `ResponsiveDialog`: hoja en móvil y diálogo desde
  * 768 px, con un solo árbol de contenido.
  *
- * - El foco inicial va a «Cancelar», la acción no destructiva.
+ * - El foco inicial va a «Cancelar», la acción no destructiva. Mientras
+ *   `loading` está activo, Cancelar se deshabilita para que no quede inerte.
  * - `confirmPhrase` exige escribirla para habilitar la confirmación; el error
  *   se anuncia con `aria-describedby` y `role="alert"` desde `TextField`.
  * - La CTA usa la piel destructiva roja suave cuando `danger` y primaria en el
@@ -81,6 +82,7 @@ export function ConfirmDialog({
             ref={cancelRef}
             variant="ghost"
             onClick={onClose}
+            disabled={loading}
             className="w-full bg-surface-2! text-text! enabled:hover:bg-surface-active! enabled:active:bg-surface-active! sm:w-auto"
           >
             {cancelLabel}

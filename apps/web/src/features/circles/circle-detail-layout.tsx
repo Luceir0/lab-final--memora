@@ -126,14 +126,16 @@ export function CircleDetailLayout({ circleId, children }: CircleDetailLayoutPro
   const invitations =
     invitationsQuery.data === undefined ? [] : flattenInvitationPages(invitationsQuery.data.pages);
   const isPeople = pathname.endsWith('/people');
-  const activeValue = isPeople ? 'people' : 'albums';
+  const isSettings = pathname.endsWith('/settings');
+  const activeValue = isSettings ? 'settings' : isPeople ? 'people' : 'albums';
+  const sectionLabel = isSettings ? 'Ajustes' : isPeople ? 'Personas' : 'Álbumes';
   const overviewPath = circlePath(circle.id);
 
   const breadcrumbItems = [
     { label: 'Mis círculos', href: '/circles' },
     { label: circle.name, href: overviewPath },
-    // La miga de sección se pinta siempre: Álbumes o Personas.
-    { label: isPeople ? 'Personas' : 'Álbumes' },
+    // La miga de sección se pinta siempre: Álbumes, Personas o Ajustes.
+    { label: sectionLabel },
   ];
 
   return (
@@ -145,31 +147,54 @@ export function CircleDetailLayout({ circleId, children }: CircleDetailLayoutPro
       canCreateAlbum={canCreate}
       albumsHeadingRef={albumsHeadingRef}
     >
-      <div className="mx-auto w-full max-w-7xl lg:px-8 lg:py-10">
-        {compact ? <CircleCompactHeader circle={circle} /> : null}
+      <div
+        className={
+          isSettings
+            ? 'mx-auto w-full max-w-7xl pt-[calc(var(--app-circle-compact-header-height)+env(safe-area-inset-top))] lg:px-8 lg:py-10'
+            : 'mx-auto w-full max-w-7xl lg:px-8 lg:py-10'
+        }
+      >
+        {compact || isSettings ? <CircleCompactHeader circle={circle} /> : null}
 
         <div className="mb-6 hidden lg:block">
           <Breadcrumb items={breadcrumbItems} label="Ruta del círculo" />
         </div>
 
-        <section className="lg:overflow-hidden lg:rounded-xl">
-          <CircleDetailHero
-            circle={circle}
-            compact={compact}
-            heroRef={heroRef}
-            titleRef={titleRef}
-            onInvite={owner ? openInvite : undefined}
-            onCreateAlbum={canCreate ? openCreateAlbum : undefined}
-            pendingCount={owner && invitations.length > 0 ? invitations.length : undefined}
-            pendingOverflow={owner && invitationsQuery.hasNextPage}
-          />
-        </section>
+        {isSettings ? (
+          // En escritorio el título es visible; en móvil lo aporta la cabecera
+          // compacta y este h1 queda solo para lectores de pantalla y foco.
+          <h1
+            ref={titleRef}
+            tabIndex={-1}
+            className="sr-only text-h1 font-extrabold text-text lg:not-sr-only lg:mb-2 lg:block"
+          >
+            Ajustes de {circle.name}
+          </h1>
+        ) : (
+          <section className="lg:overflow-hidden lg:rounded-xl">
+            <CircleDetailHero
+              circle={circle}
+              compact={compact}
+              heroRef={heroRef}
+              titleRef={titleRef}
+              onInvite={owner ? openInvite : undefined}
+              onCreateAlbum={canCreate ? openCreateAlbum : undefined}
+              pendingCount={owner && invitations.length > 0 ? invitations.length : undefined}
+              pendingOverflow={owner && invitationsQuery.hasNextPage}
+            />
+          </section>
+        )}
 
         {/* El wrapper de la nav contiene también la sección: en móvil el
             `sticky` necesita un ancestro más alto que la propia barra para no
-            desaparecer con el scroll. */}
+            desaparecer con el scroll. En Ajustes no hay héroe, así que la
+            cabecera compacta y la nav se fijan siempre. */}
         <div className="pb-2 lg:pb-0">
-          <CircleSectionNav circle={circle} activeValue={activeValue} compact={compact} />
+          <CircleSectionNav
+            circle={circle}
+            activeValue={activeValue}
+            compact={compact || isSettings}
+          />
 
           <div className="px-5 pt-2 lg:px-0 lg:pt-2">{children}</div>
         </div>

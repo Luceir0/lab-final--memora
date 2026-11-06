@@ -1,6 +1,6 @@
 import type { PhotoDto } from '@memora/shared';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { useState } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -149,6 +149,7 @@ beforeEach(() => {
 
 afterEach(() => {
   vi.restoreAllMocks();
+  vi.unstubAllGlobals();
 });
 
 describe('UploadQueueBar', () => {
@@ -211,7 +212,23 @@ describe('UploadQueueBar', () => {
     await expectNoAxeViolations(view.container);
   });
 
-  it('publica la altura de la barra en el documento mientras hay items', async () => {
+  it('publica la altura real de la barra en el documento mientras hay items', async () => {
+    let observerCallback: ResizeObserverCallback | null = null;
+
+    class FakeResizeObserver {
+      constructor(callback: ResizeObserverCallback) {
+        observerCallback = callback;
+      }
+
+      observe() {}
+      unobserve() {}
+      disconnect() {
+        observerCallback = null;
+      }
+    }
+
+    vi.stubGlobal('ResizeObserver', FakeResizeObserver);
+
     const fake = createHangingTransport();
     const view = renderBar([imageFile('foto-1.jpg')], fake.transport);
 
@@ -220,9 +237,37 @@ describe('UploadQueueBar', () => {
 
     expect(document.documentElement.dataset.uploadBar).toBe('visible');
 
+    const barButton = await screen.findByRole('button', { name: /Abrir subidas\./ });
+    const bar = barButton.parentElement;
+
+    if (bar === null) {
+      throw new Error('La barra de subidas debería tener un contenedor');
+    }
+
+    vi.spyOn(bar, 'getBoundingClientRect').mockReturnValue({
+      height: 72,
+      width: 360,
+      top: 0,
+      bottom: 72,
+      left: 0,
+      right: 360,
+      x: 0,
+      y: 0,
+      toJSON: () => ({}),
+    });
+
+    act(() => {
+      observerCallback?.([], {} as ResizeObserver);
+    });
+
+    expect(document.documentElement.style.getPropertyValue('--upload-queue-bar-height')).toBe(
+      '72px',
+    );
+
     view.unmount();
 
     expect(document.documentElement.dataset.uploadBar).toBeUndefined();
+    expect(document.documentElement.style.getPropertyValue('--upload-queue-bar-height')).toBe('');
   });
 
   it('en escritorio aparece al cerrar el panel y lo reabre', async () => {

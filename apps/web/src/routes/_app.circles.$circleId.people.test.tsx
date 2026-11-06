@@ -88,14 +88,9 @@ describe('ruta /circles/$circleId/people', () => {
     expect(people.getAttribute('href')).toBe('/circles/cir_familia/people');
     expect(people.getAttribute('aria-current')).toBe('page');
     expect(people.getAttribute('aria-disabled')).toBeNull();
-    expect(settings.getAttribute('aria-disabled')).toBe('true');
-    expect(settings.getAttribute('href')).toBeNull();
-
-    const reasonId = settings.getAttribute('aria-describedby');
-
-    expect(document.getElementById(reasonId ?? '')?.textContent).toBe(
-      'Disponible cuando lleguen los ajustes del círculo.',
-    );
+    expect(settings.getAttribute('aria-disabled')).toBeNull();
+    expect(settings.getAttribute('href')).toBe('/circles/cir_familia/settings');
+    expect(settings.getAttribute('aria-current')).toBeNull();
 
     await waitFor(() => {
       expect(screen.queryByTestId('pending-invitations-section')).toBeNull();

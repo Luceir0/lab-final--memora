@@ -103,23 +103,22 @@ describe('CircleSidebarNav', () => {
     ).toHaveLength(1);
   });
 
-  it('anuncia Ajustes como deshabilitado, sin href roto', async () => {
+  it('lleva a Ajustes con un enlace real y marca la sección activa', async () => {
     useCircles();
 
-    renderWithRouter(<CircleSidebarNav currentPath="/circles/cir_familia" />);
+    renderWithRouter(<CircleSidebarNav currentPath="/circles/cir_familia/settings" />);
 
     await screen.findByRole('link', { name: /Familia García/ });
 
     const item = screen.getByRole('link', { name: /^Ajustes/ });
 
-    expect(item.getAttribute('aria-disabled')).toBe('true');
-    expect(item.getAttribute('href')).toBeNull();
-    expect(item.getAttribute('tabindex')).toBe('0');
-
-    const descriptionId = item.getAttribute('aria-describedby');
-
-    expect(descriptionId).toBeTruthy();
-    expect(document.getElementById(descriptionId ?? '')?.textContent).toContain('Disponible');
+    expect(item.getAttribute('aria-disabled')).toBeNull();
+    expect(item.getAttribute('href')).toBe('/circles/cir_familia/settings');
+    expect(item.getAttribute('aria-current')).toBe('page');
+    expect(item.className).toContain('font-semibold');
+    expect(
+      screen.getAllByRole('link').filter((link) => link.getAttribute('aria-current') === 'page'),
+    ).toHaveLength(1);
   });
 
   it('no muestra subnav fuera de un círculo', async () => {

@@ -2,6 +2,7 @@ import {
   circleDetailResponseSchema,
   circleResponseSchema,
   csrfResponseSchema,
+  deleteCircleResponseSchema,
   listCirclesResponseSchema,
   logoutResponseSchema,
   meResponseSchema,
@@ -9,6 +10,7 @@ import {
   type CircleDto,
   type CircleStats,
   type CreateCircleRequest,
+  type UpdateCircleRequest,
 } from '@memora/shared';
 import {
   useInfiniteQuery,
@@ -19,6 +21,7 @@ import {
 } from '@tanstack/react-query';
 
 import { apiClient } from '../../lib/api-client';
+import { fetchCsrfToken } from '../../lib/csrf';
 
 /** Tamaño de página pedido a `GET /circles`. */
 export const CIRCLE_LIST_PAGE_LIMIT = 24;
@@ -157,6 +160,60 @@ export function useCreateCircleMutation() {
 
       return apiClient.post('/circles', input, {
         schema: circleResponseSchema,
+        headers: { 'X-CSRF-Token': csrfToken },
+      });
+    },
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: circleKeys.list });
+    },
+  });
+}
+
+/**
+ * Edición de un círculo con `PATCH`.
+ *
+ * - Pide CSRF fresco justo antes (la cookie puede haber rotado).
+ * - Fusiona el `CircleDto` devuelto en `['circle', id]` conservando `stats`,
+ *   que la respuesta de edición no incluye.
+ * - Invalida la lista para que el nombre y la portada se refresquen.
+ */
+export function useUpdateCircleMutation(circleId: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation<CircleDto, unknown, UpdateCircleRequest>({
+    mutationFn: async (input) => {
+      const csrfToken = await fetchCsrfToken(queryClient);
+
+      return apiClient.patch(`/circles/${encodeURIComponent(circleId)}`, input, {
+        schema: circleResponseSchema,
+        headers: { 'X-CSRF-Token': csrfToken },
+      });
+    },
+    onSuccess: (circle) => {
+      queryClient.setQueryData<CircleDetailDto>(circleKeys.detail(circleId), (previous) =>
+        previous === undefined ? previous : { ...previous, ...circle, stats: previous.stats },
+      );
+      void queryClient.invalidateQueries({ queryKey: circleKeys.list });
+    },
+  });
+}
+
+/**
+ * Borrado definitivo del círculo.
+ *
+ * Refresca la lista, pero **no** limpia el detalle aquí: quitarlo mientras el
+ * layout aún lo observa lo recrea y lanza un `GET` que ya devolverá `404`
+ * (m-03). El consumidor navega primero y llama a `removeQueries` después.
+ */
+export function useDeleteCircleMutation(circleId: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation<void, unknown, void>({
+    mutationFn: async () => {
+      const csrfToken = await fetchCsrfToken(queryClient);
+
+      await apiClient.delete(`/circles/${encodeURIComponent(circleId)}`, {
+        schema: deleteCircleResponseSchema,
         headers: { 'X-CSRF-Token': csrfToken },
       });
     },

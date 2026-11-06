@@ -1,10 +1,7 @@
 import { Outlet, createFileRoute } from '@tanstack/react-router';
 
 import { CircleDetailLayout } from '../features/circles/circle-detail-layout';
-
-function parseFlag(value: unknown): boolean {
-  return value === true || value === '1' || value === 'true';
-}
+import { parseSearchFlag } from '../features/circles/search-flags';
 
 /**
  * Layout estructural de un círculo.
@@ -21,11 +18,11 @@ export const Route = createFileRoute('/_app/circles/$circleId')({
   validateSearch: (search: Record<string, unknown>) => {
     const result: { created?: boolean; albumDeleted?: boolean } = {};
 
-    if (parseFlag(search.created)) {
+    if (parseSearchFlag(search.created)) {
       result.created = true;
     }
 
-    if (parseFlag(search.albumDeleted)) {
+    if (parseSearchFlag(search.albumDeleted)) {
       result.albumDeleted = true;
     }
 

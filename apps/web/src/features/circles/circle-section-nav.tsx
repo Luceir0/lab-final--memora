@@ -4,10 +4,10 @@ import { useRouter } from '@tanstack/react-router';
 import { Layers, Settings, Users } from 'lucide-react';
 import type { CSSProperties } from 'react';
 
-import { circlePath, circlePeoplePath } from './paths';
+import { circlePath, circlePeoplePath, circleSettingsPath } from './paths';
 import { sectionNavigationState } from './use-section-focus';
 
-export type CircleSectionValue = 'albums' | 'people';
+export type CircleSectionValue = 'albums' | 'people' | 'settings';
 
 export interface CircleSectionNavProps {
   readonly circle: CircleDetailDto;
@@ -15,19 +15,16 @@ export interface CircleSectionNavProps {
   /**
    * En móvil pega la barra bajo la cabecera compacta.
    *
-   * El layout pasa el estado real de scroll del héroe en todas las secciones:
-   * la barra se fija cuando la cabecera compacta está visible y no antes.
+   * El layout pasa el estado real de scroll del héroe, o `true` en Ajustes,
+   * donde no hay héroe y la cabecera compacta está siempre visible en móvil.
    */
   readonly compact: boolean;
 }
 
-const SETTINGS_DISABLED_REASON = 'Disponible cuando lleguen los ajustes del círculo.';
-
 /**
  * Navegación entre las secciones del círculo con URL real.
  *
- * Álbumes y Personas son enlaces; Ajustes se anuncia como deshabilitado hasta
- * F28 y explica su razón con `aria-describedby`. El scroll vuelve arriba al
+ * Álbumes, Personas y Ajustes son enlaces reales. El scroll vuelve arriba al
  * cambiar de sección (comportamiento por defecto del router) y la navegación
  * marca el historial para que la sección enfocada reciba el foco.
  */
@@ -52,12 +49,8 @@ export function CircleSectionNav({ circle, activeValue, compact }: CircleSection
     {
       value: 'settings',
       label: 'Ajustes',
-      // `TabLinks` no pinta `href` en un elemento deshabilitado; el tipo lo
-      // exige en todos los elementos porque el kit no lo divide en dos uniones.
-      href: '',
+      href: circleSettingsPath(circle.id),
       icon: Settings,
-      disabled: true,
-      disabledReason: SETTINGS_DISABLED_REASON,
     },
   ];
 
@@ -67,6 +60,7 @@ export function CircleSectionNav({ circle, activeValue, compact }: CircleSection
 
   return (
     <div
+      data-circle-section-nav=""
       className={
         compact
           ? 'sticky z-nav mt-2 bg-bg px-5 pb-1 pt-2 lg:static lg:bg-transparent lg:px-0 lg:pb-0 lg:pt-0'

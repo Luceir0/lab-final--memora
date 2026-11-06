@@ -5,7 +5,7 @@ import { getErrorMessage } from '../../lib/error-message';
 
 import { formatClockTime } from './format';
 
-export type CircleErrorContext = 'list' | 'create' | 'detail';
+export type CircleErrorContext = 'list' | 'create' | 'detail' | 'update' | 'delete' | 'leave';
 
 export type CircleFormField = 'name' | 'description';
 
@@ -18,6 +18,15 @@ export interface CirclesErrorCopy {
 
 export interface CreateCircleErrorMapping extends CirclesErrorCopy {
   readonly fieldErrors: Partial<Record<CircleFormField, string>>;
+}
+
+/**
+ * Mapeo del `PATCH /circles/:circleId`: errores por campo visible y un error
+ * de `settings` que no se puede asociar a un control concreto.
+ */
+export interface UpdateCircleErrorMapping extends CirclesErrorCopy {
+  readonly fieldErrors: Partial<Record<CircleFormField, string>>;
+  readonly settingsError: string | null;
 }
 
 export const CIRCLE_SESSION_EXPIRED_MESSAGE =
@@ -62,7 +71,13 @@ export function getCirclesErrorCopy(error: unknown, context: CircleErrorContext)
       ? 'No hemos podido cargar tus círculos'
       : context === 'detail'
         ? 'No hemos podido cargar el círculo'
-        : 'No hemos podido guardar el círculo';
+        : context === 'update'
+          ? 'No hemos podido guardar los ajustes'
+          : context === 'delete'
+            ? 'No hemos podido eliminar el círculo'
+            : context === 'leave'
+              ? 'No hemos podido salir del círculo'
+              : 'No hemos podido guardar el círculo';
 
   if (isApiError(error)) {
     if (error.status === 401) {
@@ -70,6 +85,27 @@ export function getCirclesErrorCopy(error: unknown, context: CircleErrorContext)
     }
 
     if (error.status === 403) {
+      if (context === 'update') {
+        return {
+          title: 'Solo la persona administradora puede cambiar los ajustes',
+          description: 'Tu cuenta no tiene permiso para editar este círculo.',
+        };
+      }
+
+      if (context === 'delete') {
+        return {
+          title: 'Solo la persona administradora puede eliminar el círculo',
+          description: 'Tu cuenta no tiene permiso para borrarlo.',
+        };
+      }
+
+      if (context === 'leave') {
+        return {
+          title: 'No puedes salir de este círculo',
+          description: 'Tu cuenta no tiene permiso para abandonarlo.',
+        };
+      }
+
       return {
         title:
           context === 'list'
@@ -101,15 +137,13 @@ export function getCirclesErrorCopy(error: unknown, context: CircleErrorContext)
       return {
         title: genericTitle,
         description:
-          context === 'list'
-            ? 'Parece un problema del servidor. Tus fotos siguen a salvo: vuelve a intentarlo en unos segundos.'
-            : context === 'detail'
-              ? 'Parece un problema del servidor. Tus fotos siguen a salvo: vuelve a intentarlo en unos segundos.'
-              : 'Parece un problema del servidor. No has perdido nada de lo que has escrito: vuelve a intentarlo.',
+          context === 'create' || context === 'update'
+            ? 'Parece un problema del servidor. No has perdido nada de lo que has escrito: vuelve a intentarlo.'
+            : 'Parece un problema del servidor. Tus fotos siguen a salvo: vuelve a intentarlo en unos segundos.',
       };
     }
 
-    if (context === 'create' && error.status === 400) {
+    if ((context === 'create' || context === 'update') && error.status === 400) {
       return {
         title: 'Revisa los datos del círculo',
         description: error.message,
@@ -123,7 +157,7 @@ export function getCirclesErrorCopy(error: unknown, context: CircleErrorContext)
     return {
       title: genericTitle,
       description:
-        context === 'create'
+        context === 'create' || context === 'update'
           ? 'Se ha perdido la conexión. No has perdido nada de lo que has escrito: vuelve a intentarlo.'
           : 'Parece un problema de conexión. Tus fotos siguen a salvo: vuelve a intentarlo en unos segundos.',
     };
@@ -141,6 +175,29 @@ export function mapCreateCircleError(error: unknown): CreateCircleErrorMapping {
       : {};
 
   return { ...copy, fieldErrors };
+}
+
+/**
+ * Mapeo del `PATCH`: errores por campo visible y el detalle de `settings`.
+ *
+ * `settings` no corresponde a un control concreto del formulario, así que se
+ * pinta como aviso del bloque de permisos en lugar de asociarse a un `Switch`.
+ */
+export function mapUpdateCircleError(error: unknown): UpdateCircleErrorMapping {
+  const copy = getCirclesErrorCopy(error, 'update');
+
+  if (!isApiError(error) || error.status !== 400) {
+    return { ...copy, fieldErrors: {}, settingsError: null };
+  }
+
+  const fieldErrors = collectCircleFieldErrors(error.details, error.message);
+  const settingsDetail = (error.details ?? []).find((detail) => detail.field === 'settings');
+
+  return {
+    ...copy,
+    fieldErrors,
+    settingsError: settingsDetail?.message ?? (settingsDetail ? error.message : null),
+  };
 }
 
 /**

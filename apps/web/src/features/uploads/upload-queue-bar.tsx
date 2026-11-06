@@ -1,6 +1,6 @@
 import { ProgressBar } from '@memora/ui';
 import { Upload } from 'lucide-react';
-import { useEffect, type RefObject } from 'react';
+import { useEffect, useRef, type RefObject } from 'react';
 
 import { formatUploadCancelledCount, formatUploadFailedCount } from './format';
 import { summarizeUploadQueue } from './reducer';
@@ -29,6 +29,7 @@ export function UploadQueueBar({ open, onOpen, panelId, buttonRef }: UploadQueue
   const isDesktop = useMediaQuery('(min-width: 1024px)');
   const hasItems = items.length > 0;
   const summary = summarizeUploadQueue(items);
+  const barRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!hasItems || typeof document === 'undefined') {
@@ -39,6 +40,39 @@ export function UploadQueueBar({ open, onOpen, panelId, buttonRef }: UploadQueue
 
     return () => {
       delete document.documentElement.dataset.uploadBar;
+    };
+  }, [hasItems]);
+
+  /*
+   * La barra de guardado de Ajustes se apoya en `--upload-queue-bar-height`
+   * para apilarse encima en móvil (B2). La medida fija de `app.css` se queda
+   * corta con zoom de texto; publicamos la altura real y la limpiamos al
+   * desmontar. No cambia el comportamiento visual de la barra.
+   */
+  useEffect(() => {
+    const bar = barRef.current;
+
+    if (!hasItems || bar === null || typeof document === 'undefined') {
+      return;
+    }
+
+    const root = document.documentElement;
+    const syncHeight = () => {
+      root.style.setProperty(
+        '--upload-queue-bar-height',
+        `${Math.ceil(bar.getBoundingClientRect().height)}px`,
+      );
+    };
+
+    syncHeight();
+
+    const observer = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(syncHeight);
+
+    observer?.observe(bar);
+
+    return () => {
+      observer?.disconnect();
+      root.style.removeProperty('--upload-queue-bar-height');
     };
   }, [hasItems]);
 
@@ -77,6 +111,7 @@ export function UploadQueueBar({ open, onOpen, panelId, buttonRef }: UploadQueue
 
   return (
     <div
+      ref={barRef}
       inert={open || undefined}
       className={`fixed z-nav flex min-h-14 flex-col rounded-lg border border-border bg-surface text-left shadow-lg transition-opacity duration-(--memora-duration-fast) ease-standard motion-reduce:transition-none [[data-theme='dark']_&]:border-border-strong ${positionClasses} ${
         open ? 'pointer-events-none opacity-0' : 'opacity-100'

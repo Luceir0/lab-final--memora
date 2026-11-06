@@ -11,6 +11,11 @@ export function circlePeoplePath(circleId: string): string {
   return `${circlePath(circleId)}/people`;
 }
 
+/** Ruta de Ajustes de un círculo con el id codificado. */
+export function circleSettingsPath(circleId: string): string {
+  return `${circlePath(circleId)}/settings`;
+}
+
 /**
  * Indica si la ruta pertenece a un círculo (`/circles/:id` y sus subrutas).
  *

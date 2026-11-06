@@ -1,5 +1,6 @@
 import {
   createInvitationResponseSchema,
+  leaveCircleResponseSchema,
   listInvitationsResponseSchema,
   listMembersResponseSchema,
   removeMemberResponseSchema,
@@ -131,6 +132,33 @@ export function useRevokeInvitationMutation(circleId: string) {
     },
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: memberKeys.invitations(circleId) });
+    },
+  });
+}
+
+/**
+ * Salir de un círculo como miembro.
+ *
+ * La API responde `204`; el owner recibe `409` y no debe ver esta acción. Se
+ * invalida la lista para que el círculo desaparezca de Mis círculos. La
+ * limpieza del detalle la hace el consumidor **después** de navegar: borrarlo
+ * aquí, con el layout todavía observándolo, lo recrea y lanza un `GET` que ya
+ * devolverá `404` (m-03).
+ */
+export function useLeaveCircleMutation(circleId: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation<void, unknown, void>({
+    mutationFn: async () => {
+      const csrfToken = await fetchCsrfToken(queryClient);
+
+      await apiClient.post(`/circles/${encodeURIComponent(circleId)}/leave`, undefined, {
+        schema: leaveCircleResponseSchema,
+        headers: { 'X-CSRF-Token': csrfToken },
+      });
+    },
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: circleKeys.list });
     },
   });
 }
