@@ -7,12 +7,20 @@ import { formatPhotoDescription } from './format';
 export interface PhotoTileProps {
   readonly photo: PhotoDto;
   readonly selected: boolean;
-  readonly onToggle: (photo: PhotoDto, event: MouseEvent<HTMLButtonElement>) => void;
+  /** Abre el visor. El clic sin modificadores es siempre «abrir». */
+  readonly onOpen?: ((photo: PhotoDto) => void) | undefined;
+  /**
+   * Alterna la selección. Se usa desde la casilla y desde el clic con
+   * Shift/Ctrl/Cmd sobre la miniatura.
+   */
+  readonly onToggle?: ((photo: PhotoDto, event: MouseEvent<HTMLElement>) => void) | undefined;
+  /** Con selección activa, la casilla queda siempre visible. */
+  readonly selectionActive?: boolean | undefined;
   /**
    * Tamaños de la rejilla para `sizes`. El valor por defecto describe las
    * columnas de móvil (3) y escritorio (4–7) de AC-01.
    */
-  readonly sizes?: string;
+  readonly sizes?: string | undefined;
 }
 
 const DEFAULT_SIZES =
@@ -21,30 +29,56 @@ const DEFAULT_SIZES =
 /**
  * Celda de la galería.
  *
- * El tile entero es un botón con `aria-pressed`: el clic y el teclado hacen lo
- * mismo. La imagen es decorativa dentro del botón (el nombre accesible describe
- * la foto) y usa `srcset` con las variantes `thumb` y `display` de F27, además
- * de `width`/`height` para reservar el hueco antes de cargar.
+ * La miniatura abre el visor (F30). La selección tiene su propia casilla, que
+ * aparece al pasar el ratón o al enfocar la celda y queda siempre visible en
+ * móvil o con selección activa. Shift/Ctrl/Cmd + clic sobre la miniatura
+ * seleccionan sin abrir, para no perder los atajos de F29.
  *
- * Si la imagen falla, se sustituye por un icono y se conserva el nombre del
- * botón: nunca se deja el icono nativo de imagen rota.
+ * La imagen es decorativa dentro del botón (el nombre accesible describe la
+ * foto) y usa `srcset` con las variantes `thumb` y `display` de F27, además de
+ * `width`/`height` para reservar el hueco antes de cargar.
  */
-export function PhotoTile({ photo, selected, onToggle, sizes = DEFAULT_SIZES }: PhotoTileProps) {
+export function PhotoTile({
+  photo,
+  selected,
+  onOpen,
+  onToggle,
+  selectionActive = false,
+  sizes = DEFAULT_SIZES,
+}: PhotoTileProps) {
   const [failed, setFailed] = useState(false);
   const description = formatPhotoDescription(photo);
+  const opensViewer = onOpen !== undefined;
+  const canToggle = onToggle !== undefined;
+  const checkboxVisibility = selectionActive
+    ? 'opacity-100'
+    : 'opacity-100 md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100';
+
+  const handleThumbnailClick = (event: MouseEvent<HTMLButtonElement>) => {
+    if (onOpen !== undefined && !event.shiftKey && !event.ctrlKey && !event.metaKey) {
+      onOpen(photo);
+      return;
+    }
+
+    onToggle?.(photo, event);
+  };
 
   return (
-    <li className="min-w-0">
+    <li className="group relative min-w-0">
       <button
         type="button"
-        aria-pressed={selected}
+        data-photo-tile={photo.id}
         aria-label={
-          selected ? `Quitar selección: ${description}` : `Seleccionar foto: ${description}`
+          opensViewer
+            ? `Abrir foto: ${description}`
+            : canToggle
+              ? selected
+                ? `Quitar selección: ${description}`
+                : `Seleccionar foto: ${description}`
+              : `Foto: ${description}`
         }
-        onClick={(event) => {
-          onToggle(photo, event);
-        }}
-        className="group relative block aspect-square w-full overflow-hidden rounded-md bg-surface-2 transition-shadow duration-(--memora-duration-fast) ease-standard focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
+        onClick={handleThumbnailClick}
+        className="relative block aspect-square w-full overflow-hidden rounded-md bg-surface-2 transition-shadow duration-(--memora-duration-fast) ease-standard focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
       >
         {failed ? (
           <span
@@ -72,17 +106,6 @@ export function PhotoTile({ photo, selected, onToggle, sizes = DEFAULT_SIZES }: 
           />
         )}
 
-        <span
-          aria-hidden="true"
-          className={
-            selected
-              ? 'absolute left-2 top-2 inline-flex size-6 items-center justify-center rounded-full bg-primary text-on-primary shadow-sm'
-              : 'absolute left-2 top-2 inline-flex size-6 items-center justify-center rounded-full border border-on-primary/70 bg-viewer-bg/40 text-transparent'
-          }
-        >
-          <Check className="size-4" />
-        </span>
-
         {selected ? (
           <span
             aria-hidden="true"
@@ -90,6 +113,35 @@ export function PhotoTile({ photo, selected, onToggle, sizes = DEFAULT_SIZES }: 
           />
         ) : null}
       </button>
+
+      {canToggle ? (
+        <label
+          className={`absolute left-1.5 top-1.5 z-10 inline-flex size-11 cursor-pointer items-center justify-center rounded-full transition-opacity duration-(--memora-duration-fast) ${checkboxVisibility}`}
+        >
+          <input
+            type="checkbox"
+            checked={selected}
+            aria-label={
+              selected ? `Quitar selección: ${description}` : `Seleccionar foto: ${description}`
+            }
+            onChange={() => {}}
+            onClick={(event) => {
+              onToggle?.(photo, event);
+            }}
+            className="peer sr-only"
+          />
+          <span
+            aria-hidden="true"
+            className={
+              selected
+                ? 'inline-flex size-6 items-center justify-center rounded-full bg-primary text-on-primary shadow-sm peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-focus'
+                : 'inline-flex size-6 items-center justify-center rounded-full border border-on-primary/70 bg-viewer-bg/40 text-transparent peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-focus'
+            }
+          >
+            <Check className="size-4" />
+          </span>
+        </label>
+      ) : null}
     </li>
   );
 }

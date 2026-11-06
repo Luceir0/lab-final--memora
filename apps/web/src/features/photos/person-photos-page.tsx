@@ -10,7 +10,7 @@ import {
   LinkButton,
   Skeleton,
 } from '@memora/ui';
-import { Link } from '@tanstack/react-router';
+import { Link, useNavigate } from '@tanstack/react-router';
 import { ArrowLeft, Download, Images, Tag } from 'lucide-react';
 import { useEffect, useId, useRef, useState } from 'react';
 
@@ -24,6 +24,7 @@ import { formatPersonPhotosSummary } from './format';
 import { PhotoGrid } from './photo-grid';
 import { flattenPhotoPages, useAlbumPhotosQuery, usePersonPhotosQuery } from './queries';
 import { useRestoredScroll } from './use-restored-scroll';
+import { rememberViewerOrigin } from './viewer/origin';
 
 export interface PersonPhotosPageProps {
   readonly userId: string;
@@ -43,6 +44,7 @@ export function PersonPhotosPage({ userId }: PersonPhotosPageProps) {
   const membersQuery = useMembersQuery(circle.id);
   const albumsQuery = useAlbumListQuery(circle.id);
   const [albumId, setAlbumId] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   const allPhotosQuery = usePersonPhotosQuery(circle.id, userId, albumId === null);
   const albumPhotosQuery = useAlbumPhotosQuery(albumId, userId, albumId !== null);
@@ -216,6 +218,13 @@ export function PersonPhotosPage({ userId }: PersonPhotosPageProps) {
               : `Fotos de ${name} en ${selectedAlbum.title}`
           }
           photos={photos}
+          onOpen={(photo) => {
+            rememberViewerOrigin(photo.id);
+            void navigate({
+              to: '/circles/$circleId/albums/$albumId/photos/$photoId',
+              params: { circleId: circle.id, albumId: photo.albumId, photoId: photo.id },
+            });
+          }}
           total={albumId === null ? photosCount : undefined}
           loading={activeQuery.isPending}
           error={activeQuery.error}

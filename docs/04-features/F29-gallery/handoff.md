@@ -62,6 +62,7 @@ Ejecutada en el worktree `f29-gallery` el 2026-11-06:
 - **AC-02: pasa.** `useInfiniteQuery` con `nextCursor`, centinela y botón accesible de respaldo.
 - **AC-03: pasa.** Filtro desde `GET /circles/:circleId/members` y `personId` en la petición; el API responde `404` si la persona no es del círculo.
 - **AC-04: pasa.** Clic, Shift (rango) y Ctrl/Cmd (alternar) con `aria-pressed`; `Esc` limpia.
+  **Actualizado en F30:** el clic pasa a abrir el visor y la selección se hace con la casilla, `Shift` o `Ctrl/Cmd`; los tests se adaptaron en F30.
 - **AC-05: pasa.** Posición por álbum y filtro en `sessionStorage`.
 - **AC-06: pasa.** `srcset` thumb/display, `sizes`, `loading="lazy"`, `decoding="async"` y dimensiones.
 - **AC-07: pasa.** Página con endpoint del círculo, cabecera con total y álbumes, migas y vuelta.

@@ -1,5 +1,6 @@
 import type { AlbumDto } from '@memora/shared';
 import { Button, EmptyState } from '@memora/ui';
+import { useNavigate } from '@tanstack/react-router';
 import { Images } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
@@ -12,6 +13,8 @@ import { flattenPhotoPages, useAlbumPhotosQuery } from './queries';
 import { SelectionBar } from './selection-bar';
 import { selectionModifiers, usePhotoSelection } from './use-photo-selection';
 import { useRestoredScroll } from './use-restored-scroll';
+import { rememberViewerOrigin } from './viewer/origin';
+import { registerPhotoSelectionClear } from './viewer/selection-bridge';
 
 export interface AlbumGalleryProps {
   readonly album: AlbumDto;
@@ -29,6 +32,7 @@ export function AlbumGallery({ album }: AlbumGalleryProps) {
   const photosQuery = useAlbumPhotosQuery(album.id, personId);
   const membersQuery = useMembersQuery(album.circleId);
   const gridRef = useRef<HTMLUListElement>(null);
+  const navigate = useNavigate();
 
   useUnauthorizedRedirect(photosQuery.error);
   useUnauthorizedRedirect(membersQuery.error);
@@ -44,6 +48,16 @@ export function AlbumGallery({ album }: AlbumGalleryProps) {
   useEffect(() => {
     clear();
   }, [personId, clear]);
+
+  // El visor consulta este puente para que el primer `Esc` limpie la
+  // selección y no cierre la foto que el usuario está viendo.
+  useEffect(() => {
+    if (selectedCount === 0) {
+      return;
+    }
+
+    return registerPhotoSelectionClear(clear);
+  }, [clear, selectedCount]);
 
   const selectedMember = members.find((member) => member.user.id === personId) ?? null;
   const notFound = isNotFoundError(photosQuery.error);
@@ -86,7 +100,15 @@ export function AlbumGallery({ album }: AlbumGalleryProps) {
         }
         photos={photos}
         selectedIds={selectedIds}
+        onOpen={(photo) => {
+          rememberViewerOrigin(photo.id);
+          void navigate({
+            to: '/circles/$circleId/albums/$albumId/photos/$photoId',
+            params: { circleId: album.circleId, albumId: album.id, photoId: photo.id },
+          });
+        }}
         onToggle={(photo, event) => toggle(photo, selectionModifiers(event))}
+        selectionActive={selectedCount > 0}
         total={personId === null ? album.photosCount : undefined}
         loading={photosQuery.isPending}
         error={notFound ? null : photosQuery.error}
