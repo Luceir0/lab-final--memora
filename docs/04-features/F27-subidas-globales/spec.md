@@ -3,7 +3,7 @@ id: F27
 title: "Subidas globales"
 milestone: M3
 size: L
-status: accepted
+status: done
 spec: complete
 depends_on:
   - "F26"
@@ -23,7 +23,7 @@ decisions:
 
 # F27 — Subidas globales («Mis subidas»)
 
-> **Milestone:** M3 · **Talla:** L · **Estado:** in-progress · **Spec:** completa
+> **Milestone:** M3 · **Talla:** L · **Estado:** done (2026-11-06) · **Spec:** completa
 > **Depende de:** F26 · **Bloquea:** —
 > **Auditoría:** **A**, decidida por el usuario el 2026-11-06 al autorizar que esta feature
 > adelante el endpoint de imágenes privadas desde F29.
@@ -284,3 +284,16 @@ pnpm --filter @memora/api test
 ## Handoff
 
 Al terminar, completa `handoff.md` y actualiza el tablero. No hagas commit ni push sin permiso.
+
+## Cierre (2026-11-06)
+
+- **Aceptación (G4):** 2026-11-06, tras la prueba del usuario y la resolución de una incidencia
+  de la API local (proceso lanzado sin watcher que no conocía las rutas nuevas y devolvía `404`).
+- **Cierre operativo:** rama `feat/f27-subidas-globales`, commits `784df87` y `944e2ab`,
+  [PR #44](https://github.com/Luceir0/lab-final--memora/pull/44), merge
+  `a848c93a82f7d7e83910e5d1fefb7cf38c759750` en `main`.
+- **CI:** run `42224616978` en la PR —el primer intento falló por un flake preexistente de F26 en
+  `upload-exit-guard.test.tsx` y el reintento terminó en `success`— y run `42225410112` en `main`
+  sobre el merge, `success`.
+- **Estado:** `done`. Esta nota no cambia el alcance ni el contrato congelado; el detalle de
+  verificación, revisión y pendientes vive en [handoff.md](handoff.md).
