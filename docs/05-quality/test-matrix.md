@@ -30,14 +30,14 @@
 | Círculos | F17, F18 | crear, editar, borrar, permisos, settings | API + componente |
 | Álbumes | F23, F24 | crear, editar, borrar vacío, `ALBUM_NOT_EMPTY`, vaciar, pertenencia | API + componente |
 | Subidas | F25 | formato, tamaño, cuota, píxeles, HEIC, idempotencia, fallo S3 | API |
-| Subidas UI | F26, F27 | progreso, error, retry, cancel, dropzone, cámara, salida, cola global | Componente/hook/E2E |
+| Subidas UI | F26, F27 | progreso, error, retry, cancel, dropzone, cámara, navegación sin bloqueo, aviso nativo, barra y panel globales | Componente/hook/E2E |
 | Galería | F29 | paginación, filtro persona, selección, scroll restaurado | Componente + E2E |
 | Visor | F30, F31 | teclado, swipe, Escape, foco, imagen no disponible, metadatos | Componente + E2E |
 | Etiquetas | F32 | solo miembros, duplicado, quitar, optimista, error | API + componente |
 | Descargas | F33 | individual, álbum, selección, límite, expiración, acceso, `membersCanDownload` | API + E2E |
 | Perfil y preferencias | F34 | nombre, email inmutable, iniciales, tema, logout | Componente + E2E |
 | Actividad | F35 | evento por acción, orden, paginación, privacidad | API + componente |
-| Subidas globales | F27 | cola persistente en navegación, contador, recientes | Componente + E2E |
+| Subidas globales | F27 | ruta `/uploads`, subidas recientes, contador y estados de la página (la cola y el panel globales son de F26) | Componente + E2E |
 | Tema | F10, F34 | claro/oscuro/sistema, persistencia, sin destello | Componente + E2E |
 | UI kit I: controles y datos | F11 | 18 componentes con estados y roles nativos; label/hint/error; loading con `aria-disabled`; `SegmentedControl` por flechas; áreas táctiles de 44 px; contraste sobre tokens; catálogo dev-only fuera del bundle | Componente (RTL) + axe + auditoría en navegador real |
 | UI kit II: overlays y feedback | F12 | 12 componentes; `Dialog` con `aria-modal`, trampa de foco, `Esc`, retorno, fondo inerte y scroll bloqueado; apilado por apertura; `BottomSheet` con botón y `Esc` además del arrastre; `ResponsiveDialog` por `matchMedia`; `Menu`/`Tabs`/`Accordion` con flechas y `Home`/`End`; `Toast`/`InlineAlert` con `status`/`alert` y 2.4.11; `Tooltip` con `aria-describedby`; áreas táctiles y contraste; axe en 32 pasadas de navegador real | Componente (RTL) + axe + auditoría en navegador real |
@@ -126,6 +126,21 @@
 - **Limitación honesta:** jsdom no calcula layout, así que áreas táctiles, zoom, colisión del tooltip y apilado visual no se miden en los tests. El gate de puntero del `Tooltip` (`hover: hover`) tampoco se puede comprobar en jsdom.
 - **Revisión y auditorías:** revisión independiente en dos rondas (primera **apto con correcciones** por M-01 a M-05 y N-01 a N-03; segunda **apto**) y auditoría de diseño en tres pasadas (primera **no apto** con cinco mayores y 14 menores; segunda **apto con correcciones**; tercera **apto**). Detalle en el [handoff de F12](../04-features/F12-ui-kit-ii/handoff.md).
 - **F12 queda en `done`** (2026-11-02): el usuario la aceptó en `/ui` con el estilo destructivo unificado y se cerró con la PR #13, el merge `62d98b9` y CI en verde en la PR (run `41537887650`) y en `main` (run `41538068474`).
+
+## Evidencia ejecutada (F26, 2026-11-06)
+
+- `corepack pnpm --filter @memora/web test uploads` → **19 archivos y 141 tests**: `reducer.test.ts`, `reducer-transitions.test.ts`, `use-upload-queue.test.tsx`, `use-upload-queue-risks.test.tsx`, `transport.test.ts`, `transport-contract.test.ts`, `upload-xhr-msw.test.tsx`, `validation.test.ts`, `errors.test.ts`, `format.test.ts`, `album-refresh.test.ts`, `upload-dropzone.test.tsx`, `upload-source-picker.test.tsx`, `upload-queue.test.tsx`, `upload-queue-risk.test.tsx`, `upload-queue-bar.test.tsx`, `upload-queue-host.test.tsx`, `upload-announcer.test.tsx` y `upload-exit-guard.test.tsx`.
+- `corepack pnpm --filter @memora/web test -- --maxWorkers=3` → **82 archivos y 649 tests**.
+- `corepack pnpm --filter @memora/web typecheck` y `lint` → OK; `corepack pnpm format:check` → OK. El `build` se verificó en la revisión previa (5 rutas prerenderizadas) y **no se ha re-ejecutado tras el delta**.
+- **Progreso y transporte:** `upload-xhr-msw.test.tsx` usa **MSW 3.0.3 sobre XHR real**: 500 → `error` y reintento 201 → `done` con el mismo `clientUploadId`; también normaliza un 500 sin cuerpo contractual. `transport-contract.test.ts` fija el contrato del puerto inyectable.
+- **Estado y concurrencia:** reducer puro con unión discriminada y transiciones inválidas descartadas; resumen global ponderado por bytes; `use-upload-queue.test.tsx` y `use-upload-queue-risks.test.tsx` cubren arranque por huecos, concurrencia 3, retry, cancel y un error que no pierde a los demás.
+- **Dropzone y selector:** `upload-dropzone.test.tsx` cubre drop válido, cancelación del default con archivos (también dentro de la cola o deshabilitado) y drops ignorados dentro de overlays; `upload-source-picker.test.tsx` cubre cámara/galería con `capture`.
+- **Navegación real sin bloqueo:** `album-upload-exit.test.tsx` monta el **router real** de TanStack con `UploadProvider`, `UploadExitGuard` y `UploadQueueHost`: cambiar de ruta no muestra el diálogo eliminado, no aborta la petición y mantiene barra y panel; con el panel cerrado, la barra sigue visible y usable en la nueva ruta; sin subidas activas tampoco hay diálogo.
+- **Host global:** `upload-queue-host.test.tsx` comprueba que solo hay una barra y un panel, que el autoabrir al encolar **no** roba el foco (tampoco en escritorio), que abrir desde la barra enfoca el panel y cerrar lo devuelve a la barra, y que `data-upload-panel` solo se publica en escritorio.
+- **Aviso nativo:** `upload-exit-guard.test.tsx` despacha un `beforeunload` sintético: se previene con subidas pendientes o en curso y no con la cola vacía, en `done`, en `error` o en `cancelled`. El diálogo nativo del navegador no se prueba: jsdom no lo muestra.
+- **Anuncios:** `upload-announcer.test.tsx` cubre añadida, completada, error con motivo y cancelada, y que el progreso no se anuncia; la región se portalea al overlay superior para no caer en `inert`.
+- **Axe:** las pasadas de `upload-queue-bar.test.tsx` y `upload-queue-risk.test.tsx` **pasan**.
+- **No cubierto:** no hay navegador real ni Playwright; quedan el barrido 375/1440, claro/oscuro, zoom 200 % de texto y con el panel abierto, arrastre real, `capture`, aviso nativo de `beforeunload`, lector de pantalla de la región viva fuera del diálogo y la medición real de la barra. Pasa a **G4** y a **F37/F38/F39**.
 
 ## Flujo E2E principal
 

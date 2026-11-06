@@ -38,7 +38,7 @@
 | `circles` | `CircleCard`, `CircleList`, `CircleForm`, `CirclePermissions`, `DangerZone` | Mis círculos, Ajustes |
 | `albums` | `AlbumCard`, `AlbumGrid`, `AlbumHeader`, `AlbumForm` | Círculo, Álbum |
 | `photos` | `PhotoTile`, `PhotoGrid`, `SelectionBar`, `PersonFilter`, `PhotoViewer`, `PhotoDetailsPanel`, `PhotoTags` | Álbum, Foto |
-| `uploads` | `UploadDropzone`, `UploadSourcePicker`, `UploadQueue`, `UploadItem` | Álbum, Cola |
+| `uploads` | `UploadDropzone`, `UploadSourcePicker`, `UploadQueue`, `UploadItem`, `UploadQueueBar`, `UploadQueueHost`, `UploadAnnouncer` (host único montado en el layout privado; hoja modal en móvil y panel no modal en escritorio; barra global de reapertura; región viva única portaleada al overlay) | Álbum, Cola global |
 | `members` | `MemberRow`, `MemberList`, `InvitePanel`, `PendingInvitationRow`, `TagPeopleSheet`, `InvitationCard` | Invitación, Personas, Etiquetar |
 | `profile` | `ProfileCard`, `SettingsList`, `StorageMeter` (demo), `InstallAppRow` | Perfil |
 | `activity` | `ActivityPanel`, `ActivityList`, `ActivityItem` | Mis círculos |
