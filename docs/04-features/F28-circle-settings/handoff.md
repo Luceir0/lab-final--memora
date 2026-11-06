@@ -313,7 +313,7 @@ todos ejecutados el 2026-11-06.
 
 ## Pendiente
 
-- **Cierre operativo (G5):** commit, PR y merge. No ejecutado sin permiso.
+- **Cierre operativo (G5):** **cerrado** con la rama `feat/F28-circle-settings`, el commit `e99a4b1`, la [PR #46](https://github.com/Luceir0/lab-final--memora/pull/46) (CI run `42289840796`, `success`) y el merge `e6d2a3c5b1df0fb58b45937f3b817d121d9be50d` en `main`.
 - `[Menor]` El comando literal `pnpm --filter @memora/web test -- --maxWorkers=2`
   no aplica el límite de workers por cómo pnpm reenvía `--`; usar
   `pnpm --filter @memora/web test --maxWorkers=2`.
@@ -348,14 +348,11 @@ todos ejecutados el 2026-11-06.
 - `docs/04-features/F28-circle-settings/review.md`: se añadieron al final las
   secciones «Segunda ronda de correcciones», «Tercera ronda (2026-11-06)»,
   «Cuarta ronda (2026-11-06)» y «Cierre (2026-11-06)».
-- `docs/04-features/README.md`: F28 pasa a `accepted` en el tablero.
-- `docs/06-process/ai-log.md`: entrada de aceptación y lección de proceso.
+- `docs/04-features/README.md`: F28 pasa a `done` en el tablero.
+- `docs/06-process/ai-log.md`: entrada de aceptación, cierre y lección de proceso.
 - `docs/07-curriculum/coverage-map.md`: sección de F28.
 
 ## Siguiente paso propuesto
 
-1. Commit en `feat/F28-circle-settings` con el mensaje
-   `feat(web): add circle settings with owner and member views (F28)`.
-2. PR a `main`, CI en verde, merge y cierre operativo.
-3. Tras el merge, F28 pasa a `done` y la siguiente del tablero es **F29
-   (Galería)**, que no se inicia sin permiso del usuario.
+1. F28 queda `done`. La siguiente del tablero es **F29 (Galería)**, que no se
+   inicia sin permiso del usuario.
