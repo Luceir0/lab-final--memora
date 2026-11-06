@@ -3,7 +3,7 @@ id: F31
 title: "Metadatos y lugar"
 milestone: M4
 size: S/M
-status: draft
+status: review
 spec: complete
 depends_on:
   - "F30"
@@ -20,7 +20,7 @@ decisions:
 
 # F31 — Metadatos y lugar
 
-> **Milestone:** M4 · **Talla:** S/M · **Estado:** draft · **Spec:** completa
+> **Milestone:** M4 · **Talla:** S/M · **Estado:** review · **Spec:** completa
 > **Depende de:** F30 · **Bloquea:** —
 
 ## Objetivo
