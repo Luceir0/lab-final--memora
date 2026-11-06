@@ -26,7 +26,7 @@ decisions:
 
 Añadir la página de subidas recientes y el contador del sidebar.
 
-> **Dependencia ya cubierta por F26 (2026-11-06):** la cola global, la barra y el panel viven en el layout privado y sobreviven a la navegación interna. F27 **no** los reimplementa: solo añade la ruta `/uploads`, la lista de subidas recientes y el contador del sidebar.
+> **Dependencia ya cubierta por F26, `done` el 2026-11-06:** el panel global, la barra y la cola transversal están entregados y sobreviven a la navegación interna. F27 **no** los reimplementa: solo añade la ruta `/uploads`, la lista de subidas recientes y el contador del sidebar.
 
 ## Contexto mínimo
 

@@ -3,7 +3,7 @@ id: F26
 title: "Upload queue web"
 milestone: M3
 size: L
-status: review
+status: done
 spec: complete
 depends_on:
   - "F24"
@@ -23,8 +23,10 @@ decisions:
 
 # F26 — Upload queue web
 
-> **Milestone:** M3 · **Talla:** L · **Estado:** review · **Spec:** completa
+> **Milestone:** M3 · **Talla:** L · **Estado:** done · **Spec:** completa
 > **Depende de:** F24, F25 · **Bloquea:** F27, F29
+
+> **Cierre (2026-11-06).** Aceptada por el usuario (G4) el 2026-11-06: «Todo bien, cambios aprobados.» Rama `feat/f26-upload-queue-web`, commits `9362d42` (`feat(web): add upload queue with global cross-route card (F26)`) y `130be9d` (`docs: record F26 implementation and review`), [PR #42](https://github.com/Luceir0/lab-final--memora/pull/42) y merge `86692300887bdd8d712073ba745ea87bc2674787` en `main` (`Merge pull request #42 from Luceir0/feat/f26-upload-queue-web`). CI en verde en la PR (run `42194933113`) y en `main` sobre el merge (run `42195282791`), ambos `completed/success`.
 
 > **Invariante de portada (F24, 2026-11-05).** F26 sube la imagen de portada **como una foto más del álbum**, con el mismo pipeline y los mismos límites; no crea un objeto de portada aparte ni un endpoint distinto. La elección entre las fotos del álbum y la marca `coverPhotoId` son de F29.
 

@@ -51,17 +51,18 @@
 - [x] `pnpm --filter @memora/web test -- --maxWorkers=3` → **82 archivos, 649 tests**.
 - [x] `pnpm format:check` → OK.
 - [x] axe en `upload-queue-bar.test.tsx` y `upload-queue-risk.test.tsx` → pasan.
-- [x] `pnpm --filter @memora/web build` → OK en la revisión previa; **no re-ejecutado tras el delta**.
-- [ ] Barrido en navegador real (375/1440, claro/oscuro, zoom 200 %, layout con el panel abierto, arrastre real, `capture`, aviso nativo de `beforeunload`, lector de pantalla) → G4/F37/F38/F39.
+- [x] `pnpm --filter @memora/web build` → OK con **5 rutas prerenderizadas**.
+- [ ] Barrido en navegador real (375/1440, claro/oscuro, zoom 200 %, layout con el panel abierto, arrastre real, `capture`, aviso nativo de `beforeunload`, lector de pantalla) → F37/F38/F39 y pendientes manuales de F26.
 
 ## Cierre
 
 - [x] Revisión independiente nivel B de la implementación base — **aprobada**, sin bloqueantes ni mayores.
 - [x] Auditoría de accesibilidad de la base — **aprobada**; axe sin violaciones en hoja, panel y barra.
 - [x] Auditoría de diseño — mayores resueltos; quedan nits.
-- [ ] Revisión B de cierre del delta de UI global.
-- [ ] Aceptación del usuario (G4).
+- [x] Revisión B de cierre del delta de UI global — **aprobada**.
+- [x] Aceptación del usuario (G4) — 2026-11-06: «Todo bien, cambios aprobados.»
 - [x] `handoff.md` completo.
-- [x] Tablero actualizado — F26 en `review`.
+- [x] Tablero actualizado — F26 en `done`.
 - [x] Bitácora y cobertura actualizadas.
-- [ ] Commit propuesto (sin ejecutar).
+- [x] Commits `9362d42` y `130be9d`; [PR #42](https://github.com/Luceir0/lab-final--memora/pull/42) mergeada en `main` con `86692300887bdd8d712073ba745ea87bc2674787`.
+- [x] CI en verde en la PR (run `42194933113`) y en `main` sobre el merge (run `42195282791`), ambos `completed/success`.
