@@ -27,6 +27,7 @@ import { Route as AppCirclesCircleIdIndexRouteImport } from './routes/_app.circl
 import { Route as AppCirclesCircleIdPeopleRouteImport } from './routes/_app.circles.$circleId.people'
 import { Route as AppCirclesCircleIdSettingsRouteImport } from './routes/_app.circles.$circleId.settings'
 import { Route as AppCirclesCircleIdAlbumsAlbumIdRouteImport } from './routes/_app.circles.$circleId.albums.$albumId'
+import { Route as AppCirclesCircleIdPeopleUserIdPhotosRouteImport } from './routes/_app.circles.$circleId.people.$userId.photos'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -120,6 +121,12 @@ const AppCirclesCircleIdAlbumsAlbumIdRoute =
     path: '/albums/$albumId',
     getParentRoute: () => AppCirclesCircleIdRoute,
   } as any)
+const AppCirclesCircleIdPeopleUserIdPhotosRoute =
+  AppCirclesCircleIdPeopleUserIdPhotosRouteImport.update({
+    id: '/$userId/photos',
+    path: '/$userId/photos',
+    getParentRoute: () => AppCirclesCircleIdPeopleRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -135,10 +142,11 @@ export interface FileRoutesByFullPath {
   '/circles/$circleId': typeof AppCirclesCircleIdRouteWithChildren
   '/circles/new': typeof AppCirclesNewRoute
   '/circles/': typeof AppCirclesIndexRoute
-  '/circles/$circleId/people': typeof AppCirclesCircleIdPeopleRoute
+  '/circles/$circleId/people': typeof AppCirclesCircleIdPeopleRouteWithChildren
   '/circles/$circleId/settings': typeof AppCirclesCircleIdSettingsRoute
   '/circles/$circleId/': typeof AppCirclesCircleIdIndexRoute
   '/circles/$circleId/albums/$albumId': typeof AppCirclesCircleIdAlbumsAlbumIdRoute
+  '/circles/$circleId/people/$userId/photos': typeof AppCirclesCircleIdPeopleUserIdPhotosRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -152,10 +160,11 @@ export interface FileRoutesByTo {
   '/invite/$token': typeof InviteTokenRoute
   '/circles/new': typeof AppCirclesNewRoute
   '/circles': typeof AppCirclesIndexRoute
-  '/circles/$circleId/people': typeof AppCirclesCircleIdPeopleRoute
+  '/circles/$circleId/people': typeof AppCirclesCircleIdPeopleRouteWithChildren
   '/circles/$circleId/settings': typeof AppCirclesCircleIdSettingsRoute
   '/circles/$circleId': typeof AppCirclesCircleIdIndexRoute
   '/circles/$circleId/albums/$albumId': typeof AppCirclesCircleIdAlbumsAlbumIdRoute
+  '/circles/$circleId/people/$userId/photos': typeof AppCirclesCircleIdPeopleUserIdPhotosRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -173,10 +182,11 @@ export interface FileRoutesById {
   '/_app/circles/$circleId': typeof AppCirclesCircleIdRouteWithChildren
   '/_app/circles/new': typeof AppCirclesNewRoute
   '/_app/circles/': typeof AppCirclesIndexRoute
-  '/_app/circles/$circleId/people': typeof AppCirclesCircleIdPeopleRoute
+  '/_app/circles/$circleId/people': typeof AppCirclesCircleIdPeopleRouteWithChildren
   '/_app/circles/$circleId/settings': typeof AppCirclesCircleIdSettingsRoute
   '/_app/circles/$circleId/': typeof AppCirclesCircleIdIndexRoute
   '/_app/circles/$circleId/albums/$albumId': typeof AppCirclesCircleIdAlbumsAlbumIdRoute
+  '/_app/circles/$circleId/people/$userId/photos': typeof AppCirclesCircleIdPeopleUserIdPhotosRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -198,6 +208,7 @@ export interface FileRouteTypes {
     | '/circles/$circleId/settings'
     | '/circles/$circleId/'
     | '/circles/$circleId/albums/$albumId'
+    | '/circles/$circleId/people/$userId/photos'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -215,6 +226,7 @@ export interface FileRouteTypes {
     | '/circles/$circleId/settings'
     | '/circles/$circleId'
     | '/circles/$circleId/albums/$albumId'
+    | '/circles/$circleId/people/$userId/photos'
   id:
     | '__root__'
     | '/'
@@ -235,6 +247,7 @@ export interface FileRouteTypes {
     | '/_app/circles/$circleId/settings'
     | '/_app/circles/$circleId/'
     | '/_app/circles/$circleId/albums/$albumId'
+    | '/_app/circles/$circleId/people/$userId/photos'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -374,18 +387,40 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppCirclesCircleIdAlbumsAlbumIdRouteImport
       parentRoute: typeof AppCirclesCircleIdRoute
     }
+    '/_app/circles/$circleId/people/$userId/photos': {
+      id: '/_app/circles/$circleId/people/$userId/photos'
+      path: '/$userId/photos'
+      fullPath: '/circles/$circleId/people/$userId/photos'
+      preLoaderRoute: typeof AppCirclesCircleIdPeopleUserIdPhotosRouteImport
+      parentRoute: typeof AppCirclesCircleIdPeopleRoute
+    }
   }
 }
 
+interface AppCirclesCircleIdPeopleRouteChildren {
+  AppCirclesCircleIdPeopleUserIdPhotosRoute: typeof AppCirclesCircleIdPeopleUserIdPhotosRoute
+}
+
+const AppCirclesCircleIdPeopleRouteChildren: AppCirclesCircleIdPeopleRouteChildren =
+  {
+    AppCirclesCircleIdPeopleUserIdPhotosRoute:
+      AppCirclesCircleIdPeopleUserIdPhotosRoute,
+  }
+
+const AppCirclesCircleIdPeopleRouteWithChildren =
+  AppCirclesCircleIdPeopleRoute._addFileChildren(
+    AppCirclesCircleIdPeopleRouteChildren,
+  )
+
 interface AppCirclesCircleIdRouteChildren {
-  AppCirclesCircleIdPeopleRoute: typeof AppCirclesCircleIdPeopleRoute
+  AppCirclesCircleIdPeopleRoute: typeof AppCirclesCircleIdPeopleRouteWithChildren
   AppCirclesCircleIdSettingsRoute: typeof AppCirclesCircleIdSettingsRoute
   AppCirclesCircleIdIndexRoute: typeof AppCirclesCircleIdIndexRoute
   AppCirclesCircleIdAlbumsAlbumIdRoute: typeof AppCirclesCircleIdAlbumsAlbumIdRoute
 }
 
 const AppCirclesCircleIdRouteChildren: AppCirclesCircleIdRouteChildren = {
-  AppCirclesCircleIdPeopleRoute: AppCirclesCircleIdPeopleRoute,
+  AppCirclesCircleIdPeopleRoute: AppCirclesCircleIdPeopleRouteWithChildren,
   AppCirclesCircleIdSettingsRoute: AppCirclesCircleIdSettingsRoute,
   AppCirclesCircleIdIndexRoute: AppCirclesCircleIdIndexRoute,
   AppCirclesCircleIdAlbumsAlbumIdRoute: AppCirclesCircleIdAlbumsAlbumIdRoute,

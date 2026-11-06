@@ -124,6 +124,23 @@ describe('Personas · owner', () => {
     expect(mobile.textContent).not.toMatch(/@/);
   });
 
+  it('enlaza «Ver sus fotos» desde la fila de cada persona', async () => {
+    usePeopleApi();
+    renderPeople();
+
+    const mobile = await screen.findByTestId('members-list-mobile');
+
+    await waitFor(() => {
+      expect(within(mobile).getByText('Lucas Vidal')).toBeTruthy();
+    });
+
+    const links = within(mobile).getAllByRole('link', { name: 'Ver sus fotos' });
+
+    expect(links).toHaveLength(defaultMembers.length);
+    expect(links[0]!.getAttribute('href')).toBe('/circles/cir_familia/people/usr_test_1/photos');
+    expect(links[1]!.getAttribute('href')).toBe('/circles/cir_familia/people/usr_lucas/photos');
+  });
+
   it('pinta la tabla semántica de escritorio con columnas y sin email', async () => {
     usePeopleApi();
     renderPeople();
@@ -205,7 +222,8 @@ describe('Personas · owner', () => {
     });
 
     expect(table.querySelector('table')?.className).toContain('table-fixed');
-    expect(table.querySelectorAll('th[scope="col"]')).toHaveLength(5);
+    expect(table.querySelectorAll('th[scope="col"]')).toHaveLength(6);
+    expect(within(table).getByRole('columnheader', { name: 'Fotos' })).toBeTruthy();
     expect(within(table).getByRole('row', { name: new RegExp(longName) })).toBeTruthy();
     expect(within(table).getByText('Sin etiquetas')).toBeTruthy();
     expect(within(table).getByRole('button', { name: `Acciones de ${longName}` })).toBeTruthy();

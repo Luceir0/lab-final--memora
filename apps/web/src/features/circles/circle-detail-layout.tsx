@@ -28,6 +28,9 @@ export interface CircleDetailLayoutProps {
 /** `/circles/:circleId/albums/:albumId`, con barra final opcional. */
 const ALBUM_DETAIL_PATTERN = /^\/circles\/[^/]+\/albums\/[^/]+\/?$/;
 
+/** `/circles/:circleId/people/:userId/photos`, con barra final opcional. */
+const PERSON_PHOTOS_PATTERN = /^\/circles\/[^/]+\/people\/[^/]+\/photos\/?$/;
+
 /**
  * Chrome compartido de un círculo.
  *
@@ -36,8 +39,9 @@ const ALBUM_DETAIL_PATTERN = /^\/circles\/[^/]+\/albums\/[^/]+\/?$/;
  * - Pinta migas, héroe, cabecera compacta y pestañas para todas las secciones;
  *   el héroe y los diálogos de invitar y crear álbum viven aquí para no
  *   remontarse al cambiar de pestaña.
- * - En el detalle de un álbum (D7) no pinta chrome: solo el provider y la
- *   página, que trae sus propias migas y cabecera.
+ * - En el detalle de un álbum (D7) y en «Fotos de esta persona» no pinta
+ *   chrome: solo el provider y la página, que traen sus propias migas y
+ *   cabecera.
  *
  * `['circle', id]` comparte caché con el N+1 de la lista y las invitaciones
  * usan la misma clave que Personas, así que no se duplican peticiones.
@@ -49,8 +53,10 @@ export function CircleDetailLayout({ circleId, children }: CircleDetailLayoutPro
   const meQuery = useMeQuery(notFound);
   const pathname = useRouterState({ select: (state) => state.location.pathname });
   const isAlbumDetail = ALBUM_DETAIL_PATTERN.test(pathname);
+  const isPersonPhotos = PERSON_PHOTOS_PATTERN.test(pathname);
+  const isStandalone = isAlbumDetail || isPersonPhotos;
   const isOwner = detailQuery.data?.role === 'owner';
-  const invitationsQuery = useInvitationsQuery(circleId, isOwner && !isAlbumDetail);
+  const invitationsQuery = useInvitationsQuery(circleId, isOwner && !isStandalone);
 
   const [inviteOpen, setInviteOpen] = useState(false);
   const [createAlbumOpen, setCreateAlbumOpen] = useState(false);
@@ -108,7 +114,7 @@ export function CircleDetailLayout({ circleId, children }: CircleDetailLayoutPro
   const owner = circle.role === 'owner';
   const canCreate = canCreateAlbum(circle);
 
-  if (isAlbumDetail) {
+  if (isStandalone) {
     return (
       <CircleDetailProvider
         circle={circle}
