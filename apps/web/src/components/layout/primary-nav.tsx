@@ -17,18 +17,23 @@ export interface PrimaryNavProps {
    * reales; sin contenido la sección no se renderiza (nada de datos falsos).
    */
   readonly circleList?: ReactNode | undefined;
+  /**
+   * Insignia de subidas activas. Se pinta solo en el destino `/uploads`, dentro
+   * del enlace, para que su texto forme parte del nombre accesible.
+   */
+  readonly uploadsBadge?: ReactNode | undefined;
 }
 
 /**
  * Navegación principal: **un solo** `<nav>`.
  *
- * En móvil/tablet es la barra inferior fija (Círculos · Subir · Perfil); en
+ * En móvil/tablet es la barra inferior fija (Círculos · Subidas · Perfil); en
  * escritorio, la lista vertical del sidebar (Mis círculos · Subidas · Círculos ·
  * Ayuda · Privacidad). Los mismos nodos cambian de forma con CSS: lo oculto con
  * `display: none` no se anuncia, así que no hay landmarks ni enlaces
  * duplicados por breakpoint.
  */
-export function PrimaryNav({ currentPath = '', circleList }: PrimaryNavProps) {
+export function PrimaryNav({ currentPath = '', circleList, uploadsBadge }: PrimaryNavProps) {
   const circlesGroupId = useId();
   const navRef = useRef<HTMLElement>(null);
 
@@ -105,6 +110,7 @@ export function PrimaryNav({ currentPath = '', circleList }: PrimaryNavProps) {
               <NavItem
                 destination={destination}
                 active={isDestinationActive(currentPath, destination.path)}
+                badge={destination.id === 'uploads' ? uploadsBadge : undefined}
               />
             </li>
             {destination.id === 'uploads' ? circlesGroupItem : null}
@@ -118,9 +124,10 @@ export function PrimaryNav({ currentPath = '', circleList }: PrimaryNavProps) {
 interface NavItemProps {
   readonly destination: NavDestination;
   readonly active: boolean;
+  readonly badge?: ReactNode | undefined;
 }
 
-function NavItem({ destination, active }: NavItemProps) {
+function NavItem({ destination, active, badge }: NavItemProps) {
   const Icon = destination.icon;
 
   return (
@@ -145,23 +152,16 @@ function NavItem({ destination, active }: NavItemProps) {
       >
         <Icon aria-hidden="true" className="size-5" />
       </span>
-      <span>
+      <span className="inline-flex max-w-full flex-wrap items-center justify-center gap-1 lg:flex-1 lg:justify-start">
         {destination.label.mobile === destination.label.desktop ? (
           destination.label.mobile
         ) : (
           <>
-            <span className="lg:hidden">
-              {destination.label.mobile}
-              {destination.mobileAccessibleSuffix ? (
-                <>
-                  {' '}
-                  <span className="sr-only">{destination.mobileAccessibleSuffix}</span>
-                </>
-              ) : null}
-            </span>
+            <span className="lg:hidden">{destination.label.mobile}</span>
             <span className="hidden lg:inline">{destination.label.desktop}</span>
           </>
         )}
+        {badge}
       </span>
     </Link>
   );

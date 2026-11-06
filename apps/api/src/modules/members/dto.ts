@@ -1,7 +1,9 @@
 import {
   photoDtoSchema,
+  photoSummarySchema,
   type MemberDto,
   type PhotoDto,
+  type PhotoSummary,
   type Role,
   type UserDto,
 } from '@memora/shared';
@@ -57,8 +59,8 @@ export interface PhotoWithRelations extends Photo {
  * Full public `PhotoDto`: uploader, tags and authenticated image URLs.
  *
  * Storage keys (`originalKey`, `displayKey`, `thumbKey`) and any GPS
- * coordinates never leave this function. The image endpoint itself arrives in
- * F29; here only the URLs are built.
+ * coordinates never leave this function. The authenticated image endpoint is
+ * implemented in F27; here only the URLs are built.
  */
 export function toPhotoDto(photo: PhotoWithRelations): PhotoDto {
   // Parsing keeps the DTO aligned with the frozen contract and rejects a
@@ -84,7 +86,22 @@ export function toPhotoDto(photo: PhotoWithRelations): PhotoDto {
   });
 }
 
+/**
+ * Decorative summary of a photo: id, thumb URL and intrinsic dimensions.
+ *
+ * Used by covers and the «Mis subidas» preview, where loading the full
+ * `PhotoDto` (uploader, tags, display URL) would be unnecessary.
+ */
+export function toPhotoSummary(photo: Pick<Photo, 'id' | 'width' | 'height'>): PhotoSummary {
+  return photoSummarySchema.parse({
+    id: photo.id,
+    thumbUrl: photoImageUrl(photo.id, 'thumb'),
+    width: photo.width,
+    height: photo.height,
+  });
+}
+
 /** Same URL shape as `circles/dto.ts`, never an unencoded id. */
-function photoImageUrl(photoId: string, size: 'thumb' | 'display'): string {
+export function photoImageUrl(photoId: string, size: 'thumb' | 'display'): string {
   return `/api/photos/${encodeURIComponent(photoId)}/image?size=${size}`;
 }

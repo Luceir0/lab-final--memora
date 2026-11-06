@@ -68,9 +68,10 @@ import {
   loginResponseSchema,
   logoutResponseSchema,
   meResponseSchema,
-  meUploadsQuerySchema,
-  meUploadsResponseSchema,
   memberDtoSchema,
+  myUploadsPhotosQuerySchema,
+  myUploadsPhotosResponseSchema,
+  myUploadsSummarySchema,
   pageQuerySchema,
   personPhotosParamsSchema,
   personPhotosQuerySchema,
@@ -123,6 +124,23 @@ const photoSummary = {
   thumbUrl: '/api/photos/1/image?size=thumb',
   width: 800,
   height: 600,
+};
+const myUploadsSummary = {
+  total: 1,
+  circles: [
+    {
+      circle: { id: ID.circle, name: 'Familia' },
+      photosCount: 1,
+      albums: [
+        {
+          album: { id: ID.album, title: 'Costa Brava' },
+          photosCount: 1,
+          lastUploadAt: ISO,
+          preview: [photoSummary],
+        },
+      ],
+    },
+  ],
 };
 const photo = {
   id: ID.photo,
@@ -309,9 +327,18 @@ const ENDPOINTS: readonly EndpointContract[] = [
   {
     method: 'GET',
     path: '/me/uploads',
+    requires: ['response'],
+    response: { schema: myUploadsSummarySchema, value: myUploadsSummary },
+  },
+  {
+    method: 'GET',
+    path: '/me/uploads/photos',
     requires: ['query', 'response'],
-    query: { schema: meUploadsQuerySchema, value: { limit: '12' } },
-    response: { schema: meUploadsResponseSchema, value: { items: [photo], nextCursor: null } },
+    query: { schema: myUploadsPhotosQuerySchema, value: { albumId: ID.album, limit: '12' } },
+    response: {
+      schema: myUploadsPhotosResponseSchema,
+      value: { items: [photo], nextCursor: null, total: 1 },
+    },
   },
   // Círculos
   {
@@ -621,6 +648,7 @@ const EXPECTED_ENDPOINTS: readonly string[] = [
   'GET /me',
   'PATCH /me',
   'GET /me/uploads',
+  'GET /me/uploads/photos',
   'GET /circles',
   'POST /circles',
   'GET /circles/:circleId',
@@ -683,7 +711,7 @@ describe('endpoint contract coverage', () => {
 
     expect(declared).toEqual(EXPECTED_ENDPOINTS);
     expect(new Set(declared).size).toBe(declared.length);
-    expect(declared).toHaveLength(42);
+    expect(declared).toHaveLength(43);
   });
 
   it('declares every mandatory part of every endpoint', () => {
@@ -828,6 +856,7 @@ const INVALID_CASES: ReadonlyArray<readonly [string, z.ZodType, unknown]> = [
     { description: 'x'.repeat(1001) },
   ],
   ['updatePhoto: 201-character place', updatePhotoRequestSchema, { placeName: 'x'.repeat(201) }],
+  ['photo image: missing size', photoImageQuerySchema, {}],
   ['photo image: unknown size', photoImageQuerySchema, { size: 'huge' }],
   ['upload: missing clientUploadId', uploadPhotoFieldsSchema, { description: 'Playa' }],
   [
@@ -1001,7 +1030,10 @@ describe('pagination contracts', () => {
   it('applies the shared default to every list query', () => {
     expect(pageQuerySchema.parse({})).toEqual({ limit: DEFAULT_PAGE_LIMIT });
     expect(albumPhotosQuerySchema.parse({})).toEqual({ limit: DEFAULT_PAGE_LIMIT });
-    expect(meUploadsQuerySchema.parse({})).toEqual({ limit: DEFAULT_PAGE_LIMIT });
+    expect(myUploadsPhotosQuerySchema.parse({ albumId: ID.album })).toEqual({
+      albumId: ID.album,
+      limit: DEFAULT_PAGE_LIMIT,
+    });
     expect(listCirclesQuerySchema.parse({})).toEqual({ limit: DEFAULT_PAGE_LIMIT });
     expect(listAlbumsQuerySchema.parse({})).toEqual({ limit: DEFAULT_PAGE_LIMIT });
     expect(listMembersQuerySchema.parse({})).toEqual({ limit: DEFAULT_PAGE_LIMIT });
@@ -1010,8 +1042,8 @@ describe('pagination contracts', () => {
     expect(personPhotosQuerySchema.parse({})).toEqual({ limit: DEFAULT_PAGE_LIMIT });
   });
 
-  it('defaults the image size to display', () => {
-    expect(photoImageQuerySchema.parse({})).toEqual({ size: 'display' });
+  it('requires an explicit image size', () => {
+    expect(photoImageQuerySchema.safeParse({}).success).toBe(false);
     expect(photoImageQuerySchema.parse({ size: 'original' })).toEqual({ size: 'original' });
   });
 });

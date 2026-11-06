@@ -7,5 +7,6 @@ export * from './downloads.js';
 export * from './dto.js';
 export * from './health.js';
 export * from './invitations.js';
+export * from './my-uploads.js';
 export * from './photos.js';
 export * from './tags.js';
