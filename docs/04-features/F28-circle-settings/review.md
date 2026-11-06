@@ -287,3 +287,30 @@ El subagente que el usuario dio por detenido escribió dos archivos más a las 2
 - Los botones usan `min-w-fit` y `sm:flex-none` para conservar su ancho natural en escritorio.
 
 Es la quinta pasada sobre la misma barra. La regla de «un fix = un hallazgo» no se rompe por esto: se verificó solo `settings`, no la batería completa.
+
+## Quinta ronda (2026-11-06)
+
+| ID | Estado | Evidencia |
+| --- | --- | --- |
+| **Mayor — aviso bajo cabecera a 200 %** | Corregido | `scrollIntoView({ block: 'start' })` y `scroll-mt-[var(--app-circle-scroll-offset)]` en el aviso superior; se mantienen `focus()` y `tabIndex={-1}`. El título queda por debajo de la cabecera compacta. |
+| **Menor — barra con error a 217 px** | Corregido | Se elimina la línea «No se pudo guardar. Revisa el aviso.» de la barra. El aviso superior es la única región viva (`role="alert"`); la barra vuelve a ~161 px a 200 % y no duplica el anuncio. |
+| **Menor — «Descartar» desborda 4 px a 360 @200 %** | Corregido | Ambos botones usan `min-w-fit flex-1 ... sm:flex-none`; si no caben, el contenedor `flex-wrap` los pasa a otra fila. En escritorio `sm:flex-none` deja «Guardar cambios» en una línea. |
+| **Decisiones** | Sin cambios | No se toca copy, descripciones visibles, resumen oculto con cola, orden Portada, D6, D9, N3/N4, N-E, N-F, MN-1 ni NT-2. |
+
+### Verificación ejecutada
+
+| Comando | Resultado |
+| --- | --- |
+| `pnpm --filter @memora/web test settings` | **37 tests, 2 archivos: OK** |
+| `pnpm --filter @memora/web test --maxWorkers=2` | **88 archivos, 725 tests: OK** |
+| `pnpm typecheck` | **9/9 OK** |
+| `pnpm lint` | **6/6 OK** |
+| `pnpm format:check` | **OK** |
+| `pnpm build` | **5/5 OK** |
+| `pnpm docs:check` | **192 archivos, 609 enlaces, 0 rotos** |
+
+### Pendiente
+
+- `a11y-auditor`: confirmar a 375×667 y 375×720 @200 % que el título del aviso se ve completo, la barra queda ~161 px y «Descartar» no desborda a 360 @200 %.
+- `reviewer`: solo si la reauditoría deja un bloqueante.
+- Aceptación del usuario (G4) y commit propuesto.

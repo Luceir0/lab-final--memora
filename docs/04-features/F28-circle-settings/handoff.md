@@ -311,6 +311,37 @@ Decisión explícita: el 200 % de zoom no tiene que quedar perfecto. La validaci
 de cierre es la tabla de arriba más los 725 tests de web y los 283 de `@memora/ui`,
 todos ejecutados el 2026-11-06.
 
+## Quinta ronda (2026-11-06)
+
+| ID | Cambio |
+| --- | --- |
+| **Mayor — aviso bajo cabecera a 200 %** | `scrollIntoView({ block: 'start' })` y `scroll-mt-[var(--app-circle-scroll-offset)]` en el aviso superior; se mantienen `focus()` y `tabIndex={-1}`. |
+| **Menor — barra con error a 217 px** | Se elimina la línea «No se pudo guardar. Revisa el aviso.» de la barra. El aviso superior es la única región viva; la barra vuelve a ~161 px a 200 %. |
+| **Menor — «Descartar» desborda a 360 @200 %** | Botones `min-w-fit flex-1 ... sm:flex-none`; el contenedor `flex-wrap` los pasa a otra fila si no caben. En escritorio «Guardar cambios» queda en una línea. |
+| **Decisiones** | Sin cambios: copy, descripciones visibles, resumen oculto con cola, orden Portada, D6, D9, N3/N4, N-E, N-F, MN-1 y NT-2 se mantienen. |
+
+Test actualizado: el aviso superior conserva `role="alert"`, `title` completo y
+`scroll-mt-[var(--app-circle-scroll-offset)]`; la barra no contiene el texto de
+error ni un segundo `role="alert"`; los botones llevan `min-w-fit` y
+`sm:flex-none`.
+
+### Verificación de la quinta ronda
+
+| Comando | Resultado |
+| --- | --- |
+| `pnpm --filter @memora/web test settings` | **37 tests, 2 archivos: OK** |
+| `pnpm --filter @memora/web test --maxWorkers=2` | **88 archivos, 725 tests: OK** |
+| `pnpm typecheck` | **9/9 tareas OK** |
+| `pnpm lint` | **6/6 tareas OK** |
+| `pnpm format:check` | **OK** |
+| `pnpm build` | **5/5 tareas OK** |
+| `pnpm docs:check` | **192 archivos, 609 enlaces, 0 rotos** |
+
+> La otra sesión dejó el código y los tests de la quinta ronda en el commit
+> `c7438a9` (`fix(web): align settings error and keep save actions compact`).
+> Esta sesión **no ha hecho commit ni push**; los documentos de esta ronda
+> quedan sin commitear, por indicación expresa del usuario.
+
 ## Pendiente
 
 - **Cierre operativo (G5):** **cerrado** con la rama `feat/F28-circle-settings`, el commit `e99a4b1`, la [PR #46](https://github.com/Luceir0/lab-final--memora/pull/46) (CI run `42289840796`, `success`) y el merge `e6d2a3c5b1df0fb58b45937f3b817d121d9be50d` en `main`.
@@ -347,7 +378,8 @@ todos ejecutados el 2026-11-06.
 - `docs/04-features/F28-circle-settings/handoff.md` (este archivo).
 - `docs/04-features/F28-circle-settings/review.md`: se añadieron al final las
   secciones «Segunda ronda de correcciones», «Tercera ronda (2026-11-06)»,
-  «Cuarta ronda (2026-11-06)» y «Cierre (2026-11-06)».
+  «Cuarta ronda (2026-11-06)», «Cierre (2026-11-06)» y «Quinta ronda
+  (2026-11-06)».
 - `docs/04-features/README.md`: F28 pasa a `done` en el tablero.
 - `docs/06-process/ai-log.md`: entrada de aceptación, cierre y lección de proceso.
 - `docs/07-curriculum/coverage-map.md`: sección de F28.
