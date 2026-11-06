@@ -10,9 +10,9 @@ El nivel de cada feature se fija por tabla en `docs/04-features/README.md` y **s
 
 | Nivel de auditoría | Criterio | Features |
 | --- | --- | --- |
-| **A — alto riesgo** | Una equivocación filtra datos de otros, permite actuar como otro usuario o expone binarios privados | F15, F16, F17, F19, F20, F21, F22, F25, F28, F33, F35, F42 |
+| **A — alto riesgo** | Una equivocación filtra datos de otros, permite actuar como otro usuario o expone binarios privados | F15, F16, F17, F19, F20, F21, F22, F25, F27, F28, F33, F35, F42 |
 | **B — UI sobre kit** | Pantalla compuesta con componentes ya auditados, sin lógica de permisos nueva | F13, F18, F23, F24, F26, F29, F30, F31, F32 |
-| **C — bajo riesgo** | PWA, contenido, ajustes cosméticos y tooling | F14, F27, F34, F36, F37 |
+| **C — bajo riesgo** | PWA, contenido, ajustes cosméticos y tooling | F14, F34, F36, F37 |
 | **V — verificación** | El producto de la feature es el informe de auditoría | F38, F39, F40, F41, F43 |
 
 | Exigencia | A | B | C | V |

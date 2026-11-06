@@ -14,7 +14,7 @@ Probar 320, 375, 390, 768, 1024, 1280 y 1440 px, vertical y horizontal, zoom 200
 
 | Elemento | Móvil | Tablet | Escritorio |
 | --- | --- | --- | --- |
-| Global | Bottom nav: Círculos, Subir, Perfil | Bottom nav o rail | Sidebar persistente |
+| Global | Bottom nav: Círculos, Subidas, Perfil | Bottom nav o rail | Sidebar persistente |
 | Dentro del círculo | Tabs Álbumes/Personas/Ajustes | Tabs | Subnav en sidebar |
 | Acción principal | Botón central de subir | Cabecera | Cabecera + dropzone |
 | Secundarias | Bottom sheet | Menú | Menú/barra |

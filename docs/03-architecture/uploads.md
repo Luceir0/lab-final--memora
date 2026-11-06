@@ -55,6 +55,7 @@ Si algo falla después del primer `put`, se borran los objetos ya escritos y no 
 - El `original` se reencodea con la orientación aplicada y **sin metadatos**; en JPEG y WebP sale a **calidad 95**, en PNG se mantiene PNG.
 - Las variantes se generan desde el **archivo crudo** recibido, no desde el original reencodeado, para evitar una segunda compresión.
 - Los tres objetos se sirven siempre desde la API; el bucket nunca es público.
+- Desde **F27**, `GET /api/photos/:photoId/image?size=thumb|display|original` entrega las tres variantes con sesión y membresía (ADR-0006); `original` exige `photo.download`. F27 adelanta el endpoint que estaba asignado a F29.
 
 Claves:
 
