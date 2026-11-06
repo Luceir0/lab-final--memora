@@ -28,6 +28,13 @@
    * que ocupa la barra cuando el texto crece (zoom de texto al 200 %).
    */
   --app-bottom-nav-height: calc(var(--app-bottom-nav-min-height) + env(safe-area-inset-bottom));
+  /* Altura aproximada de la barra compacta de subidas, para scroll-padding. */
+  --upload-queue-bar-height: 5.5rem;
+  /*
+   * Altura máxima del panel de escritorio. Acotarla evita que tape por
+   * completo el elemento enfocado y deja sitio para desplazarlo por encima.
+   */
+  --upload-queue-panel-height: min(32rem, calc(100dvh - 3rem));
   /*
    * Chrome de las secciones de círculo. La cabecera compacta y la barra de
    * pestañas son sticky en móvil; el foco no debe quedar tapado por ambas.
@@ -64,10 +71,63 @@
     }
   }
 
+  /*
+   * La barra compacta de subidas existe fuera de `<main>`: el scroll es del
+   * documento, así que reservamos su altura aquí. La barra marca el dataset
+   * al montarse con items y lo limpia al desmontarse.
+   */
+  html[data-upload-bar='visible'] {
+    scroll-padding-bottom: calc(
+      var(--app-bottom-nav-height) + var(--upload-queue-bar-height) + 0.75rem
+    );
+  }
+
+  @media (min-width: 64rem) {
+    html[data-upload-bar='visible'] {
+      scroll-padding-bottom: calc(var(--upload-queue-bar-height) + 1.5rem);
+    }
+  }
+
+  /*
+   * Con el panel de escritorio abierto, el foco debe poder desplazarse por
+   * encima de él. Esta regla va después de la de la barra para ganar cuando
+   * ambas marcas estén activas.
+   */
+  @media (min-width: 64rem) {
+    html[data-upload-panel='open'] {
+      scroll-padding-bottom: calc(var(--upload-queue-panel-height) + 2.25rem);
+    }
+  }
+
   /* En móvil, el foco de una sección de círculo reserva cabecera + pestañas. */
   @media (max-width: 63.999rem) {
     html:has([data-circle-compact-header]) {
       scroll-padding-top: var(--app-circle-scroll-offset);
+    }
+  }
+}
+
+/*
+ * La barra global de subidas es fija y vive fuera de `<main>`. Mientras está
+ * visible reservamos su altura al final del contenido en **todas** las rutas
+ * privadas: en móvil sobre la bottom nav y en escritorio sobre la pill. Se
+ * declara en `utilities` para ganar a los `pb-*` de cada página por
+ * especificidad, sin sumar dos veces ni tapar el último control.
+ */
+@layer utilities {
+  html[data-upload-bar='visible'] main {
+    padding-bottom: calc(var(--app-bottom-nav-height) + var(--upload-queue-bar-height) + 0.75rem);
+  }
+
+  @media (min-width: 64rem) {
+    html[data-upload-bar='visible'] main {
+      padding-bottom: calc(var(--upload-queue-bar-height) + 1.5rem);
+    }
+  }
+
+  @media (min-width: 64rem) {
+    html[data-upload-panel='open'] main {
+      padding-bottom: calc(var(--upload-queue-panel-height) + 2.25rem);
     }
   }
 }

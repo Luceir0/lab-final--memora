@@ -12,6 +12,7 @@ import { renderAlbumsRouter } from '../../test/fixtures/albums-router';
 import { circleDetail, circleWithCover, testMeResponse } from '../../test/circles-fixtures';
 import { CircleDetailLayout } from '../circles/circle-detail-layout';
 import { CircleDetailPage } from '../circles/circle-detail-page';
+import { UploadProvider } from '../uploads/upload-provider';
 
 import { AlbumDetailPage } from './album-detail-page';
 
@@ -58,9 +59,11 @@ describe('F24 · detalle de álbum dentro del layout del círculo', () => {
     useCircleApi();
 
     const { container } = renderAlbumsRouter(
-      <CircleDetailLayout circleId="cir_familia">
-        <AlbumDetailPage circleId="cir_familia" albumId="alb_verano" />
-      </CircleDetailLayout>,
+      <UploadProvider>
+        <CircleDetailLayout circleId="cir_familia">
+          <AlbumDetailPage circleId="cir_familia" albumId="alb_verano" />
+        </CircleDetailLayout>
+      </UploadProvider>,
       '/circles/cir_familia/albums/alb_verano',
     );
 

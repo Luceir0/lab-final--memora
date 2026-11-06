@@ -4,18 +4,25 @@ import { describe, expect, it } from 'vitest';
 import { albumCreator, otherAlbumCreator } from '../../test/fixtures/albums-fixtures';
 import { circleDetail, circleWithCover } from '../../test/circles-fixtures';
 
-import { canCreateAlbum, canEditAlbum, canManageAlbum, type AlbumCircle } from './permissions';
+import {
+  canCreateAlbum,
+  canEditAlbum,
+  canManageAlbum,
+  canUploadPhotos,
+  type AlbumCircle,
+} from './permissions';
 
 const ME_ID = albumCreator.id;
 
 function circleWith(
   role: CircleDetailDto['role'],
   membersCanCreateAlbums: boolean,
+  membersCanUpload = true,
 ): CircleDetailDto {
   return circleDetail({
     ...circleWithCover,
     role,
-    settings: { ...circleWithCover.settings, membersCanCreateAlbums },
+    settings: { ...circleWithCover.settings, membersCanCreateAlbums, membersCanUpload },
   });
 }
 
@@ -34,6 +41,20 @@ describe('canCreateAlbum', () => {
 
   it('deniega al miembro sin la flag', () => {
     expect(canCreateAlbum(circleWith('member', false))).toBe(false);
+  });
+});
+
+describe('canUploadPhotos', () => {
+  it('permite al owner aunque la flag esté apagada', () => {
+    expect(canUploadPhotos(circleWith('owner', true, false))).toBe(true);
+  });
+
+  it('permite al miembro mientras `membersCanUpload` siga activo', () => {
+    expect(canUploadPhotos(circleWith('member', true, true))).toBe(true);
+  });
+
+  it('deniega al miembro sin la flag de subidas', () => {
+    expect(canUploadPhotos(circleWith('member', true, false))).toBe(false);
   });
 });
 
