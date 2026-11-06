@@ -49,3 +49,19 @@ Demostrar el flujo completo con dos usuarios y dos círculos, en móvil y escrit
 - [ ] Vídeo descargado.
 - [ ] Diapositivas.
 - [ ] Usuario y contraseñas demo.
+
+## Binarios del seed
+
+El seed crea las filas `Photo` con sus claves de storage, pero **no escribe objetos**. Sin ellos, la galería y el visor muestran el bloque de reserva aunque el código funcione.
+
+Para que la demo tenga imágenes reales:
+
+```bash
+DATABASE_URL=... S3_ENDPOINT=http://localhost:9000 S3_BUCKET=memora \
+S3_ACCESS_KEY_ID=memora S3_SECRET_ACCESS_KEY=memora123 S3_FORCE_PATH_STYLE=true \
+pnpm --filter @memora/api db:seed:images
+```
+
+Genera un JPEG determinista por foto, aplica el mismo pipeline que la subida real (original, display y thumb) y actualiza la fila. Es idempotente y no borra datos.
+
+Requisitos del entorno local (los del `.env.example`): bucket `memora` creado en Silo y `S3_ENDPOINT` accesible desde el proceso de la API (`http://localhost:9000`, no el nombre del contenedor).
