@@ -112,6 +112,20 @@ describe('AlbumGallery', () => {
     expect(await screen.findByRole('button', { name: /Deià/ })).toBeTruthy();
   });
 
+  it('selecciona desde la casilla sin abrir el visor', async () => {
+    useGalleryApi();
+    renderGallery();
+
+    const checkbox = await screen.findByRole('checkbox', {
+      name: /Seleccionar foto: Atardecer en la playa/,
+    });
+
+    fireEvent.click(checkbox);
+
+    expect(checkbox).toHaveProperty('checked', true);
+    expect(screen.getByText('1 foto seleccionada')).toBeTruthy();
+  });
+
   it('restaura la posición de scroll guardada', async () => {
     useGalleryApi();
     const scrollTo = vi.spyOn(window, 'scrollTo');

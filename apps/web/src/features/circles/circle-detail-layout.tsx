@@ -25,8 +25,8 @@ export interface CircleDetailLayoutProps {
   readonly children: ReactNode;
 }
 
-/** `/circles/:circleId/albums/:albumId`, con barra final opcional. */
-const ALBUM_DETAIL_PATTERN = /^\/circles\/[^/]+\/albums\/[^/]+\/?$/;
+/** `/circles/:circleId/albums/:albumId` y su visor anidado, con barra final opcional. */
+const ALBUM_DETAIL_PATTERN = /^\/circles\/[^/]+\/albums\/[^/]+(?:\/photos\/[^/]+)?\/?$/;
 
 /** `/circles/:circleId/people/:userId/photos`, con barra final opcional. */
 const PERSON_PHOTOS_PATTERN = /^\/circles\/[^/]+\/people\/[^/]+\/photos\/?$/;

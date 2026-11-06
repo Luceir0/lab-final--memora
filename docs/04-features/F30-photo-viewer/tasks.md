@@ -2,42 +2,50 @@
 
 ## Antes de empezar
 
-- [ ] Leer `AGENTS.md` y `spec.md`.
-- [ ] Comprobar dependencias: F29.
-- [ ] Comprobar Definition of Ready.
-- [ ] Proponer plan y esperar confirmación.
+- [x] Leer `AGENTS.md` y `spec.md`.
+- [x] Comprobar dependencias: F29 (`review`, mergeada en local).
+- [x] Comprobar Definition of Ready.
+- [x] Plan aprobado a nivel de proyecto (3 tracks, sin recortes, sin `reviewer` en nivel B).
 
 ## Implementación
 
-- [ ] Ruta propia
-- [ ] Modal escritorio
-- [ ] Fullscreen móvil
-- [ ] Teclado/flechas/Esc
-- [ ] Swipe con alternativa
-- [ ] Panel de detalles
-- [ ] Loading/no disponible
-- [ ] Restaurar scroll
+- [x] Ruta propia anidada bajo el álbum
+- [x] Modal escritorio
+- [x] Fullscreen móvil
+- [x] Teclado/flechas/Esc
+- [x] Swipe con alternativa
+- [x] Panel de detalles
+- [x] Loading/no disponible
+- [x] Restaurar scroll
+- [x] **Endpoint que faltaba:** `GET /api/photos/:photoId`
 
 ## Criterios de aceptación
 
-- [ ] AC-01: Móvil fullscreen; escritorio modal.
-- [ ] AC-02: Atrás cierra y conserva scroll.
-- [ ] AC-03: Flechas y Esc.
-- [ ] AC-04: Swipe con botones.
-- [ ] AC-05: Foco gestionado.
-- [ ] AC-06: Detalles con autor/fecha/lugar.
-- [ ] AC-07: Imagen no disponible.
+- [x] AC-01: Móvil fullscreen; escritorio modal.
+- [x] AC-02: Atrás cierra y conserva scroll.
+- [x] AC-03: Flechas y Esc.
+- [x] AC-04: Swipe con botones.
+- [x] AC-05: Foco gestionado.
+- [x] AC-06: Detalles con autor/fecha/lugar.
+- [x] AC-07: Imagen no disponible.
 
 ## Verificación
 
-- [ ] `pnpm --filter @memora/web test viewer`
-- [ ] `Revisar móvil/escritorio`
+- [x] `pnpm --filter @memora/web test viewer --maxWorkers=2` → 13 tests.
+- [x] `pnpm --filter @memora/web test photos --maxWorkers=2` → 34 tests.
+- [x] `pnpm --filter @memora/web test --maxWorkers=2` → suite completa.
+- [x] `DATABASE_URL=…memora_test pnpm --filter @memora/api test` → 358 tests.
+- [x] `pnpm typecheck`, `pnpm lint`, `pnpm format:check`, `pnpm build`.
+- [ ] Aceptación del usuario en navegador (G4).
 
 ## Cierre
 
-- [ ] Revisión independiente.
+- [x] Sin revisión independiente: nivel B y regla de entrega del 2026-11-06.
 - [ ] Aceptación del usuario.
-- [ ] `handoff.md` completo.
-- [ ] Tablero actualizado.
-- [ ] Bitácora y cobertura actualizadas.
-- [ ] Commit propuesto (sin ejecutar).
+- [x] `handoff.md` completo.
+
+## Pendiente
+
+- E2E real de atrás/scroll/foco y swipe táctil → F38.
+- Vecinos solo desde páginas cacheadas cuando se entra por enlace directo.
+- Al abrir desde «Fotos de esta persona», cerrar vuelve al álbum (limitación anotada).

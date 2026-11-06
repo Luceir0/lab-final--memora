@@ -1,6 +1,8 @@
 import {
   can,
   errorResponseSchema,
+  photoParamsSchema,
+  photoResponseSchema,
   uploadPhotoParamsSchema,
   uploadPhotoResponseSchema,
   type PermissionActor,
@@ -19,7 +21,7 @@ import { assertTrustedOrigin } from '../auth/origin.ts';
 import { resolveSession } from '../auth/session.ts';
 import { toCircleSettings } from '../circles/dto.ts';
 import { toPhotoDto } from '../members/dto.ts';
-import { storePhoto } from './service.ts';
+import { findPhotoForMember, storePhoto } from './service.ts';
 import { readUploadRequest } from './upload-request.ts';
 
 const PHOTOS_TAG = 'Photos';
@@ -142,6 +144,52 @@ export function registerPhotoRoutes(app: MemoraServer, config: AppConfig): void 
       setPrivateNoStore(reply);
 
       return reply.code(result.status).send(toPhotoDto(result.photo));
+    },
+  );
+
+  /**
+   * `GET /api/photos/:photoId` — public detail of one photo (F30).
+   *
+   * Requires a session and a current membership in the photo's circle. A
+   * non-member, a photo from another circle and a missing photo all answer
+   * `404 NOT_FOUND`, never `403`. The payload is the frozen `PhotoDto`: author,
+   * date, place, dimensions, album, tags and authenticated image URLs; storage
+   * keys and coordinates are never selected.
+   */
+  app.get(
+    '/api/photos/:photoId',
+    {
+      schema: {
+        tags: [PHOTOS_TAG],
+        summary: 'Detalle de foto',
+        description:
+          'Devuelve el `PhotoDto` completo de una foto: autor, fecha, lugar, dimensiones, álbum, etiquetas y ' +
+          'URLs `thumb`/`display`. Requiere sesión y membresía vigente en el círculo de la foto. Un no miembro, ' +
+          'una foto de otro círculo y un id inexistente responden `404 NOT_FOUND`, nunca `403`. No incluye ' +
+          'claves de almacenamiento ni coordenadas.',
+        security: sessionSecurity,
+        params: photoParamsSchema,
+        response: {
+          200: photoResponseSchema,
+          400: errorResponseSchema,
+          401: errorResponseSchema,
+          404: errorResponseSchema,
+          429: errorResponseSchema,
+        },
+      },
+    },
+    async (request, reply) => {
+      const prisma = requirePrisma(app);
+      const { user } = await resolveSession(prisma, config, request, reply);
+      const photo = await findPhotoForMember(prisma, request.params.photoId, user.id);
+
+      if (photo === null) {
+        throw new ApiError('NOT_FOUND');
+      }
+
+      setPrivateNoStore(reply);
+
+      return toPhotoDto(photo);
     },
   );
 }

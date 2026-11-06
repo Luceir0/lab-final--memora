@@ -13,7 +13,12 @@ export interface PhotoGridProps {
   readonly label: string;
   readonly photos: readonly PhotoDto[];
   readonly selectedIds?: ReadonlySet<string>;
-  readonly onToggle?: (photo: PhotoDto, event: MouseEvent<HTMLButtonElement>) => void;
+  /** Abre el visor al pulsar la miniatura. */
+  readonly onOpen?: ((photo: PhotoDto) => void) | undefined;
+  /** Alterna la selección desde la casilla o con modificadores. */
+  readonly onToggle?: ((photo: PhotoDto, event: MouseEvent<HTMLElement>) => void) | undefined;
+  /** Mantiene visibles las casillas mientras haya selección. */
+  readonly selectionActive?: boolean | undefined;
   /** Total conocido (contador del álbum o de la persona) para el pie. */
   readonly total?: number | undefined;
   readonly loading?: boolean;
@@ -43,7 +48,9 @@ export function PhotoGrid({
   label,
   photos,
   selectedIds,
+  onOpen,
   onToggle,
+  selectionActive = false,
   total,
   loading = false,
   error = null,
@@ -119,15 +126,27 @@ export function PhotoGrid({
 
   return (
     <div className={className}>
-      <ul ref={gridRef} tabIndex={-1} aria-label={label} className={GRID_CLASSES}>
+      <ul
+        ref={gridRef}
+        tabIndex={-1}
+        aria-label={label}
+        data-photo-grid=""
+        className={GRID_CLASSES}
+      >
         {photos.map((photo) => (
           <PhotoTile
             key={photo.id}
             photo={photo}
             selected={selectedIds?.has(photo.id) ?? false}
-            onToggle={(item, event) => {
-              onToggle?.(item, event);
-            }}
+            onOpen={onOpen}
+            onToggle={
+              onToggle === undefined
+                ? undefined
+                : (item, event) => {
+                    onToggle(item, event);
+                  }
+            }
+            selectionActive={selectionActive}
           />
         ))}
       </ul>

@@ -1,17 +1,20 @@
 import { act, fireEvent, render, screen, within } from '@testing-library/react';
+import { useState } from 'react';
 import { describe, expect, it, vi } from 'vitest';
 
 import { galleryPhotos } from '../../test/fixtures/photos-fixtures';
 
 import { PhotoGrid } from './photo-grid';
 import { SelectionBar } from './selection-bar';
-import { usePhotoSelection } from './use-photo-selection';
+import { selectionModifiers, usePhotoSelection } from './use-photo-selection';
 
 function SelectionHarness() {
   const selection = usePhotoSelection(galleryPhotos);
+  const [opened, setOpened] = useState<readonly string[]>([]);
 
   return (
     <div>
+      <p data-testid="opened-photo">{opened.join(',')}</p>
       {selection.selectedCount > 0 ? (
         <SelectionBar
           selectedCount={selection.selectedCount}
@@ -24,7 +27,11 @@ function SelectionHarness() {
         label="Fotos del álbum"
         photos={galleryPhotos}
         selectedIds={selection.selectedIds}
-        onToggle={(photo, event) => selection.toggle(photo, event)}
+        selectionActive={selection.selectedCount > 0}
+        onOpen={(photo) => {
+          setOpened((current) => [...current, photo.id]);
+        }}
+        onToggle={(photo, event) => selection.toggle(photo, selectionModifiers(event))}
       />
     </div>
   );
@@ -56,36 +63,44 @@ describe('PhotoGrid', () => {
     expect(image.getAttribute('height')).toBe('1200');
   });
 
-  it('selecciona con clic, Shift y Ctrl y limpia con Escape', () => {
+  it('abre el visor con clic y selecciona desde la casilla, Shift y Ctrl', () => {
     render(<SelectionHarness />);
 
-    const tiles = screen.getAllByRole('button', { name: /Seleccionar foto:/ });
+    const tiles = screen.getAllByRole('button', { name: /Abrir foto:/ });
+    const checkboxes = screen.getAllByRole('checkbox', { name: /Seleccionar foto:/ });
 
     expect(tiles).toHaveLength(galleryPhotos.length);
+    expect(checkboxes).toHaveLength(galleryPhotos.length);
 
     fireEvent.click(tiles[0]!);
-    expect(tiles[0]!.getAttribute('aria-pressed')).toBe('true');
+    expect(screen.getByTestId('opened-photo').textContent).toBe('pho_playa');
+    expect(tiles[0]!.getAttribute('aria-pressed')).toBeNull();
+    expect(screen.queryByRole('region', { name: 'Selección de fotos' })).toBeNull();
+
+    fireEvent.click(checkboxes[0]!);
+    expect(checkboxes[0]).toHaveProperty('checked', true);
     expect(screen.getByText('1 foto seleccionada')).toBeTruthy();
+    expect(screen.getByTestId('opened-photo').textContent).toBe('pho_playa');
 
     fireEvent.click(tiles[2]!, { shiftKey: true });
-    expect(tiles[0]!.getAttribute('aria-pressed')).toBe('true');
-    expect(tiles[1]!.getAttribute('aria-pressed')).toBe('true');
-    expect(tiles[2]!.getAttribute('aria-pressed')).toBe('true');
     expect(screen.getByText('3 fotos seleccionadas')).toBeTruthy();
+    expect(screen.getByTestId('opened-photo').textContent).toBe('pho_playa');
 
     fireEvent.click(tiles[1]!, { ctrlKey: true });
-    expect(tiles[1]!.getAttribute('aria-pressed')).toBe('false');
     expect(screen.getByText('2 fotos seleccionadas')).toBeTruthy();
+    expect(screen.getByTestId('opened-photo').textContent).toBe('pho_playa');
 
     fireEvent.keyDown(window, { key: 'Escape' });
-    expect(tiles.every((tile) => tile.getAttribute('aria-pressed') === 'false')).toBe(true);
+    expect(checkboxes.every((checkbox) => (checkbox as HTMLInputElement).checked === false)).toBe(
+      true,
+    );
     expect(screen.queryByRole('region', { name: 'Selección de fotos' })).toBeNull();
   });
 
   it('la barra permite seleccionar todo y mantiene las acciones futuras deshabilitadas', () => {
     render(<SelectionHarness />);
 
-    fireEvent.click(screen.getAllByRole('button', { name: /Seleccionar foto:/ })[0]!);
+    fireEvent.click(screen.getAllByRole('checkbox', { name: /Seleccionar foto:/ })[0]!);
 
     const bar = screen.getByRole('region', { name: 'Selección de fotos' });
 

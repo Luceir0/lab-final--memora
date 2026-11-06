@@ -200,7 +200,7 @@ describe('AlbumDetailPage · contenido según fotos', () => {
 
     expect(await screen.findByRole('region', { name: 'Galería del álbum' })).toBeTruthy();
     expect(
-      await screen.findByRole('button', { name: /Seleccionar foto: Atardecer en la playa/ }),
+      await screen.findByRole('button', { name: /Abrir foto: Atardecer en la playa/ }),
     ).toBeTruthy();
     expect(
       await screen.findByRole('group', { name: 'Filtrar las fotos por persona' }),
