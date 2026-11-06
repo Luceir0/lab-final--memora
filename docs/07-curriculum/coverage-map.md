@@ -350,7 +350,7 @@ Fuera de F14: offline, push y subidas en segundo plano. Sin service worker
 | Cierre operativo | PR, merge y CI de la PR y de `main` | [handoff de F27](../04-features/F27-subidas-globales/handoff.md) | Cubierto (F27, `done` el 2026-11-06): commits `784df87` y `944e2ab`, PR #44, merge `a848c93a82f7d7e83910e5d1fefb7cf38c759750`, CI run `42224616978` en la PR (`success` tras reintentar un flake preexistente de F26) y run `42225410112` en `main`, `success` |
 | Pendiente y desviaciones | Sin migración nueva (el índice único `(uploaderId, clientUploadId)` cubre el filtro), sin visor hasta F30, `original` sin límite hasta F33, seed sin objetos en storage, resumen sin paginación | [handoff de F27](../04-features/F27-subidas-globales/handoff.md), [spec de F27](../04-features/F27-subidas-globales/spec.md) | Pendiente: AC-09 parcial (barrido 320/375/768/1024/1440, claro/oscuro y lector de pantalla) → **F37/F38/F39**; A11Y-06 y Nits de a11y/diseño; índice `(uploaderId, createdAt, id)` si el volumen lo exige; integración real de lectura S3/Silo; límite de descargas de F33 |
 
-## Ajustes del círculo (F28, accepted)
+## Ajustes del círculo (F28, done)
 
 | Tema | Dónde se aplica | Evidencia | Estado |
 | --- | --- | --- | --- |
@@ -364,6 +364,7 @@ Fuera de F14: offline, push y subidas en segundo plano. Sin service worker
 | Revisión y auditorías | Nivel **A**: `reviewer` apto con correcciones sin bloqueantes; `a11y-auditor` no apto por 2 bloqueantes de solape/foco (2.4.11), corregidos en cuatro rondas; `design-auditor` con D1–D5 y N-A/N-B aplicados | [review.md](../04-features/F28-circle-settings/review.md) | Cubierto (F28): aceptada el 2026-11-06 sin reauditoría completa |
 | Verificación | Tests dirigidos y completos, typecheck, lint, formato y checks documentales | `test settings` → **37**; `@memora/ui test` → **283**; suite web → **725 en 88 archivos**; `typecheck` **9/9**; `lint` **6/6**; `format:check` OK; `build` **5/5**; `docs:check` **192 archivos y 601 enlaces**; `agents:check` OK | Cubierto (F28) |
 | Pendiente y desviaciones | Sin API nueva ni cambios de contrato; portada en solo lectura hasta F29; bloque de descarga hasta F33; barrido de navegador y lector de pantalla diferidos | [handoff de F28](../04-features/F28-circle-settings/handoff.md) | Pendiente: 320/375/768/1024/1440 claro/oscuro y lector de pantalla → **F37/F38/F39**; `m3` y copy de `packages/ui` compartido; owner fuera de la primera página de miembros |
+| Cierre operativo | PR, merge y CI de la PR y de `main` | [handoff de F28](../04-features/F28-circle-settings/handoff.md) | Cubierto (F28, `done` el 2026-11-06): commit `e99a4b1`, PR #46, CI run `42289840796` en la PR (`success`) y merge `e6d2a3c5b1df0fb58b45937f3b817d121d9be50d` en `main` |
 
 ## Evidencias de entrega
 

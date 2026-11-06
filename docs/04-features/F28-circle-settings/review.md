@@ -274,6 +274,6 @@ Cuatro rondas sobre el mismo componente no fueron cuatro correcciones: fueron **
 
 ### Pendiente real tras la aceptación
 
-- Commit, PR y merge (cierre operativo, G5).
+- Commit, PR y merge (cierre operativo, G5). **Cerrado:** rama `feat/F28-circle-settings`, commit `e99a4b1`, [PR #46](https://github.com/Luceir0/lab-final--memora/pull/46) con CI en verde (run `42289840796`), merge `e6d2a3c5b1df0fb58b45937f3b817d121d9be50d` en `main`.
 - Los menores y nits no aplicados siguen en `Pendiente` del [handoff](handoff.md); ninguno bloquea la entrega.
 - El barrido de navegador 320/375/768/1024/1440 en claro/oscuro y la comprobación con lector de pantalla siguen diferidos a **F37/F38/F39**, como en F26 y F27.
