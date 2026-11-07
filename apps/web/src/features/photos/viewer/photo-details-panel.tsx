@@ -115,56 +115,19 @@ export function PhotoDetailsPanel({
       className={className}
       data-testid="photo-viewer-details"
     >
-      <div className="flex items-start justify-between gap-3">
-        <div className="flex min-w-0 items-center gap-3">
-          <Avatar
-            name={photo.uploader.name}
-            src={photo.uploader.avatarUrl ?? undefined}
-            size={40}
-            decorative
-          />
-          <div className="min-w-0">
-            <p className="truncate text-body-sm font-semibold text-text">{photo.uploader.name}</p>
-            {uploadedAt === null ? null : (
-              <p className="text-caption text-muted">Subida el {uploadedAt}</p>
-            )}
-          </div>
+      <div className="flex min-w-0 items-center gap-3">
+        <Avatar
+          name={photo.uploader.name}
+          src={photo.uploader.avatarUrl ?? undefined}
+          size={40}
+          decorative
+        />
+        <div className="min-w-0">
+          <p className="truncate text-body-sm font-semibold text-text">{photo.uploader.name}</p>
+          {uploadedAt === null ? null : (
+            <p className="text-caption text-muted">Subida el {uploadedAt}</p>
+          )}
         </div>
-
-        {canEdit || canDelete ? (
-          <div className="flex shrink-0 flex-wrap justify-end gap-2">
-            {canEdit && !editing ? (
-              <Button
-                ref={editButtonRef}
-                variant="secondary"
-                size="sm"
-                icon={<Pencil />}
-                aria-label="Editar datos de la foto"
-                onClick={() => {
-                  setStatus(null);
-                  setEditing(true);
-                }}
-              >
-                Editar
-              </Button>
-            ) : null}
-
-            {canDelete && !editing ? (
-              <Button
-                variant="ghost"
-                size="sm"
-                icon={<Trash2 />}
-                onClick={() => {
-                  setDeleteError(null);
-                  setDeleteOpen(true);
-                }}
-                className="text-danger-text!"
-              >
-                Eliminar foto
-              </Button>
-            ) : null}
-          </div>
-        ) : null}
       </div>
 
       <div role="status" aria-live="polite" aria-atomic="true" className="sr-only">
@@ -185,33 +148,73 @@ export function PhotoDetailsPanel({
         />
       ) : (
         <>
-          {description === '' ? null : (
-            <p className="mt-4 text-body text-text [overflow-wrap:anywhere]">{description}</p>
-          )}
+          <div className="mt-4 flex-1 space-y-4 pb-4" data-testid="photo-details-content">
+            {description === '' ? null : (
+              <p className="text-body text-text [overflow-wrap:anywhere]">{description}</p>
+            )}
 
-          {takenAt === null && place === '' ? null : (
-            <dl className="mt-4 space-y-2 text-body-sm text-text">
-              {takenAt === null ? null : (
-                <div className="flex items-start gap-2">
-                  <dt className="flex items-center gap-2 text-muted">
-                    <CalendarDays aria-hidden="true" className="size-4 shrink-0" />
-                    <span className="sr-only">Fecha de la foto</span>
-                  </dt>
-                  <dd className="min-w-0 [overflow-wrap:anywhere]">{takenAt}</dd>
-                </div>
-              )}
+            {takenAt === null && place === '' ? null : (
+              <dl className="space-y-2 text-body-sm text-text">
+                {takenAt === null ? null : (
+                  <div className="flex items-start gap-2">
+                    <dt className="flex items-center gap-2 text-muted">
+                      <CalendarDays aria-hidden="true" className="size-4 shrink-0" />
+                      <span className="sr-only">Fecha de la foto</span>
+                    </dt>
+                    <dd className="min-w-0 [overflow-wrap:anywhere]">{takenAt}</dd>
+                  </div>
+                )}
 
-              {place === '' ? null : (
-                <div className="flex items-start gap-2">
-                  <dt className="flex items-center gap-2 text-muted">
-                    <MapPin aria-hidden="true" className="size-4 shrink-0" />
-                    <span className="sr-only">Lugar</span>
-                  </dt>
-                  <dd className="min-w-0 [overflow-wrap:anywhere]">{place}</dd>
-                </div>
-              )}
-            </dl>
-          )}
+                {place === '' ? null : (
+                  <div className="flex items-start gap-2">
+                    <dt className="flex items-center gap-2 text-muted">
+                      <MapPin aria-hidden="true" className="size-4 shrink-0" />
+                      <span className="sr-only">Lugar</span>
+                    </dt>
+                    <dd className="min-w-0 [overflow-wrap:anywhere]">{place}</dd>
+                  </div>
+                )}
+              </dl>
+            )}
+          </div>
+
+          {canEdit || canDelete ? (
+            <div
+              data-testid="photo-details-actions"
+              className="mt-auto flex shrink-0 flex-wrap gap-2 border-t border-border pt-4"
+            >
+              {canEdit ? (
+                <Button
+                  ref={editButtonRef}
+                  variant="secondary"
+                  size="sm"
+                  icon={<Pencil />}
+                  aria-label="Editar datos de la foto"
+                  onClick={() => {
+                    setStatus(null);
+                    setEditing(true);
+                  }}
+                >
+                  Editar
+                </Button>
+              ) : null}
+
+              {canDelete ? (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  icon={<Trash2 />}
+                  onClick={() => {
+                    setDeleteError(null);
+                    setDeleteOpen(true);
+                  }}
+                  className="text-danger-text!"
+                >
+                  Eliminar foto
+                </Button>
+              ) : null}
+            </div>
+          ) : null}
         </>
       )}
 
