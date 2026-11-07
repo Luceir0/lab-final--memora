@@ -64,7 +64,7 @@ Tablero de las 44 features. Cada carpeta contiene `spec.md`, `tasks.md` y `hando
 | F29 | [Galería](F29-gallery/spec.md) | M4 | M | `done` | F24, F26 | B |
 | F30 | [Visor de foto](F30-photo-viewer/spec.md) | M4 | L | `done` | F29 | B |
 | F31 | [Metadatos y lugar](F31-photo-metadata/spec.md) | M4 | S/M | `done` | F30 | B |
-| F32 | [Etiquetado](F32-tagging/spec.md) | M4 | M | `draft` | F22, F30 | B |
+| F32 | [Etiquetado](F32-tagging/spec.md) | M4 | M | `done` | F22, F30 | B |
 | F33 | [Descargas](F33-downloads/spec.md) | M4 | L | `done` | F29, F30 | A |
 | F34 | [Perfil y preferencias](F34-profile/spec.md) | M4 | S/M | `done` | F16 | C |
 | F35 | [Actividad](F35-activity/spec.md) | M4 | M | `draft` | F21, F23, F25, F28 | A |

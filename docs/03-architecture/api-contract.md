@@ -186,6 +186,8 @@ Semántica cerrada en F23:
 
 `GET /circles/:circleId/members/:userId/photos` (F21) lista solo fotos de **ese círculo** en las que el miembro indicado está etiquetado, con `PhotoDto` completo (`uploader`, `tags`, `thumbUrl` y `displayUrl`). Orden `createdAt desc` con desempate `id desc`, keyset opaco y `limit` 1–100 (defecto 24). Tanto el llamante como el objetivo deben pertenecer al círculo; si cualquiera de los dos no es miembro, la respuesta es `404 NOT_FOUND`, para no revelar usuarios de otros círculos. Las URLs apuntan a `GET /photos/:photoId/image?size=thumb|display`, que **existe desde F27** (antes asignado a F29).
 
+`POST /photos/:photoId/tags` (F32) etiqueta a un miembro con `{ userId }`. Requiere sesión, `Origin`/`Referer` permitido, CSRF y membresía vigente en el círculo de la foto: un no miembro, una foto de otro círculo y un id inexistente responden `404 NOT_FOUND`; un miembro sin `photo.tag` (con `membersCanTag` desactivado) recibe `403 FORBIDDEN`, y sin sesión `401 UNAUTHENTICATED`. El propietario se resuelve por `Circle.ownerId` y siempre puede etiquetar. El objetivo debe ser miembro actual del mismo círculo; si no lo es, `404 NOT_FOUND`, sin revelar usuarios de otros círculos. Es idempotente por `(photoId, taggedUserId)`: `201` al crear y `200` con la etiqueta existente (misma forma `PhotoTagDto`), también al resolver una carrera `P2002`. `DELETE /photos/:photoId/tags/:userId` aplica las mismas reglas de visibilidad y permiso y responde `204` sin cuerpo tanto si la etiqueta existía como si no. `PhotoTagDto` solo expone `id`, `photoId`, `user` (`id`, `name`, `avatarUrl`) y `createdAt`: nunca email, claves de almacenamiento ni coordenadas. El etiquetado no genera actividad nueva.
+
 
 ## Descargas
 
