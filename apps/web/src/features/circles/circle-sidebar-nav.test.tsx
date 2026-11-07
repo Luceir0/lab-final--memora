@@ -103,6 +103,32 @@ describe('CircleSidebarNav', () => {
     ).toHaveLength(1);
   });
 
+  it('marca Álbumes como página activa dentro de un álbum sin duplicar aria-current', async () => {
+    useCircles();
+
+    renderWithRouter(<CircleSidebarNav currentPath="/circles/cir_familia/albums/alb_verano" />);
+
+    const family = await screen.findByRole('link', { name: /Familia García/ });
+
+    // El círculo se resalta, pero dentro de un álbum no es la página actual.
+    expect(family.getAttribute('aria-current')).toBeNull();
+    expect(family.className).toContain('bg-primary-soft');
+    expect(family.className).toContain('font-semibold');
+    expect(family.className).toContain('text-primary-text');
+
+    const albums = screen.getByRole('link', { name: 'Álbumes' });
+
+    expect(albums.getAttribute('href')).toBe('/circles/cir_familia');
+    expect(albums.getAttribute('aria-current')).toBe('page');
+    expect(albums.className).toContain('font-semibold');
+    expect(albums.className).toContain('text-primary-text');
+    expect(albums.className).not.toContain('bg-primary-soft');
+
+    expect(
+      screen.getAllByRole('link').filter((link) => link.getAttribute('aria-current') === 'page'),
+    ).toHaveLength(1);
+  });
+
   it('lleva a Ajustes con un enlace real y marca la sección activa', async () => {
     useCircles();
 

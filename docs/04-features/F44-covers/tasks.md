@@ -36,12 +36,12 @@
 - [x] `pnpm --filter @memora/web test albums --maxWorkers=2 --retry=1` → 139 tests
 - [x] `pnpm --filter @memora/web test circle-settings --maxWorkers=2 --retry=1` → 9 tests
 - [x] `pnpm --filter @memora/web test '_app.circles.$circleId.settings' --maxWorkers=2 --retry=1` → 34 tests
-- [x] `pnpm --filter @memora/web test --maxWorkers=2 --retry=1` → 105 archivos y 864 tests
+- [x] `pnpm --filter @memora/web test --maxWorkers=2 --retry=1` → 105 archivos y 866 tests
 - [x] `pnpm typecheck` → 9/9
 - [x] `pnpm lint` → 6/6
 - [x] `pnpm build` → 5/5
 - [x] `pnpm format:check` → OK
-- [x] `pnpm docs:check` → 197 archivos y 641 enlaces
+- [x] `pnpm docs:check` → 197 archivos y 642 enlaces
 - [x] `pnpm agents:check` → 44 specs y 44 filas
 
 ## Cierre

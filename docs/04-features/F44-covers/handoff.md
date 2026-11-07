@@ -52,20 +52,39 @@ Ajustes con «Guardar cambios».
   `features/albums/albums-form.test.tsx`.
 - Documentación: esta carpeta, tablero, `remaining-plan.md`, bitácora y cobertura.
 
+## Correcciones de aceptación (2026-11-07)
+
+A petición del usuario al probar la feature, se corrigen dos defectos de navegación
+existentes que afectaban al contexto del álbum. No cambian el alcance de F44, pero viajan
+en la misma rama para poder probarlo todo junto:
+
+- **Migas del detalle de álbum:** `Mis círculos / Familia Ferrer / Álbumes / Lisboa en
+  primavera`. «Álbumes» enlaza al overview del círculo (`circlePath`).
+- **Sidebar del círculo:** «Álbumes» se marca en negrita y con `aria-current="page"`
+  dentro de `/circles/:id/albums...`; el enlace del círculo deja de llevar
+  `aria-current` en esa ruta para que siga siendo único. En el overview se mantiene la
+  regla anterior.
+
+Tests añadidos en `albums-detail.test.tsx` y `circle-sidebar-nav.test.tsx`.
+Verificación: `test circle-sidebar` **7**, `test albums` **140**, `test circle-detail`
+**17**, `typecheck` 9/9, `lint` 6/6 y `format:check` OK.
+
 ## Verificación (comandos y resultado real)
 
 | Comando | Resultado |
 | --- | --- |
 | `pnpm --filter @memora/web test covers --maxWorkers=2 --retry=1` | **2 archivos, 28 tests** |
-| `pnpm --filter @memora/web test albums --maxWorkers=2 --retry=1` | **9 archivos, 139 tests** |
+| `pnpm --filter @memora/web test albums --maxWorkers=2 --retry=1` | **9 archivos, 140 tests** |
 | `pnpm --filter @memora/web test circle-settings --maxWorkers=2 --retry=1` | **1 archivo, 9 tests** |
+| `pnpm --filter @memora/web test circle-sidebar --maxWorkers=2 --retry=1` | **1 archivo, 7 tests** |
+| `pnpm --filter @memora/web test circle-detail --maxWorkers=2 --retry=1` | **2 archivos, 17 tests** |
 | `pnpm --filter @memora/web test '_app.circles.$circleId.settings' --maxWorkers=2 --retry=1` | **1 archivo, 34 tests** (regresión real de F28) |
-| `pnpm --filter @memora/web test --maxWorkers=2 --retry=1` | **105 archivos, 864 tests** |
+| `pnpm --filter @memora/web test --maxWorkers=2 --retry=1` | **105 archivos, 866 tests** |
 | `pnpm typecheck` | **9/9 tareas** |
 | `pnpm lint` | **6/6 tareas** |
 | `pnpm build` | **5/5 tareas**, 5 rutas prerenderizadas |
 | `pnpm format:check` | OK |
-| `pnpm docs:check` | **197 archivos, 641 enlaces, 0 rotos** |
+| `pnpm docs:check` | **197 archivos, 642 enlaces, 0 rotos** |
 | `pnpm agents:check` | **44 specs, 44 filas** |
 
 Sin cambios en `apps/api` ni en `packages/shared`: no hay tests de API nuevos porque no
@@ -94,7 +113,7 @@ verificación se hizo en secuencia y con `--maxWorkers=2 --retry=1`.
 ## Pendiente
 
 - Prueba visual del usuario en móvil (375 px) y escritorio (1280+), tema claro y oscuro
-  (AC-11 y G4).
+  (AC-11 y G4). Para verla hay que usar la rama `feat/F44-covers`, no `main`.
 - Aceptación del usuario y merge de la PR.
 - `[Limitación]` El 404 de portada es ambiguo en la API (mismo código para recurso
   inexistente y foto ajena). La UI solo lo trata como error de foto cuando el id es no

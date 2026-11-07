@@ -515,6 +515,7 @@ function AlbumHeader({
           items={[
             { label: 'Mis círculos', href: '/circles' },
             { label: circle.name, href: circlePath(circle.id) },
+            { label: 'Álbumes', href: circlePath(circle.id) },
             { label: album.title },
           ]}
         />
