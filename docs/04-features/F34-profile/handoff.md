@@ -1,7 +1,7 @@
 # Handoff — F34 Perfil y preferencias
 
-- **Estado:** review
-- **Rama:** `feat/F34-profile`
+- **Estado:** done
+- **Rama:** `feat/F34-profile` (mergeada)
 - **Fecha:** 2026-11-07
 - **Implementado por:** `ui-dev`
 - **Revisado por:** no aplica (nivel C: gates automáticos, axe jsdom y aceptación del usuario)
@@ -75,4 +75,4 @@ Nota de entorno: `pnpm --filter @memora/web test` sin límite de workers produjo
 
 ## Siguiente paso propuesto
 
-Aceptación del usuario (G4) en móvil y escritorio, claro y oscuro sobre la **PR #53** (commit `cf876de`). Tras la aceptación, merge a `main` y cierre documental. No se inicia F32 sin permiso.
+Cerrada el 2026-11-07 con la **PR #53** (merge `9ad61a0`). Siguiente sesión: **F44 Portadas de círculo y álbum**, aprobada por el usuario para la entrega. El avatar de perfil y F35 quedan fuera de alcance. No se inicia F32 sin permiso.

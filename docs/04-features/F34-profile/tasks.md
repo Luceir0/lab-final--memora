@@ -39,9 +39,9 @@
 
 ## Cierre
 
-- [ ] Revisión independiente (nivel C: no aplica; gates automáticos + axe jsdom).
-- [ ] Aceptación del usuario.
-- [ ] `handoff.md` completo.
-- [x] Tablero actualizado a `review`.
+- [x] Revisión independiente (nivel C: no aplica; gates automáticos + axe jsdom).
+- [x] Aceptación del usuario (2026-11-07).
+- [x] `handoff.md` completo.
+- [x] Tablero actualizado a `done`.
 - [x] Bitácora y cobertura actualizadas.
-- [ ] Commit propuesto (sin ejecutar).
+- [x] Commit, PR #53 y merge `9ad61a0`.
