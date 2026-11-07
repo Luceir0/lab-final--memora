@@ -135,5 +135,13 @@ Dos rondas de `reviewer` de nivel B:
 
 ## Siguiente paso propuesto
 
-Aceptación visual del usuario (G4) y merge de la PR. Después, **S2: F32 completa**, sin
+Aceptación visual del usuario (G4) y merge de la PR #55. Después, **S2: F32 completa**, sin
 iniciarla sin permiso.
+
+## Cierre operativo
+
+- Commit `eb2c2d4` (`feat(web): add album and circle cover pickers (F44)`) en la rama
+  `feat/F44-covers`.
+- [PR #55](https://github.com/Luceir0/lab-final--memora/pull/55) abierta contra `main`;
+  el CI de la rama se ejecuta en la propia PR.
+- Sin merge: pendiente la aceptación visual del usuario (G4).

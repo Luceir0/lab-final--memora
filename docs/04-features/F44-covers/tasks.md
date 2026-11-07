@@ -50,5 +50,5 @@
 - [x] `handoff.md` completo con la decisión de patrón.
 - [x] `review.md` con los hallazgos y su estado.
 - [x] Tablero, bitácora y cobertura actualizados.
+- [x] Commit y PR (`eb2c2d4`, PR #55).
 - [ ] Aceptación visual del usuario (G4, AC-11) y merge.
-- [ ] Commit y PR.
