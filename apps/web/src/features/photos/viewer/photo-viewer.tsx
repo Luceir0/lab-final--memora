@@ -339,6 +339,7 @@ export function PhotoViewer({
             albumId={albumId}
             circleRole={circleRole}
             meId={currentUserId}
+            canDownload={allowOriginal}
             onDeleted={close}
             className="flex max-h-[55dvh] shrink-0 flex-col overflow-y-auto rounded-t-2xl border-t border-border bg-surface p-5 md:h-auto md:max-h-none md:w-[380px] md:rounded-none md:border-l md:border-t-0 md:p-6"
           />

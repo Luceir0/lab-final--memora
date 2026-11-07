@@ -1,11 +1,12 @@
 import type { PhotoDto, Role } from '@memora/shared';
-import { Avatar, Button, ConfirmDialog, InlineAlert } from '@memora/ui';
-import { CalendarDays, MapPin, Pencil, Trash2 } from 'lucide-react';
+import { Avatar, Button, ConfirmDialog, InlineAlert, LinkButton } from '@memora/ui';
+import { CalendarDays, Download, MapPin, Pencil, Trash2 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
 import { isUnauthorizedError, useUnauthorizedRedirect } from '../../circles/session';
 import { getPhotoDeleteErrorCopy, type PhotoDeleteErrorCopy } from '../delete/errors';
 import { useDeletePhotoMutation } from '../delete/queries';
+import { photoDownloadUrl } from '../downloads/paths';
 import { canEditPhotoMetadata } from '../metadata/permissions';
 import { PhotoMetadataEditor } from '../metadata/photo-metadata-editor';
 import { canDeletePhoto } from '../permissions';
@@ -21,6 +22,8 @@ export interface PhotoDetailsPanelProps {
   readonly circleRole: Role;
   /** Cuenta autenticada; `null` mientras `/me` carga. */
   readonly meId: string | null;
+  /** La cuenta puede descargar el original (`membersCanDownload`). */
+  readonly canDownload?: boolean | undefined;
   /** Se llama tras borrar la foto: el visor se cierra y vuelve al álbum. */
   readonly onDeleted: () => void;
 }
@@ -36,6 +39,9 @@ export interface PhotoDetailsPanelProps {
  * sustituye los datos de lectura por el formulario. Cancelar descarta el estado
  * local del formulario, así que los valores originales quedan intactos.
  *
+ * «Descargar» (F33) es un enlace real al original con `download`, no un job:
+ * el servidor exige `membersCanDownload` y responde con el archivo adjunto.
+ *
  * «Eliminar foto» sigue la misma regla de permisos que el `PATCH`. Si falla, el
  * visor se queda abierto con el error; si funciona, el padre navega al álbum.
  */
@@ -46,6 +52,7 @@ export function PhotoDetailsPanel({
   albumId,
   circleRole,
   meId,
+  canDownload = false,
   onDeleted,
 }: PhotoDetailsPanelProps) {
   const [editing, setEditing] = useState(false);
@@ -178,11 +185,24 @@ export function PhotoDetailsPanel({
             )}
           </div>
 
-          {canEdit || canDelete ? (
+          {canEdit || canDelete || canDownload ? (
             <div
               data-testid="photo-details-actions"
               className="mt-auto flex shrink-0 flex-wrap gap-2 border-t border-border pt-4"
             >
+              {canDownload ? (
+                <LinkButton
+                  href={photoDownloadUrl(photo.id)}
+                  download
+                  variant="secondary"
+                  size="sm"
+                  icon={<Download />}
+                  aria-label="Descargar foto original"
+                >
+                  Descargar
+                </LinkButton>
+              ) : null}
+
               {canEdit ? (
                 <Button
                   ref={editButtonRef}

@@ -24,6 +24,7 @@ const photo = makePhoto({
 interface RenderPanelOptions {
   readonly role?: Role;
   readonly meId?: string | null;
+  readonly canDownload?: boolean;
 }
 
 function renderPanel(options: RenderPanelOptions = {}) {
@@ -43,6 +44,7 @@ function renderPanel(options: RenderPanelOptions = {}) {
           albumId="alb_verano"
           circleRole={options.role ?? 'member'}
           meId={options.meId === undefined ? testUser.id : options.meId}
+          canDownload={options.canDownload ?? false}
           onDeleted={() => undefined}
           className="flex flex-col"
         />
@@ -126,5 +128,24 @@ describe('PhotoDetailsPanel · disposición', () => {
     expect(within(details).queryByTestId('photo-details-actions')).toBeNull();
     expect(within(details).queryByRole('button', { name: 'Editar datos de la foto' })).toBeNull();
     expect(within(details).queryByRole('button', { name: 'Eliminar foto' })).toBeNull();
+  });
+});
+
+describe('PhotoDetailsPanel · descarga', () => {
+  it('enlaza el original con `download` cuando hay permiso', async () => {
+    renderPanel({ canDownload: true });
+
+    const link = await screen.findByRole('link', { name: 'Descargar foto original' });
+
+    expect(link.getAttribute('href')).toBe('/api/photos/pho_test/download');
+    expect(link.hasAttribute('download')).toBe(true);
+  });
+
+  it('no muestra la descarga sin permiso', async () => {
+    renderPanel({ canDownload: false });
+
+    const details = await screen.findByTestId('photo-viewer-details');
+
+    expect(within(details).queryByRole('link', { name: 'Descargar foto original' })).toBeNull();
   });
 });

@@ -13,6 +13,7 @@ import { createLoggerOptions, type LogStream } from './logging.ts';
 import { registerAlbumRoutes } from './modules/albums/routes.ts';
 import { registerAuthRoutes } from './modules/auth/routes.ts';
 import { registerCircleRoutes } from './modules/circles/routes.ts';
+import { registerDownloadRoutes } from './modules/downloads/routes.ts';
 import { registerInvitationRoutes } from './modules/invitations/routes.ts';
 import { registerMemberRoutes } from './modules/members/routes.ts';
 import { registerPhotoImageRoutes } from './modules/photos/image.ts';
@@ -150,6 +151,7 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<MemoraSer
   registerPhotoImageRoutes(app, config);
   registerUploadRoutes(app, config);
   registerInvitationRoutes(app, config);
+  registerDownloadRoutes(app, config);
   await registerDocsRoutes(app, config);
 
   return app;
