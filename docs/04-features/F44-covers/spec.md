@@ -3,7 +3,7 @@ id: F44
 title: "Portadas de círculo y álbum"
 milestone: M4
 size: S/M
-status: review
+status: done
 spec: complete
 depends_on:
   - "F23"
@@ -22,7 +22,7 @@ decisions:
 
 # F44 — Portadas de círculo y álbum
 
-> **Milestone:** M4 · **Talla:** S/M · **Estado:** review · **Spec:** completa
+> **Milestone:** M4 · **Talla:** S/M · **Estado:** done · **Spec:** completa
 > **Depende de:** F23, F24, F28, F29 · **Bloquea:** —
 > **Auditoría:** B (UI sobre endpoints ya auditados; sin permisos nuevos en servidor)
 

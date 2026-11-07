@@ -1,6 +1,6 @@
 # F44 — Handoff
 
-> **Estado:** `review` · **Nivel:** B · **Rama:** `feat/F44-covers` · **Fecha:** 2026-11-07
+> **Estado:** `done` · **Nivel:** B · **Rama:** `feat/F44-covers` · **Fecha:** 2026-11-07
 
 ## Resultado
 
@@ -84,7 +84,7 @@ Verificación: `test circle-sidebar` **7**, `test albums` **140**, `test circle-
 | `pnpm lint` | **6/6 tareas** |
 | `pnpm build` | **5/5 tareas**, 5 rutas prerenderizadas |
 | `pnpm format:check` | OK |
-| `pnpm docs:check` | **197 archivos, 642 enlaces, 0 rotos** |
+| `pnpm docs:check` | **197 archivos, 646 enlaces, 0 rotos** |
 | `pnpm agents:check` | **44 specs, 44 filas** |
 
 Sin cambios en `apps/api` ni en `packages/shared`: no hay tests de API nuevos porque no
@@ -112,9 +112,8 @@ verificación se hizo en secuencia y con `--maxWorkers=2 --retry=1`.
 
 ## Pendiente
 
-- Prueba visual del usuario en móvil (375 px) y escritorio (1280+), tema claro y oscuro
-  (AC-11 y G4). Para verla hay que usar la rama `feat/F44-covers`, no `main`.
-- Aceptación del usuario y merge de la PR.
+- **Aceptada por el usuario el 2026-11-07** tras probar portadas, migas y sidebar. La
+  verificación formal a 375/1280 y con lector de pantalla queda para F38/F39.
 - `[Limitación]` El 404 de portada es ambiguo en la API (mismo código para recurso
   inexistente y foto ajena). La UI solo lo trata como error de foto cuando el id es no
   nulo y conserva el borrador; si el círculo desapareció en ese instante, el aviso será
@@ -154,8 +153,7 @@ Dos rondas de `reviewer` de nivel B:
 
 ## Siguiente paso propuesto
 
-Aceptación visual del usuario (G4) y merge de la PR #55. Después, **S2: F32 completa**, sin
-iniciarla sin permiso.
+F44 está cerrada. Después, **S2: F32 completa**, sin iniciarla sin permiso.
 
 ## Cierre operativo
 

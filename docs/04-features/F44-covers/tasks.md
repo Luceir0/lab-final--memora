@@ -1,6 +1,6 @@
 # F44 — Tareas
 
-> **Estado:** review · **Nivel:** B · **Rama:** `feat/F44-covers`
+> **Estado:** done · **Nivel:** B · **Rama:** `feat/F44-covers`
 
 ## G0–G1
 
@@ -41,7 +41,7 @@
 - [x] `pnpm lint` → 6/6
 - [x] `pnpm build` → 5/5
 - [x] `pnpm format:check` → OK
-- [x] `pnpm docs:check` → 197 archivos y 642 enlaces
+- [x] `pnpm docs:check` → 197 archivos y 646 enlaces
 - [x] `pnpm agents:check` → 44 specs y 44 filas
 
 ## Cierre
@@ -51,4 +51,4 @@
 - [x] `review.md` con los hallazgos y su estado.
 - [x] Tablero, bitácora y cobertura actualizados.
 - [x] Commit y PR (`eb2c2d4`, PR #55).
-- [ ] Aceptación visual del usuario (G4, AC-11) y merge.
+- [x] Aceptación del usuario (G4) y merge (`15dc7c3`).

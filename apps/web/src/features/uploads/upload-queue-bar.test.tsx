@@ -210,6 +210,10 @@ describe('UploadQueueBar', () => {
     expect(bar.getAttribute('aria-label')).toContain('0 %');
     expect(screen.queryByRole('button', { name: 'Cerrar subidas terminadas' })).toBeNull();
 
+    const content = bar.parentElement?.querySelector('[data-upload-bar-content]');
+
+    expect(content?.classList.contains('pr-12')).toBe(false);
+
     await expectNoAxeViolations(view.container);
   });
 
@@ -220,6 +224,14 @@ describe('UploadQueueBar', () => {
     const dismiss = await screen.findByRole('button', { name: 'Cerrar subidas terminadas' });
 
     expect(screen.getByText('Subidas terminadas · 1 de 1')).toBeTruthy();
+
+    // La X ocupa una franja absoluta a la derecha: todo el contenido reserva
+    // ese espacio, incluida la barra de progreso que pasa por debajo.
+    const content = dismiss.parentElement?.querySelector('[data-upload-bar-content]');
+
+    expect(content?.classList.contains('pr-12')).toBe(true);
+    expect(content?.querySelector('[role="progressbar"]')).toBeTruthy();
+
     await expectNoAxeViolations(view.container);
 
     fireEvent.click(dismiss);

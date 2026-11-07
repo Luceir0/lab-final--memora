@@ -50,7 +50,7 @@ Si se cae un día, el orden de recorte es: **F40 → F39 (solo bloqueantes) → 
 | --- | --- | --- |
 | S0 | 2026-11-07 | Aceptación de F29–F31, revisión A y aceptación de F33 y cierre de F36. PR #51 y #52 mergeadas; F29–F31, F33 y F36 en `done`. |
 | S1 | 2026-11-07 | F34 implementada y aceptada: perfil real con nombre editable, email de solo lectura, iniciales, tema, instalación y logout; sin medidor de almacenamiento. Cerrada con la PR #53 (merge `9ad61a0`) y F34 en `done`. |
-| S1.5 | 2026-11-07 | **F44 Portadas** implementada y en `review`: selector de portada de álbum entre sus fotos y de círculo para el owner navegando por álbumes; sin endpoint nuevo. Verificación: web **105 archivos y 864 tests**, typecheck 9/9, lint 6/6, build 5/5, docs y agents OK. Revisión B en dos rondas con bloqueantes corregidos; pendiente aceptación visual y merge. Cierre operativo: commit `eb2c2d4` y PR #55. |
+| S1.5 | 2026-11-07 | **F44 Portadas** implementada, aceptada y en `done`: selector de portada de álbum entre sus fotos y de círculo para el owner navegando por álbumes; sin endpoint nuevo. Verificación: web **105 archivos y 866 tests**, typecheck 9/9, lint 6/6, build 5/5, docs y agents OK. Revisión B en dos rondas con bloqueantes corregidos y migas/sidebar ajustados en la aceptación. Cierre: commit `eb2c2d4`, PR #55 y merge `15dc7c3`. |
 | S2 | — | F32 completa (API + UI + tests + permisos). Después de F44. |
 
 ## Reglas de trabajo (no negociables)

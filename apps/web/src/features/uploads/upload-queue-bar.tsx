@@ -142,18 +142,18 @@ export function UploadQueueBar({
         aria-controls={open ? panelId : undefined}
         className="absolute inset-0 rounded-lg"
       />
-      <div aria-hidden="true" className="pointer-events-none flex gap-3 p-3">
+      <div
+        aria-hidden="true"
+        data-upload-bar-content=""
+        className={`pointer-events-none flex gap-3 p-3 ${canDismissCompleted ? 'pr-12' : ''}`}
+      >
         {isDesktop ? null : (
           <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary-soft text-on-primary-soft">
             <Upload className="size-4" />
           </span>
         )}
         <div className="min-w-0 flex-1">
-          <div
-            className={`flex items-baseline justify-between gap-3 ${
-              canDismissCompleted ? 'pr-12' : ''
-            }`}
-          >
+          <div className="flex items-baseline justify-between gap-3">
             <span className="min-w-0 truncate text-body-sm font-semibold text-text">
               {stateText}
             </span>

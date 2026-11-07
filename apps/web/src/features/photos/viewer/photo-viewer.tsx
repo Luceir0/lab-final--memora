@@ -214,6 +214,9 @@ export function PhotoViewer({
         : `${photo.displayUrl} 1600w`
       : `${photo.displayUrl} 1600w, ${originalUrl} ${photo.width}w`;
 
+  // El visor no se registra en `overlay-utils`, así que usa la base de la pila
+  // (`z-sheet`). Los diálogos registrados (z 60/62) se montan después en
+  // `body` y quedan por encima sin necesidad de coordinación.
   return createPortal(
     <div
       ref={containerRef}
@@ -222,7 +225,7 @@ export function PhotoViewer({
       aria-label="Visor de foto"
       data-testid="photo-viewer"
       tabIndex={-1}
-      className="fixed inset-0 z-modal flex flex-col overscroll-contain bg-viewer-bg md:bg-viewer-bg/95 md:backdrop-blur-sm"
+      className="fixed inset-0 z-sheet flex flex-col overscroll-contain bg-viewer-bg md:bg-viewer-bg/95 md:backdrop-blur-sm"
     >
       <header className="grid shrink-0 grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 px-3 py-2 md:px-6 md:py-4">
         <IconButton
