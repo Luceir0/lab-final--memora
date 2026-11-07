@@ -668,3 +668,22 @@ Registro de usos relevantes de IA. No es un chat completo: es evidencia para el 
 - **Estado:** **F28 pasa de `review` a `accepted` y a `done`** el 2026-11-06. Cierre operativo: rama `feat/F28-circle-settings`, commit `e99a4b1` (`feat(web): add circle settings with owner and member views (F28)`), [PR #46](https://github.com/Luceir0/lab-final--memora/pull/46) con CI en verde (run `42289840796`) y merge `e6d2a3c5b1df0fb58b45937f3b817d121d9be50d` en `main`. La siguiente del tablero es **F29 (Galería)**; no se inicia sin permiso del usuario.
 - **Tema del temario:** aceptación de usuario (G4), control del alcance de una auditoría, coste real de re-verificar de más, y diferencia entre corregir un defecto y rediseñar el componente que lo contiene.
 - **Evidencia:** [review de F28](../04-features/F28-circle-settings/review.md), [handoff](../04-features/F28-circle-settings/handoff.md), [tablero](../04-features/README.md) y [cobertura](../07-curriculum/coverage-map.md).
+
+### 2026-11-07 — Cierre de F29–F31, PR #51 y revisión A de F33
+
+- **Prompt representativo:** «Lo veo todo bien. Sigue con el plan: sube estos cambios al repositorio y empecemos con lo que hemos planeado».
+- **Decisión del usuario:** aceptar F29–F33 tras revisar la app en local; mantener el recorte para entrega, con **F32 completa** y **F35 fuera**. El plan queda en [remaining-plan.md](remaining-plan.md).
+- **Cierre operativo:** la rama `feat/F29-F33-product-block` se empujó y se abrió la [PR #51](https://github.com/Luceir0/lab-final--memora/pull/51); CI en verde (install · docs · agents · lint · typecheck · test · build) y merge `1e667c1` en `main`. `main` local y remoto quedaron sincronizados.
+- **Estado:** **F29, F30 y F31 pasan a `done`** el 2026-11-07 por aceptación del usuario, con sus Menores y Nits en `Pendiente`. **F33 sigue en `review`**: la revisión A devolvió **apto con correcciones, sin bloqueantes** (5 Mayores: recuperación de `pending`, ZIP en memoria, limpieza best-effort, rate limit del original y aviso de >100 MB del álbum). Se corrigen M-01, M-04 y M-05; M-02 y M-03 quedan documentados como limitaciones del MVP.
+- **Verificación de la revisión:** `test downloads` → 27; API → 406 passed + 2 skipped; web → 807; typecheck 9/9 y lint 6/6. Sin acceso cruzado, sin fuga de `objectKey` y sin bypass de sesión/CSRF/permiso.
+- **En curso:** F36 privacidad (`ui-dev`) y los fixes de API de F33 (`api-dev`); M-05 se hará después en la web. Sin commit ni push de estos cambios todavía.
+- **Evidencia:** [tablero](../04-features/README.md), [F33 handoff](../04-features/F33-downloads/handoff.md), [plan](remaining-plan.md) y [coverage](../07-curriculum/coverage-map.md).
+
+### 2026-11-07 — F36 privacidad y correcciones de F33
+
+- **Prompt representativo:** cerrar F36 con alcance reducido y aplicar las correcciones M-01, M-04 y M-05 de la revisión A de F33 sin tocar contratos.
+- **F36:** `/privacy` deja de ser un placeholder. `readLegalPage()` lee el `legalPage` con slug `privacidad` del snapshot; la ruta usa `PageContainer`, un solo `h1`, `<time>` y párrafos, sin `dangerouslySetInnerHTML`. `/privacy` entra en el prerender y genera `dist/client/privacy/index.html`. Verificación: `test content privacy provisional` → **16 tests**; suite web → **103 archivos y 810 tests**; typecheck, lint y build OK; build con snapshot inexistente → **exit 1**.
+- **F33 M-01:** `markOrphanedJobs` recupera `pending` y `processing`; el orden `recuperación → creación → encolado` hace seguro incluir `pending` en una instancia. **M-04:** rate limit 10/min por usuario también en la descarga individual del original. Verificación: `test downloads` → **30 tests**; API → **409 passed + 2 skipped**.
+- **F33 M-05:** «Descargar álbum» abre un `ConfirmDialog` antes de crear el job, con copy de 100 MB, uso simultáneo y ubicación en iOS/Android; sin cambio de contrato. Verificación: `test downloads` → **20 tests**; `test albums` → **129 tests**; typecheck y lint OK. Los dos primeros intentos en paralelo dieron falsos negativos por contención de Vitest; en secuencia pasan.
+- **Estado:** **F36 pasa a `review`**; **F33 sigue en `review`** con las correcciones aplicadas y pendiente de aceptación del delta. M-02 (ZIP en memoria) y M-03 (limpieza best-effort) quedan como limitaciones del MVP.
+- **Evidencia:** [F36 handoff](../04-features/F36-content-island/handoff.md), [F33 handoff](../04-features/F33-downloads/handoff.md), [tablero](../04-features/README.md) y [coverage](../07-curriculum/coverage-map.md).

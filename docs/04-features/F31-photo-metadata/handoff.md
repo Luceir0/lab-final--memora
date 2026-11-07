@@ -1,6 +1,6 @@
 # Handoff — F31 Metadatos y lugar
 
-- **Estado:** `review` (implementación terminada; pendiente aceptación del usuario)
+- **Estado:** `done` (aceptada por el usuario el 2026-11-07; PR #51, merge `1e667c1`)
 - **Rama:** `feat/F31-photo-metadata` (worktree `f29-gallery`, commit local, sin push)
 - **Fecha:** 2026-11-07
 - **Nivel de auditoría:** B. **Sin `reviewer`** por la regla de entrega aprobada el 2026-11-06.

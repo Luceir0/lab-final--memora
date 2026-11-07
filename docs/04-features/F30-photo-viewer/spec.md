@@ -3,7 +3,7 @@ id: F30
 title: "Visor de foto"
 milestone: M4
 size: L
-status: review
+status: done
 spec: complete
 depends_on:
   - "F29"

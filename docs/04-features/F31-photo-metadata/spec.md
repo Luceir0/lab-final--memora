@@ -3,7 +3,7 @@ id: F31
 title: "Metadatos y lugar"
 milestone: M4
 size: S/M
-status: review
+status: done
 spec: complete
 depends_on:
   - "F30"
