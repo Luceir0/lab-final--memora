@@ -718,3 +718,12 @@ Registro de usos relevantes de IA. No es un chat completo: es evidencia para el 
 - **Verificación:** `test circle-sidebar` **7**, `test albums` **140**, `test circle-detail` **17**, `typecheck` 9/9, `lint` 6/6 y `format:check` OK. Suite web completa tras las correcciones: **105 archivos y 866 tests**.
 - **Tema del temario:** navegación jerárquica y breadcrumbs, estado activo en navegación anidada, `aria-current` único y prueba en la rama correcta.
 - **Evidencia:** `apps/web/src/features/albums/{album-detail-page,albums-detail.test}.tsx`, `apps/web/src/features/circles/{circle-sidebar-nav,circle-sidebar-nav.test}.tsx` y [handoff de F44](../04-features/F44-covers/handoff.md).
+
+### 2026-11-07 — Cierre automático de la cola de subidas
+
+- **Prompt representativo:** «La card de subidas terminadas debería cerrarse pasados unos 10 segundos; permanece para siempre y no se puede cerrar ni con una X».
+- **Diagnóstico:** la barra compacta de F26 se deriva de los items de la cola y los `done`/`cancelled` no se limpiaban nunca; la barra no tenía cierre propio y la X del panel solo cerraba el panel.
+- **Corrección:** `UploadQueueHost` limpia `done`/`cancelled` a los 10 s cuando no hay `pending`/`uploading` ni errores, cierra el panel si está abierto y devuelve el foco a `#main-content`. Con errores no se auto-cierra. La barra añade una X («Cerrar subidas terminadas») que limpia al instante. Constante en `features/uploads/completed-dismiss.ts`.
+- **Verificación:** `test upload-queue-host` **8**, `test upload-queue-bar` **7**, `test uploads` **183**, suite web **105 archivos y 870 tests**, `typecheck` 9/9, `lint` 6/6 y `format:check` OK.
+- **Tema del temario:** estado derivado y limpieza de items terminales, temporizadores con cleanup, foco al desmontar la barra, cierre accesible y separación entre errores reintentables y terminados.
+- **Evidencia:** `apps/web/src/features/uploads/{upload-queue-host,upload-queue-bar,completed-dismiss}.tsx`, sus tests, [handoff de F26](../04-features/F26-upload-queue-web/handoff.md) y [uploads.md](../03-architecture/uploads.md).

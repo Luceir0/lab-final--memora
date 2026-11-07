@@ -1,5 +1,5 @@
-import { ProgressBar } from '@memora/ui';
-import { Upload } from 'lucide-react';
+import { IconButton, ProgressBar } from '@memora/ui';
+import { Upload, X } from 'lucide-react';
 import { useEffect, useRef, type RefObject } from 'react';
 
 import { formatUploadCancelledCount, formatUploadFailedCount } from './format';
@@ -14,6 +14,11 @@ export interface UploadQueueBarProps {
   /** Id del panel/hoja que controla el botón. */
   readonly panelId: string;
   readonly buttonRef?: RefObject<HTMLButtonElement | null>;
+  /**
+   * Descarta los items terminados al pulsar la X. Si no se pasa, cae a
+   * `clearCompleted` del contexto para no exigirlo en todos los harness.
+   */
+  readonly onDismissCompleted?: () => void;
 }
 
 /**
@@ -24,12 +29,19 @@ export interface UploadQueueBarProps {
  * visualmente oculta e `inert`) para que el panel pueda devolverle el foco.
  * Se pinta en cualquier ruta privada mientras haya items.
  */
-export function UploadQueueBar({ open, onOpen, panelId, buttonRef }: UploadQueueBarProps) {
-  const { items } = useUploadQueue();
+export function UploadQueueBar({
+  open,
+  onOpen,
+  panelId,
+  buttonRef,
+  onDismissCompleted,
+}: UploadQueueBarProps) {
+  const { items, clearCompleted } = useUploadQueue();
   const isDesktop = useMediaQuery('(min-width: 1024px)');
   const hasItems = items.length > 0;
   const summary = summarizeUploadQueue(items);
   const barRef = useRef<HTMLDivElement>(null);
+  const dismissCompleted = onDismissCompleted ?? clearCompleted;
 
   useEffect(() => {
     if (!hasItems || typeof document === 'undefined') {
@@ -105,6 +117,10 @@ export function UploadQueueBar({ open, onOpen, panelId, buttonRef }: UploadQueue
 
   const percentText = `${summary.progress} %`;
   const accessibleText = [stateText, percentText, ...counters].join(' · ');
+  const canDismissCompleted =
+    summary.pending === 0 &&
+    summary.active === 0 &&
+    (summary.completed > 0 || summary.cancelled > 0);
   const positionClasses = isDesktop
     ? 'bottom-6 right-6 w-[22rem] max-w-[calc(100vw-3rem)]'
     : 'bottom-[calc(var(--app-bottom-nav-height)+0.75rem)] left-[max(0.75rem,env(safe-area-inset-left))] right-[max(0.75rem,env(safe-area-inset-right))]';
@@ -133,7 +149,11 @@ export function UploadQueueBar({ open, onOpen, panelId, buttonRef }: UploadQueue
           </span>
         )}
         <div className="min-w-0 flex-1">
-          <div className="flex items-baseline justify-between gap-3">
+          <div
+            className={`flex items-baseline justify-between gap-3 ${
+              canDismissCompleted ? 'pr-12' : ''
+            }`}
+          >
             <span className="min-w-0 truncate text-body-sm font-semibold text-text">
               {stateText}
             </span>
@@ -150,6 +170,15 @@ export function UploadQueueBar({ open, onOpen, panelId, buttonRef }: UploadQueue
           ) : null}
         </div>
       </div>
+      {canDismissCompleted ? (
+        <IconButton
+          label="Cerrar subidas terminadas"
+          icon={<X />}
+          variant="ghost"
+          onClick={dismissCompleted}
+          className="absolute top-1.5 right-3 z-10 size-11"
+        />
+      ) : null}
     </div>
   );
 }

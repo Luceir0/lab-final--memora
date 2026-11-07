@@ -124,6 +124,7 @@ circles/{circleId}/photos/{photoId}/thumb.webp
 - **Aviso al recargar o cerrar:** `beforeunload` nativo mientras haya subidas pendientes o en curso. La navegación interna **no** se bloquea y no hay diálogo propio; el navegador no permite personalizar ese aviso.
 - La cola sobrevive a la navegación **dentro de la zona privada**, no a la recarga. Salir de la zona privada, el logout o un `401` desmontan el provider y **abortan** la cola.
 - **UI única y global:** el provider, el guard y el host de la cola viven en el layout privado; una sola barra, un solo panel y una sola región viva para toda la zona privada. El panel no filtra por ruta ni por álbum.
+- **Cierre de la cola terminada:** cuando no quedan subidas pendientes ni activas y no hay errores, la barra «Subidas terminadas» se limpia sola a los 10 s (y cierra el panel si estaba abierto); con errores permanece para reintentar. La barra ofrece además una X para descartar los terminados al instante.
 - Sin subidas en segundo plano.
 
 ## Limpieza

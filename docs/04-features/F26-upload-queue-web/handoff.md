@@ -103,6 +103,17 @@ Notas sobre la verificación:
 - Merge en `main`: `86692300887bdd8d712073ba745ea87bc2674787` (`Merge pull request #42 from Luceir0/feat/f26-upload-queue-web`).
 - CI en la PR: run `42194933113`, `completed/success`. CI en `main` sobre el merge: run `42195282791`, `completed/success`.
 
+## Corrección posterior (2026-11-07)
+
+La barra «Subidas terminadas» se quedaba permanente. Ahora, cuando la cola queda inactiva
+(sin `pending`/`uploading`) y **sin errores**, los items `done`/`cancelled` se limpian
+solos a los **10 s**, se cierra el panel si estaba abierto y el foco vuelve a `#main-content`.
+Si hay algún error, la barra permanece para reintentar o descartar. La barra añade una
+**X** («Cerrar subidas terminadas») para limpiar los terminados al instante sin abrir el
+panel. Verificación: `test upload-queue-host` **8**, `test upload-queue-bar` **7**,
+`test uploads` **183**, suite web **105 archivos y 870 tests**, `typecheck` 9/9, `lint` 6/6
+y `format:check` OK. Se añade `features/uploads/completed-dismiss.ts` con la constante.
+
 ## Pendiente
 
 - **Verificación con lector de pantalla:** comprobar que el anunciador, portaleado fuera del diálogo, sigue anunciando con la hoja modal abierta.

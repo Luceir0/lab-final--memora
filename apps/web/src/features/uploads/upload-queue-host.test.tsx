@@ -1,12 +1,34 @@
 import type { PhotoDto } from '@memora/shared';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { COMPLETED_DISMISS_DELAY_MS } from './completed-dismiss';
+import { UploadTransportError } from './errors';
 import type { UploadTransport, UploadTransportRequest } from './transport';
 import { UploadProvider } from './upload-provider';
 import { UploadQueueHost } from './upload-queue-host';
 import { useUploadQueue } from './upload-queue-context';
+
+const photo: PhotoDto = {
+  id: 'photo-1',
+  circleId: 'circle-1',
+  albumId: 'album-1',
+  uploader: { id: 'user-1', name: 'Lucía', avatarUrl: null },
+  clientUploadId: null,
+  description: null,
+  takenAt: null,
+  placeName: null,
+  mimeType: 'image/jpeg',
+  size: 10,
+  width: 100,
+  height: 100,
+  thumbUrl: '/api/photos/photo-1/image?size=thumb',
+  displayUrl: '/api/photos/photo-1/image?size=display',
+  tags: [],
+  createdAt: '2026-11-05T10:00:00.000Z',
+  updatedAt: '2026-11-05T10:00:00.000Z',
+};
 
 const { fetchCsrfTokenMock } = vi.hoisted(() => ({
   fetchCsrfTokenMock: vi.fn(async () => 'csrf-token'),
@@ -56,19 +78,28 @@ function HostHarness() {
   );
 }
 
-function renderHost() {
-  const fake = createHangingTransport();
+function renderHostWith(transport: UploadTransport) {
   const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
 
   render(
     <QueryClientProvider client={queryClient}>
-      <UploadProvider transport={fake.transport}>
+      <UploadProvider transport={transport}>
         <HostHarness />
       </UploadProvider>
     </QueryClientProvider>,
   );
+}
 
+function renderHost() {
+  const fake = createHangingTransport();
+  renderHostWith(fake.transport);
   return fake;
+}
+
+async function advanceTimers(ms: number): Promise<void> {
+  await act(async () => {
+    await vi.advanceTimersByTimeAsync(ms);
+  });
 }
 
 function mockDesktop(): void {
@@ -92,6 +123,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  vi.useRealTimers();
   vi.restoreAllMocks();
 });
 
@@ -176,5 +208,84 @@ describe('UploadQueueHost', () => {
 
     expect(screen.getByRole('heading', { name: 'Subidas' })).toBeTruthy();
     expect(document.documentElement.dataset.uploadPanel).toBeUndefined();
+  });
+
+  it('auto-cierra los terminados a los 10 s y devuelve el foco a main', async () => {
+    vi.useFakeTimers();
+    mockDesktop();
+    const upload = vi.fn(async () => photo);
+    renderHostWith({ upload });
+    const main = screen.getByRole('main');
+
+    fireEvent.click(screen.getByRole('button', { name: 'añadir' }));
+
+    await advanceTimers(0);
+
+    expect(screen.getByText('Subidas terminadas · 1 de 1')).toBeTruthy();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Cerrar subidas' }));
+
+    await advanceTimers(0);
+
+    expect(screen.getByRole('button', { name: /Abrir subidas\./ })).toBeTruthy();
+
+    await advanceTimers(COMPLETED_DISMISS_DELAY_MS);
+
+    vi.useRealTimers();
+
+    expect(screen.queryByText('Subidas terminadas · 1 de 1')).toBeNull();
+    expect(screen.queryByRole('button', { name: /Abrir subidas\./ })).toBeNull();
+    expect(screen.queryByRole('heading', { name: 'Subidas' })).toBeNull();
+    await waitFor(() => expect(document.activeElement).toBe(main));
+  });
+
+  it('no auto-cierra si queda algún error para reintentar', async () => {
+    vi.useFakeTimers();
+    mockDesktop();
+    const upload = vi.fn(async () => {
+      throw new UploadTransportError('FILE_TOO_LARGE', 413);
+    });
+    renderHostWith({ upload });
+
+    fireEvent.click(screen.getByRole('button', { name: 'añadir' }));
+
+    await advanceTimers(0);
+
+    const bar = screen.getByRole('button', { name: /Abrir subidas\./ });
+
+    expect(bar.getAttribute('aria-label')).toContain('1 con error');
+
+    await advanceTimers(COMPLETED_DISMISS_DELAY_MS);
+
+    const stillThere = screen.getByRole('button', { name: /Abrir subidas\./ });
+
+    expect(stillThere.getAttribute('aria-label')).toContain('1 con error');
+
+    vi.useRealTimers();
+  });
+
+  it('la X descarta los terminados y enfoca main sin reabrir el panel', async () => {
+    mockDesktop();
+    const upload = vi.fn(async () => photo);
+    renderHostWith({ upload });
+    const main = screen.getByRole('main');
+
+    fireEvent.click(screen.getByRole('button', { name: 'añadir' }));
+
+    await screen.findByText('Subidas terminadas · 1 de 1');
+
+    fireEvent.click(screen.getByRole('button', { name: 'Cerrar subidas' }));
+
+    const dismiss = await screen.findByRole('button', { name: 'Cerrar subidas terminadas' });
+
+    expect(screen.queryByRole('heading', { name: 'Subidas' })).toBeNull();
+
+    fireEvent.click(dismiss);
+
+    expect(screen.queryByRole('button', { name: /Abrir subidas\./ })).toBeNull();
+    expect(screen.queryByText('Subidas terminadas · 1 de 1')).toBeNull();
+    expect(screen.queryByRole('heading', { name: 'Subidas' })).toBeNull();
+
+    await waitFor(() => expect(document.activeElement).toBe(main));
   });
 });
