@@ -77,3 +77,12 @@ Descarga completa: original individual, selección y álbum en ZIP con job en ba
 1. Revisión A del diff y aceptación del usuario.
 2. Commit local y merge local a `main` (sin push hasta el final).
 3. Continuar con **F32 (etiquetado)**, la última del nivel bajo del plan.
+
+## Incidencia de arranque (2026-11-07)
+
+La API no arrancaba en desarrollo tras mergear F33. Dos causas, ambas corregidas:
+
+1. **Parameter property incompatible con strip-only.** `DownloadJobFailure` usaba `constructor(readonly userMessage: string)`. `node --watch src/index.ts` ejecuta TypeScript en modo strip-only y lo rechaza con `ERR_UNSUPPORTED_TYPESCRIPT_SYNTAX`; `tsc` y vitest lo aceptan, por eso los tests no lo vieron. Se sustituyó por una propiedad declarada y asignada (commit `e2e281b`).
+2. **`archiver` no instalado en el árbol principal.** La dependencia se añadió en el worktree; el repo principal necesitaba `pnpm install --frozen-lockfile`.
+
+**Prevención para F37:** añadir al CI un arranque real de la API (`node src/index.ts` con timeout) además de `tsc`. Ni el build ni los tests detectan la sintaxis que el runtime de desarrollo rechaza.
