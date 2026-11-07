@@ -6,7 +6,6 @@ import { describe, expect, it, vi } from 'vitest';
 import { createQueryClient } from '../lib/query-client';
 import { routeTree } from '../routeTree.gen';
 
-import { Route as PrivacyRoute } from './_app.privacy';
 import { Route as ProfileRoute } from './_app.profile';
 
 /**
@@ -35,10 +34,7 @@ vi.mock('@tanstack/react-router', async (importOriginal) => {
   };
 });
 
-const PLACEHOLDERS = [
-  { path: '/profile', title: 'Perfil', Route: ProfileRoute },
-  { path: '/privacy', title: 'Privacidad', Route: PrivacyRoute },
-] as const;
+const PLACEHOLDERS = [{ path: '/profile', title: 'Perfil', Route: ProfileRoute }] as const;
 
 describe('pantallas provisionales', () => {
   it.each(PLACEHOLDERS)('$path tiene título real y texto honesto', ({ title, Route }) => {

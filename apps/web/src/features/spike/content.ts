@@ -1,6 +1,6 @@
 import { createServerFn } from '@tanstack/react-start';
 
-import { readHelpContent } from './content.server';
+import { readHelpContent, readLegalPage } from './content.server';
 
 /** Artículo de ayuda tal y como lo devuelve el snapshot de Content Island. */
 export interface HelpArticle {
@@ -30,6 +30,17 @@ export interface HelpContentData {
   faqs: FaqItem[];
 }
 
+/** Página legal tal y como la devuelve el snapshot de Content Island. */
+export interface LegalPage {
+  id: string;
+  language: string;
+  lastUpdate: string;
+  title: string;
+  slug: string;
+  body: string;
+  updatedAt: string;
+}
+
 /**
  * Único punto de entrada que usa la ruta.
  *
@@ -39,4 +50,16 @@ export interface HelpContentData {
  */
 export const loadHelpContent = createServerFn({ method: 'GET' }).handler(
   async (): Promise<HelpContentData> => readHelpContent(),
+);
+
+/**
+ * Carga la página legal de privacidad (slug `privacidad`) desde el snapshot.
+ *
+ * Comparte el patrón de `loadHelpContent`: el loader funciona en navegación
+ * cliente y la lectura del sistema de archivos queda en el servidor. Si la
+ * página no existe, la promesa se rechaza para que el build falle en el
+ * prerender y la navegación cliente muestre el estado de error de la ruta.
+ */
+export const loadLegalPage = createServerFn({ method: 'GET' }).handler(
+  async (): Promise<LegalPage> => readLegalPage(),
 );

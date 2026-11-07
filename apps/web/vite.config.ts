@@ -9,7 +9,7 @@ import { resolveServerApiOrigin } from './src/lib/env.server.ts';
  * Configuración de F09.
  *
  * - Tailwind 4 CSS-first vía plugin de Vite (sin preset JS).
- * - Start con SSR selectivo y prerender de `/help`.
+ * - Start con SSR selectivo y prerender de `/help` y `/privacy`.
  * - Proxy `/api` hacia el origen de la API interna. El destino sale de
  *   `API_INTERNAL_URL` (misma variable que usa el cliente de servidor) y cae a
  *   `http://127.0.0.1:3001`, para que el navegador no necesite CORS.
@@ -35,7 +35,10 @@ export default defineConfig(({ mode }) => {
         router: {
           routeFileIgnorePattern: '\\.test\\.(ts|tsx)$',
         },
-        pages: [{ path: '/help', prerender: { enabled: true } }],
+        pages: [
+          { path: '/help', prerender: { enabled: true } },
+          { path: '/privacy', prerender: { enabled: true } },
+        ],
       }),
       viteReact(),
     ],

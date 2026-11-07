@@ -2,12 +2,20 @@ import path from 'node:path';
 
 import { createClient } from '@content-island/api-client';
 
-import type { FaqItem, HelpArticle, HelpContentData } from './content';
+import type { FaqItem, HelpArticle, HelpContentData, LegalPage } from './content';
 
 const HELP_CONTENT_TYPE = 'helpArticle';
 const FAQ_CONTENT_TYPE = 'faqItem';
+const LEGAL_CONTENT_TYPE = 'legalPage';
 const CONTENT_LANGUAGE = 'es';
 const DEFAULT_SNAPSHOT_RELATIVE_PATH = '../../content-island-snapshot.json';
+
+/** Slug de la página legal de privacidad en Content Island. */
+export const LEGAL_PAGE_SLUG = 'privacidad';
+
+/** Error público cuando el snapshot no contiene la página legal de privacidad. */
+export const LEGAL_PAGE_MISSING_ERROR =
+  'El snapshot de Content Island no contiene la página legal «privacidad».';
 
 /**
  * Ruta del snapshot. Por defecto se resuelve desde `apps/web` (cwd del dev y
@@ -79,4 +87,59 @@ export async function readHelpContent(snapshotPath?: string): Promise<HelpConten
       'No se pudo leer el snapshot de Content Island. Revisa CONTENT_ISLAND_SNAPSHOT_PATH o regenera el snapshot.',
     );
   }
+}
+
+/**
+ * Lee la página legal de privacidad desde el snapshot local.
+ *
+ * La ausencia de la página es un error explícito, no un contenido vacío: el
+ * prerender de `/privacy` falla y, en navegación cliente, la ruta muestra su
+ * estado de error.
+ */
+export async function readLegalPage(snapshotPath?: string): Promise<LegalPage> {
+  const resolvedPath = resolveSnapshotPath(snapshotPath);
+
+  const client = createClient({
+    accessToken: '',
+    mode: 'snapshot',
+    snapshotPath: resolvedPath,
+  });
+
+  let pages: LegalPage[];
+
+  try {
+    const snapshot = await client.getSnapshotInfo();
+    if (snapshot.view !== 'published') {
+      throw new Error(`El snapshot de Content Island no está publicado (view: ${snapshot.view}).`);
+    }
+
+    pages = await client.getContentList<LegalPage>({
+      contentType: LEGAL_CONTENT_TYPE,
+      language: CONTENT_LANGUAGE,
+    });
+  } catch (error) {
+    // Log solo de servidor: el mensaje que cruza la server function es genérico.
+    // eslint-disable-next-line no-console
+    console.error(
+      `[spike/content] No se pudo leer el snapshot de Content Island. Ruta: ${resolvedPath}`,
+      error,
+    );
+
+    throw new Error(
+      'No se pudo leer el snapshot de Content Island. Revisa CONTENT_ISLAND_SNAPSHOT_PATH o regenera el snapshot.',
+    );
+  }
+
+  const page = pages.find((item) => item.slug === LEGAL_PAGE_SLUG);
+
+  if (page === undefined) {
+    // eslint-disable-next-line no-console
+    console.error(
+      `[spike/content] El snapshot no contiene la página legal "${LEGAL_PAGE_SLUG}". Ruta: ${resolvedPath}`,
+    );
+
+    throw new Error(LEGAL_PAGE_MISSING_ERROR);
+  }
+
+  return page;
 }

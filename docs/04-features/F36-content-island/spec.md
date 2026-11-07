@@ -3,7 +3,7 @@ id: F36
 title: "Content Island"
 milestone: M5
 size: M
-status: draft
+status: review
 spec: complete
 depends_on:
   - "F09"
@@ -23,8 +23,13 @@ decisions:
 
 # F36 — Content Island
 
-> **Milestone:** M5 · **Talla:** M · **Estado:** draft · **Spec:** completa
+> **Milestone:** M5 · **Talla:** M · **Estado:** review · **Spec:** completa
 > **Depende de:** F09, F10 · **Bloquea:** F42
+>
+> **Entrega (2026-11-07):** alcance reducido en revisión. `/help` ya estaba
+> implementado; se completa `/privacy` con el `legalPage` de slug `privacidad`
+> del snapshot, prerender y tests. Sin CMS, sin llamadas a Content Island en
+> runtime y sin mover tipos a `packages/shared`.
 
 ## Objetivo
 
