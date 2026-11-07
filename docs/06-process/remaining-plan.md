@@ -1,6 +1,6 @@
 # Plan del resto del proyecto (entrega 2026-11)
 
-> **Vigente desde:** 2026-11-07 · **Decisión del usuario:** recorte para entrega, F32 completa, F35 fuera.
+> **Vigente desde:** 2026-11-07 · **Decisión del usuario:** recorte para entrega, F32 completa, F35 fuera, **F44 Portadas dentro** y avatar de perfil fuera salvo que sobre tiempo.
 > Sustituye al plan de tres tracks del 2026-11-06, que queda al final como histórico.
 > Este documento manda sobre el orden de trabajo. Si una sesión se salta una fila, lo registra aquí y en el tablero.
 
@@ -15,8 +15,10 @@ El objetivo ya no es completar las 43 features, sino **cerrar un MVP defendible 
 | Feature | Decisión | Motivo |
 | --- | --- | --- |
 | F29, F30, F31, F33 | Cerrar y aceptar | Ya están hechas y verificadas; F33 tiene pendiente la revisión A |
-| F34 Perfil | Reducida | Perfil real, nombre, tema, instalación y logout; sin medidor de almacenamiento falso |
-| F36 Content Island | Reducida | `/help` ya funciona con snapshot; falta `/privacy` con `legalPage`; sin CMS |
+| F34 Perfil | **Cerrada** | Perfil real, nombre, tema, instalación y logout; sin medidor de almacenamiento. `done` el 2026-11-07 (PR #53) |
+| F36 Content Island | **Cerrada** | `/help` y `/privacy` con snapshot; sin CMS. `done` el 2026-11-07 (PR #52) |
+| **F44 Portadas** | **Nueva, reducida** | Selector de portada de álbum y de círculo sobre `coverPhotoId`; la API ya existe. Decisión del usuario del 2026-11-07 |
+| Avatar de perfil | **Fuera de alcance** | Requiere contrato, storage y decisión de privacidad; solo si sobra tiempo al final |
 | F32 Etiquetado | **Completa** | Decisión del usuario: API `POST`/`DELETE`, UI, optimista, permisos y tests |
 | F35 Actividad | **Fuera de entrega** | Extra sin modelo ni flujo dependiente; se documenta como limitación |
 | F37 + F38 | Fusionadas y mínimas | Playwright con 3 flujos, CI y smoke de arranque de la API |
@@ -34,20 +36,22 @@ El objetivo ya no es completar las 43 features, sino **cerrar un MVP defendible 
 | --- | --- | --- |
 | 0 | Aceptar F29/F30/F31; revisión A y aceptación de F33; cerrar tablero y bitácora | 0,5 |
 | 1 | F36 privacidad + F34 perfil | 1 |
+| 1.5 | **F44 portadas** (álbum y círculo) | 0,5 |
 | 2 | F32 completa (API + UI + tests + revisión) | 1,5 |
 | 3 | F37 + F38 mínimo y F39 bloqueantes | 1 |
 | 4 | F41, F40 y verificación de F42 | 1 |
 | 5 | F43 y batería completa | 1 |
 
-Si se cae un día, el orden de recorte es: **F40 → F39 (solo bloqueantes) → F38 (un solo flujo) → F42 (solo verificar)**. No se recortan F32, F42/F43, autorización ni la batería de tests.
+Si se cae un día, el orden de recorte es: **F40 → F39 (solo bloqueantes) → F38 (un solo flujo) → F42 (solo verificar)**. No se recortan F32, F42/F43, F44, autorización ni la batería de tests.
 
 ## Sesiones ejecutadas
 
 | Sesión | Fecha | Resultado |
 | --- | --- | --- |
 | S0 | 2026-11-07 | Aceptación de F29–F31, revisión A y aceptación de F33 y cierre de F36. PR #51 y #52 mergeadas; F29–F31, F33 y F36 en `done`. |
-| S1 | 2026-11-07 | F34 implementada en `feat/F34-profile`: perfil real con nombre editable, email de solo lectura, iniciales, tema, instalación y logout; sin medidor de almacenamiento. Nivel C, en `review`, pendiente la aceptación del usuario. |
-| S2 | — | F32 completa (API + UI + tests + permisos). Siguiente, no iniciada. |
+| S1 | 2026-11-07 | F34 implementada y aceptada: perfil real con nombre editable, email de solo lectura, iniciales, tema, instalación y logout; sin medidor de almacenamiento. Cerrada con la PR #53 (merge `9ad61a0`) y F34 en `done`. |
+| S1.5 | — | **F44 Portadas** (nueva): selector de portada de álbum y de círculo sobre `coverPhotoId`. Siguiente, no iniciada. |
+| S2 | — | F32 completa (API + UI + tests + permisos). Después de F44. |
 
 ## Reglas de trabajo (no negociables)
 
