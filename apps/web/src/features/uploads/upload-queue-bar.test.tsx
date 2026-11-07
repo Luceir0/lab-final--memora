@@ -208,8 +208,26 @@ describe('UploadQueueBar', () => {
     expect(screen.getByText('0 %')).toBeTruthy();
     expect(bar.getAttribute('aria-label')).toContain('Subiendo 0 de 1');
     expect(bar.getAttribute('aria-label')).toContain('0 %');
+    expect(screen.queryByRole('button', { name: 'Cerrar subidas terminadas' })).toBeNull();
 
     await expectNoAxeViolations(view.container);
+  });
+
+  it('la X cierra los terminados al instante y no reabre el panel', async () => {
+    const upload = vi.fn(async () => photo);
+    const view = await openAndClose([imageFile('foto-1.jpg')], { upload });
+
+    const dismiss = await screen.findByRole('button', { name: 'Cerrar subidas terminadas' });
+
+    expect(screen.getByText('Subidas terminadas · 1 de 1')).toBeTruthy();
+    await expectNoAxeViolations(view.container);
+
+    fireEvent.click(dismiss);
+
+    expect(screen.queryByRole('button', { name: /Abrir subidas\./ })).toBeNull();
+    expect(screen.queryByText('Subidas terminadas · 1 de 1')).toBeNull();
+    expect(screen.queryByRole('dialog')).toBeNull();
+    expect(screen.queryByRole('heading', { name: 'Subidas' })).toBeNull();
   });
 
   it('publica la altura real de la barra en el documento mientras hay items', async () => {

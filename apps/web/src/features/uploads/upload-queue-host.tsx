@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useId, useRef } from 'react';
 
 import { MAIN_CONTENT_ID } from '../../components/layout/skip-link';
+import { COMPLETED_DISMISS_DELAY_MS } from './completed-dismiss';
 import { UploadQueue } from './upload-queue';
 import { UploadQueueBar } from './upload-queue-bar';
 import { useUploadQueue } from './upload-queue-context';
@@ -17,9 +18,13 @@ import { useMediaQuery } from './use-media-query';
  * Abrir desde la barra mueve el foco al panel de escritorio. El autoabrir tras
  * encolar no lo mueve. Al cerrar, el foco vuelve a la barra; si la cola quedó
  * vacía y la barra ya no existe, vuelve a `<main>` para no dejarlo en `body`.
+ *
+ * Cuando la cola queda inactiva y sin errores, los items terminados se limpian
+ * solos a los 10 s para que la barra «Subidas terminadas» no sea permanente.
  */
 export function UploadQueueHost() {
-  const { isPanelOpen, focusOnOpen, openPanel, closePanel } = useUploadQueue();
+  const { items, summary, isPanelOpen, focusOnOpen, openPanel, closePanel, clearCompleted } =
+    useUploadQueue();
   const panelId = useId();
   const barRef = useRef<HTMLButtonElement>(null);
   const isDesktop = useMediaQuery('(min-width: 1024px)');
@@ -56,9 +61,57 @@ export function UploadQueueHost() {
     });
   }, [closePanel]);
 
+  const focusMainContent = useCallback((): void => {
+    document.getElementById(MAIN_CONTENT_ID)?.focus();
+  }, []);
+
+  const handleDismissCompleted = useCallback((): void => {
+    clearCompleted();
+    focusMainContent();
+  }, [clearCompleted, focusMainContent]);
+
+  // Auto-cierre: la cola lleva 10 s inactiva y sin errores.
+  useEffect(() => {
+    const isInactive = summary.pending === 0 && summary.active === 0;
+
+    if (!isInactive || summary.failed > 0 || items.length === 0) {
+      return;
+    }
+
+    const timeout = window.setTimeout(() => {
+      clearCompleted();
+
+      if (isPanelOpen) {
+        handleClose();
+        return;
+      }
+
+      focusMainContent();
+    }, COMPLETED_DISMISS_DELAY_MS);
+
+    return () => {
+      window.clearTimeout(timeout);
+    };
+  }, [
+    summary.pending,
+    summary.active,
+    summary.failed,
+    items.length,
+    isPanelOpen,
+    clearCompleted,
+    handleClose,
+    focusMainContent,
+  ]);
+
   return (
     <>
-      <UploadQueueBar open={isPanelOpen} onOpen={handleOpen} panelId={panelId} buttonRef={barRef} />
+      <UploadQueueBar
+        open={isPanelOpen}
+        onOpen={handleOpen}
+        panelId={panelId}
+        buttonRef={barRef}
+        onDismissCompleted={handleDismissCompleted}
+      />
       <UploadQueue
         open={isPanelOpen}
         onClose={handleClose}
