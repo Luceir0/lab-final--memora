@@ -1,8 +1,9 @@
 import type { DownloadJobDto } from '@memora/shared';
-import { fireEvent, screen, waitFor } from '@testing-library/react';
+import { fireEvent, screen, waitFor, within } from '@testing-library/react';
 import { HttpResponse, http } from 'msw';
 import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
 
+import { expectNoAxeViolations } from '../../../../../../packages/ui/src/test/axe';
 import { AUTH_TEST_API_BASE } from '../../../test/auth-fixtures';
 import { createAuthTestServer, startAuthTestServer } from '../../../test/auth-server';
 import { albumWithPhotos } from '../../../test/fixtures/albums-fixtures';
@@ -114,6 +115,13 @@ describe('AlbumDetailPage · descarga del álbum', () => {
     openAlbumMenu();
     fireEvent.click(screen.getByRole('menuitem', { name: 'Descargar álbum' }));
 
+    const dialog = await screen.findByRole('dialog', { name: 'Descargar 342 fotos' });
+
+    // El aviso llega antes de crear el job.
+    expect(bodies).toEqual([]);
+
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Generar ZIP' }));
+
     await waitFor(() => expect(bodies).toEqual([{}]));
 
     expect(
@@ -123,6 +131,146 @@ describe('AlbumDetailPage · descarga del álbum', () => {
     const anchors = clickSpy.mock.instances as unknown as HTMLAnchorElement[];
 
     expect(anchors.at(-1)?.getAttribute('href')).toBe('/api/downloads/job_album/file');
+  });
+
+  it('el botón de escritorio abre el aviso sin crear el job y el copy explica tamaño y ubicación (AC-06)', async () => {
+    const bodies: unknown[] = [];
+
+    server.use(
+      http.post(CREATE_URL, async ({ request }) => {
+        bodies.push(await request.json());
+
+        return HttpResponse.json(makeJob(), { status: 202 });
+      }),
+    );
+
+    renderAlbum(true);
+
+    await screen.findByRole('heading', { level: 1, name: 'Verano en Mallorca' });
+
+    fireEvent.click(screen.getByRole('button', { name: 'Descargar álbum' }));
+
+    const dialog = await screen.findByRole('dialog', { name: 'Descargar 342 fotos' });
+
+    expect(bodies).toEqual([]);
+    expect(within(dialog).getByText(/100 MB/)).toBeTruthy();
+    expect(within(dialog).getByText(/iPhone y Android/)).toBeTruthy();
+    expect(within(dialog).getByText(/Archivos o en Descargas/)).toBeTruthy();
+    expect(within(dialog).getByText(/seguir usando Memora/)).toBeTruthy();
+
+    await expectNoAxeViolations(dialog);
+  });
+
+  it('la acción del menú móvil abre el mismo aviso y no crea el job', async () => {
+    const bodies: unknown[] = [];
+
+    server.use(
+      http.post(CREATE_URL, async ({ request }) => {
+        bodies.push(await request.json());
+
+        return HttpResponse.json(makeJob(), { status: 202 });
+      }),
+    );
+
+    renderAlbum(true);
+
+    await screen.findByRole('heading', { level: 1, name: 'Verano en Mallorca' });
+    openAlbumMenu();
+    fireEvent.click(screen.getByRole('menuitem', { name: 'Descargar álbum' }));
+
+    const dialog = await screen.findByRole('dialog', { name: 'Descargar 342 fotos' });
+
+    expect(bodies).toEqual([]);
+    expect(within(dialog).getByText(/100 MB/)).toBeTruthy();
+  });
+
+  it('cancelar el aviso no crea ningún job', async () => {
+    const bodies: unknown[] = [];
+
+    server.use(
+      http.post(CREATE_URL, async ({ request }) => {
+        bodies.push(await request.json());
+
+        return HttpResponse.json(makeJob(), { status: 202 });
+      }),
+    );
+
+    renderAlbum(true);
+
+    await screen.findByRole('heading', { level: 1, name: 'Verano en Mallorca' });
+
+    fireEvent.click(screen.getByRole('button', { name: 'Descargar álbum' }));
+
+    const dialog = await screen.findByRole('dialog', { name: 'Descargar 342 fotos' });
+
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Cancelar' }));
+
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog')).toBeNull();
+    });
+    expect(bodies).toEqual([]);
+  });
+
+  it('el aviso enfoca «Cancelar» y se cierra con Esc sin crear el job', async () => {
+    const bodies: unknown[] = [];
+
+    server.use(
+      http.post(CREATE_URL, async ({ request }) => {
+        bodies.push(await request.json());
+
+        return HttpResponse.json(makeJob(), { status: 202 });
+      }),
+    );
+
+    renderAlbum(true);
+
+    await screen.findByRole('heading', { level: 1, name: 'Verano en Mallorca' });
+
+    fireEvent.click(screen.getByRole('button', { name: 'Descargar álbum' }));
+
+    const dialog = await screen.findByRole('dialog', { name: 'Descargar 342 fotos' });
+    const cancel = within(dialog).getByRole('button', { name: 'Cancelar' });
+
+    await waitFor(() => {
+      expect(document.activeElement).toBe(cancel);
+    });
+
+    fireEvent.keyDown(cancel, { key: 'Escape' });
+
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog')).toBeNull();
+    });
+    expect(bodies).toEqual([]);
+  });
+
+  it('confirmar crea un único job aunque se pulse dos veces', async () => {
+    const bodies: unknown[] = [];
+
+    server.use(
+      http.post(CREATE_URL, async ({ request }) => {
+        bodies.push(await request.json());
+
+        return HttpResponse.json(makeJob(), { status: 202 });
+      }),
+    );
+
+    renderAlbum(true);
+
+    await screen.findByRole('heading', { level: 1, name: 'Verano en Mallorca' });
+
+    fireEvent.click(screen.getByRole('button', { name: 'Descargar álbum' }));
+
+    const dialog = await screen.findByRole('dialog', { name: 'Descargar 342 fotos' });
+    const confirm = within(dialog).getByRole('button', { name: 'Generar ZIP' });
+
+    fireEvent.click(confirm);
+    fireEvent.click(confirm);
+
+    await waitFor(() => expect(bodies).toEqual([{}]));
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog')).toBeNull();
+    });
+    expect(bodies).toHaveLength(1);
   });
 
   it('sin permiso oculta la entrada del menú y deshabilita el botón con motivo', async () => {

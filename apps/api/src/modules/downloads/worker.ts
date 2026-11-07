@@ -12,7 +12,7 @@ import { buildArchiveEntryName, formatFileDate } from './filename.ts';
  * Concurrency is exactly one: a second job waits in memory until the first
  * finishes, so the process never runs two `archiver` pipelines at once. The
  * queue is intentionally not persisted; a restart marks the leftover
- * `processing` rows as `error` (see `service.markOrphanedJobs`).
+ * `pending` and `processing` rows as `error` (see `service.markOrphanedJobs`).
  *
  * `StorageService.put` only accepts a `Buffer`, so the ZIP is assembled in
  * memory with a hard 2 GB ceiling. That is an MVP limitation recorded in the

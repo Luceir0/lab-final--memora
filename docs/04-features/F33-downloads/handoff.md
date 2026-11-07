@@ -86,3 +86,95 @@ La API no arrancaba en desarrollo tras mergear F33. Dos causas, ambas corregidas
 2. **`archiver` no instalado en el árbol principal.** La dependencia se añadió en el worktree; el repo principal necesitaba `pnpm install --frozen-lockfile`.
 
 **Prevención para F37:** añadir al CI un arranque real de la API (`node src/index.ts` con timeout) además de `tsc`. Ni el build ni los tests detectan la sintaxis que el runtime de desarrollo rechaza.
+
+## Correcciones de la revisión A (2026-11-07)
+
+La revisión independiente de F33 fue **apto con correcciones, sin bloqueantes**. El usuario
+decidió corregir ahora **M-01** y **M-04**. **M-02** y **M-03** quedan como limitaciones del MVP
+según el informe de la revisión; **M-05** (descarga en la web) lo resolverá otro agente en
+`apps/web/**`.
+
+### M-01 — Jobs `pending` perdidos al reiniciar
+
+`markOrphanedJobs` recuperaba solo `processing`. Como la cola del worker vive en memoria y la
+concurrencia es 1, un proceso que muere deja `pending` los jobs aún no reclamados y esos jobs
+nunca terminaban. Ahora la recuperación marca `pending` **y** `processing` como `error` con el
+mismo `ORPHANED_JOB_MESSAGE` (no se re-encola: el contrato no cambia y el usuario crea otro job).
+
+La inclusión de `pending` es segura porque en `routes.ts` la recuperación se espera **antes** de
+crear y encolar: el POST hace `ensureOrphanRecovery → createDownloadJob → worker.enqueue`. Un
+job de esta instancia no existe hasta que la recuperación (memoizada, una vez por instancia) ha
+terminado, así que no puede barrerse a sí mismo. Los GET de job/fichero también la esperan antes
+de leer. **Asunción documentada:** una sola instancia de API por base de datos; con varias, la
+recuperación de una marcaría como `error` los jobs vivos de otra. Limitación del MVP hasta que
+la cola se persista.
+
+Tests añadidos (PostgreSQL real):
+
+- un job `pending` sembrado pasa a `error` con `errorMessage` de reinicio al primer `GET /api/downloads/:jobId`;
+- un job `pending` sembrado antes de un `POST /api/albums/:albumId/downloads` queda recuperado,
+  el job nuevo responde `202 pending`, no se marca `error` y termina `ready`.
+
+El test existente de `409` con job `pending` ahora prepara la recuperación antes de sembrar para
+seguir midiendo el estado `pending` real.
+
+### M-04 — Rate limit en la descarga individual
+
+El limitador de 10/min existía para el POST pero no para `GET /api/photos/:photoId/download`.
+Ahora se aplica justo después de `resolveSession`, con la misma clave por `userId` (no por IP) y
+el mismo `RATE_LIMITED` → `429`. La autorización no cambia: sin sesión `401`, foto ajena o de
+otro círculo `404`, `membersCanDownload` apagado `403`. Al compartir el limitador, el cupo de
+10/min es por usuario entre descarga individual y creación de jobs.
+
+Test añadido: 10 descargas individuales devuelven `200` y la 11.ª `429 RATE_LIMITED`.
+
+### Verificación de las correcciones
+
+| Comando | Resultado |
+| --- | --- |
+| `DATABASE_URL=…memora_test pnpm --filter @memora/api test downloads` | **30/30 en 1 archivo: OK** (antes 27) |
+| `DATABASE_URL=…memora_test pnpm --filter @memora/api test` | **409 passed, 2 skipped en 25 archivos: OK** (antes 406) |
+| `pnpm --filter @memora/api typecheck` | **OK** |
+| `pnpm --filter @memora/api lint` | **OK** |
+| `pnpm exec prettier --check` sobre los 4 archivos tocados | **OK** |
+
+### Pendiente de la revisión A (no abordado en esta pasada)
+
+- **M-02** y **M-03**: limitaciones del MVP, según el informe de la revisión A. **M-05**
+  (descarga en la web) lo resolverá otro agente en `apps/web/**`.
+- Siguen abiertos los `[Menor]`/`[Nit]` previos de `Pendiente`: ZIP en memoria, objeto huérfano
+  entre `put` y `ready`, `progress` en memoria, sin reanudar job, sin prevalidación de cliente y
+  lectura literal de `membersCanDownload` en la UI.
+
+No se ha hecho commit ni push de estos cambios.
+
+### M-05 — Aviso antes de descargar el álbum completo
+
+La revisión detectó que el aviso de >100 MB y la explicación de dónde queda el archivo en
+iOS/Android existían para la **selección** de fotos, pero no para la **descarga del álbum
+completo**. `AlbumDto` no expone el tamaño total y el usuario decidió corregirlo **sin cambiar
+el contrato**: una confirmación previa, con copy honesto sobre el umbral y la ubicación.
+
+- `album-detail-page.tsx`: «Descargar álbum» (botón de escritorio y acción del menú móvil) abre
+  un `ConfirmDialog` antes de crear el job. Confirmar cierra el aviso y llama a `download.start()`
+  una sola vez; cancelar, `Esc` o el fondo no crean ningún job. El controlador ya bloqueaba
+  dobles clics de forma síncrona con `activeRef`.
+- `format.ts`: `formatAlbumDownloadWarning(photoCount)` explica que se generará un ZIP con las N
+  fotos, que si supera 100 MB puede tardar, que se puede seguir usando Memora y que en iPhone y
+  Android queda en Archivos o en Descargas. Reutiliza `formatDownloadWarningTitle` para el
+  título y el mismo `ConfirmDialog` que la selección, sin duplicarlo.
+- Tests: botón de escritorio y acción del menú abren el aviso sin crear el job, cancelar o
+  `Esc` no llaman a `start`, el foco inicial va a «Cancelar», confirmar (dos clics) crea un
+  único job, el copy incluye 100 MB e iOS/Android y axe no reporta violaciones sobre el
+  diálogo. El test previo del menú ahora confirma el aviso antes de esperar el `POST`.
+
+| Comando | Resultado |
+| --- | --- |
+| `pnpm --filter @memora/web test downloads` | **4 archivos, 20 tests: OK** (antes 13) |
+| `pnpm --filter @memora/web test albums` | **9 archivos, 129 tests: OK** |
+| `pnpm --filter @memora/web typecheck` | **OK** |
+| `pnpm --filter @memora/web lint` | **OK** |
+| `pnpm exec prettier --check` sobre los 4 archivos tocados | **OK** |
+
+No se ha cambiado el contrato ni la API. No se ha hecho commit ni push. F33 sigue en `review`:
+la aceptación (G4) es del usuario.

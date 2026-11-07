@@ -118,10 +118,20 @@ export function registerDownloadRoutes(app: MemoraServer, config: AppConfig): vo
   };
 
   /**
-   * ADR-0008: jobs left in `processing` by a previous process are dead. The
-   * recovery is lazy (first job request) so a health-only boot never needs a
-   * database. It runs once per app instance and a failure never masks the real
-   * request, which will fail on its own query if the database is down.
+   * ADR-0008: jobs left in `pending` or `processing` by a previous process are
+   * dead, because the in-memory queue and the ZIP worker do not survive a
+   * restart. The recovery is lazy (first job request) so a health-only boot
+   * never needs a database.
+   *
+   * It runs once per app instance and is always awaited **before** creating a
+   * job (see the POST handler: recovery → create → enqueue). That ordering is
+   * what makes including `pending` safe: a job created by this instance can
+   * never be swept, since it does not exist until recovery has finished.
+   * Assumes a single API instance per database (documented MVP limitation);
+   * with several instances, one would mark another's live jobs as `error`.
+   *
+   * A failure never masks the real request, which will fail on its own query
+   * if the database is down.
    */
   let orphanRecovery: Promise<void> | null = null;
 
@@ -176,7 +186,7 @@ export function registerDownloadRoutes(app: MemoraServer, config: AppConfig): vo
           '`membersCanDownload` desactivado recibe `403`. Cabeceras: `Content-Disposition: attachment` con nombre ' +
           'seguro `memora-{album}-{fecha}-{id}.{ext}`, `Content-Type` real, `Content-Length`, ' +
           '`X-Content-Type-Options: nosniff` y `Cache-Control: private, no-store`. Un objeto ausente en storage ' +
-          'es `404`; un fallo de storage es `500` sin filtrar claves.',
+          'es `404`; un fallo de storage es `500` sin filtrar claves. Límite: 10 por minuto y usuario.',
         security: sessionSecurity,
         params: downloadPhotoParamsSchema,
         response: {
@@ -192,6 +202,11 @@ export function registerDownloadRoutes(app: MemoraServer, config: AppConfig): vo
     async (request, reply) => {
       const prisma = requirePrisma(app);
       const { user } = await resolveSession(prisma, config, request, reply);
+
+      // Contract `downloads.md`: 10 downloads per minute and user. The key is
+      // the session user, not the IP.
+      await enforceDownloadLimit(request, user.id);
+
       const photo = await findDownloadablePhoto(prisma, request.params.photoId, user.id);
 
       if (photo === null) {

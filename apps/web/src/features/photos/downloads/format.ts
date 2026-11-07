@@ -40,3 +40,16 @@ export function formatDownloadWarning(photoCount: number, bytes: number): string
 
   return `La selección (${photos}) pesa ${formatDownloadSize(bytes)}. Generar el ZIP puede tardar unos minutos. En iPhone y Android, el archivo se guarda en Archivos o en Descargas.`;
 }
+
+/**
+ * Aviso antes de generar el ZIP del álbum completo (AC-06).
+ *
+ * El DTO del álbum no expone el tamaño total, así que no se promete una cifra:
+ * se explica el umbral de 100 MB, que se puede seguir usando Memora y dónde
+ * queda el archivo en móvil.
+ */
+export function formatAlbumDownloadWarning(photoCount: number): string {
+  const photos = photoCount === 1 ? '1 foto' : `${photoCount} fotos`;
+
+  return `Se generará un ZIP con ${photos} del álbum. Si supera 100 MB, puede tardar unos minutos; puedes seguir usando Memora mientras se genera. En iPhone y Android, el archivo se guarda en Archivos o en Descargas.`;
+}
