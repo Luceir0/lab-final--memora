@@ -2,40 +2,46 @@
 
 ## Antes de empezar
 
-- [ ] Leer `AGENTS.md` y `spec.md`.
-- [ ] Comprobar dependencias: F16.
-- [ ] Comprobar Definition of Ready.
-- [ ] Proponer plan y esperar confirmación.
+- [x] Leer `AGENTS.md` y `spec.md`.
+- [x] Comprobar dependencias: F16.
+- [x] Comprobar Definition of Ready.
+- [x] Plan aprobado en `docs/06-process/remaining-plan.md` (sesión S1).
 
 ## Implementación
 
-- [ ] ProfileCard
-- [ ] Edición de nombre (email inmutable; avatar con iniciales)
-- [ ] ThemeToggle
-- [ ] InstallAppRow
-- [ ] Logout
-- [ ] Estados
-- [ ] Sin medidor de almacenamiento (dato falso; retirado el 2026-11-07)
+- [x] ProfileCard
+- [x] Edición de nombre (email inmutable; avatar con iniciales)
+- [x] ThemeToggle
+- [x] InstallAppRow
+- [x] Logout
+- [x] Estados
+- [x] Sin medidor de almacenamiento (dato falso; retirado el 2026-11-07)
 
 ## Criterios de aceptación
 
-- [ ] AC-01: Editar nombre valida y guarda.
-- [ ] AC-02: El email se muestra pero no se edita en el MVP.
-- [ ] AC-03: El avatar usa iniciales; no hay subida en el MVP.
-- [ ] AC-04: Tema persiste.
-- [ ] AC-05: Instalar explica iOS/Android.
-- [ ] AC-06: No aplica (medidor de almacenamiento retirado del MVP).
-- [ ] AC-07: Logout redirige.
+- [x] AC-01: Editar nombre valida y guarda.
+- [x] AC-02: El email se muestra pero no se edita en el MVP.
+- [x] AC-03: El avatar usa iniciales; no hay subida en el MVP.
+- [x] AC-04: Tema persiste.
+- [x] AC-05: Instalar explica iOS/Android.
+- [x] AC-06: No aplica (medidor de almacenamiento retirado del MVP).
+- [x] AC-07: Logout redirige.
 
 ## Verificación
 
-- [ ] `pnpm --filter @memora/web test profile`
+- [x] `pnpm --filter @memora/web test profile` → **27 tests**.
+- [x] `pnpm --filter @memora/web test provisional` → **2 tests**.
+- [x] `pnpm --filter @memora/web test` (suite completa).
+- [x] `pnpm typecheck` → **9/9**.
+- [x] `pnpm lint` → **6/6**.
+- [x] `pnpm build` → **5/5**.
+- [x] `pnpm format:check`.
 
 ## Cierre
 
-- [ ] Revisión independiente.
+- [ ] Revisión independiente (nivel C: no aplica; gates automáticos + axe jsdom).
 - [ ] Aceptación del usuario.
 - [ ] `handoff.md` completo.
-- [ ] Tablero actualizado.
-- [ ] Bitácora y cobertura actualizadas.
+- [x] Tablero actualizado a `review`.
+- [x] Bitácora y cobertura actualizadas.
 - [ ] Commit propuesto (sin ejecutar).

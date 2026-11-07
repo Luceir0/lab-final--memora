@@ -41,6 +41,14 @@ El objetivo ya no es completar las 43 features, sino **cerrar un MVP defendible 
 
 Si se cae un día, el orden de recorte es: **F40 → F39 (solo bloqueantes) → F38 (un solo flujo) → F42 (solo verificar)**. No se recortan F32, F42/F43, autorización ni la batería de tests.
 
+## Sesiones ejecutadas
+
+| Sesión | Fecha | Resultado |
+| --- | --- | --- |
+| S0 | 2026-11-07 | Aceptación de F29–F31, revisión A y aceptación de F33 y cierre de F36. PR #51 y #52 mergeadas; F29–F31, F33 y F36 en `done`. |
+| S1 | 2026-11-07 | F34 implementada en `feat/F34-profile`: perfil real con nombre editable, email de solo lectura, iniciales, tema, instalación y logout; sin medidor de almacenamiento. Nivel C, en `review`, pendiente la aceptación del usuario. |
+| S2 | — | F32 completa (API + UI + tests + permisos). Siguiente, no iniciada. |
+
 ## Reglas de trabajo (no negociables)
 
 1. **Una sesión = un worktree = una rama.** Nunca dos sesiones en el mismo árbol.

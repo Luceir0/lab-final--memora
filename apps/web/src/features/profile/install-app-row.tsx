@@ -5,11 +5,12 @@ import { INSTALL_COPY, INSTALL_TITLE } from './install-copy';
 import { useInstallPrompt } from './use-install-prompt';
 
 /**
- * Fila de instalación del Perfil provisional (F14).
+ * Tarjeta de instalación del Perfil.
  *
- * Solo se muestra por debajo de `lg`: el diseño móvil la incluye y el de
- * escritorio no. El estado inicial es `unsupported` (también en SSR); el hook
- * lo corrige tras hidratar, así que no hay desajuste de hidratación.
+ * En móvil ocupa el ancho completo; desde `lg` vive en la columna derecha del
+ * perfil, como en el diseño de escritorio. El estado inicial es `unsupported`
+ * (también en SSR); el hook lo corrige tras hidratar, así que no hay desajuste
+ * de hidratación.
  */
 export function InstallAppRow() {
   const { state, promptInstall } = useInstallPrompt();
@@ -18,7 +19,7 @@ export function InstallAppRow() {
   return (
     <section
       aria-labelledby="install-app-title"
-      className="mb-6 rounded-xl border border-primary bg-primary-soft p-4 lg:hidden"
+      className="rounded-xl border border-primary bg-primary-soft p-4"
     >
       <div className="flex items-center gap-3">
         <span

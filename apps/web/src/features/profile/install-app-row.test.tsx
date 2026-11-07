@@ -139,11 +139,12 @@ describe('InstallAppRow', () => {
     expect(screen.queryByRole('button', { name: 'Instalar' })).toBeNull();
   });
 
-  it('solo se muestra por debajo de lg', () => {
+  it('se pinta también en escritorio dentro de la columna del perfil', () => {
     const { container } = render(<InstallAppRow />);
     const section = container.querySelector('section');
 
-    expect(section?.className).toContain('lg:hidden');
+    expect(section?.className).not.toContain('lg:hidden');
+    expect(section?.className).toContain('rounded-xl');
   });
 
   it('no tiene violaciones de axe', async () => {
