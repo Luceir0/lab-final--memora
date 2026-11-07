@@ -760,3 +760,14 @@ Registro de usos relevantes de IA. No es un chat completo: es evidencia para el 
 - **Estado:** **F32 pasa de `review` a `accepted` y `done`** el 2026-11-08 tras la aceptación del usuario y el cierre operativo autorizado.
 - **Cierre operativo (2026-11-08):** commit `d7efe2d` (`feat: add photo tagging with optimistic updates (F32)`), [PR #59](https://github.com/Luceir0/lab-final--memora/pull/59) y merge `4b5e54b` en `main`; CI en verde en la PR y sobre el merge (check run `install · docs · agents · lint · typecheck · test · build`). `main` local y remoto sincronizados. No se inicia S3.
 - **Evidencia:** `apps/web/src/features/photos/tags/tag-people-dialog.tsx` y sus tests, [handoff de F32](../04-features/F32-tagging/handoff.md), [tablero](../04-features/README.md) y [cobertura](../07-curriculum/coverage-map.md).
+
+### 2026-11-08 — Recorte final por tiempo: S3 fuera, S4 reducida y S5 con F40
+
+- **Prompt representativo:** «Me quedan pocas horas; ¿podemos no hacer S3, hacer solo S4 y después S5? Quiero tener bien hecha la S5. ¿Podemos pasar Lighthouse a S5?».
+- **Decisión del usuario:** **S3 no se ejecuta**. Se saltan F37 (infra Playwright/CI), F38 (E2E) y F39 (auditoría formal de a11y); quedan en `draft` y se documentan como limitaciones. **S4 se reduce** a F42 (entorno demo reproducible) y F41 (checklist de seguridad) en **1,5–2,5 h**. **S5** incluye F43 completo y **F40 mínimo** (Lighthouse) en **3,5–5,5 h**. S7 se funde con el ensayo de S5 si hace falta.
+- **Lighthouse (F40):** se mueve a S5 con **timebox de 45 min** y build de producción. Mínimo obligatorio `/login`; página autenticada solo si el tiempo lo permite. Si no coopera, se documenta y no se insiste. No se estiman horas: es una corrida acotada, no una auditoría completa.
+- **Excepciones de dependencia autorizadas:** F38 → F40/F41 y F39 → F43. Se registran en el plan y el tablero.
+- **Qué no se recorta:** autorización y permisos, persistencia, la batería Vitest/RTL/MSW/axe existente (910 web + 424 API), seed/demo y documentación de cobertura.
+- **Riesgo asumido:** la entrega no tendrá E2E automatizado ni informe formal de accesibilidad; la evidencia será la suite existente, axe en jsdom, la demo manual y una pasada mínima de teclado/foco en el ensayo. F43 debe listarlo en limitaciones (AC-06).
+- **Estado:** decisión registrada el 2026-11-08. Próxima sesión: **S4 reducida**. No se inicia desde esta sesión.
+- **Evidencia:** [plan de sesiones](../06-process/remaining-plan.md), [tablero](../04-features/README.md) y [mapa de cobertura](../07-curriculum/coverage-map.md).

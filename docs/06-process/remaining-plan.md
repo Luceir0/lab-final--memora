@@ -1,12 +1,12 @@
 # Plan del resto del proyecto (entrega 2026-11)
 
-> **Vigente desde:** 2026-11-07 · **Decisión del usuario:** recorte para entrega, F32 completa, F35 fuera, **F44 Portadas dentro y cerrada** y avatar de perfil fuera salvo que sobre tiempo.
+> **Vigente desde:** 2026-11-08 · **Decisión del usuario:** cierre por tiempo. S3 **no se ejecuta**; S4 se reduce a **F42 + F41**; S5 incluye **F43 completo + F40 mínimo (Lighthouse con timebox)**. F37, F38 y F39 quedan fuera y se documentan como limitaciones.
 > Sustituye al plan de tres tracks del 2026-11-06, que queda al final como histórico.
 > Este documento manda sobre el orden de trabajo y sobre el cuadro de sesiones. Si una sesión se salta una fila o cambia el orden, lo registra aquí y en el tablero **antes** de continuar.
 
 ## Contexto
 
-F01–F28 están `done`. F29, F30, F31 y F33 se aceptaron en la S0; F34 y F36 se cerraron en la S1; F44 se cerró en la S1.5. F32 está aceptada el 2026-11-08 y pendiente solo de commit/PR/merge. `main` está al día con `origin/main` y no hay trabajo pendiente de sesiones anteriores.
+F01–F28 están `done`. F29, F30, F31 y F33 se aceptaron en la S0; F34 y F36 se cerraron en la S1; F44 se cerró en la S1.5. F32 está `done` y mergeada el 2026-11-08 (PR #59, merge `4b5e54b`). `main` local y remoto están sincronizados. **S3 no se ejecuta** por límite de tiempo; la siguiente sesión es **S4 reducida**.
 
 El objetivo ya no es completar las 43 features, sino **cerrar un MVP defendible sin romper lo ya aprobado**. Se recorta producto extra; no se recortan autorización, persistencia, accesibilidad, seed/demo, tests ni documentación de cobertura.
 
@@ -18,15 +18,15 @@ El objetivo ya no es completar las 43 features, sino **cerrar un MVP defendible 
 | F34 Perfil | **Cerrada** | Perfil real, nombre, tema, instalación y logout; sin medidor de almacenamiento. `done` el 2026-11-07 (PR #53) |
 | F36 Content Island | **Cerrada** | `/help` y `/privacy` con snapshot; sin CMS. `done` el 2026-11-07 (PR #52) |
 | F44 Portadas | **Cerrada** | Selector de portada de álbum y de círculo sobre `coverPhotoId`; migas y sidebar ajustados en la aceptación. `done` el 2026-11-07 (PR #55) |
-| F32 Etiquetado | **Siguiente, completa** | API `POST`/`DELETE`, UI, optimista, permisos y tests. Es la única funcionalidad de producto que queda |
+| F32 Etiquetado | **Cerrada** | API `POST`/`DELETE`, UI, optimista, permisos y tests. `done` el 2026-11-08 (PR #59, merge `4b5e54b`) |
 | Avatar de perfil | **Fuera de alcance** | Requiere contrato, storage y decisión de privacidad; solo si sobra tiempo al final |
 | F35 Actividad | **Fuera de entrega** | Extra sin modelo ni flujo dependiente; se documenta como limitación |
-| F37 + F38 | Fusionadas y mínimas | Playwright con 3 flujos, CI y smoke de arranque de la API |
-| F39 | Mínima | Una pasada en pantallas clave y corrección de bloqueantes |
-| F40 | Mínima | Una corrida de Lighthouse; corregir solo lo que incumpla |
-| F41 | Mínima | Checklist, `pnpm audit` y tests negativos existentes |
-| F42 | Mínima | Verificar Compose local, migraciones, seed y healthchecks; sin cloud |
-| F43 | Completa, acotada | Checklist, demo con 2 usuarios, vídeo y diapositivas |
+| F37 + F38 | **No se ejecutan** | S3 saltada por tiempo; sin Playwright ni E2E automatizado. Se documenta como limitación; la batería Vitest/RTL/MSW/axe existente sigue siendo la evidencia |
+| F39 | **No se ejecuta** | Sin informe formal de a11y; se hace una pasada manual mínima en el ensayo de S5 y se documenta |
+| F40 | **Mínima, dentro de S5** | Una corrida de Lighthouse con timebox de 45 min; si no coopera, se documenta y se sigue |
+| F41 | **Mínima, en S4** | Checklist, `pnpm audit` y tests negativos existentes |
+| F42 | **Mínima, en S4** | Verificar Compose local, migraciones, seed y healthchecks; sin cloud |
+| F43 | **Completa, acotada, en S5** | Checklist, demo con 2 usuarios, vídeo y diapositivas; incluye F40 y la pasada manual de a11y |
 
 **No se recorta:** autorización y permisos, subidas y descargas privadas, accesibilidad de las pantallas principales, seed/demo, tests y documentación de cobertura.
 
@@ -38,19 +38,27 @@ El objetivo ya no es completar las 43 features, sino **cerrar un MVP defendible 
 | **S1** | 1 | F36 privacidad + F34 perfil | Funcionalidad | **Hecha** (2026-11-07) |
 | **S1.5** | 0,5 | F44 portadas de álbum y círculo, migas y sidebar | Funcionalidad | **Hecha** (2026-11-07, PR #55) |
 | **S2** | 1,5 | F32 completa: API + UI + permisos + optimista + tests | Funcionalidad | **Hecha, aceptada y cerrada** (2026-11-08) |
-| **S3** | 1 | F37 + F38 mínimo y F39 solo bloqueantes | Testeo (E2E, a11y) | Pendiente; al final |
-| **S4** | 1 | F41, F40 y verificación de F42 | Testeo / calidad y despliegue | Pendiente; mínimo necesario para F43 |
-| **S5** | 1 | F43 y batería completa de entrega | Presentación y defensa | Pendiente |
-| **S6** | — | Reserva / correcciones de la batería final | Mixto | No definida |
-| **S7** | — | Ensayo de demo y defensa | Presentación | No definida |
+| **S3** | 1 | F37 + F38 mínimo y F39 solo bloqueantes | Testeo (E2E, a11y) | **No ejecutada** (2026-11-08); fuera por tiempo |
+| **S4** | 1 | **F42 + F41** (F40 movido a S5) | Testeo / calidad y despliegue | **Siguiente**; reducida |
+| **S5** | 1 | **F43 + F40 mínimo** (Lighthouse con timebox) | Presentación y defensa | Pendiente; prioridad |
+| **S6** | — | Reserva / correcciones finales | Mixto | No definida |
+| **S7** | — | Ensayo de demo y defensa | Presentación | Se funde con S5 si no hay tiempo |
 
-**Orden acordado por el usuario (2026-11-07):**
+**Orden acordado por el usuario (2026-11-08):**
 
-1. **Funcionalidad** primero: **S2 — F32 etiquetado**.
-2. **Presentación y defensa** después: **S5/S7**, con el mínimo de **S3/S4** que F43 necesita para cumplir sus dependencias (F39–F42). No se salta la dependencia, pero no se ejecuta la batería completa antes de la presentación.
-3. **Tests restantes al final**, si hay tiempo: ampliación de S3/S4 y cualquier auditoría no bloqueante.
+1. **Funcionalidad cerrada:** S2 — F32 etiquetado, `done` y mergeada.
+2. **S3 se salta.** No se instala Playwright ni se hacen E2E ni F39.
+3. **S4 reducida:** F42 (entorno demo reproducible) y F41 (checklist de seguridad) en **1,5–2,5 h**.
+4. **S5:** F43 completo + F40 mínimo (Lighthouse timeboxed) en **3,5–5,5 h**, con el ensayo incluido.
+5. **S7** se funde con el ensayo de S5 si el tiempo aprieta.
 
-**Recorte si se cae un día:** F40 → F39 (solo bloqueantes) → F38 (un solo flujo) → F42 (solo verificar). No se recortan F32, F42/F43, F44, autorización ni la batería de tests.
+**Decisiones de recorte (2026-11-08):**
+
+- **S3 no ejecutada.** F37, F38 y F39 quedan en `draft` y **no se marcan `done`**; F43 cierra con limitaciones explícitas (AC-06).
+- **F40 dentro de S5**, con timebox de **45 min** y build de producción. Mínimo obligatorio: `/login`; página autenticada solo si el tiempo lo permite. Si Lighthouse no coopera, se documenta y no se insiste.
+- **F41 y F42 en S4.** F42 va primero porque valida que la demo arranca desde cero; F41 después.
+- **Excepciones de dependencia autorizadas:** F38 → F40/F41 y F39 → F43. Se registran aquí y en el tablero.
+- **No se recortan:** autorización y permisos, persistencia, la batería de tests existente, seed/demo y documentación de cobertura.
 
 **Regla de secuencia:** una sesión termina, se entrega el handoff y **se para**. El usuario revisa y abre la siguiente. No se encadena la siguiente sesión desde dentro de la actual, aunque sobre presupuesto.
 
@@ -62,6 +70,7 @@ El objetivo ya no es completar las 43 features, sino **cerrar un MVP defendible 
 | S1 | 2026-11-07 | F34 implementada y aceptada: perfil real con nombre editable, email de solo lectura, iniciales, tema, instalación y logout; sin medidor de almacenamiento. Cerrada con la PR #53 (merge `9ad61a0`) y F34 en `done`. |
 | S1.5 | 2026-11-07 | **F44 Portadas** implementada, aceptada y en `done`: selector de portada de álbum entre sus fotos y de círculo para el owner navegando por álbumes; sin endpoint nuevo. Verificación: web **105 archivos y 866 tests**, typecheck 9/9, lint 6/6, build 5/5, docs y agents OK. Revisión B en dos rondas con bloqueantes corregidos y migas/sidebar ajustados en la aceptación. Cierre: commits `eb2c2d4`, `2623912` y `a92249a`, PR #55 y merge `15dc7c3`. |
 | S2 | 2026-11-08 | **F32 Etiquetado** aceptada y en `done`: API `POST`/`DELETE` idempotentes con `photo.tag`, UI en el visor con diálogo responsive, buscador en cliente, optimista con rollback, permisos espejo y axe. Revisión B con M-01 (carrera membresía→INSERT, deuda m-06) y M-02 (rollback con éxito parcial) corregidos, más menores. Ajuste de aceptación: «Guardar etiquetas» sin contador. Verificación: API **424 passed + 2 skipped**, web **110 archivos y 910 tests**, typecheck 9/9, lint 6/6, build 5/5, format/docs/agents OK. Cierre operativo: commit `d7efe2d`, PR #59, merge `4b5e54b`; CI en verde en PR y `main`. |
+| S3 | 2026-11-08 | **No ejecutada** por decisión del usuario y límite de tiempo. F37/F38/F39 no se hacen: quedan en `draft` y se documentan como limitaciones. F40 se mueve a S5 con timebox de 45 min. |
 
 ## Cómo retomar una sesión
 
