@@ -56,6 +56,17 @@ El diseño canónico usa checkbox para seleccionar y clic para abrir, así que *
 - **AC-06: pasa.** Autor, fecha de subida, `takenAt` y `placeName`; sin coordenadas.
 - **AC-07: pasa.** Fallo del binario y `404` del detalle tienen estados propios.
 
+## Corrección posterior (2026-11-07)
+
+El `ConfirmDialog` de «Eliminar foto» quedaba **detrás** del visor: el visor usaba `z-modal`
+(70) y el diálogo registrado en `overlay-utils` recibe la base `z-sheet` (60/62). El visor
+pasa a `z-sheet` (60), de modo que el diálogo montado después en `body` queda por encima;
+además, el trap del visor cede `Tab`/`Escape`/flechas mientras exista un
+`[data-memora-overlay-root]` abierto. Test de regresión en
+`photo-metadata-integration.test.tsx`: orden en `body` y `Escape` cierra solo el diálogo.
+Verificación: `test photo-metadata` **13**, `test photo-viewer` **9**, suite web **105
+archivos y 871 tests**, `typecheck` 9/9, `lint` 6/6 y `format:check` OK.
+
 ## Pendiente
 
 - **Aceptación del usuario (G4)** en navegador real: atrás con scroll, swipe táctil y foco.

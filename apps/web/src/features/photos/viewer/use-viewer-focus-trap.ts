@@ -94,6 +94,11 @@ export function useViewerFocusTrap({
         return;
       }
 
+      // Deja mandar al overlay de @memora/ui que esté abierto (p. ej. el ConfirmDialog de borrar).
+      if (document.querySelector('[data-memora-overlay-root]') !== null) {
+        return;
+      }
+
       if (event.key === 'Tab') {
         const focusables = getFocusableElements(container);
         const first = focusables[0];

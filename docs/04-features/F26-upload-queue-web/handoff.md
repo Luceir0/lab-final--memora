@@ -110,9 +110,11 @@ La barra «Subidas terminadas» se quedaba permanente. Ahora, cuando la cola que
 solos a los **10 s**, se cierra el panel si estaba abierto y el foco vuelve a `#main-content`.
 Si hay algún error, la barra permanece para reintentar o descartar. La barra añade una
 **X** («Cerrar subidas terminadas») para limpiar los terminados al instante sin abrir el
-panel. Verificación: `test upload-queue-host` **8**, `test upload-queue-bar` **7**,
-`test uploads` **183**, suite web **105 archivos y 870 tests**, `typecheck` 9/9, `lint` 6/6
-y `format:check` OK. Se añade `features/uploads/completed-dismiss.ts` con la constante.
+panel; el `pr-12` de esa X se aplica al wrapper completo del contenido
+(`data-upload-bar-content`) para que la barra de progreso no pase por debajo. Verificación:
+`test upload-queue-host` **8**, `test upload-queue-bar` **7**, `test uploads` **183**, suite
+web **105 archivos y 871 tests**, `typecheck` 9/9, `lint` 6/6 y `format:check` OK. Se añade
+`features/uploads/completed-dismiss.ts` con la constante.
 
 ## Pendiente
 

@@ -44,5 +44,5 @@ Tras la tercera pasada de correcciones, el orquestador ejecutó la batería comp
   `format:check`, `docs:check` y `agents:check` OK.
 
 No se relanzó una tercera revisión independiente: los dos hallazgos de la segunda ronda
-eran mecánicos y estaban acotados por el propio informe. Queda pendiente la aceptación
-visual del usuario (G4).
+eran mecánicos y estaban acotados por el propio informe. **Aceptada por el usuario (G4) el
+2026-11-07**; F44 queda `done` con la PR #55 mergeada.

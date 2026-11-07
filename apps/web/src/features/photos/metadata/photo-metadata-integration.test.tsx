@@ -263,4 +263,44 @@ describe('PhotoDetailsPanel · metadatos', () => {
     expect(await within(dialog).findByText('No hemos podido eliminar la foto')).toBeTruthy();
     expect(screen.getByTestId('photo-viewer')).toBeTruthy();
   });
+
+  it('apila el diálogo de borrado sobre el visor y Escape solo cierra el diálogo', async () => {
+    const user = userEvent.setup();
+
+    useViewerApi();
+    renderViewer({ meId: testUser.id });
+
+    const details = await screen.findByTestId('photo-viewer-details');
+    const viewer = screen.getByTestId('photo-viewer');
+
+    // El visor no se registra en `overlay-utils`: usa la base de la pila.
+    expect(viewer.className).toContain('z-sheet');
+    expect(viewer.className).not.toContain('z-modal');
+
+    await user.click(within(details).getByRole('button', { name: 'Eliminar foto' }));
+
+    const dialog = await screen.findByRole('dialog', { name: 'Eliminar foto' });
+    const dialogRoot = dialog.closest('[data-memora-overlay-root]');
+
+    expect(dialogRoot).not.toBeNull();
+
+    if (dialogRoot === null) {
+      throw new Error('El diálogo de borrado debería vivir en un root de overlay');
+    }
+
+    // El portal del diálogo se monta después: mismo z-index, pero pinta encima.
+    expect(dialogRoot.parentElement).toBe(document.body);
+    expect(
+      viewer.compareDocumentPosition(dialogRoot) & Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
+
+    await user.keyboard('{Escape}');
+
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog', { name: 'Eliminar foto' })).toBeNull();
+    });
+
+    expect(screen.getByTestId('photo-viewer')).toBeTruthy();
+    expect(screen.getByTestId('photo-viewer-details')).toBeTruthy();
+  });
 });
