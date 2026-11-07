@@ -4,10 +4,22 @@ import path from 'node:path';
 
 import { describe, expect, it, vi } from 'vitest';
 
-import { readHelpContent, resolveSnapshotPath, sortByOrder } from './content.server';
+import {
+  LEGAL_PAGE_MISSING_ERROR,
+  LEGAL_PAGE_SLUG,
+  readHelpContent,
+  readLegalPage,
+  resolveSnapshotPath,
+  sortByOrder,
+} from './content.server';
 
 const GENERIC_ERROR =
   'No se pudo leer el snapshot de Content Island. Revisa CONTENT_ISLAND_SNAPSHOT_PATH o regenera el snapshot.';
+
+interface SnapshotFile {
+  meta: { view: string };
+  contents: Array<{ contentType: { name: string } }>;
+}
 
 function isMonotonic(orders: number[]): boolean {
   return orders.every((order, index) => index === 0 || (orders[index - 1] ?? 0) <= order);
@@ -99,6 +111,59 @@ describe('readHelpContent', () => {
     } finally {
       errorSpy.mockRestore();
       rmSync(tempDir, { recursive: true, force: true });
+    }
+  });
+});
+
+describe('readLegalPage', () => {
+  it('lee la página legal de privacidad desde el snapshot real', async () => {
+    const page = await readLegalPage();
+
+    expect(page.slug).toBe(LEGAL_PAGE_SLUG);
+    expect(page.title).toBe('Política de privacidad');
+    expect(page.body.length).toBeGreaterThan(0);
+    expect(page.updatedAt).toBeTruthy();
+  });
+
+  it('falla con un error explícito si el snapshot no contiene la página legal', async () => {
+    const realSnapshotPath = resolveSnapshotPath();
+    const snapshot = JSON.parse(readFileSync(realSnapshotPath, 'utf8')) as SnapshotFile;
+    snapshot.contents = snapshot.contents.filter(
+      (content) => content.contentType.name !== 'legalPage',
+    );
+
+    const tempDir = mkdtempSync(path.join(tmpdir(), 'memora-f36-snapshot-'));
+    const missingPath = path.join(tempDir, 'sin-legal-page.json');
+    writeFileSync(missingPath, JSON.stringify(snapshot), 'utf8');
+
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    try {
+      const error = await captureError(readLegalPage(missingPath));
+
+      expect(error.message).toBe(LEGAL_PAGE_MISSING_ERROR);
+      expect(error.message).not.toContain(missingPath);
+      expect(errorSpy).toHaveBeenCalled();
+      expect(errorSpy.mock.calls.some((call) => String(call[0]).includes(missingPath))).toBe(true);
+    } finally {
+      errorSpy.mockRestore();
+      rmSync(tempDir, { recursive: true, force: true });
+    }
+  });
+
+  it('falla con el error genérico si el snapshot no se puede leer', async () => {
+    const missingPath = resolveSnapshotPath('/snapshot-que-no-existe.json');
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    try {
+      const error = await captureError(readLegalPage(missingPath));
+
+      expect(error.message).toBe(GENERIC_ERROR);
+      expect(error.message).not.toContain(missingPath);
+      expect(errorSpy).toHaveBeenCalled();
+      expect(errorSpy.mock.calls.some((call) => String(call[0]).includes(missingPath))).toBe(true);
+    } finally {
+      errorSpy.mockRestore();
     }
   });
 });

@@ -3,7 +3,7 @@ id: F29
 title: "Galería"
 milestone: M4
 size: M
-status: review
+status: done
 spec: complete
 depends_on:
   - "F21"

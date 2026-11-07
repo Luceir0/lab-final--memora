@@ -57,7 +57,6 @@ Construir perfil, edición de nombre, tema, instalación, almacenamiento demo y 
 - Edición de nombre (email inmutable; avatar con iniciales)
 - ThemeToggle
 - InstallAppRow
-- StorageMeter demo
 - Logout
 - Estados
 
@@ -65,6 +64,7 @@ Construir perfil, edición de nombre, tema, instalación, almacenamiento demo y 
 
 - Borrado de cuenta
 - Planes reales
+- Medidor de almacenamiento demo (dato falso; fuera de la entrega del 2026-11-07)
 
 ## Entregables
 
@@ -85,7 +85,7 @@ Construir perfil, edición de nombre, tema, instalación, almacenamiento demo y 
 - **AC-03.** El avatar usa iniciales; no hay subida en el MVP.
 - **AC-04.** Tema persiste.
 - **AC-05.** Instalar explica iOS/Android.
-- **AC-06.** Almacenamiento marcado demo.
+- **AC-06.** No aplica: se retira el medidor de almacenamiento demo por decisión del 2026-11-07.
 - **AC-07.** Logout redirige.
 
 ## Pruebas

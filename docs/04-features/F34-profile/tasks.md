@@ -13,9 +13,9 @@
 - [ ] Edición de nombre (email inmutable; avatar con iniciales)
 - [ ] ThemeToggle
 - [ ] InstallAppRow
-- [ ] StorageMeter demo
 - [ ] Logout
 - [ ] Estados
+- [ ] Sin medidor de almacenamiento (dato falso; retirado el 2026-11-07)
 
 ## Criterios de aceptación
 
@@ -24,7 +24,7 @@
 - [ ] AC-03: El avatar usa iniciales; no hay subida en el MVP.
 - [ ] AC-04: Tema persiste.
 - [ ] AC-05: Instalar explica iOS/Android.
-- [ ] AC-06: Almacenamiento marcado demo.
+- [ ] AC-06: No aplica (medidor de almacenamiento retirado del MVP).
 - [ ] AC-07: Logout redirige.
 
 ## Verificación

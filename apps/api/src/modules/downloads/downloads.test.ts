@@ -327,6 +327,21 @@ describe.skipIf(!hasDatabase)('downloads API', () => {
       expect(response.statusCode, response.body).toBe(404);
       expect(response.json<ErrorResponse>().code).toBe('NOT_FOUND');
     });
+
+    it('rate limits individual downloads at 10 per minute and user', async () => {
+      const photo = await seedPhoto();
+      const auth = await makeAuth(fixture.member.id);
+
+      for (let attempt = 0; attempt < 10; attempt += 1) {
+        const response = await getDownload(auth, photo.id);
+        expect(response.statusCode, response.body).toBe(200);
+      }
+
+      const limited = await getDownload(auth, photo.id);
+
+      expect(limited.statusCode, limited.body).toBe(429);
+      expect(limited.json<ErrorResponse>().code).toBe('RATE_LIMITED');
+    });
   });
 
   describe('POST /api/albums/:albumId/downloads', () => {
@@ -511,6 +526,40 @@ describe.skipIf(!hasDatabase)('downloads API', () => {
       expect(response.json<DownloadJobDto>().progress).toBeNull();
     });
 
+    it('marks orphaned pending jobs as error on the first job request', async () => {
+      const orphan = await seedJob({ status: 'pending' });
+      const auth = await makeAuth(fixture.member.id);
+
+      const response = await getJob(auth, orphan.id);
+
+      expect(response.statusCode, response.body).toBe(200);
+      expect(response.json<DownloadJobDto>().status).toBe('error');
+      expect(response.json<DownloadJobDto>().errorMessage).toContain('reiniciar');
+
+      const stored = await prisma.downloadJob.findUnique({ where: { id: orphan.id } });
+      expect(stored?.status).toBe('error');
+    });
+
+    it('recovers pending orphans before creating the new job and keeps the new one pending', async () => {
+      const orphan = await seedJob({ status: 'pending' });
+      await seedPhoto();
+      const auth = await makeAuth(fixture.member.id);
+
+      const created = await postDownload(auth, fixture.album.id);
+      const body = created.json<DownloadJobDto>();
+
+      expect(created.statusCode, created.body).toBe(202);
+      expect(body.status).toBe('pending');
+
+      const recovered = await prisma.downloadJob.findUnique({ where: { id: orphan.id } });
+      expect(recovered?.status).toBe('error');
+
+      const fresh = await prisma.downloadJob.findUnique({ where: { id: body.id } });
+      expect(fresh?.status).not.toBe('error');
+
+      await waitForStatus(body.id, 'ready');
+    });
+
     it('derives progress only while processing', async () => {
       const auth = await makeAuth(fixture.member.id);
       await primeRecovery(auth);
@@ -586,8 +635,9 @@ describe.skipIf(!hasDatabase)('downloads API', () => {
     });
 
     it('answers 409 while the job is not ready', async () => {
-      const job = await seedJob({ status: 'pending' });
       const auth = await makeAuth(fixture.member.id);
+      await primeRecovery(auth);
+      const job = await seedJob({ status: 'pending' });
 
       const response = await getJobFile(auth, job.id);
 

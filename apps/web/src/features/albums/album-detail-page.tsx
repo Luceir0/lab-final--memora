@@ -22,6 +22,7 @@ import { useMeQuery } from '../circles/queries';
 import { isNotFoundError, isUnauthorizedError, useUnauthorizedRedirect } from '../circles/session';
 import { AlbumGallery } from '../photos/album-gallery';
 import { DownloadJobToast } from '../photos/downloads/download-job-toast';
+import { formatAlbumDownloadWarning, formatDownloadWarningTitle } from '../photos/downloads/format';
 import { canDownloadPhotos } from '../photos/downloads/permissions';
 import { useDownloadJobController } from '../photos/downloads/use-download-job';
 import { UploadDropzone } from '../uploads/upload-dropzone';
@@ -77,6 +78,7 @@ export function AlbumDetailPage({ circleId, albumId }: AlbumDetailPageProps) {
   const [editing, setEditing] = useState(false);
   const [emptyOpen, setEmptyOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
+  const [downloadOpen, setDownloadOpen] = useState(false);
   const [toast, setToast] = useState<ToastState | null>(null);
 
   useUnauthorizedRedirect(detailQuery.error);
@@ -194,6 +196,13 @@ export function AlbumDetailPage({ circleId, albumId }: AlbumDetailPageProps) {
     }
   };
 
+  const confirmAlbumDownload = () => {
+    // El controlador bloquea el doble job de forma síncrona; aquí solo
+    // cerramos el aviso antes de arrancar para no dejar dos diálogos vivos.
+    setDownloadOpen(false);
+    download.start();
+  };
+
   const openEmptyAfterNotEmpty = async () => {
     try {
       // El 409 puede llegar con un recuento cacheado obsoleto: refrescamos
@@ -264,7 +273,7 @@ export function AlbumDetailPage({ circleId, albumId }: AlbumDetailPageProps) {
         canDownload={canDownload}
         downloading={download.isGenerating}
         onDownloadAlbum={() => {
-          download.start();
+          setDownloadOpen(true);
         }}
         onFiles={handleUploadFiles}
         onEdit={() => {
@@ -397,6 +406,17 @@ export function AlbumDetailPage({ circleId, albumId }: AlbumDetailPageProps) {
           />
         )}
       </ConfirmDialog>
+
+      <ConfirmDialog
+        open={downloadOpen}
+        onClose={() => {
+          setDownloadOpen(false);
+        }}
+        onConfirm={confirmAlbumDownload}
+        title={formatDownloadWarningTitle(album.photosCount)}
+        description={formatAlbumDownloadWarning(album.photosCount)}
+        confirmLabel="Generar ZIP"
+      />
 
       {toast === null && download.status === 'idle' ? null : (
         <ToastViewport>

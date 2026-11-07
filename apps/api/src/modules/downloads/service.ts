@@ -252,15 +252,27 @@ export async function createDownloadJob(
 }
 
 /**
- * Marks the jobs a previous process left in `processing` as `error`.
+ * Marks the jobs a previous process left in `pending` or `processing` as `error`.
  *
- * ADR-0008: the in-process worker does not survive a restart, so those jobs
- * can never finish. Runs lazily on the first job request, never on boot, so a
- * health-only process does not need a database.
+ * ADR-0008: the in-process worker and its in-memory queue do not survive a
+ * restart, so a job that was queued but never claimed (`pending`) is as dead
+ * as one that was claimed (`processing`). Both are recovered with the same
+ * user-facing message; the user creates a new download.
+ *
+ * Runs lazily on the first job request, never on boot, so a health-only
+ * process does not need a database. Callers must await it **before** creating
+ * or enqueuing jobs of this instance: otherwise a freshly created `pending`
+ * row could be swept as an orphan of the previous process. `routes.ts` honours
+ * that order (recovery → create → enqueue).
+ *
+ * Assumes a single API instance per database: with more than one instance,
+ * the recovery of one would mark the other's live `pending`/`processing` jobs
+ * as `error`. Until the queue is persisted, that is a documented MVP
+ * limitation.
  */
 export async function markOrphanedJobs(prisma: PrismaClient): Promise<number> {
   const result = await prisma.downloadJob.updateMany({
-    where: { status: 'processing' },
+    where: { status: { in: ['pending', 'processing'] } },
     data: { status: 'error', errorMessage: ORPHANED_JOB_MESSAGE },
   });
 
