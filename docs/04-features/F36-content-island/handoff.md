@@ -1,10 +1,10 @@
 # Handoff — F36 Content Island
 
-- **Estado:** review
-- **Rama:** `feat/f36-content-island`
+- **Estado:** `done` (aceptada por el usuario el 2026-11-07; PR #52)
+- **Rama:** `feat/F33-F36-cierre`
 - **Fecha:** 2026-11-07
 - **Implementado por:** subagente UI Dev (DeepSeek V4.1 Flash)
-- **Revisado por:** pendiente (nivel C: gates automáticos + aceptación del usuario)
+- **Revisado por:** no aplica (nivel C: gates automáticos + aceptación del usuario)
 
 ## Resultado
 

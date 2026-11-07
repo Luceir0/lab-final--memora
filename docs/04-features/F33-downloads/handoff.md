@@ -1,7 +1,7 @@
 # Handoff — F33 Descargas
 
-- **Estado:** `review` (implementación terminada; pendiente revisión A y aceptación)
-- **Rama:** `feat/F33-downloads` (worktree `f29-gallery`, commit local, sin push)
+- **Estado:** `done` (revisión A cerrada y aceptada por el usuario el 2026-11-07; PR #52)
+- **Rama:** `feat/F33-F36-cierre` (CI de la PR #52)
 - **Fecha:** 2026-11-07
 - **Nivel de auditoría:** A. Una pasada del `reviewer` sobre el diff, según la regla de entrega del 2026-11-06.
 

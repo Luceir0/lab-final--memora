@@ -32,14 +32,15 @@
 
 ## Verificación
 
-- [x] `pnpm --filter @memora/api test downloads` → 27 tests.
-- [x] API completa → 406 tests, 2 skipped.
-- [x] `pnpm --filter @memora/web test downloads` → 13 tests.
-- [x] Web completa → 807 tests.
-- [x] `typecheck`, `lint`, `format:check`, `build`, `docs:check`.
+- [x] `pnpm --filter @memora/api test downloads` → 30 tests (incluye M-01 y M-04).
+- [x] API completa → 409 passed + 2 skipped.
+- [x] `pnpm --filter @memora/web test downloads` → 20 tests (incluye M-05).
+- [x] Web completa → 103 archivos y 818 tests.
+- [x] `typecheck` 9/9, `lint` 6/6, `format:check`, `build` 5/5, `docs:check`, `agents:check`.
 
 ## Cierre
 
-- [ ] Revisión independiente nivel A.
-- [ ] Aceptación del usuario.
+- [x] Revisión independiente nivel A — apto con correcciones, sin bloqueantes.
+- [x] Aceptación del usuario (2026-11-07).
 - [x] `handoff.md` completo.
+- [x] M-01, M-04 y M-05 corregidos; M-02/M-03 documentados como limitaciones.

@@ -3,7 +3,7 @@ id: F33
 title: "Descargas"
 milestone: M4
 size: L
-status: review
+status: done
 spec: complete
 depends_on:
   - "F29"

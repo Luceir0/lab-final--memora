@@ -44,8 +44,8 @@
 ## Cierre
 
 - [x] Revisión independiente — no aplica (nivel C; gates automáticos y aceptación del usuario).
-- [ ] Aceptación del usuario en móvil/escritorio y claro/oscuro.
+- [x] Aceptación del usuario en móvil/escritorio y claro/oscuro (2026-11-07).
 - [x] `handoff.md` completo.
-- [ ] Tablero actualizado (prohibido en este encargo; no se tocó `docs/04-features/README.md`).
-- [ ] Bitácora y cobertura actualizadas (fuera del alcance permitido).
-- [ ] Commit propuesto (sin ejecutar).
+- [x] Tablero actualizado.
+- [x] Bitácora y cobertura actualizadas.
+- [x] Commit en la PR #52.

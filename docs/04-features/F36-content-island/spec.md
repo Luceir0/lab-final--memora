@@ -3,7 +3,7 @@ id: F36
 title: "Content Island"
 milestone: M5
 size: M
-status: review
+status: done
 spec: complete
 depends_on:
   - "F09"

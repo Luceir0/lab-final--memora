@@ -366,18 +366,18 @@ Fuera de F14: offline, push y subidas en segundo plano. Sin service worker
 | Pendiente y desviaciones | Sin API nueva ni cambios de contrato; portada en solo lectura hasta F29; bloque de descarga hasta F33; barrido de navegador y lector de pantalla diferidos | [handoff de F28](../04-features/F28-circle-settings/handoff.md) | Pendiente: 320/375/768/1024/1440 claro/oscuro y lector de pantalla → **F37/F38/F39**; `m3` y copy de `packages/ui` compartido; owner fuera de la primera página de miembros |
 | Cierre operativo | PR, merge y CI de la PR y de `main` | [handoff de F28](../04-features/F28-circle-settings/handoff.md) | Cubierto (F28, `done` el 2026-11-06): commit `e99a4b1`, PR #46, CI run `42289840796` en la PR (`success`) y merge `e6d2a3c5b1df0fb58b45937f3b817d121d9be50d` en `main` |
 
-## Descargas (F33, review)
+## Descargas (F33, done)
 
 | Tema | Dónde se aplica | Evidencia | Estado |
 | --- | --- | --- | --- |
 | Descarga de binarios privados | `GET /photos/:photoId/download` sirve el original como `attachment` con nombre ASCII saneado, `no-store` y `nosniff`; exige membresía y `membersCanDownload` | `apps/api/src/modules/downloads/{routes,service,filename}.ts`, `downloads.test.ts` | Cubierto (F33) |
-| Jobs asíncronos en base de datos | `DownloadJob` con `pending → processing → ready|error → expired`, `progress` derivado y expiración a 24 h; recuperación de huérfanos al arrancar | `apps/api/src/modules/downloads/{service,worker,dto}.ts`, `downloads.test.ts` | Cubierto (F33) |
+| Jobs asíncronos en base de datos | `DownloadJob` con `pending → processing → ready|error → expired`, `progress` derivado y expiración a 24 h; recuperación perezosa de `pending` y `processing` antes de crear jobs nuevos | `apps/api/src/modules/downloads/{service,worker,dto}.ts`, `downloads.test.ts` | Cubierto (F33) |
 | Worker con concurrencia limitada | Cola en memoria con concurrencia 1, ZIP con `archiver`, `README.txt` y topes de 500 fotos / 2 GB | `apps/api/src/modules/downloads/worker.ts` | Cubierto (F33); ZIP en memoria por la interfaz actual de storage |
 | Polling y estados en cliente | Creación con CSRF, sondeo cada 2 s, parada en estado terminal, descarga automática, reintento y expirado; un solo job activo por pantalla | `apps/web/src/features/photos/downloads/**` | Cubierto (F33) |
-| Límites y aviso de tamaño | 500 fotos y 2 GB en servidor; aviso de >100 MB en cliente con ubicación del archivo en iOS/Android | `downloads/service.ts`, `downloads/format.ts`, `album-gallery.tsx` | Cubierto (F33) |
+| Límites y aviso de tamaño | 500 fotos y 2 GB en servidor; aviso de >100 MB en cliente con ubicación del archivo en iOS/Android, tanto en la selección como en la descarga del álbum completo | `downloads/service.ts`, `downloads/format.ts`, `album-gallery.tsx`, `album-detail-page.tsx` | Cubierto (F33) |
 | Autorización por recurso | Solo el solicitante o un owner ve el job y el ZIP; selección validada contra álbum y círculo; `objectKey` nunca sale | `downloads/{service,routes,dto}.ts` | Cubierto (F33) |
-| Verificación | Tests de API y web, typecheck, lint, formato, build y checks documentales | `test downloads` → **27**; API → **406 y 2 skipped**; web → **807**; typecheck 9/9; lint 6/6; build 5/5; `docs:check` OK | Cubierto (F33) |
-| Pendiente | Revisión A y aceptación; streaming de ZIP; reanudación tras recarga | [handoff de F33](../04-features/F33-downloads/handoff.md) | Pendiente: revisión A y G4 |
+| Verificación | Tests de API y web, typecheck, lint, formato, build y checks documentales | `test downloads` → **30**; API → **409 passed + 2 skipped**; web → **103 archivos y 818 tests**; typecheck 9/9; lint 6/6; build 5/5; `docs:check` y `agents:check` OK | Cubierto (F33) |
+| Pendiente | M-02 (ZIP en memoria) y M-03 (limpieza best-effort) como limitaciones del MVP; reanudación tras recarga fuera de alcance | [handoff de F33](../04-features/F33-downloads/handoff.md) | Documentado |
 
 ## Evidencias de entrega
 
