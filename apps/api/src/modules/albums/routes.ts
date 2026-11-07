@@ -1,5 +1,7 @@
 import {
   albumParamsSchema,
+  albumPhotosQuerySchema,
+  albumPhotosResponseSchema,
   albumResponseSchema,
   can,
   circleAlbumsParamsSchema,
@@ -27,6 +29,7 @@ import { assertTrustedOrigin } from '../auth/origin.ts';
 import { resolveSession } from '../auth/session.ts';
 import { toCircleSettings } from '../circles/dto.ts';
 import { findCircleForMember, type CircleMembership } from '../circles/service.ts';
+import { findCircleMember } from '../members/service.ts';
 import { deleteObjects, photoObjectKeys } from '../photos/objects.ts';
 import { decodeAlbumCursor } from './cursor.ts';
 import { toAlbumDto, type AlbumWithRelations } from './dto.ts';
@@ -37,6 +40,7 @@ import {
   findAlbumForMember,
   findAlbumPhoto,
   isAlbumWriteRace,
+  listAlbumPhotosPage,
   listAlbumsPage,
   updateAlbum,
   type AlbumMembership,
@@ -358,6 +362,60 @@ export function registerAlbumRoutes(app: MemoraServer, config: AppConfig): void 
       }
 
       return { deletedCount: emptied.deletedCount };
+    },
+  );
+
+  app.get(
+    '/api/albums/:albumId/photos',
+    {
+      schema: {
+        tags: [ALBUMS_TAG],
+        summary: 'Fotos del álbum',
+        description:
+          'Galería paginada de un álbum con `PhotoDto` completo (autor, etiquetas y URLs ' +
+          '`thumb`/`display`), sin claves de almacenamiento ni coordenadas. Solo para miembros del círculo; ' +
+          'un extraño recibe `404 NOT_FOUND`. Orden `createdAt desc` con desempate `id desc`, keyset opaco ' +
+          'sobre `(createdAt, id)` y `limit` 1–100 (defecto 24). `personId` filtra por etiqueta y debe ser ' +
+          'miembro del círculo: si no lo es, `404 NOT_FOUND`. Un álbum vacío o una página sin resultados ' +
+          'responde `200` con `items: []` y `nextCursor: null`.',
+        security: sessionSecurity,
+        params: albumParamsSchema,
+        querystring: albumPhotosQuerySchema,
+        response: {
+          200: albumPhotosResponseSchema,
+          400: errorResponseSchema,
+          401: errorResponseSchema,
+          404: errorResponseSchema,
+          429: errorResponseSchema,
+        },
+      },
+    },
+    async (request, reply) => {
+      const prisma = requirePrisma(app);
+      const { user } = await resolveSession(prisma, config, request, reply);
+      const target = await requireAlbumMembership(prisma, user.id, request.params.albumId);
+      const { cursor, limit, personId } = request.query;
+
+      if (personId !== undefined) {
+        // Same rule as the person gallery: a user outside the circle is
+        // indistinguishable from a missing one, so the filter cannot be used
+        // to probe foreign accounts.
+        const person = await findCircleMember(prisma, target.circle.id, personId);
+
+        if (person === null) {
+          throw new ApiError('NOT_FOUND');
+        }
+      }
+
+      const page = await listAlbumPhotosPage(prisma, target.album.id, target.circle.id, {
+        cursor: cursor === undefined ? null : decodeAlbumCursor(cursor),
+        limit,
+        personId: personId ?? null,
+      });
+
+      setPrivateNoStore(reply);
+
+      return page;
     },
   );
 }

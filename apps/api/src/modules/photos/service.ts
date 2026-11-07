@@ -27,7 +27,7 @@ const PUBLIC_USER_SELECT = {
   avatarUrl: true,
 } as const;
 
-const PHOTO_INCLUDE = {
+export const PHOTO_INCLUDE = {
   uploader: { select: PUBLIC_USER_SELECT },
   tags: { include: { taggedUser: { select: PUBLIC_USER_SELECT } } },
 } as const satisfies Prisma.PhotoInclude;
@@ -70,6 +70,29 @@ async function assertQuota(
   if (current + incomingBytes > MAX_CIRCLE_BYTES) {
     throw new ApiError('QUOTA_EXCEEDED');
   }
+}
+
+/**
+ * Photo plus the relations `PhotoDto` needs, only while the requesting user is
+ * still a member of its circle.
+ *
+ * A missing photo, a photo from another circle and a circle the user left all
+ * return `null`, so the route answers `404` without revealing which case it is.
+ * The select is the same one used by the upload response: storage keys and
+ * coordinates never leave the database.
+ */
+export async function findPhotoForMember(
+  prisma: PrismaClient,
+  photoId: string,
+  userId: string,
+): Promise<PhotoWithRelations | null> {
+  return prisma.photo.findFirst({
+    where: {
+      id: photoId,
+      circle: { memberships: { some: { userId } } },
+    },
+    include: PHOTO_INCLUDE,
+  });
 }
 
 /** Finds an upload by its idempotency key, with the relations `PhotoDto` needs. */

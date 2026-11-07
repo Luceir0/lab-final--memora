@@ -22,6 +22,7 @@ import {
   makeMembership,
   makePhoto,
   makeSession,
+  makeTag,
   makeUser,
 } from '../../test/factories.ts';
 import { createTestApp, TEST_APP_URL, type TestApp } from '../../test/harness.ts';
@@ -217,6 +218,14 @@ describe.skipIf(!hasDatabase)('photos API', () => {
       },
       withCsrf,
     );
+  }
+
+  function getPhoto(auth: AuthFixture | null, photoId: string) {
+    return testApp.app.inject({
+      method: 'GET',
+      url: `/api/photos/${encodeURIComponent(photoId)}`,
+      headers: headers(auth),
+    });
   }
 
   function storedPhotoKeys(photo: Photo): [string, string, string] {
@@ -916,5 +925,100 @@ describe.skipIf(!hasDatabase)('photos API', () => {
     expect(columns).toEqual([]);
     expect(photo.circleId).toBe(circle.id);
     expect(photo.uploaderId).toBe(owner.id);
+  });
+
+  it('GET detail: answers 401 without a session', async () => {
+    const { circle, album, owner } = await seedCircleWithAlbum();
+    const photo = await makePhoto(prisma, {
+      circleId: circle.id,
+      albumId: album.id,
+      uploaderId: owner.id,
+    });
+
+    const response = await getPhoto(null, photo.id);
+
+    expect(response.statusCode, response.body).toBe(401);
+    expect((response.json() as ErrorResponse).code).toBe('UNAUTHENTICATED');
+  });
+
+  it('GET detail: hides a photo from another circle with 404', async () => {
+    const { circle, album, owner } = await seedCircleWithAlbum();
+    const photo = await makePhoto(prisma, {
+      circleId: circle.id,
+      albumId: album.id,
+      uploaderId: owner.id,
+    });
+
+    const stranger = await makeUser(prisma);
+    const strangerCircle = await makeCircle(prisma, { ownerId: stranger.id });
+    await makeMembership(prisma, {
+      circleId: strangerCircle.id,
+      userId: stranger.id,
+      role: 'owner',
+    });
+    const strangerAuth = await makeAuth(stranger.id);
+
+    const response = await getPhoto(strangerAuth, photo.id);
+
+    expect(response.statusCode, response.body).toBe(404);
+    expect((response.json() as ErrorResponse).code).toBe('NOT_FOUND');
+  });
+
+  it('GET detail: answers 404 for a missing photo id', async () => {
+    const { auth } = await seedCircleWithAlbum();
+
+    const response = await getPhoto(auth, 'does-not-exist');
+
+    expect(response.statusCode, response.body).toBe(404);
+    expect((response.json() as ErrorResponse).code).toBe('NOT_FOUND');
+  });
+
+  it('GET detail: returns the PhotoDto without storage keys or coordinates', async () => {
+    const { circle, album, auth, owner } = await seedCircleWithAlbum();
+    const tagged = await makeUser(prisma);
+    await makeMembership(prisma, { circleId: circle.id, userId: tagged.id, role: 'member' });
+    const photo = await makePhoto(prisma, {
+      circleId: circle.id,
+      albumId: album.id,
+      uploaderId: owner.id,
+    });
+    await makeTag(prisma, {
+      photoId: photo.id,
+      taggedUserId: tagged.id,
+      createdBy: owner.id,
+    });
+
+    const response = await getPhoto(auth, photo.id);
+
+    expect(response.statusCode, response.body).toBe(200);
+    expect(response.headers['cache-control']).toBe('private, no-store');
+
+    const dto = response.json() as PhotoDto;
+
+    expect(dto.id).toBe(photo.id);
+    expect(dto.circleId).toBe(circle.id);
+    expect(dto.albumId).toBe(album.id);
+    expect(dto.uploader).toEqual({
+      id: owner.id,
+      name: owner.name,
+      avatarUrl: null,
+    });
+    expect(dto.takenAt).toBe('2025-05-01T12:00:00.000Z');
+    expect(dto.placeName).toBe('Madrid, España');
+    expect(dto.width).toBe(photo.width);
+    expect(dto.height).toBe(photo.height);
+    expect(dto.tags).toEqual([{ id: tagged.id, name: tagged.name, avatarUrl: tagged.avatarUrl }]);
+    expect(dto.thumbUrl).toBe(`/api/photos/${photo.id}/image?size=thumb`);
+    expect(dto.displayUrl).toBe(`/api/photos/${photo.id}/image?size=display`);
+
+    for (const forbidden of ['originalKey', 'displayKey', 'thumbKey', 'latitude', 'longitude']) {
+      expect(dto).not.toHaveProperty(forbidden);
+    }
+
+    expect(response.body).not.toContain(photo.originalKey);
+    expect(response.body).not.toContain(photo.displayKey);
+    expect(response.body).not.toContain(photo.thumbKey);
+    expect(response.body).not.toContain('latitude');
+    expect(response.body).not.toContain('longitude');
   });
 });

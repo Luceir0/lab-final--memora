@@ -15,11 +15,13 @@ import {
   albumSinglePhoto,
   albumWithPhotos,
 } from '../../test/fixtures/albums-fixtures';
+import { galleryPhotos } from '../../test/fixtures/photos-fixtures';
 import { renderAlbumsRouter } from '../../test/fixtures/albums-router';
 import { circleDetail, circleWithCover, testMeResponse } from '../../test/circles-fixtures';
 import { CircleDetailProvider } from '../circles/circle-detail-context';
 import { CircleDetailLayout } from '../circles/circle-detail-layout';
 import { CircleDetailPage } from '../circles/circle-detail-page';
+import { defaultMembers } from '../members/members-fixtures';
 import type { UploadTransport } from '../uploads/transport';
 import { UploadProvider } from '../uploads/upload-provider';
 import { UploadQueueHost } from '../uploads/upload-queue-host';
@@ -31,6 +33,7 @@ const ME_URL = `${AUTH_TEST_API_BASE}/me`;
 const CSRF_URL = `${AUTH_TEST_API_BASE}/auth/csrf`;
 const DETAIL_URL = `${AUTH_TEST_API_BASE}/circles/cir_familia`;
 const ALBUMS_URL = `${DETAIL_URL}/albums`;
+const MEMBERS_URL = `${DETAIL_URL}/members`;
 const INVITATIONS_URL = `${DETAIL_URL}/invitations`;
 const ALBUM_URL = `${AUTH_TEST_API_BASE}/albums/alb_verano`;
 const EMPTY_ALBUM_URL = `${AUTH_TEST_API_BASE}/albums/alb_vacio`;
@@ -90,8 +93,12 @@ function renderDetail(options: DetailOptions = {}) {
     http.get(ME_URL, () => HttpResponse.json(testMeResponse)),
     http.get(DETAIL_URL, () => HttpResponse.json(circle)),
     http.get(INVITATIONS_URL, () => HttpResponse.json({ items: [], nextCursor: null })),
+    http.get(MEMBERS_URL, () => HttpResponse.json({ items: defaultMembers, nextCursor: null })),
     http.get(ALBUMS_URL, () => HttpResponse.json({ items: [album], nextCursor: null })),
     http.get(albumUrl, () => HttpResponse.json(album)),
+    http.get(`${AUTH_TEST_API_BASE}/albums/${album.id}/photos`, () =>
+      HttpResponse.json({ items: galleryPhotos, nextCursor: null }),
+    ),
     http.get(CSRF_URL, () => HttpResponse.json({ csrfToken: 'csrf-detail' })),
   );
 
@@ -188,29 +195,29 @@ describe('AlbumDetailPage · contenido según fotos', () => {
     expect(screen.queryByRole('button', { name: 'Subir fotos' })).toBeNull();
   });
 
-  it('con fotos pinta el panel de galería futura con el recuento', async () => {
+  it('con fotos pinta la galería real y el filtro por persona', async () => {
     renderDetail();
 
+    expect(await screen.findByRole('region', { name: 'Galería del álbum' })).toBeTruthy();
     expect(
-      await screen.findByRole('heading', {
-        level: 2,
-        name: 'La galería llega en la siguiente entrega',
-      }),
+      await screen.findByRole('button', { name: /Abrir foto: Atardecer en la playa/ }),
     ).toBeTruthy();
     expect(
-      screen.getByText('Este álbum guarda 342 fotos. Podrás verlas aquí muy pronto.'),
+      await screen.findByRole('group', { name: 'Filtrar las fotos por persona' }),
     ).toBeTruthy();
+    expect(screen.getByRole('button', { name: /Lucas Vidal/ })).toBeTruthy();
+    expect(screen.queryByText('La galería llega en la siguiente entrega')).toBeNull();
     expect(screen.queryByText('Este álbum todavía no tiene fotos')).toBeNull();
   });
 
-  it('mantiene «Descargar álbum» deshabilitado y habilita «Subir fotos»', async () => {
+  it('habilita «Descargar álbum» y «Subir fotos» con permiso', async () => {
     renderDetail();
 
     await screen.findByRole('heading', { level: 1, name: 'Verano en Mallorca' });
 
     expect(
       (screen.getByRole('button', { name: 'Descargar álbum' }) as HTMLButtonElement).disabled,
-    ).toBe(true);
+    ).toBe(false);
 
     const uploadButtons = screen.getAllByRole('button', { name: 'Subir fotos' });
 
@@ -294,7 +301,7 @@ describe('AlbumDetailPage · acciones por permisos', () => {
     expect(screen.queryByRole('button', { name: 'Acciones del álbum' })).toBeNull();
   });
 
-  it('no hay menú si `/me` aún no ha resuelto', async () => {
+  it('con `/me` pendiente solo ofrece la descarga, que no depende de la cuenta', async () => {
     let resolveMe!: (value: Response) => void;
     const meResponse = new Promise<Response>((resolve) => {
       resolveMe = resolve;
@@ -311,11 +318,14 @@ describe('AlbumDetailPage · acciones por permisos', () => {
     expect(
       await screen.findByRole('heading', { level: 1, name: 'Verano en Mallorca' }),
     ).toBeTruthy();
-    expect(screen.queryByRole('button', { name: 'Acciones del álbum' })).toBeNull();
+
+    openAlbumMenu();
+    expect(screen.getByRole('menuitem', { name: 'Descargar álbum' })).toBeTruthy();
+    expect(screen.queryByRole('menuitem', { name: 'Editar álbum' })).toBeNull();
 
     resolveMe(HttpResponse.json(testMeResponse));
 
-    expect(await screen.findByRole('button', { name: 'Acciones del álbum' })).toBeTruthy();
+    expect(await screen.findByRole('menuitem', { name: 'Editar álbum' })).toBeTruthy();
   });
 });
 
@@ -833,7 +843,8 @@ describe('AlbumDetailPage · accesibilidad', () => {
 
     const items = screen.getAllByRole('menuitem');
 
-    expect(items).toHaveLength(3);
+    expect(items).toHaveLength(4);
+    expect(items[0]?.textContent).toContain('Descargar álbum');
     // Roving tabindex: solo un ítem entra en el orden de tabulación.
     expect(items.filter((item) => item.getAttribute('tabindex') === '0')).toHaveLength(1);
   });
