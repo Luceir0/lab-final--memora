@@ -61,6 +61,7 @@ Nota de entorno: `pnpm --filter @memora/web test` sin límite de workers produjo
 - El nombre nuevo se refleja al instante en la caché `['me']`; si otra pestaña cambia el perfil, esta pantalla no se invalida hasta el siguiente refetch.
 - `InstallAppRow` se ha hecho visible también en escritorio para respetar la columna derecha del diseño; el copy de instalación sigue siendo el de F14, sin el «Enviarme el enlace» del mock.
 - La suite web completa necesita `--maxWorkers=2` en esta máquina por contención de Vitest; no es un fallo funcional, pero conviene fijarlo en CI/F37.
+- Entorno de revisión: el worktree no hereda `DATABASE_URL`. Sin ella la API arranca en modo *health-only* y login, `/me` y `/auth/csrf` responden `500` («La API requiere DATABASE_URL»). Para revisar en local hay que arrancar el dev con `DATABASE_URL=postgresql://memora:memora@localhost:5432/memora?schema=public` (valores locales de `.env.example`, sin secretos) y, si se van a ver fotos, con las `S3_*` de MinIO.
 - Sin prueba de lector de pantalla real ni captura de los estados; axe jsdom cubre datos y edición.
 
 ## Documentación actualizada
