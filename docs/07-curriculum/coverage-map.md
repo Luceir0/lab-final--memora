@@ -379,6 +379,20 @@ Fuera de F14: offline, push y subidas en segundo plano. Sin service worker
 | Verificación | Tests de API y web, typecheck, lint, formato, build y checks documentales | `test downloads` → **30**; API → **409 passed + 2 skipped**; web → **103 archivos y 818 tests**; typecheck 9/9; lint 6/6; build 5/5; `docs:check` y `agents:check` OK | Cubierto (F33) |
 | Pendiente | M-02 (ZIP en memoria) y M-03 (limpieza best-effort) como limitaciones del MVP; reanudación tras recarga fuera de alcance | [handoff de F33](../04-features/F33-downloads/handoff.md) | Documentado |
 
+## Perfil y preferencias (F34, review)
+
+| Tema | Dónde se aplica | Evidencia | Estado |
+| --- | --- | --- | --- |
+| Formulario contra API real | Edición inline del nombre con `TextField`, validación con `displayNameSchema`, CSRF y `PATCH /api/me`; el email se muestra en solo lectura | `apps/web/src/features/profile/{profile-card,queries,profile-errors}.tsx` | Cubierto (F34) |
+| Caché compartida del shell | `setQueryData(['me'])` tras guardar para que sidebar y top bar reflejen el nombre nuevo | `features/profile/queries.ts`, `features/circles/queries.ts` | Cubierto (F34) |
+| Tema persistente | `ThemeToggle variant="section"` reutilizado; cookie de un año y `data-theme` del documento | `apps/web/src/components/theme-toggle.tsx` | Cubierto (F34) |
+| Instalación guiada | `InstallAppRow` con estados instalada/disponible/iOS/no soportado en móvil y columna derecha de escritorio | `features/profile/{install-app-row,use-install-prompt,install-copy}.ts` | Cubierto (F34) |
+| Logout con confirmación | `ConfirmDialog` no destructivo, `POST /auth/logout`, limpieza de caché y navegación a `/login`; 401 tratado como cierre correcto | `features/profile/logout-card.tsx` | Cubierto (F34) |
+| Estados y accesibilidad | Esqueleto con `aria-busy`, error de carga con reintento, error de guardado por campo o aviso, región viva de éxito, foco gestionado y axe en datos, edición, carga y error | `features/profile/profile-page.test.tsx` | Cubierto (F34) |
+| Responsive y tokens | Una columna en móvil; dos desde `lg` (datos+apariencia / instalación+logout); sin medidor de almacenamiento | `features/profile/profile-page.tsx` | Cubierto (F34); pixel real y lector de pantalla → F37/F38/F39 |
+| Verificación | Tests RTL/MSW/axe, typecheck, lint, build y formato | `test profile` → **27**; `test provisional` → **2**; suite web estabilizada con `--maxWorkers=2`; typecheck 9/9; lint 6/6; build 5/5; format OK | Cubierto (F34, `review`) |
+| Pendiente | Aceptación del usuario; sin revisión independiente por nivel C; verificación visual y de lector de pantalla | [handoff de F34](../04-features/F34-profile/handoff.md) | Documentado |
+
 ## Evidencias de entrega
 
 - [ ] README con instalación y scripts.
