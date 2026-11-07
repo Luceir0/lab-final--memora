@@ -74,4 +74,4 @@ Nota de entorno: `pnpm --filter @memora/web test` sin límite de workers produjo
 
 ## Siguiente paso propuesto
 
-Aceptación del usuario (G4) en móvil y escritorio, claro y oscuro. Después, commit propuesto y PR de cierre. No se inicia F32 sin permiso.
+Aceptación del usuario (G4) en móvil y escritorio, claro y oscuro sobre la **PR #53** (commit `cf876de`). Tras la aceptación, merge a `main` y cierre documental. No se inicia F32 sin permiso.
