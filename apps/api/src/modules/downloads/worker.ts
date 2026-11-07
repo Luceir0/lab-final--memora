@@ -30,8 +30,11 @@ const ZIP_TOO_LARGE_MESSAGE = 'El ZIP supera el límite de 2 GB. Selecciona meno
 
 /** A failure whose message is safe to persist and expose in the job DTO. */
 class DownloadJobFailure extends Error {
-  constructor(readonly userMessage: string) {
+  readonly userMessage: string;
+
+  constructor(userMessage: string) {
     super(userMessage);
+    this.userMessage = userMessage;
     this.name = 'DownloadJobFailure';
   }
 }
