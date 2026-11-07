@@ -69,3 +69,35 @@ Edición de metadatos desde el visor: botón «Editar» para el autor de la foto
 1. Aceptación del usuario en navegador.
 2. Commit local y merge local a `main` (sin push hasta el final).
 3. Continuar con **F33 (descargas)** en el mismo worktree; F32 queda para el final del plan.
+
+## Ampliación: borrado de foto (2026-11-07)
+
+El contrato definía `DELETE /photos/:photoId` desde F06, pero **ninguna feature lo reclamaba** y no existía ni en API ni en UI. Se cierra dentro de F31.
+
+### API
+
+- `apps/api/src/modules/photos/delete.ts`: borra la fila con `deleteMany` acotado por `id + circleId` dentro de una transacción; las etiquetas caen por cascada y `Activity.photoId` queda `null` por `SetNull`. Después del commit borra los tres objetos con `deleteObjects` en best-effort (si falla, aviso en logs y `204`).
+- `apps/api/src/modules/photos/routes.ts`: `DELETE /api/photos/:photoId` con CSRF, autor u owner, `204`/`403`/`404`.
+- `apps/api/src/modules/photos/delete.test.ts`: 9 tests (401, 403 sin CSRF, 403 de miembro, 404 de otro círculo e inexistente, 204 de autor y owner, etiquetas, actividad con `photoId: null`, objetos borrados, repetición 404, storage fallando → 204).
+
+### Web
+
+- `features/photos/delete/`: `queries.ts` (DELETE con CSRF e invalidación de álbum, persona, «Mis subidas» y stats), `batch.ts` (pool de 3 con resultado parcial), `errors.ts`.
+- `features/photos/permissions.ts`: `canDeletePhoto` (autor u owner).
+- `selection-bar.tsx`: «Eliminar» activo solo si toda la selección es borrable, con confirmación y anuncio del resultado; descargar y etiquetar siguen deshabilitados (F33/F32).
+- `viewer/photo-details-panel.tsx`: «Eliminar foto» con confirmación, estado y error; al borrar cierra el visor y vuelve al álbum.
+- `uploads/history/photo-thumbnail.tsx`: la miniatura de «Mis subidas» es un enlace al visor con nombre accesible.
+
+### Verificación de la ampliación
+
+| Comando | Resultado |
+| --- | --- |
+| `DATABASE_URL=…memora_test pnpm --filter @memora/api test` | **24 archivos y 379 tests, 2 skipped: OK** |
+| `pnpm --filter @memora/web test --maxWorkers=2` | **97 archivos, 788 tests: OK** |
+| `pnpm typecheck` / `pnpm lint` / `pnpm format:check` / `pnpm build` | **9/9 · 6/6 · OK · 5/5** |
+
+### Pendiente de la ampliación
+
+- `[Nit]` Si fallan todas las fotos del borrado múltiple, el detalle se anuncia en la región viva pero no se abre un diálogo de error.
+- `[Menor]` Se reutiliza un único token CSRF para toda la tanda; si caduca a mitad, el resto cuenta como fallo parcial.
+- Abrir el visor desde «Mis subidas» navega al álbum, así que al cerrar se vuelve al álbum y no a `/uploads`.

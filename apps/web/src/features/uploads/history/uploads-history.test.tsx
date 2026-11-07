@@ -582,6 +582,26 @@ describe('UploadHistoryPage · carpetas', () => {
     expect(panel.querySelectorAll('img')).toHaveLength(1);
   });
 
+  it('abre el visor desde la miniatura con un enlace accesible', async () => {
+    const p1 = photo('ph_1', 'alb_costa', 'cir_familia');
+
+    server.use(
+      http.get(SUMMARY_URL, () => HttpResponse.json(buildSummary())),
+      http.get(PHOTOS_URL, () => HttpResponse.json({ items: [p1], nextCursor: null, total: 1 })),
+    );
+
+    renderPage();
+
+    await screen.findByRole('heading', { level: 2, name: 'Familia' });
+
+    fireEvent.click(folderButton(/Costa Brava/));
+
+    const panel = await screen.findByRole('region', { name: /Costa Brava/ });
+    const link = await within(panel).findByRole('link', { name: /^Abrir foto: / });
+
+    expect(link.getAttribute('href')).toBe('/circles/cir_familia/albums/alb_costa/photos/ph_1');
+  });
+
   it('usa la descripción como alt cuando existe', async () => {
     const described = photo('ph_desc', 'alb_costa', 'cir_familia', {
       description: 'Mirador al atardecer',

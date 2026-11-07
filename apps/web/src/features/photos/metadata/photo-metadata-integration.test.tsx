@@ -101,7 +101,7 @@ function renderViewer(options: { readonly role?: Role; readonly meId?: string | 
     </QueryClientProvider>,
   );
 
-  return { ...result, queryClient };
+  return { ...result, router, queryClient };
 }
 
 beforeAll(() => {
@@ -207,5 +207,60 @@ describe('PhotoDetailsPanel · metadatos', () => {
       'value',
       'Atardecer en la playa',
     );
+  });
+
+  it('elimina la foto desde el visor con CSRF y vuelve al álbum', async () => {
+    const user = userEvent.setup();
+    const deletes: (string | null)[] = [];
+
+    useViewerApi();
+    server.use(
+      http.delete(PHOTO_URL, ({ params, request }) => {
+        deletes.push(`${String(params.photoId)}|${request.headers.get('x-csrf-token')}`);
+
+        return new HttpResponse(null, { status: 204 });
+      }),
+    );
+
+    const { router } = renderViewer({ meId: testUser.id });
+    const details = await screen.findByTestId('photo-viewer-details');
+
+    await user.click(within(details).getByRole('button', { name: 'Eliminar foto' }));
+
+    const dialog = await screen.findByRole('dialog', { name: 'Eliminar foto' });
+
+    await user.click(within(dialog).getByRole('button', { name: 'Eliminar foto' }));
+
+    await waitFor(() => {
+      expect(deletes).toEqual(['pho_playa|csrf-token']);
+    });
+
+    await waitFor(() => {
+      expect(router.state.location.pathname).toBe('/circles/cir_familia/albums/alb_verano');
+    });
+
+    expect(screen.queryByTestId('photo-viewer')).toBeNull();
+  });
+
+  it('mantiene el visor abierto con el error si el borrado falla', async () => {
+    const user = userEvent.setup();
+
+    useViewerApi();
+    server.use(
+      http.delete(PHOTO_URL, () => HttpResponse.json({ code: 'INTERNAL_ERROR' }, { status: 500 })),
+    );
+
+    renderViewer({ meId: testUser.id });
+
+    const details = await screen.findByTestId('photo-viewer-details');
+
+    await user.click(within(details).getByRole('button', { name: 'Eliminar foto' }));
+
+    const dialog = await screen.findByRole('dialog', { name: 'Eliminar foto' });
+
+    await user.click(within(dialog).getByRole('button', { name: 'Eliminar foto' }));
+
+    expect(await within(dialog).findByText('No hemos podido eliminar la foto')).toBeTruthy();
+    expect(screen.getByTestId('photo-viewer')).toBeTruthy();
   });
 });

@@ -93,6 +93,12 @@ export function renderAlbumsRouter(
     component: AlbumDetailRoute,
   });
 
+  const photoRoute = createRoute({
+    getParentRoute: () => rootRoute,
+    path: '/circles/$circleId/albums/$albumId/photos/$photoId',
+    component: page(<p>Visor</p>),
+  });
+
   function AlbumDetailRoute() {
     const pathname = useRouterState({ select: (state) => state.location.pathname });
     const content = options.albumDetailRoute ?? ui;
@@ -115,6 +121,7 @@ export function renderAlbumsRouter(
       newCircleRoute,
       circleRoute,
       albumDetailRoute,
+      photoRoute,
       loginRoute,
     ]),
     history: createMemoryHistory({ initialEntries: [initialPath] }),

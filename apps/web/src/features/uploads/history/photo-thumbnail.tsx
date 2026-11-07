@@ -1,4 +1,5 @@
 import type { PhotoDto, PhotoSummary } from '@memora/shared';
+import { Link } from '@tanstack/react-router';
 import { ImageOff } from 'lucide-react';
 import { useState } from 'react';
 
@@ -12,17 +13,23 @@ export interface UploadPhotoThumbnailProps {
 /**
  * Miniatura de una foto propia.
  *
- * No es un enlace: el visor llega en F30. Si la imagen falla (el seed de
- * desarrollo puede no tener el objeto en storage) se sustituye por un bloque
- * de reserva con un icono decorativo, conservando el texto alternativo. Nunca
- * se deja el icono nativo de imagen rota.
+ * Es un enlace al visor de esa foto (F30), con nombre accesible «Abrir foto…».
+ * Si la imagen falla (el seed de desarrollo puede no tener el objeto en
+ * storage) se sustituye por un bloque de reserva con un icono decorativo,
+ * conservando el texto alternativo. Nunca se deja el icono nativo de imagen
+ * rota.
  */
 export function UploadPhotoThumbnail({ photo, albumTitle }: UploadPhotoThumbnailProps) {
   const [failed, setFailed] = useState(false);
   const alt = formatUploadPhotoAlt(photo.description, albumTitle, photo.createdAt, photo.takenAt);
 
   return (
-    <div className="aspect-square overflow-hidden rounded-md bg-surface-2">
+    <Link
+      to="/circles/$circleId/albums/$albumId/photos/$photoId"
+      params={{ circleId: photo.circleId, albumId: photo.albumId, photoId: photo.id }}
+      aria-label={`Abrir foto: ${alt}`}
+      className="block aspect-square overflow-hidden rounded-md bg-surface-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
+    >
       {failed ? (
         <div
           role="img"
@@ -46,7 +53,7 @@ export function UploadPhotoThumbnail({ photo, albumTitle }: UploadPhotoThumbnail
           className="size-full object-cover"
         />
       )}
-    </div>
+    </Link>
   );
 }
 
