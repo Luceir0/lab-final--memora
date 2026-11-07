@@ -105,6 +105,13 @@ API y UI de etiquetado implementadas. La API persiste etiquetas con `POST`/`DELE
 - Ajuste solicitado: el botón principal del diálogo muestra **«Guardar etiquetas»** sin el número entre paréntesis. Se mantienen el deshabilitado por cambios pendientes, el `loading`, «Guardando…» y el estado de escritorio «Guardando {n} etiquetas…».
 - Verificación tras el ajuste: `pnpm --filter @memora/web test tags` → **35/35**; `pnpm --filter @memora/web test viewer` → **23/23**; typecheck y lint OK.
 
+## Cierre operativo (2026-11-08)
+
+- Commit `d7efe2d` — `feat: add photo tagging with optimistic updates (F32)`.
+- [PR #59](https://github.com/Luceir0/lab-final--memora/pull/59) mergeada en `main` con merge commit `4b5e54b`.
+- CI en verde en la PR y sobre el merge en `main` (check run `install · docs · agents · lint · typecheck · test · build`).
+- `main` local y remoto sincronizados en `4b5e54b`.
+
 ## Riesgos y limitaciones
 
 - El lock `FOR SHARE` de la membresía se mantiene mientras dura la transacción del alta (lectura + insert): en un pico de etiquetado sobre el mismo miembro puede haber contención, pero el orden de locks es consistente con la expulsión y no hay deadlock con `removeCircleMember`.

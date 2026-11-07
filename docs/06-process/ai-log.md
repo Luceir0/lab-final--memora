@@ -757,5 +757,6 @@ Registro de usos relevantes de IA. No es un chat completo: es evidencia para el 
 - **Prompt representativo:** «Está todo bien, pero prefiero que el botón de “Guardar etiquetas” no muestre el número entre paréntesis».
 - **Ajuste:** el botón principal de `TagPeopleDialog` muestra siempre «Guardar etiquetas», sin contador. Se conservan el deshabilitado por cambios pendientes, el `loading`, «Guardando…» y el estado de escritorio «Guardando {n} etiquetas…». Tests de tags y viewer actualizados.
 - **Verificación:** `test tags` → **35/35**; `test viewer` → **23/23**; typecheck y lint OK; prettier OK.
-- **Estado:** **F32 pasa de `review` a `accepted` y `done`** el 2026-11-08 tras la aceptación del usuario y el cierre operativo autorizado (commit, PR y merge). No se inicia S3.
+- **Estado:** **F32 pasa de `review` a `accepted` y `done`** el 2026-11-08 tras la aceptación del usuario y el cierre operativo autorizado.
+- **Cierre operativo (2026-11-08):** commit `d7efe2d` (`feat: add photo tagging with optimistic updates (F32)`), [PR #59](https://github.com/Luceir0/lab-final--memora/pull/59) y merge `4b5e54b` en `main`; CI en verde en la PR y sobre el merge (check run `install · docs · agents · lint · typecheck · test · build`). `main` local y remoto sincronizados. No se inicia S3.
 - **Evidencia:** `apps/web/src/features/photos/tags/tag-people-dialog.tsx` y sus tests, [handoff de F32](../04-features/F32-tagging/handoff.md), [tablero](../04-features/README.md) y [cobertura](../07-curriculum/coverage-map.md).
