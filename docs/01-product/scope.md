@@ -24,7 +24,7 @@
 ## Extras acordados
 
 - **Subidas globales** (`/uploads`): cola compartida, panel y recientes. F27.
-- **Actividad**: eventos por círculo y global. F35.
+- **Actividad**: eventos por círculo y global. F35. **Fuera de la entrega del 2026-11-07**; se documenta como limitación.
 - **Privacidad en Content Island**: `legalPage` con slug `privacidad`. F36.
 
 ## Fuera del MVP (documentado)

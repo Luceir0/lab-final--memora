@@ -8,7 +8,8 @@
 - [ ] Galería, visor, metadatos y etiquetas.
 - [ ] Descarga individual, selección y álbum.
 - [ ] Perfil, tema y permisos.
-- [ ] Subidas globales y actividad.
+- [ ] Subidas globales.
+      _Actividad (F35) queda fuera de la entrega por decisión del 2026-11-07._
 - [ ] Ayuda, FAQ y Privacidad.
 - [ ] PWA instalable.
 

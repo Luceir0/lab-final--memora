@@ -1,91 +1,60 @@
-# Plan del resto del proyecto (F29–F43)
+# Plan del resto del proyecto (entrega 2026-11)
 
-> **Fecha:** 2026-11-06 · **Decisión del usuario:** sin recortes de alcance · 3 tracks con worktrees.
-> Este documento manda sobre el orden de trabajo. Si una sesión va a saltarse una fila, lo
-> registra aquí y en el tablero.
+> **Vigente desde:** 2026-11-07 · **Decisión del usuario:** recorte para entrega, F32 completa, F35 fuera.
+> Sustituye al plan de tres tracks del 2026-11-06, que queda al final como histórico.
+> Este documento manda sobre el orden de trabajo. Si una sesión se salta una fila, lo registra aquí y en el tablero.
 
-## Por qué existe
+## Contexto
 
-F28 acumuló **cuatro rondas de correcciones y 6 h 20 min** por dos causas: cada ronda
-relanzaba la batería completa y dos sesiones escribían en el mismo árbol. Las reglas de
-abajo existen para que eso no se repita.
+F01–F28 están `done`. F29, F30, F31 y F33 están implementadas, verificadas y **mergeadas en `main` local**, pero siguen en `review` hasta la aceptación del usuario. `main` local está **por delante de `origin/main`** con los commits de F29–F33; no hay nada en remoto que falte en local.
+
+El objetivo ya no es completar las 43 features, sino **cerrar un MVP defendible en menos de una semana** sin romper lo ya aprobado. Se recorta producto extra; no se recortan autorización, persistencia, accesibilidad ni tests.
+
+## Alcance vigente
+
+| Feature | Decisión | Motivo |
+| --- | --- | --- |
+| F29, F30, F31, F33 | Cerrar y aceptar | Ya están hechas y verificadas; F33 tiene pendiente la revisión A |
+| F34 Perfil | Reducida | Perfil real, nombre, tema, instalación y logout; sin medidor de almacenamiento falso |
+| F36 Content Island | Reducida | `/help` ya funciona con snapshot; falta `/privacy` con `legalPage`; sin CMS |
+| F32 Etiquetado | **Completa** | Decisión del usuario: API `POST`/`DELETE`, UI, optimista, permisos y tests |
+| F35 Actividad | **Fuera de entrega** | Extra sin modelo ni flujo dependiente; se documenta como limitación |
+| F37 + F38 | Fusionadas y mínimas | Playwright con 3 flujos, CI y smoke de arranque de la API |
+| F39 | Mínima | Una pasada en pantallas clave y corrección de bloqueantes |
+| F40 | Mínima | Una corrida de Lighthouse; corregir solo lo que incumpla |
+| F41 | Mínima | Checklist, `pnpm audit` y tests negativos existentes |
+| F42 | Mínima | Verificar Compose local, migraciones, seed y healthchecks; sin cloud |
+| F43 | Completa, acotada | Checklist, demo con 2 usuarios, vídeo y diapositivas |
+
+**No se recorta:** autorización y permisos, subidas y descargas privadas, accesibilidad de las pantallas principales, seed/demo, tests y documentación de cobertura.
+
+## Orden de trabajo (secuencial)
+
+| Bloque | Trabajo | Sesiones |
+| --- | --- | --- |
+| 0 | Aceptar F29/F30/F31; revisión A y aceptación de F33; cerrar tablero y bitácora | 0,5 |
+| 1 | F36 privacidad + F34 perfil | 1 |
+| 2 | F32 completa (API + UI + tests + revisión) | 1,5 |
+| 3 | F37 + F38 mínimo y F39 bloqueantes | 1 |
+| 4 | F41, F40 y verificación de F42 | 1 |
+| 5 | F43 y batería completa | 1 |
+
+Si se cae un día, el orden de recorte es: **F40 → F39 (solo bloqueantes) → F38 (un solo flujo) → F42 (solo verificar)**. No se recortan F32, F42/F43, autorización ni la batería de tests.
 
 ## Reglas de trabajo (no negociables)
 
 1. **Una sesión = un worktree = una rama.** Nunca dos sesiones en el mismo árbol.
-2. **Un fix = un hallazgo.** Tras corregir: solo el test afectado, el `axe` del estado
-   tocado y el viewport que falló.
-3. **Auditoría del delta**, no de la pantalla entera. **Una sola revisión por feature y solo
-   del diff.** Nivel B sin `reviewer` (CI + `axe` jsdom + aceptación); nivel A con una pasada
-   centrada en autorización y datos; `a11y-auditor` una vez en F39 y `design-auditor` solo si
-   hay desviación del diseño canónico.
+2. **Un fix = un hallazgo.** Tras corregir: solo el test afectado, el `axe` del estado tocado y el viewport que falló.
+3. **Auditoría del delta**, no de la pantalla entera. Nivel B sin `reviewer` (CI + `axe` jsdom + aceptación); nivel A con una pasada centrada en autorización y datos. F32 toca permisos: se recomienda revisión A o, como mínimo, tests negativos.
 4. **La batería completa, una vez**, antes del commit.
-5. **Nada de encadenar features** sin permiso: al cerrar una, se para y se reporta.
-
-## Orden por importancia
-
-### Nivel 1 — Crítico
-
-| # | Feature | Qué falta | Talla | Depende |
-| --- | --- | --- | --- | --- |
-| 1 | F29 Galería | Scroll infinito, selección, filtro por persona, «Fotos de esta persona» y selector de portada | M (11 AC) | F21, F24, F26 ✅ |
-| 2 | F30 Visor | Abrir foto, navegar, detalles y estados | L (7 AC) | F29 |
-| 3 | F33 Descargas | Individual, selección y álbum en ZIP; `DownloadJob` ya existe | L (7 AC) | F29, F30 |
-| 4 | F34 Perfil | Sustituir la pantalla provisional; nombre, tema, instalación | S/M (7 AC) | F16 ✅ |
-| 5 | F36 Content Island | Ayuda, FAQ y Privacidad reales con snapshot y SSG | M (7 AC) | F09, F10 ✅ |
-| 6 | F42 Demo local | Compose desde cero, migraciones, seed y healthchecks | M (6 AC) | F33, F36 |
-| 7 | F43 Entrega | Checklist, demo con 2 usuarios, vídeo, diapositivas y mapa | M (7 AC) | F39–F42 |
-
-### Nivel 2 — Alto
-
-| # | Feature | Qué falta | Talla | Depende |
-| --- | --- | --- | --- | --- |
-| 8 | F37 Infra de tests | Playwright + axe en CI | M (6 AC) | F06, F09 ✅ |
-| 9 | F38 E2E | Flujo con 2 usuarios y 2 círculos, Chromium y Pixel | M (5 AC) | F33, F37 |
-| 10 | F39 Accesibilidad | Auditoría AA/AAA y correcciones; arrastra la deuda de F26/F27/F28 | M (6 AC) | F38 |
-| 11 | F31 Metadatos | Descripción, fecha y lugar editables | S/M (6 AC) | F30 |
-| 12 | F35 Actividad | API global y por círculo, panel y página | M (7 AC) | F21, F23, F25, F28 ✅ |
-
-### Nivel 3 — Medio
-
-| # | Feature | Qué falta | Talla |
-| --- | --- | --- | --- |
-| 13 | F41 Seguridad | Auditoría, tests negativos e informe | M (6 AC) |
-| 14 | F40 Rendimiento | Lighthouse y correcciones solo si incumplen | S/M (6 AC) |
-
-### Nivel 4 — Bajo (se hace al final, nunca antes de F29–F36)
-
-| # | Feature | Qué falta | Talla |
-| --- | --- | --- | --- |
-| 15 | F32 Etiquetado | API de crear/borrar etiquetas (no existe), UI en el visor y optimista | M (6 AC) |
-
-> **Sin recortes:** F32 se mantiene. Mientras no exista, el filtro por persona funciona con
-> las 2 etiquetas del seed.
-
-## Tracks
-
-| Track | Cadena | Zona de archivos | Worktree |
-| --- | --- | --- | --- |
-| **A — producto** | F29 → F30 → F33 → F31 | `apps/web` álbum/foto, `apps/api` photos/downloads | `wt/f29-gallery` |
-| **B — pantallas** | F34 → F36 → F35 | `/profile`, `/help`, `/privacy`, `api/activity` | `wt/pantallas-m4` |
-| **C — calidad** | F37 → F38 | infra de test, Playwright, CI | `wt/calidad-m5` |
-
-Después, en secuencia sobre `main`: **F39 → F40 → F41 → F42 → F43**.
-
-- **F31** espera a F30 y se hace en el track A.
-- **F32** se hace al final, cuando F29–F36 estén cerradas.
-- **F39/F40/F41** pueden repartirse en tres sesiones de auditoría porque no escriben el
-  mismo código: F39 toca UI, F41 toca API y F40 mide.
-
-## Estimación
-
-| Escenario | Trabajo efectivo | Calendario |
-| --- | --- | --- |
-| Sin recortes, 3 tracks | ~30–40 h | 2–3 días |
-| Sin recortes, 1 track | ~30–40 h | 4–5 días |
+5. **F29–F33 congeladas** salvo correcciones de aceptación.
+6. **Sin dependencias nuevas** salvo Playwright en F37 (`devDependency`, con permiso).
+7. **Sin commit ni push sin permiso.** `main` solo recibe merges verificados.
 
 ## Criterio de parada
 
-Una feature se para y se reporta si: falta una decisión, el contrato no está claro, hay que
-tocar migraciones o dependencias sin permiso, o el presupuesto de pasos se agota antes de
-implementar. No se entrega a medias ni se finge que está verde.
+Una feature se para y se reporta si: falta una decisión, el contrato no está claro, hay que tocar migraciones o dependencias sin permiso, o el presupuesto de pasos se agota antes de implementar. No se entrega a medias ni se finge que está verde.
+
+## Histórico: plan anterior (2026-11-06)
+
+Se organizó el resto en tres tracks con worktree —A producto (F29 → F30 → F33 → F31), B pantallas (F34 → F36 → F35) y C calidad (F37 → F38)— y una secuencia final F39 → F40 → F41 → F42 → F43, con F32 al final y “sin recortes”. El track A se completó y está en `review`; los tracks B y C no llegaron a empezar. El 2026-11-07 el usuario cambió la decisión: se recorta producto extra para asegurar la entrega y se mantiene F32 completa.
