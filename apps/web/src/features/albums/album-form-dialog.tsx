@@ -4,13 +4,19 @@ import {
   type AlbumDto,
   type CircleDetailDto,
   type CreateAlbumRequest,
+  type PhotoSummary,
+  type UpdateAlbumRequest,
 } from '@memora/shared';
-import { Button, InlineAlert, ResponsiveDialog, TextArea, TextField } from '@memora/ui';
-import { ImagePlus } from 'lucide-react';
+import { Button, EmptyState, InlineAlert, ResponsiveDialog, TextArea, TextField } from '@memora/ui';
+import { ImagePlus, X } from 'lucide-react';
 import { useEffect, useId, useRef, useState, type RefObject } from 'react';
 import { Controller, useForm, type Resolver } from 'react-hook-form';
 
-import { isUnauthorizedError, useUnauthorizedRedirect } from '../circles/session';
+import { isNotFoundError, isUnauthorizedError, useUnauthorizedRedirect } from '../circles/session';
+import { toPhotoSummary } from '../covers/cover-photo';
+import { CoverPhotoPicker } from '../covers/cover-photo-picker';
+import { CoverPreview } from '../covers/cover-preview';
+import { useCoverAlbumPhotos } from '../covers/use-cover-album-photos';
 
 import {
   ALBUM_FORM_FIELDS,
@@ -101,6 +107,11 @@ export interface AlbumFormDialogProps {
   readonly onClose: () => void;
   readonly onSaved: (album: AlbumDto) => void;
   /**
+   * Permiso de edición de la portada, espejo de `canEditAlbum`. Por defecto
+   * `false` (solo lectura); el consumidor de edición pasa el valor real.
+   */
+  readonly canEditCover?: boolean | undefined;
+  /**
    * Destino de foco si el disparador desaparece al guardar (por ejemplo, el
    * botón del estado vacío cuando llega el primer álbum).
    */
@@ -112,7 +123,8 @@ export interface AlbumFormDialogProps {
  *
  * - Un solo formulario para ambos modos; en edición precarga los valores.
  * - La fecha usa `type="month"` y se convierte al día 1 a las 00:00 UTC (D3).
- * - La portada se muestra deshabilitada con nota: se elige en F29 (D2).
+ * - La portada se elige entre las fotos del álbum (F44), dentro del propio
+ *   formulario para no anidar diálogos; en alta no se envía.
  * - Foco inicial en el título; `Esc`/Cancelar cierran si no está guardando.
  */
 export function AlbumFormDialog({
@@ -122,17 +134,23 @@ export function AlbumFormDialog({
   album,
   onClose,
   onSaved,
+  canEditCover = false,
   fallbackFocusRef,
 }: AlbumFormDialogProps) {
   const formId = useId();
+  const coverSelectorId = useId();
   const titleRef = useRef<HTMLInputElement>(null);
   const summaryRef = useRef<HTMLDivElement>(null);
   const coverNoteId = useId();
   const submittingRef = useRef(false);
   const albumRef = useRef(album);
   albumRef.current = album;
+  const initialCoverIdRef = useRef<string | null>(album?.coverPhoto?.id ?? null);
   const [pending, setPending] = useState(false);
   const [serverError, setServerError] = useState<AlbumFormErrorMapping | null>(null);
+  const [coverError, setCoverError] = useState<string | null>(null);
+  const [coverPhoto, setCoverPhoto] = useState<PhotoSummary | null>(album?.coverPhoto ?? null);
+  const [coverSelectorOpen, setCoverSelectorOpen] = useState(false);
 
   const {
     mutateAsync: createAlbum,
@@ -149,6 +167,17 @@ export function AlbumFormDialog({
 
   useUnauthorizedRedirect(createError);
   useUnauthorizedRedirect(updateError);
+
+  const photoCount = album?.photosCount ?? 0;
+  const hasPhotos = mode === 'edit' && photoCount > 0;
+  const coverEditable = mode === 'create' || canEditCover;
+  const coverPhotos = useCoverAlbumPhotos(
+    mode === 'edit' ? (album?.id ?? null) : null,
+    open && coverSelectorOpen && mode === 'edit' && coverEditable,
+  );
+  const coverPhotosQuery = coverPhotos.query;
+
+  useUnauthorizedRedirect(coverPhotosQuery.error);
 
   const {
     register,
@@ -182,6 +211,10 @@ export function AlbumFormDialog({
       description: currentAlbum?.description ?? '',
       date: mode === 'create' ? currentMonthInput() : isoToMonthInput(currentAlbum?.date),
     });
+    setCoverPhoto(currentAlbum?.coverPhoto ?? null);
+    initialCoverIdRef.current = currentAlbum?.coverPhoto?.id ?? null;
+    setCoverSelectorOpen(false);
+    setCoverError(null);
     setServerError(null);
     resetCreate();
     resetUpdate();
@@ -216,17 +249,34 @@ export function AlbumFormDialog({
       submittingRef.current = true;
       setPending(true);
       setServerError(null);
+      setCoverError(null);
       clearErrors();
 
       const description = values.description.trim();
-      const payload: CreateAlbumRequest = {
+      const fields = {
         title: values.title,
         description: description === '' ? null : description,
         date: values.date === '' ? null : monthInputToIso(values.date),
       };
+      const nextCoverId = coverPhoto?.id ?? null;
+      const coverChanged = mode === 'edit' && nextCoverId !== initialCoverIdRef.current;
 
       try {
-        const saved = mode === 'create' ? await createAlbum(payload) : await updateAlbum(payload);
+        let saved: AlbumDto;
+
+        if (mode === 'create') {
+          const payload: CreateAlbumRequest = fields;
+
+          saved = await createAlbum(payload);
+        } else {
+          const payload: UpdateAlbumRequest = { ...fields };
+
+          if (coverChanged) {
+            payload.coverPhotoId = nextCoverId;
+          }
+
+          saved = await updateAlbum(payload);
+        }
 
         onSaved(saved);
 
@@ -241,6 +291,17 @@ export function AlbumFormDialog({
         });
       } catch (error) {
         if (isUnauthorizedError(error)) {
+          return;
+        }
+
+        /*
+         * Un 404 puede ser «el álbum ya no existe» o «la foto de portada ya no
+         * pertenece al álbum». El servidor solo valida la foto cuando el id no
+         * es nulo: con una foto elegida es el caso accionable y no se pierde el
+         * borrador; con `null` el comportamiento sigue siendo el genérico.
+         */
+        if (mode === 'edit' && coverChanged && nextCoverId !== null && isNotFoundError(error)) {
+          setCoverError('La foto elegida ya no está disponible. Elige otra y vuelve a guardar.');
           return;
         }
 
@@ -308,7 +369,13 @@ export function AlbumFormDialog({
         </>
       }
     >
-      <form id={formId} noValidate onSubmit={onSubmit} className="flex flex-col gap-5">
+      <form
+        id={formId}
+        noValidate
+        onSubmit={onSubmit}
+        aria-busy={busy || undefined}
+        className="flex flex-col gap-5"
+      >
         {/* Botón por defecto para que Enter en un campo envíe el formulario.
             El botón visible vive en el footer del diálogo, fuera del form. */}
         <button type="submit" hidden>
@@ -395,32 +462,105 @@ export function AlbumFormDialog({
         </div>
 
         <div className="rounded-lg border border-border bg-surface-2 p-4">
-          <div className="flex items-start gap-3">
-            <span
-              aria-hidden="true"
-              className="flex size-10 shrink-0 items-center justify-center rounded-md bg-primary-soft text-on-primary-soft"
-            >
-              <ImagePlus className="size-5" />
-            </span>
-            <div className="min-w-0">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-start">
+            <CoverPreview photo={coverPhoto} className="w-24 shrink-0 sm:w-32" />
+            <div className="min-w-0 flex-1">
               <p className="text-body-sm font-semibold text-text">
                 Portada <span className="font-normal text-muted">(opcional)</span>
               </p>
               <p id={coverNoteId} className="mt-1 text-caption text-muted">
-                Podrás elegirla cuando el álbum tenga fotos.
+                {!coverEditable
+                  ? 'Solo quien puede editar el álbum puede cambiar la portada.'
+                  : hasPhotos
+                    ? 'Elige una foto del álbum como portada.'
+                    : 'Sube fotos para elegir una portada.'}
               </p>
+              {mode === 'edit' && coverEditable && coverPhoto === null && album?.coverPhoto ? (
+                <p className="mt-1 text-caption text-muted">Se quitará al guardar.</p>
+              ) : null}
+
+              {coverError === null ? null : (
+                <InlineAlert
+                  tone="danger"
+                  title="No hemos podido usar esa portada"
+                  description={coverError}
+                  className="mt-3"
+                />
+              )}
+
+              {coverEditable ? (
+                <div className="mt-3 flex flex-wrap gap-2">
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    icon={<ImagePlus />}
+                    aria-expanded={mode === 'edit' ? coverSelectorOpen : undefined}
+                    {...(mode === 'edit' && coverSelectorOpen
+                      ? { 'aria-controls': coverSelectorId }
+                      : {})}
+                    aria-describedby={coverNoteId}
+                    disabled={busy || !hasPhotos}
+                    onClick={() => {
+                      setCoverSelectorOpen((current) => !current);
+                    }}
+                  >
+                    {coverSelectorOpen ? 'Ocultar fotos' : 'Elegir portada'}
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    icon={<X />}
+                    disabled={busy || coverPhoto === null}
+                    onClick={() => {
+                      setCoverPhoto(null);
+                      setCoverError(null);
+                    }}
+                  >
+                    Quitar portada
+                  </Button>
+                </div>
+              ) : null}
             </div>
           </div>
-          <Button
-            variant="secondary"
-            size="sm"
-            disabled
-            icon={<ImagePlus />}
-            aria-describedby={coverNoteId}
-            className="mt-3"
-          >
-            Elegir portada
-          </Button>
+
+          {mode === 'edit' && coverEditable && coverSelectorOpen ? (
+            <div id={coverSelectorId} className="mt-4 border-t border-border pt-4">
+              <CoverPhotoPicker
+                label="Fotos del álbum para la portada"
+                photos={coverPhotos.photos}
+                selectedId={coverPhoto?.id ?? null}
+                loading={coverPhotosQuery.isPending}
+                error={coverPhotosQuery.isError ? coverPhotosQuery.error : null}
+                onRetry={() => {
+                  void coverPhotosQuery.refetch();
+                }}
+                hasNextPage={coverPhotosQuery.hasNextPage}
+                loadingMore={coverPhotosQuery.isFetchingNextPage}
+                onLoadMore={() => {
+                  void coverPhotosQuery.fetchNextPage();
+                }}
+                onSelect={(photo) => {
+                  setCoverPhoto(toPhotoSummary(photo));
+                  setCoverError(null);
+                }}
+                onClear={() => {
+                  setCoverPhoto(null);
+                  setCoverError(null);
+                }}
+                total={photoCount}
+                empty={
+                  <EmptyState
+                    icon={<ImagePlus />}
+                    iconShape="square"
+                    title="Este álbum no tiene fotos"
+                    description="Sube una foto y vuelve a intentarlo."
+                    headingLevel={3}
+                    className="rounded-xl border border-dashed border-border-strong px-5 py-10"
+                  />
+                }
+              />
+            </div>
+          ) : null}
         </div>
       </form>
     </ResponsiveDialog>

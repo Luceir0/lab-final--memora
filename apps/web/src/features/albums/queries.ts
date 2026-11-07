@@ -115,10 +115,20 @@ export function useUpdateAlbumMutation(albumId: string, circleId: string) {
         headers: { 'X-CSRF-Token': csrfToken },
       });
     },
-    onSuccess: (album) => {
+    onSuccess: (album, input) => {
       queryClient.setQueryData(albumKeys.detail(albumId), album);
       void queryClient.invalidateQueries({ queryKey: albumKeys.list(circleId) });
       void queryClient.invalidateQueries({ queryKey: circleKeys.detail(circleId) });
+
+      /*
+       * AC-09 exige refrescar la lista de círculos al cambiar la portada,
+       * aunque hoy `CircleDto` no muestre la portada del álbum y no exista una
+       * dependencia visual directa. Se limita a los PATCH que incluyen
+       * `coverPhotoId` para no añadir refetches en ediciones de texto.
+       */
+      if (input.coverPhotoId !== undefined) {
+        void queryClient.invalidateQueries({ queryKey: circleKeys.list });
+      }
     },
   });
 }

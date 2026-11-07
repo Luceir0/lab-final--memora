@@ -89,6 +89,7 @@ export function AlbumDetailPage({ circleId, albumId }: AlbumDetailPageProps) {
   const album = detailQuery.data;
   const meId = meQuery.data?.user.id ?? null;
   const canUpload = canUploadPhotos(circle);
+  const canEdit = album === undefined ? false : canEditAlbum(circle, album, meId);
 
   const handleUploadFiles = (files: readonly File[], source: UploadSource): void => {
     if (!canUpload || album === undefined || files.length === 0) {
@@ -328,6 +329,7 @@ export function AlbumDetailPage({ circleId, albumId }: AlbumDetailPageProps) {
         onClose={() => {
           setEditing(false);
         }}
+        canEditCover={canEdit}
         onSaved={(saved) => {
           setEditing(false);
           setToast({
