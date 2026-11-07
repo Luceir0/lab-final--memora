@@ -15,16 +15,25 @@ export interface SelectionBarProps {
   /** Motivo visible y accesible cuando «Eliminar» no está disponible. */
   readonly deleteDisabledReason?: string | undefined;
   readonly deleting?: boolean | undefined;
+  /** La cuenta puede descargar en este círculo (`membersCanDownload`). */
+  readonly canDownload?: boolean | undefined;
+  readonly onDownload?: (() => void) | undefined;
+  /** Hay un job de descarga en curso: bloquea el botón. */
+  readonly downloading?: boolean | undefined;
+  /** Motivo visible y accesible cuando «Descargar» no está disponible. */
+  readonly downloadDisabledReason?: string | undefined;
 }
 
 /**
  * Barra de selección de la galería.
  *
  * «Eliminar» está activo cuando todas las fotos seleccionadas son borrables
- * (autor u owner). Descarga y etiquetado pertenecen a F33/F32 y siguen
- * deshabilitados con una nota accesible: no se ocultan porque el diseño los
- * sitúa en la barra. `Esc` también limpia la selección desde el hook; el botón
- * de cerrar devuelve el foco a la rejilla.
+ * (autor u owner). «Descargar» depende de `membersCanDownload` (F33); si está
+ * desactivado se explica con una nota accesible. El etiquetado pertenece a F32
+ * y sigue deshabilitado.
+ *
+ * `Esc` también limpia la selección desde el hook; el botón de cerrar devuelve
+ * el foco a la rejilla.
  */
 export function SelectionBar({
   selectedCount,
@@ -35,9 +44,14 @@ export function SelectionBar({
   onDelete,
   deleteDisabledReason,
   deleting = false,
+  canDownload = false,
+  onDownload,
+  downloading = false,
+  downloadDisabledReason,
 }: SelectionBarProps) {
   const noteId = useId();
   const deleteReasonId = useId();
+  const downloadReasonId = useId();
   const allSelected = loadedCount > 0 && selectedCount === loadedCount;
 
   return (
@@ -73,8 +87,10 @@ export function SelectionBar({
           variant="ghost"
           size="sm"
           icon={<Download />}
-          disabled
-          aria-describedby={noteId}
+          disabled={!canDownload}
+          loading={downloading}
+          aria-describedby={canDownload ? undefined : downloadReasonId}
+          onClick={onDownload}
           className="text-on-primary! disabled:bg-transparent! disabled:text-on-primary/60!"
         >
           Descargar
@@ -103,8 +119,14 @@ export function SelectionBar({
       </div>
 
       <p id={noteId} className="w-full text-caption text-on-primary/80">
-        Descargar y etiquetar selecciones llegarán en una próxima entrega.
+        El etiquetado de selecciones llegará en una próxima entrega.
       </p>
+
+      {canDownload ? null : (
+        <p id={downloadReasonId} className="w-full text-caption text-on-primary/80">
+          {downloadDisabledReason ?? 'La descarga está desactivada en este círculo.'}
+        </p>
+      )}
 
       {canDelete ? null : (
         <p id={deleteReasonId} className="w-full text-caption text-on-primary/80">

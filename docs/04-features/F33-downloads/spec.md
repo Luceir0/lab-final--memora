@@ -3,7 +3,7 @@ id: F33
 title: "Descargas"
 milestone: M4
 size: L
-status: draft
+status: review
 spec: complete
 depends_on:
   - "F29"
@@ -22,7 +22,7 @@ decisions:
 
 # F33 — Descargas
 
-> **Milestone:** M4 · **Talla:** L · **Estado:** draft · **Spec:** completa
+> **Milestone:** M4 · **Talla:** L · **Estado:** review · **Spec:** completa
 > **Depende de:** F29, F30 · **Bloquea:** F38, F42
 
 ## Objetivo

@@ -21,6 +21,9 @@ import { circlePath } from '../circles/paths';
 import { useMeQuery } from '../circles/queries';
 import { isNotFoundError, isUnauthorizedError, useUnauthorizedRedirect } from '../circles/session';
 import { AlbumGallery } from '../photos/album-gallery';
+import { DownloadJobToast } from '../photos/downloads/download-job-toast';
+import { canDownloadPhotos } from '../photos/downloads/permissions';
+import { useDownloadJobController } from '../photos/downloads/use-download-job';
 import { UploadDropzone } from '../uploads/upload-dropzone';
 import { UploadSourcePicker } from '../uploads/upload-source-picker';
 import { useUploadQueue } from '../uploads/upload-queue-context';
@@ -62,6 +65,8 @@ export function AlbumDetailPage({ circleId, albumId }: AlbumDetailPageProps) {
   const emptyMutation = useEmptyAlbumMutation(albumId, circle.id);
   const deleteMutation = useDeleteAlbumMutation(albumId, circle.id);
   const { enqueue, items: uploadItems, isPanelOpen } = useUploadQueue();
+  const download = useDownloadJobController({ albumId });
+  const canDownload = canDownloadPhotos(circle);
 
   const titleRef = useRef<HTMLHeadingElement>(null);
   const emptyRef = useRef<HTMLDivElement>(null);
@@ -256,6 +261,11 @@ export function AlbumDetailPage({ circleId, albumId }: AlbumDetailPageProps) {
         meId={meId}
         titleRef={titleRef}
         canUpload={canUpload}
+        canDownload={canDownload}
+        downloading={download.isGenerating}
+        onDownloadAlbum={() => {
+          download.start();
+        }}
         onFiles={handleUploadFiles}
         onEdit={() => {
           setEditing(true);
@@ -276,6 +286,11 @@ export function AlbumDetailPage({ circleId, albumId }: AlbumDetailPageProps) {
         meId={meId}
         emptyRef={emptyRef}
         canUpload={canUpload}
+        canDownload={canDownload}
+        downloading={download.isGenerating}
+        onDownloadSelection={(photoIds) => {
+          download.start({ photoIds });
+        }}
         onFiles={handleUploadFiles}
       />
 
@@ -383,17 +398,20 @@ export function AlbumDetailPage({ circleId, albumId }: AlbumDetailPageProps) {
         )}
       </ConfirmDialog>
 
-      {toast === null ? null : (
+      {toast === null && download.status === 'idle' ? null : (
         <ToastViewport>
-          <Toast
-            tone="success"
-            title={toast.title}
-            description={toast.description}
-            duration={6000}
-            onClose={() => {
-              setToast(null);
-            }}
-          />
+          {toast === null ? null : (
+            <Toast
+              tone="success"
+              title={toast.title}
+              description={toast.description}
+              duration={6000}
+              onClose={() => {
+                setToast(null);
+              }}
+            />
+          )}
+          <DownloadJobToast controller={download} />
         </ToastViewport>
       )}
     </div>
@@ -406,6 +424,9 @@ interface AlbumHeaderProps {
   readonly meId: string | null;
   readonly titleRef: RefObject<HTMLHeadingElement | null>;
   readonly canUpload: boolean;
+  readonly canDownload: boolean;
+  readonly downloading: boolean;
+  readonly onDownloadAlbum: () => void;
   readonly onFiles: (files: readonly File[], source: UploadSource) => void;
   readonly onEdit: () => void;
   readonly onEmpty: () => void;
@@ -418,6 +439,9 @@ function AlbumHeader({
   meId,
   titleRef,
   canUpload,
+  canDownload,
+  downloading,
+  onDownloadAlbum,
   onFiles,
   onEdit,
   onEmpty,
@@ -428,6 +452,15 @@ function AlbumHeader({
   const canManage = canManageAlbum(circle, album, meId);
 
   const items: MenuItem[] = [];
+
+  if (canDownload && album.photosCount > 0) {
+    items.push({
+      label: 'Descargar álbum',
+      icon: <Download />,
+      disabled: downloading,
+      onSelect: onDownloadAlbum,
+    });
+  }
 
   if (canEdit) {
     items.push({ label: 'Editar álbum', icon: <Pencil />, onSelect: onEdit });
@@ -445,6 +478,12 @@ function AlbumHeader({
       onSelect: onDelete,
     });
   }
+
+  const downloadDisabledReason = !canDownload
+    ? 'La descarga está desactivada en este círculo.'
+    : album.photosCount === 0
+      ? 'Este álbum todavía no tiene fotos que descargar.'
+      : undefined;
 
   return (
     <header>
@@ -497,9 +536,11 @@ function AlbumHeader({
           <div className="hidden flex-wrap gap-2 lg:flex">
             <Button
               variant="secondary"
-              disabled
+              disabled={downloadDisabledReason !== undefined}
+              loading={downloading}
               icon={<Download />}
-              aria-describedby={actionsNoteId}
+              aria-describedby={downloadDisabledReason === undefined ? undefined : actionsNoteId}
+              onClick={onDownloadAlbum}
             >
               Descargar álbum
             </Button>
@@ -510,9 +551,11 @@ function AlbumHeader({
           )}
         </div>
 
-        <p id={actionsNoteId} className="hidden text-caption text-muted lg:col-span-2 lg:block">
-          La descarga del álbum llegará en una próxima entrega.
-        </p>
+        {downloadDisabledReason === undefined ? null : (
+          <p id={actionsNoteId} className="text-caption text-muted lg:col-span-2">
+            {downloadDisabledReason}
+          </p>
+        )}
       </div>
     </header>
   );
@@ -524,6 +567,9 @@ interface AlbumContentProps {
   readonly meId: string | null;
   readonly emptyRef: RefObject<HTMLDivElement | null>;
   readonly canUpload: boolean;
+  readonly canDownload: boolean;
+  readonly downloading: boolean;
+  readonly onDownloadSelection: (photoIds: readonly string[]) => void;
   readonly onFiles: (files: readonly File[], source: UploadSource) => void;
 }
 
@@ -533,6 +579,9 @@ function AlbumContent({
   meId,
   emptyRef,
   canUpload,
+  canDownload,
+  downloading,
+  onDownloadSelection,
   onFiles,
 }: AlbumContentProps) {
   if (album.photosCount === 0) {
@@ -559,7 +608,16 @@ function AlbumContent({
     );
   }
 
-  return <AlbumGallery album={album} circleRole={circleRole} meId={meId} />;
+  return (
+    <AlbumGallery
+      album={album}
+      circleRole={circleRole}
+      meId={meId}
+      canDownload={canDownload}
+      downloading={downloading}
+      onDownload={onDownloadSelection}
+    />
+  );
 }
 
 function AlbumNoAccess() {

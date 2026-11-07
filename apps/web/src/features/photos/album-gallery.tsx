@@ -12,6 +12,12 @@ import { flattenMemberPages, useMembersQuery } from '../members/queries';
 import { getPhotoDeleteErrorCopy, type PhotoDeleteErrorCopy } from './delete/errors';
 import { deletePhotosWithLimit } from './delete/batch';
 import { invalidateAfterPhotoDelete } from './delete/queries';
+import {
+  exceedsDownloadWarning,
+  formatDownloadWarning,
+  formatDownloadWarningTitle,
+  sumPhotoSizes,
+} from './downloads/format';
 import { formatDeletePhotosResult, formatWillDeleteSelected } from './format';
 import { canDeletePhoto } from './permissions';
 import { PersonFilter } from './person-filter';
@@ -29,6 +35,12 @@ export interface AlbumGalleryProps {
   readonly circleRole?: Role | undefined;
   /** Cuenta autenticada; `null` mientras `/me` carga. */
   readonly meId?: string | null | undefined;
+  /** La cuenta puede descargar en este círculo (`membersCanDownload`). */
+  readonly canDownload?: boolean | undefined;
+  /** Crea el job de descarga con las fotos seleccionadas. */
+  readonly onDownload?: ((photoIds: readonly string[]) => void) | undefined;
+  /** Hay un job en curso: bloquea una segunda descarga. */
+  readonly downloading?: boolean | undefined;
 }
 
 /**
@@ -41,13 +53,28 @@ export interface AlbumGalleryProps {
  * «Eliminar» de la barra solo se activa cuando todas las fotos seleccionadas
  * son borrables (autor u owner). El borrado tolera fallos parciales: informa
  * cuántas se eliminaron y cuántas fallaron en una región viva.
+ *
+ * «Descargar» (F33) crea un único job para la selección. Si el peso supera
+ * 100 MB, primero se confirma y se explica que puede tardar y dónde acaba el
+ * archivo en móvil (AC-06).
  */
-export function AlbumGallery({ album, circleRole = 'member', meId = null }: AlbumGalleryProps) {
+export function AlbumGallery({
+  album,
+  circleRole = 'member',
+  meId = null,
+  canDownload = false,
+  onDownload,
+  downloading = false,
+}: AlbumGalleryProps) {
   const [personId, setPersonId] = useState<string | null>(null);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState<PhotoDeleteErrorCopy | null>(null);
   const [deleteAnnouncement, setDeleteAnnouncement] = useState('');
+  const [downloadRequest, setDownloadRequest] = useState<{
+    readonly photoIds: readonly string[];
+    readonly bytes: number;
+  } | null>(null);
   const photosQuery = useAlbumPhotosQuery(album.id, personId);
   const membersQuery = useMembersQuery(album.circleId);
   const gridRef = useRef<HTMLUListElement>(null);
@@ -135,6 +162,38 @@ export function AlbumGallery({ album, circleRole = 'member', meId = null }: Albu
     }
   };
 
+  const requestDownload = () => {
+    if (!canDownload || downloading || onDownload === undefined) {
+      return;
+    }
+
+    const photoIds = selectedPhotos.map((photo) => photo.id);
+
+    if (photoIds.length === 0) {
+      return;
+    }
+
+    const bytes = sumPhotoSizes(selectedPhotos);
+
+    // AC-06: por encima de 100 MB se avisa antes de generar el ZIP.
+    if (exceedsDownloadWarning(bytes)) {
+      setDownloadRequest({ photoIds, bytes });
+      return;
+    }
+
+    onDownload(photoIds);
+  };
+
+  const confirmDownload = () => {
+    const request = downloadRequest;
+
+    setDownloadRequest(null);
+
+    if (request !== null) {
+      onDownload?.(request.photoIds);
+    }
+  };
+
   return (
     <section aria-label="Galería del álbum" className="mt-6">
       {album.photosCount > 0 ? (
@@ -156,6 +215,9 @@ export function AlbumGallery({ album, circleRole = 'member', meId = null }: Albu
           canDelete={canDeleteSelection}
           onDelete={openDelete}
           deleting={deleting}
+          canDownload={canDownload}
+          onDownload={requestDownload}
+          downloading={downloading}
         />
       ) : null}
 
@@ -193,6 +255,22 @@ export function AlbumGallery({ album, circleRole = 'member', meId = null }: Albu
           />
         )}
       </ConfirmDialog>
+
+      {downloadRequest === null ? null : (
+        <ConfirmDialog
+          open
+          onClose={() => {
+            setDownloadRequest(null);
+          }}
+          onConfirm={confirmDownload}
+          title={formatDownloadWarningTitle(downloadRequest.photoIds.length)}
+          description={formatDownloadWarning(
+            downloadRequest.photoIds.length,
+            downloadRequest.bytes,
+          )}
+          confirmLabel="Generar ZIP"
+        />
+      )}
 
       <PhotoGrid
         label={
