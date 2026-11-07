@@ -9,23 +9,35 @@ export interface SelectionBarProps {
   readonly loadedCount: number;
   readonly onClear: () => void;
   readonly onSelectAll: () => void;
+  /** Todas las fotos seleccionadas son borrables por la cuenta actual. */
+  readonly canDelete?: boolean | undefined;
+  readonly onDelete?: (() => void) | undefined;
+  /** Motivo visible y accesible cuando «Eliminar» no está disponible. */
+  readonly deleteDisabledReason?: string | undefined;
+  readonly deleting?: boolean | undefined;
 }
 
 /**
  * Barra de selección de la galería.
  *
- * Las acciones de descarga, etiquetado y borrado pertenecen a F33/F31 y se
- * muestran deshabilitadas con una nota accesible: no se ocultan porque el
- * diseño las sitúa en la barra. `Esc` también limpia la selección desde el
- * hook; el botón de cerrar devuelve el foco a la rejilla.
+ * «Eliminar» está activo cuando todas las fotos seleccionadas son borrables
+ * (autor u owner). Descarga y etiquetado pertenecen a F33/F32 y siguen
+ * deshabilitados con una nota accesible: no se ocultan porque el diseño los
+ * sitúa en la barra. `Esc` también limpia la selección desde el hook; el botón
+ * de cerrar devuelve el foco a la rejilla.
  */
 export function SelectionBar({
   selectedCount,
   loadedCount,
   onClear,
   onSelectAll,
+  canDelete = false,
+  onDelete,
+  deleteDisabledReason,
+  deleting = false,
 }: SelectionBarProps) {
   const noteId = useId();
+  const deleteReasonId = useId();
   const allSelected = loadedCount > 0 && selectedCount === loadedCount;
 
   return (
@@ -81,17 +93,25 @@ export function SelectionBar({
           variant="ghost"
           size="sm"
           icon={<Trash2 />}
-          disabled
-          aria-describedby={noteId}
+          disabled={!canDelete || deleting}
+          aria-describedby={canDelete ? undefined : deleteReasonId}
+          onClick={onDelete}
           className="text-on-primary! disabled:bg-transparent! disabled:text-on-primary/60!"
         >
-          Eliminar
+          {deleting ? 'Eliminando…' : 'Eliminar'}
         </Button>
       </div>
 
       <p id={noteId} className="w-full text-caption text-on-primary/80">
-        Descargar, etiquetar y eliminar selecciones llegarán en una próxima entrega.
+        Descargar y etiquetar selecciones llegarán en una próxima entrega.
       </p>
+
+      {canDelete ? null : (
+        <p id={deleteReasonId} className="w-full text-caption text-on-primary/80">
+          {deleteDisabledReason ??
+            'Solo puedes eliminar las fotos que hayas subido tú o si eres propietario del círculo.'}
+        </p>
+      )}
     </div>
   );
 }

@@ -1,5 +1,6 @@
 import {
   can,
+  deletePhotoResponseSchema,
   errorResponseSchema,
   photoParamsSchema,
   photoResponseSchema,
@@ -23,6 +24,7 @@ import { assertTrustedOrigin } from '../auth/origin.ts';
 import { resolveSession } from '../auth/session.ts';
 import { toCircleSettings } from '../circles/dto.ts';
 import { toPhotoDto } from '../members/dto.ts';
+import { deletePhoto } from './delete.ts';
 import { findPhotoForMember, storePhoto } from './service.ts';
 import { findPhotoUpdateTarget, updatePhoto, type PhotoUpdateTarget } from './update.ts';
 import { readUploadRequest } from './upload-request.ts';
@@ -48,13 +50,17 @@ function assertUploadPermission(userId: string, target: AlbumMembership): void {
 }
 
 /**
- * Checks `photo.update` for the loaded photo.
+ * Checks `photo.update` or `photo.delete` for the loaded photo.
  *
- * Only the author (uploader) or the circle owner may edit. Ownership is decided
- * by `Circle.ownerId` inside `can()`, using the membership already loaded for
- * the request, so a forged `role: 'owner'` cannot escalate.
+ * Only the author (uploader) or the circle owner may edit or delete. Ownership
+ * is decided by `Circle.ownerId` inside `can()`, using the membership already
+ * loaded for the request, so a forged `role: 'owner'` cannot escalate.
  */
-function assertPhotoUpdatePermission(userId: string, target: PhotoUpdateTarget): void {
+function assertPhotoPermission(
+  userId: string,
+  target: PhotoUpdateTarget,
+  action: 'photo.update' | 'photo.delete',
+): void {
   const actor: PermissionActor = { id: userId, role: target.membership.role };
   const circle: PermissionCircle = {
     id: target.circle.id,
@@ -67,7 +73,7 @@ function assertPhotoUpdatePermission(userId: string, target: PhotoUpdateTarget):
     uploaderId: target.photo.uploaderId,
   };
 
-  if (!can(actor, 'photo.update', circle, resource)) {
+  if (!can(actor, action, circle, resource)) {
     throw new ApiError('FORBIDDEN');
   }
 }
@@ -272,7 +278,7 @@ export function registerPhotoRoutes(app: MemoraServer, config: AppConfig): void 
         throw new ApiError('NOT_FOUND');
       }
 
-      assertPhotoUpdatePermission(user.id, target);
+      assertPhotoPermission(user.id, target, 'photo.update');
 
       const { description, takenAt, placeName } = request.body;
       const updated = await updatePhoto(prisma, target.photo.id, {
@@ -284,6 +290,76 @@ export function registerPhotoRoutes(app: MemoraServer, config: AppConfig): void 
       setPrivateNoStore(reply);
 
       return toPhotoDto(updated);
+    },
+  );
+
+  /**
+   * `DELETE /api/photos/:photoId` — remove one photo (F31).
+   *
+   * Requires a session and a current membership in the photo's circle: a
+   * non-member, a photo from another circle and a missing photo answer `404`,
+   * never `403`. Only the author or the circle owner may delete; any other
+   * member gets `403 FORBIDDEN`. The row is deleted in a transaction, so tags
+   * fall by cascade and `Activity.photoId` becomes `null`; the three storage
+   * objects are removed after the commit, best-effort. A storage failure logs a
+   * warning and still answers `204`. Repeating the request answers `404`.
+   */
+  app.delete(
+    '/api/photos/:photoId',
+    {
+      preValidation: trustedOrigin,
+      schema: {
+        tags: [PHOTOS_TAG],
+        summary: 'Borrar foto',
+        description:
+          'Borra una foto y responde `204` sin cuerpo. Requiere sesión, `Origin`/`Referer` permitido, CSRF y ' +
+          'membresía vigente en el círculo: un no miembro, una foto de otro círculo y un id inexistente ' +
+          'responden `404 NOT_FOUND`. Solo el autor de la foto o el propietario del círculo pueden borrar; ' +
+          'cualquier otro miembro recibe `403 FORBIDDEN`. La fila se elimina en una transacción: las etiquetas ' +
+          'caen por cascada y la actividad histórica se conserva con `photoId = null`. Tras el commit borra ' +
+          'los tres objetos (`original`, `display`, `thumb`) de forma best-effort; si storage falla, registra ' +
+          'un aviso y responde `204` igualmente. Repetir el borrado → `404 NOT_FOUND`. No expone claves de ' +
+          'almacenamiento ni detalles internos.',
+        security: sessionSecurity,
+        headers: csrfHeaderSchema,
+        params: photoParamsSchema,
+        response: {
+          204: deletePhotoResponseSchema,
+          400: errorResponseSchema,
+          401: errorResponseSchema,
+          403: errorResponseSchema,
+          404: errorResponseSchema,
+          429: errorResponseSchema,
+        },
+      },
+    },
+    async (request, reply) => {
+      const prisma = requirePrisma(app);
+      const { user, token } = await resolveSession(prisma, config, request, reply);
+
+      assertCsrfToken(request, app, token);
+
+      const target = await findPhotoUpdateTarget(prisma, request.params.photoId, user.id);
+
+      if (target === null) {
+        throw new ApiError('NOT_FOUND');
+      }
+
+      assertPhotoPermission(user.id, target, 'photo.delete');
+
+      const deleted = await deletePhoto({
+        prisma,
+        storage: app.services.storage,
+        photoId: target.photo.id,
+        circleId: target.photo.circleId,
+        logger: request.log,
+      });
+
+      if (!deleted) {
+        throw new ApiError('NOT_FOUND');
+      }
+
+      return reply.code(204).send();
     },
   );
 }

@@ -272,6 +272,8 @@ export function AlbumDetailPage({ circleId, albumId }: AlbumDetailPageProps) {
 
       <AlbumContent
         album={album}
+        circleRole={circle.role}
+        meId={meId}
         emptyRef={emptyRef}
         canUpload={canUpload}
         onFiles={handleUploadFiles}
@@ -518,12 +520,21 @@ function AlbumHeader({
 
 interface AlbumContentProps {
   readonly album: AlbumDto;
+  readonly circleRole: CircleDetailDto['role'];
+  readonly meId: string | null;
   readonly emptyRef: RefObject<HTMLDivElement | null>;
   readonly canUpload: boolean;
   readonly onFiles: (files: readonly File[], source: UploadSource) => void;
 }
 
-function AlbumContent({ album, emptyRef, canUpload, onFiles }: AlbumContentProps) {
+function AlbumContent({
+  album,
+  circleRole,
+  meId,
+  emptyRef,
+  canUpload,
+  onFiles,
+}: AlbumContentProps) {
   if (album.photosCount === 0) {
     return (
       <div ref={emptyRef} tabIndex={-1} role="region" aria-label="Álbum vacío" className="mt-8">
@@ -548,7 +559,7 @@ function AlbumContent({ album, emptyRef, canUpload, onFiles }: AlbumContentProps
     );
   }
 
-  return <AlbumGallery album={album} />;
+  return <AlbumGallery album={album} circleRole={circleRole} meId={meId} />;
 }
 
 function AlbumNoAccess() {

@@ -188,3 +188,7 @@ Tras recargar la página, el resumen debe renderizar las carpetas y las miniatur
 3. Si el usuario autoriza F28, primero se comprueba su Definition of Ready, se carga solo su
    `spec.md` y se propone plan antes de escribir código.
 4. **Parar.** No encadenar F28/F29 ni hacer commit o `push` sin permiso.
+
+## Actualización (2026-11-07)
+
+La decisión «sin visor: las miniaturas no son interactivas» queda **anulada por F31**: cada miniatura de «Mis subidas» es ahora un enlace al visor (`/circles/:circleId/albums/:albumId/photos/:photoId`) y desde ahí se puede eliminar la foto, como en la galería. El mosaico de previews de carpeta sigue siendo decorativo.

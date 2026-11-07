@@ -55,3 +55,41 @@ export function formatPersonPhotosSummary(photosCount: number, albumsCount: numb
 export function formatSelectedCount(count: number): string {
   return count === 1 ? '1 foto seleccionada' : `${count} fotos seleccionadas`;
 }
+
+/** «Se eliminará 1 foto» / «Se eliminarán 5 fotos». */
+export function formatWillDeleteSelected(count: number): string {
+  return count === 1 ? 'Se eliminará 1 foto' : `Se eliminarán ${count} fotos`;
+}
+
+/**
+ * Resultado de un borrado múltiple, incluido el parcial.
+ *
+ * Se anuncia tal cual en la región viva: cuántas se borraron y cuántas
+ * fallaron. Si no se borró ninguna, no se dice «se han eliminado 0».
+ */
+export function formatDeletePhotosResult(deletedCount: number, failedCount: number): string {
+  const deleted =
+    deletedCount === 0
+      ? ''
+      : deletedCount === 1
+        ? 'Se ha eliminado 1 foto.'
+        : `Se han eliminado ${deletedCount} fotos.`;
+  const failed =
+    failedCount === 0
+      ? ''
+      : failedCount === 1
+        ? '1 foto no se pudo eliminar.'
+        : `${failedCount} fotos no se pudieron eliminar.`;
+
+  if (deleted === '' && failed === '') {
+    return '';
+  }
+
+  if (deleted === '') {
+    return failedCount === 1
+      ? 'No se ha podido eliminar la foto.'
+      : `No se ha podido eliminar ninguna de las ${failedCount} fotos.`;
+  }
+
+  return `${deleted}${failed === '' ? '' : ` ${failed}`}`;
+}

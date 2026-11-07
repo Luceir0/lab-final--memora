@@ -124,6 +124,7 @@ async function main(): Promise<void> {
   }
 
   await prisma.$disconnect();
+  // eslint-disable-next-line no-console -- script de línea de comandos
   console.log(`seed-images: ${created} generadas, ${skipped} ya tenian objeto.`);
 }
 

@@ -1,10 +1,14 @@
 import type { PhotoDto, Role } from '@memora/shared';
-import { Avatar, Button } from '@memora/ui';
-import { CalendarDays, MapPin, Pencil } from 'lucide-react';
+import { Avatar, Button, ConfirmDialog, InlineAlert } from '@memora/ui';
+import { CalendarDays, MapPin, Pencil, Trash2 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
+import { isUnauthorizedError, useUnauthorizedRedirect } from '../../circles/session';
+import { getPhotoDeleteErrorCopy, type PhotoDeleteErrorCopy } from '../delete/errors';
+import { useDeletePhotoMutation } from '../delete/queries';
 import { canEditPhotoMetadata } from '../metadata/permissions';
 import { PhotoMetadataEditor } from '../metadata/photo-metadata-editor';
+import { canDeletePhoto } from '../permissions';
 
 import { formatPhotoTakenAt, formatPhotoUploadedAt } from './format';
 
@@ -17,6 +21,8 @@ export interface PhotoDetailsPanelProps {
   readonly circleRole: Role;
   /** Cuenta autenticada; `null` mientras `/me` carga. */
   readonly meId: string | null;
+  /** Se llama tras borrar la foto: el visor se cierra y vuelve al álbum. */
+  readonly onDeleted: () => void;
 }
 
 /**
@@ -29,6 +35,9 @@ export interface PhotoDetailsPanelProps {
  * La edición (F31) se abre solo para el autor o el propietario del círculo y
  * sustituye los datos de lectura por el formulario. Cancelar descarta el estado
  * local del formulario, así que los valores originales quedan intactos.
+ *
+ * «Eliminar foto» sigue la misma regla de permisos que el `PATCH`. Si falla, el
+ * visor se queda abierto con el error; si funciona, el padre navega al álbum.
  */
 export function PhotoDetailsPanel({
   photo,
@@ -37,10 +46,16 @@ export function PhotoDetailsPanel({
   albumId,
   circleRole,
   meId,
+  onDeleted,
 }: PhotoDetailsPanelProps) {
   const [editing, setEditing] = useState(false);
   const [status, setStatus] = useState<string | null>(null);
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [deleteError, setDeleteError] = useState<PhotoDeleteErrorCopy | null>(null);
   const editButtonRef = useRef<HTMLButtonElement>(null);
+  const deleteMutation = useDeletePhotoMutation({ circleId, albumId });
+
+  useUnauthorizedRedirect(deleteMutation.error);
 
   const uploadedAt = formatPhotoUploadedAt(photo.createdAt);
   const takenAt = formatPhotoTakenAt(photo.takenAt);
@@ -51,12 +66,19 @@ export function PhotoDetailsPanel({
     uploaderId: photo.uploader.id,
     meId,
   });
+  const canDelete = canDeletePhoto({
+    circleRole,
+    uploaderId: photo.uploader.id,
+    meId,
+  });
 
   // Al navegar a otra foto, la edición abierta no debe sobrevivir con valores
-  // de la foto anterior.
+  // de la foto anterior. El diálogo de borrado tampoco.
   useEffect(() => {
     setEditing(false);
     setStatus(null);
+    setDeleteOpen(false);
+    setDeleteError(null);
   }, [photo.id]);
 
   const closeEditing = (message?: string) => {
@@ -65,6 +87,26 @@ export function PhotoDetailsPanel({
 
     // El botón «Editar» vuelve a montarse: el foco no debe caer en `body`.
     window.requestAnimationFrame(() => editButtonRef.current?.focus());
+  };
+
+  const confirmDelete = async () => {
+    if (deleteMutation.isPending) {
+      return;
+    }
+
+    setDeleteError(null);
+
+    try {
+      await deleteMutation.mutateAsync(photo.id);
+      setDeleteOpen(false);
+      onDeleted();
+    } catch (error) {
+      if (isUnauthorizedError(error)) {
+        return;
+      }
+
+      setDeleteError(getPhotoDeleteErrorCopy(error));
+    }
   };
 
   return (
@@ -89,20 +131,39 @@ export function PhotoDetailsPanel({
           </div>
         </div>
 
-        {canEdit && !editing ? (
-          <Button
-            ref={editButtonRef}
-            variant="secondary"
-            size="sm"
-            icon={<Pencil />}
-            aria-label="Editar datos de la foto"
-            onClick={() => {
-              setStatus(null);
-              setEditing(true);
-            }}
-          >
-            Editar
-          </Button>
+        {canEdit || canDelete ? (
+          <div className="flex shrink-0 flex-wrap justify-end gap-2">
+            {canEdit && !editing ? (
+              <Button
+                ref={editButtonRef}
+                variant="secondary"
+                size="sm"
+                icon={<Pencil />}
+                aria-label="Editar datos de la foto"
+                onClick={() => {
+                  setStatus(null);
+                  setEditing(true);
+                }}
+              >
+                Editar
+              </Button>
+            ) : null}
+
+            {canDelete && !editing ? (
+              <Button
+                variant="ghost"
+                size="sm"
+                icon={<Trash2 />}
+                onClick={() => {
+                  setDeleteError(null);
+                  setDeleteOpen(true);
+                }}
+                className="text-danger-text!"
+              >
+                Eliminar foto
+              </Button>
+            ) : null}
+          </div>
         ) : null}
       </div>
 
@@ -153,6 +214,33 @@ export function PhotoDetailsPanel({
           )}
         </>
       )}
+
+      <ConfirmDialog
+        open={deleteOpen}
+        onClose={() => {
+          if (!deleteMutation.isPending) {
+            setDeleteOpen(false);
+            setDeleteError(null);
+          }
+        }}
+        onConfirm={() => {
+          void confirmDelete();
+        }}
+        title="Eliminar foto"
+        description="La foto se eliminará para siempre. Esta acción no se puede deshacer."
+        confirmLabel={deleteMutation.isPending ? 'Eliminando…' : 'Eliminar foto'}
+        danger
+        dismissible={!deleteMutation.isPending}
+        loading={deleteMutation.isPending}
+      >
+        {deleteError === null ? null : (
+          <InlineAlert
+            tone="danger"
+            title={deleteError.title}
+            description={deleteError.description}
+          />
+        )}
+      </ConfirmDialog>
     </aside>
   );
 }
