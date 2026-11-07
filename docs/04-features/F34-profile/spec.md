@@ -3,7 +3,7 @@ id: F34
 title: "Perfil y preferencias"
 milestone: M4
 size: S/M
-status: draft
+status: review
 spec: complete
 depends_on:
   - "F16"
@@ -20,7 +20,7 @@ decisions:
 
 # F34 — Perfil y preferencias
 
-> **Milestone:** M4 · **Talla:** S/M · **Estado:** draft · **Spec:** completa
+> **Milestone:** M4 · **Talla:** S/M · **Estado:** review · **Spec:** completa
 > **Depende de:** F16 · **Bloquea:** —
 
 ## Objetivo

@@ -21,7 +21,7 @@ const QUICK_LINKS: readonly QuickLink[] = [
  */
 export function ProfileQuickLinks() {
   return (
-    <nav aria-label="Más secciones" className="mb-6 lg:hidden">
+    <nav aria-label="Más secciones" className="lg:hidden">
       <ul className="space-y-2">
         {QUICK_LINKS.map(({ to, label, icon: Icon }) => (
           <li key={to}>
