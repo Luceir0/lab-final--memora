@@ -32,6 +32,10 @@ export interface PhotoViewerProps {
   readonly allowOriginal?: boolean;
   /** Rol de la cuenta en el círculo. Decide si se ofrece editar metadatos. */
   readonly circleRole?: Role;
+  /** Nombre del círculo, para describir el diálogo de etiquetado. */
+  readonly circleName?: string;
+  /** La cuenta puede etiquetar personas (`photo.tag`). */
+  readonly canTag?: boolean;
   /** Cuenta autenticada; `null` mientras `/me` carga. */
   readonly currentUserId?: string | null;
 }
@@ -58,6 +62,8 @@ export function PhotoViewer({
   photoId,
   allowOriginal = false,
   circleRole = 'member',
+  circleName = '',
+  canTag = false,
   currentUserId = null,
 }: PhotoViewerProps) {
   const navigate = useNavigate();
@@ -343,6 +349,8 @@ export function PhotoViewer({
             circleRole={circleRole}
             meId={currentUserId}
             canDownload={allowOriginal}
+            canTag={canTag}
+            circleName={circleName}
             onDeleted={close}
             className="flex max-h-[55dvh] shrink-0 flex-col overflow-y-auto rounded-t-2xl border-t border-border bg-surface p-5 md:h-auto md:max-h-none md:w-[380px] md:rounded-none md:border-l md:border-t-0 md:p-6"
           />

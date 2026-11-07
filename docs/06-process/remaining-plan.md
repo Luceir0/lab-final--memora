@@ -6,7 +6,7 @@
 
 ## Contexto
 
-F01–F28 están `done`. F29, F30, F31 y F33 se aceptaron en la S0; F34 y F36 se cerraron en la S1; F44 se cerró en la S1.5. `main` está al día con `origin/main` y no hay trabajo pendiente de sesiones anteriores.
+F01–F28 están `done`. F29, F30, F31 y F33 se aceptaron en la S0; F34 y F36 se cerraron en la S1; F44 se cerró en la S1.5. F32 está aceptada el 2026-11-08 y pendiente solo de commit/PR/merge. `main` está al día con `origin/main` y no hay trabajo pendiente de sesiones anteriores.
 
 El objetivo ya no es completar las 43 features, sino **cerrar un MVP defendible sin romper lo ya aprobado**. Se recorta producto extra; no se recortan autorización, persistencia, accesibilidad, seed/demo, tests ni documentación de cobertura.
 
@@ -37,7 +37,7 @@ El objetivo ya no es completar las 43 features, sino **cerrar un MVP defendible 
 | **S0** | 0,5 | Aceptar F29–F31; revisión A y aceptación de F33; cerrar F36, tablero y bitácora | Testeo / aceptación | **Hecha** (2026-11-07) |
 | **S1** | 1 | F36 privacidad + F34 perfil | Funcionalidad | **Hecha** (2026-11-07) |
 | **S1.5** | 0,5 | F44 portadas de álbum y círculo, migas y sidebar | Funcionalidad | **Hecha** (2026-11-07, PR #55) |
-| **S2** | 1,5 | F32 completa: API + UI + permisos + optimista + tests | Funcionalidad | **Siguiente**; no iniciada |
+| **S2** | 1,5 | F32 completa: API + UI + permisos + optimista + tests | Funcionalidad | **Hecha, aceptada y cerrada** (2026-11-08) |
 | **S3** | 1 | F37 + F38 mínimo y F39 solo bloqueantes | Testeo (E2E, a11y) | Pendiente; al final |
 | **S4** | 1 | F41, F40 y verificación de F42 | Testeo / calidad y despliegue | Pendiente; mínimo necesario para F43 |
 | **S5** | 1 | F43 y batería completa de entrega | Presentación y defensa | Pendiente |
@@ -61,7 +61,7 @@ El objetivo ya no es completar las 43 features, sino **cerrar un MVP defendible 
 | S0 | 2026-11-07 | Aceptación de F29–F31, revisión A y aceptación de F33 y cierre de F36. PR #51 y #52 mergeadas; F29–F31, F33 y F36 en `done`. |
 | S1 | 2026-11-07 | F34 implementada y aceptada: perfil real con nombre editable, email de solo lectura, iniciales, tema, instalación y logout; sin medidor de almacenamiento. Cerrada con la PR #53 (merge `9ad61a0`) y F34 en `done`. |
 | S1.5 | 2026-11-07 | **F44 Portadas** implementada, aceptada y en `done`: selector de portada de álbum entre sus fotos y de círculo para el owner navegando por álbumes; sin endpoint nuevo. Verificación: web **105 archivos y 866 tests**, typecheck 9/9, lint 6/6, build 5/5, docs y agents OK. Revisión B en dos rondas con bloqueantes corregidos y migas/sidebar ajustados en la aceptación. Cierre: commits `eb2c2d4`, `2623912` y `a92249a`, PR #55 y merge `15dc7c3`. |
-| S2 | — | F32 completa (API + UI + tests + permisos). **Siguiente; no iniciada.** |
+| S2 | 2026-11-08 | **F32 Etiquetado** aceptada y en `done`: API `POST`/`DELETE` idempotentes con `photo.tag`, UI en el visor con diálogo responsive, buscador en cliente, optimista con rollback, permisos espejo y axe. Revisión B con M-01 (carrera membresía→INSERT, deuda m-06) y M-02 (rollback con éxito parcial) corregidos, más menores. Ajuste de aceptación: «Guardar etiquetas» sin contador. Verificación: API **424 passed + 2 skipped**, web **110 archivos y 910 tests**, typecheck 9/9, lint 6/6, build 5/5, format/docs/agents OK. Cierre operativo autorizado: commit, PR y merge. |
 
 ## Cómo retomar una sesión
 

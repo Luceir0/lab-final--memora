@@ -2,6 +2,7 @@ import { createFileRoute } from '@tanstack/react-router';
 
 import { useCircleDetail } from '../features/circles/circle-detail-context';
 import { useMeQuery } from '../features/circles/queries';
+import { canTagPhoto } from '../features/photos/tags/permissions';
 import { PhotoViewer } from '../features/photos/viewer/photo-viewer';
 
 /**
@@ -34,6 +35,11 @@ function PhotoViewerRoute() {
       photoId={photoId}
       allowOriginal={circle.settings.membersCanDownload}
       circleRole={circle.role}
+      circleName={circle.name}
+      canTag={canTagPhoto({
+        circleRole: circle.role,
+        membersCanTag: circle.settings.membersCanTag,
+      })}
       currentUserId={meQuery.data?.user.id ?? null}
     />
   );

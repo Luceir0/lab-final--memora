@@ -1,9 +1,13 @@
 import {
+  addPhotoTagRequestSchema,
+  addPhotoTagResponseSchema,
   can,
   deletePhotoResponseSchema,
   errorResponseSchema,
   photoParamsSchema,
   photoResponseSchema,
+  photoTagParamsSchema,
+  removePhotoTagResponseSchema,
   updatePhotoRequestSchema,
   uploadPhotoParamsSchema,
   uploadPhotoResponseSchema,
@@ -26,6 +30,7 @@ import { toCircleSettings } from '../circles/dto.ts';
 import { toPhotoDto } from '../members/dto.ts';
 import { deletePhoto } from './delete.ts';
 import { findPhotoForMember, storePhoto } from './service.ts';
+import { addPhotoTag, removePhotoTag } from './tags.ts';
 import { findPhotoUpdateTarget, updatePhoto, type PhotoUpdateTarget } from './update.ts';
 import { readUploadRequest } from './upload-request.ts';
 
@@ -50,16 +55,17 @@ function assertUploadPermission(userId: string, target: AlbumMembership): void {
 }
 
 /**
- * Checks `photo.update` or `photo.delete` for the loaded photo.
+ * Checks `photo.update`, `photo.delete` or `photo.tag` for the loaded photo.
  *
- * Only the author (uploader) or the circle owner may edit or delete. Ownership
- * is decided by `Circle.ownerId` inside `can()`, using the membership already
- * loaded for the request, so a forged `role: 'owner'` cannot escalate.
+ * Only the author (uploader) or the circle owner may edit or delete; tagging
+ * additionally requires `membersCanTag` for members. Ownership is decided by
+ * `Circle.ownerId` inside `can()`, using the membership already loaded for the
+ * request, so a forged `role: 'owner'` cannot escalate.
  */
 function assertPhotoPermission(
   userId: string,
   target: PhotoUpdateTarget,
-  action: 'photo.update' | 'photo.delete',
+  action: 'photo.update' | 'photo.delete' | 'photo.tag',
 ): void {
   const actor: PermissionActor = { id: userId, role: target.membership.role };
   const circle: PermissionCircle = {
@@ -358,6 +364,128 @@ export function registerPhotoRoutes(app: MemoraServer, config: AppConfig): void 
       if (!deleted) {
         throw new ApiError('NOT_FOUND');
       }
+
+      return reply.code(204).send();
+    },
+  );
+
+  /**
+   * `POST /api/photos/:photoId/tags` — tag a circle member on a photo (F32).
+   *
+   * Requires a session and a current membership in the photo's circle: a
+   * non-member, a photo from another circle and a missing photo answer `404`,
+   * never `403`. The owner may always tag; a member needs `membersCanTag` and
+   * otherwise gets `403 FORBIDDEN`. The target must be a current member of the
+   * same circle, also `404` when it is not. Idempotent by
+   * `(photoId, taggedUserId)`: `200` with the existing tag, `201` when created.
+   */
+  app.post(
+    '/api/photos/:photoId/tags',
+    {
+      preValidation: trustedOrigin,
+      schema: {
+        tags: [PHOTOS_TAG],
+        summary: 'Etiquetar miembro',
+        description:
+          'Etiqueta a un miembro en una foto. Requiere sesión, `Origin`/`Referer` permitido, CSRF y membresía ' +
+          'vigente en el círculo de la foto: un no miembro, una foto de otro círculo y un id inexistente ' +
+          'responden `404 NOT_FOUND`, nunca `403`. El propietario del círculo (`Circle.ownerId`) siempre puede ' +
+          'etiquetar; un miembro necesita `membersCanTag` y, si está desactivado, recibe `403 FORBIDDEN`. El ' +
+          'objetivo debe ser miembro actual del mismo círculo: si no lo es, `404 NOT_FOUND`, para no revelar ' +
+          'usuarios de otros círculos. Idempotente por `(photoId, taggedUserId)`: la repetición devuelve `200` ' +
+          'con la etiqueta existente y una creación nueva `201`, ambos con el mismo `PhotoTagDto` (sin email, ' +
+          'claves de almacenamiento ni coordenadas).',
+        security: sessionSecurity,
+        headers: csrfHeaderSchema,
+        params: photoParamsSchema,
+        body: addPhotoTagRequestSchema,
+        response: {
+          200: addPhotoTagResponseSchema,
+          201: addPhotoTagResponseSchema,
+          400: errorResponseSchema,
+          401: errorResponseSchema,
+          403: errorResponseSchema,
+          404: errorResponseSchema,
+          429: errorResponseSchema,
+        },
+      },
+    },
+    async (request, reply) => {
+      const prisma = requirePrisma(app);
+      const { user, token } = await resolveSession(prisma, config, request, reply);
+
+      assertCsrfToken(request, app, token);
+
+      const target = await findPhotoUpdateTarget(prisma, request.params.photoId, user.id);
+
+      if (target === null) {
+        throw new ApiError('NOT_FOUND');
+      }
+
+      assertPhotoPermission(user.id, target, 'photo.tag');
+
+      const result = await addPhotoTag(prisma, {
+        photoId: target.photo.id,
+        circleId: target.photo.circleId,
+        taggedUserId: request.body.userId,
+        createdBy: user.id,
+      });
+
+      setPrivateNoStore(reply);
+
+      return reply.code(result.status).send(result.tag);
+    },
+  );
+
+  /**
+   * `DELETE /api/photos/:photoId/tags/:userId` — remove one tag (F32).
+   *
+   * Same visibility and permission rules as `POST`: a non-member, a photo from
+   * another circle and a missing photo answer `404`; the owner may always
+   * remove and a member needs `membersCanTag` (`403` otherwise). Idempotent:
+   * the response is `204` whether the tag existed or not.
+   */
+  app.delete(
+    '/api/photos/:photoId/tags/:userId',
+    {
+      preValidation: trustedOrigin,
+      schema: {
+        tags: [PHOTOS_TAG],
+        summary: 'Quitar etiqueta',
+        description:
+          'Quita la etiqueta de un usuario en una foto. Requiere sesión, `Origin`/`Referer` permitido, CSRF y ' +
+          'membresía vigente en el círculo de la foto: un no miembro, una foto de otro círculo y un id ' +
+          'inexistente responden `404 NOT_FOUND`. El propietario del círculo (`Circle.ownerId`) siempre puede ' +
+          'quitar etiquetas; un miembro necesita `membersCanTag` y, si está desactivado, recibe `403 FORBIDDEN`. ' +
+          'Idempotente: responde `204` sin cuerpo exista o no la etiqueta, también al repetir la petición.',
+        security: sessionSecurity,
+        headers: csrfHeaderSchema,
+        params: photoTagParamsSchema,
+        response: {
+          204: removePhotoTagResponseSchema,
+          400: errorResponseSchema,
+          401: errorResponseSchema,
+          403: errorResponseSchema,
+          404: errorResponseSchema,
+          429: errorResponseSchema,
+        },
+      },
+    },
+    async (request, reply) => {
+      const prisma = requirePrisma(app);
+      const { user, token } = await resolveSession(prisma, config, request, reply);
+
+      assertCsrfToken(request, app, token);
+
+      const target = await findPhotoUpdateTarget(prisma, request.params.photoId, user.id);
+
+      if (target === null) {
+        throw new ApiError('NOT_FOUND');
+      }
+
+      assertPhotoPermission(user.id, target, 'photo.tag');
+
+      await removePhotoTag(prisma, target.photo.id, request.params.userId);
 
       return reply.code(204).send();
     },

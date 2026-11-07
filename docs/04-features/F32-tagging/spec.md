@@ -3,7 +3,7 @@ id: F32
 title: "Etiquetado"
 milestone: M4
 size: M
-status: draft
+status: done
 spec: complete
 depends_on:
   - "F22"
@@ -22,7 +22,7 @@ decisions:
 
 # F32 — Etiquetado
 
-> **Milestone:** M4 · **Talla:** M · **Estado:** draft · **Spec:** completa
+> **Milestone:** M4 · **Talla:** M · **Estado:** done · **Spec:** completa
 > **Depende de:** F22, F30 · **Bloquea:** —
 
 ## Objetivo
@@ -110,12 +110,12 @@ Etiquetar miembros en fotos y mantener el filtro por persona en el visor y la ga
 
 ## Definition of Ready
 
-- [ ] Dependencias `done`. Excepción autorizada por el usuario y registrada en el tablero.
-- [ ] Decisiones resueltas.
-- [ ] Contratos congelados.
-- [ ] Diseño enlazado (si aplica).
-- [ ] Datos de prueba.
-- [ ] Sin preguntas bloqueantes.
+- [x] Dependencias `done`. Excepción autorizada por el usuario y registrada en el tablero.
+- [x] Decisiones resueltas (G1 del 2026-11-07: permiso simétrico, `POST` idempotente, buscador en cliente, UI en el visor, caché optimista).
+- [x] Contratos congelados (`tags.ts` y `photoTagDtoSchema`; solo se documentó el `200` idempotente).
+- [x] Diseño enlazado (móvil, sin resultados y escritorio guardando).
+- [x] Datos de prueba (`makeTag`, `makeUser`, `makeMembership`, `makePhoto`).
+- [x] Sin preguntas bloqueantes.
 
 ## Handoff
 
@@ -123,4 +123,4 @@ Al terminar, completa `handoff.md` y actualiza el tablero. No hagas commit ni pu
 
 ## Preguntas abiertas
 
-Las etiquetas de un miembro expulsado se eliminan.
+Ninguna. «Las etiquetas de un miembro expulsado se eliminan» ya estaba implementado en F21 y se ha reforzado en F32 con el orden de locks `Membership → PhotoTag` para cerrar la carrera etiquetar/expulsar (m-06).

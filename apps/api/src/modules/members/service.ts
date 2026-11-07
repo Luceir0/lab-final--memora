@@ -130,11 +130,14 @@ async function loadPhotosCounts(
 /**
  * Expels a member from a circle.
  *
- * Runs in one transaction: the person's tags **in this circle** and their
- * membership row are deleted. Tags they created for other people, tags of
- * other circles, their photos, those photos' authorship and `Activity` are
- * untouched (AC-04). Returns the number of deleted memberships so the route
- * can map a lost race to `404`.
+ * Runs in one transaction: the person's membership row is deleted first and
+ * then their tags **in this circle**. That order is deliberate: it matches the
+ * `Membership → PhotoTag` lock order used by `addPhotoTag` (which locks the
+ * membership `FOR SHARE`), so an expulsion that wins cannot leave behind a tag
+ * committed concurrently for a former member. Tags they created for other
+ * people, tags of other circles, their photos, those photos' authorship and
+ * `Activity` are untouched (AC-04). Returns the number of deleted memberships
+ * so the route can map a lost race to `404`.
  */
 export async function removeCircleMember(
   prisma: PrismaClient,
@@ -142,14 +145,14 @@ export async function removeCircleMember(
   userId: string,
 ): Promise<number> {
   return prisma.$transaction(async (tx) => {
-    await tx.photoTag.deleteMany({
-      where: { taggedUserId: userId, photo: { circleId } },
-    });
-
     const removed = await tx.membership.deleteMany({
       // The role is never part of the condition: ownership is decided by
       // `Circle.ownerId` in the route before reaching this point.
       where: { circleId, userId },
+    });
+
+    await tx.photoTag.deleteMany({
+      where: { taggedUserId: userId, photo: { circleId } },
     });
 
     return removed.count;

@@ -1,6 +1,6 @@
 import type { PhotoDto, Role } from '@memora/shared';
 import { Avatar, Button, ConfirmDialog, InlineAlert, LinkButton } from '@memora/ui';
-import { CalendarDays, Download, MapPin, Pencil, Trash2 } from 'lucide-react';
+import { CalendarDays, Download, MapPin, Pencil, Tag, Trash2 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
 import { isUnauthorizedError, useUnauthorizedRedirect } from '../../circles/session';
@@ -10,6 +10,8 @@ import { photoDownloadUrl } from '../downloads/paths';
 import { canEditPhotoMetadata } from '../metadata/permissions';
 import { PhotoMetadataEditor } from '../metadata/photo-metadata-editor';
 import { canDeletePhoto } from '../permissions';
+import { TagList } from '../tags/tag-list';
+import { TagPeopleDialog } from '../tags/tag-people-dialog';
 
 import { formatPhotoTakenAt, formatPhotoUploadedAt } from './format';
 
@@ -24,6 +26,10 @@ export interface PhotoDetailsPanelProps {
   readonly meId: string | null;
   /** La cuenta puede descargar el original (`membersCanDownload`). */
   readonly canDownload?: boolean | undefined;
+  /** La cuenta puede etiquetar y quitar etiquetas (`photo.tag`). */
+  readonly canTag?: boolean | undefined;
+  /** Nombre del círculo para el diálogo de etiquetado. */
+  readonly circleName?: string | undefined;
   /** Se llama tras borrar la foto: el visor se cierra y vuelve al álbum. */
   readonly onDeleted: () => void;
 }
@@ -53,12 +59,15 @@ export function PhotoDetailsPanel({
   circleRole,
   meId,
   canDownload = false,
+  canTag = false,
+  circleName = '',
   onDeleted,
 }: PhotoDetailsPanelProps) {
   const [editing, setEditing] = useState(false);
   const [status, setStatus] = useState<string | null>(null);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [deleteError, setDeleteError] = useState<PhotoDeleteErrorCopy | null>(null);
+  const [tagOpen, setTagOpen] = useState(false);
   const editButtonRef = useRef<HTMLButtonElement>(null);
   const deleteMutation = useDeletePhotoMutation({ circleId, albumId });
 
@@ -86,6 +95,7 @@ export function PhotoDetailsPanel({
     setStatus(null);
     setDeleteOpen(false);
     setDeleteError(null);
+    setTagOpen(false);
   }, [photo.id]);
 
   const closeEditing = (message?: string) => {
@@ -183,9 +193,11 @@ export function PhotoDetailsPanel({
                 )}
               </dl>
             )}
+
+            <TagList tags={photo.tags} />
           </div>
 
-          {canEdit || canDelete || canDownload ? (
+          {canEdit || canDelete || canDownload || canTag ? (
             <div
               data-testid="photo-details-actions"
               className="mt-auto flex shrink-0 flex-wrap gap-2 border-t border-border pt-4"
@@ -201,6 +213,20 @@ export function PhotoDetailsPanel({
                 >
                   Descargar
                 </LinkButton>
+              ) : null}
+
+              {canTag ? (
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  icon={<Tag />}
+                  onClick={() => {
+                    setStatus(null);
+                    setTagOpen(true);
+                  }}
+                >
+                  Etiquetar personas
+                </Button>
               ) : null}
 
               {canEdit ? (
@@ -264,6 +290,24 @@ export function PhotoDetailsPanel({
           />
         )}
       </ConfirmDialog>
+
+      {canTag ? (
+        <TagPeopleDialog
+          open={tagOpen}
+          onClose={() => {
+            setTagOpen(false);
+          }}
+          photo={photo}
+          circleId={circleId}
+          albumId={albumId}
+          circleName={circleName}
+          circleRole={circleRole}
+          meId={meId}
+          onSaved={() => {
+            setStatus('Etiquetas guardadas.');
+          }}
+        />
+      ) : null}
     </aside>
   );
 }
