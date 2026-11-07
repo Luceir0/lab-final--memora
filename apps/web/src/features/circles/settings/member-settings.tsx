@@ -6,6 +6,7 @@ import { CircleCheck, CircleX, Lock, LogOut } from 'lucide-react';
 import { useState } from 'react';
 
 import { flattenMemberPages, useLeaveCircleMutation, useMembersQuery } from '../../members/queries';
+import { CircleCover } from '../circle-cover';
 import { getCirclesErrorCopy, type CirclesErrorCopy } from '../errors';
 import { circleKeys } from '../queries';
 import { isNotFoundError, isUnauthorizedError, useUnauthorizedRedirect } from '../session';
@@ -66,6 +67,18 @@ export function MemberSettings({ circle }: MemberSettingsProps) {
 
   return (
     <div className="mx-auto flex w-full max-w-xl flex-col gap-6 pb-4">
+      <Card padding="md" className="lg:p-6">
+        <div className="flex items-center gap-3 md:block">
+          <p className="shrink-0 text-body-sm font-semibold text-text">Portada</p>
+          <CircleCover
+            name={circle.name}
+            photo={circle.coverPhoto}
+            className="min-w-0 aspect-[3/2] w-24 rounded-lg md:aspect-[12/5] md:max-h-56 md:w-full md:mt-2"
+            initialsClassName="text-body-sm md:text-h1"
+          />
+        </div>
+      </Card>
+
       <div className="flex flex-col items-center px-2 text-center">
         <span
           aria-hidden="true"

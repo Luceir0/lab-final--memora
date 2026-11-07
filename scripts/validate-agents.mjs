@@ -12,7 +12,7 @@
  *      body and existing repository paths quoted in the body.
  *   4. One `SKILL.md` per directory in `.opencode/skills`: name, description,
  *      directory match and a body of at least 20 lines.
- *   5. Feature specs under `docs/04-features`: 43 specs, coherent ids, valid
+ *   5. Feature specs under `docs/04-features`: 44 specs, coherent ids, valid
  *      status, existing dependencies without cycles and required sections.
  *   6. Board rows in the features README point to existing specs.
  *   7. Root `package.json` wires `docs:check` and `agents:check` to these
@@ -49,7 +49,7 @@ const SPEC_SECTIONS = [
   '## Definition of Ready',
   '## Handoff',
 ];
-const FEATURE_COUNT = 43;
+const FEATURE_COUNT = 44;
 const MIN_SKILL_BODY_LINES = 20;
 
 /** @type {Array<{ category: string, file: string, message: string }>} */

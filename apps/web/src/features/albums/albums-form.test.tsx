@@ -7,17 +7,22 @@ import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest
 import { expectNoAxeViolations } from '../../../../../packages/ui/src/test/axe';
 import { AUTH_TEST_API_BASE } from '../../test/auth-fixtures';
 import { createAuthTestServer, startAuthTestServer } from '../../test/auth-server';
-import { albumWithPhotos } from '../../test/fixtures/albums-fixtures';
+import { albumEmpty, albumWithPhotos } from '../../test/fixtures/albums-fixtures';
+import { galleryPhotos } from '../../test/fixtures/photos-fixtures';
 import { renderAlbumsRouter } from '../../test/fixtures/albums-router';
 import { circleDetail, circleWithCover } from '../../test/circles-fixtures';
+import { circleKeys } from '../circles/queries';
+import { photoKeys } from '../photos/queries';
 
 import { AlbumFormDialog } from './album-form-dialog';
 import { currentMonthInput } from './format';
+import { albumKeys } from './queries';
 
 const server = createAuthTestServer();
 const CSRF_URL = `${AUTH_TEST_API_BASE}/auth/csrf`;
 const ALBUMS_URL = `${AUTH_TEST_API_BASE}/circles/cir_familia/albums`;
 const ALBUM_URL = `${AUTH_TEST_API_BASE}/albums/alb_verano`;
+const ALBUM_PHOTOS_URL = `${AUTH_TEST_API_BASE}/albums/alb_verano/photos`;
 
 beforeAll(() => {
   startAuthTestServer(server);
@@ -34,6 +39,7 @@ afterAll(() => {
 interface FormOptions {
   readonly mode?: 'create' | 'edit';
   readonly album?: AlbumDto;
+  readonly canEditCover?: boolean;
 }
 
 function renderForm(options: FormOptions = {}) {
@@ -47,6 +53,7 @@ function renderForm(options: FormOptions = {}) {
       album={options.album ?? null}
       onClose={onClose}
       onSaved={onSaved}
+      {...(options.canEditCover === undefined ? {} : { canEditCover: options.canEditCover })}
     />,
     '/circles/cir_familia',
   );
@@ -258,6 +265,7 @@ describe('AlbumFormDialog · envío al contrato', () => {
     expect(saving.getAttribute('aria-busy')).toBe('true');
     // Región viva: anuncia el guardado sin depender del texto del botón.
     expect(within(dialog).getByRole('status').textContent).toBe('Guardando álbum…');
+    expect(document.querySelector('form')?.getAttribute('aria-busy')).toBe('true');
     expect((screen.getByRole('button', { name: 'Cancelar' }) as HTMLButtonElement).disabled).toBe(
       true,
     );
@@ -411,16 +419,309 @@ describe('AlbumFormDialog · edición', () => {
 });
 
 describe('AlbumFormDialog · portada, teclado y accesibilidad', () => {
-  it('muestra la portada deshabilitada con su nota', async () => {
+  it('con 0 fotos deshabilita la acción y explica cómo habilitarla', async () => {
+    renderForm({ mode: 'edit', album: albumEmpty, canEditCover: true });
+
+    const dialog = await screen.findByRole('dialog', { name: 'Editar álbum' });
+    const coverButton = within(dialog).getByRole('button', { name: 'Elegir portada' });
+
+    expect((coverButton as HTMLButtonElement).disabled).toBe(true);
+    expect(coverButton.getAttribute('aria-describedby')).toBeTruthy();
+    expect(within(dialog).getByText('Sube fotos para elegir una portada.')).toBeTruthy();
+    expect(
+      (within(dialog).getByRole('button', { name: 'Quitar portada' }) as HTMLButtonElement)
+        .disabled,
+    ).toBe(true);
+    expect(document.querySelector('input[type="file"]')).toBeNull();
+  });
+
+  it('abre la rejilla, marca una sola foto y envía su id en el PATCH', async () => {
+    let body: unknown = null;
+
+    useCsrf();
+    server.use(
+      http.get(ALBUM_PHOTOS_URL, () =>
+        HttpResponse.json({ items: galleryPhotos, nextCursor: null }),
+      ),
+      http.patch(ALBUM_URL, async ({ request }) => {
+        body = await request.json();
+        return HttpResponse.json(albumWithPhotos);
+      }),
+    );
+
+    renderForm({
+      mode: 'edit',
+      album: { ...albumWithPhotos, coverPhoto: null },
+      canEditCover: true,
+    });
+    const user = userEvent.setup();
+
+    const dialog = await screen.findByRole('dialog', { name: 'Editar álbum' });
+    const coverButton = within(dialog).getByRole('button', { name: 'Elegir portada' });
+
+    expect((coverButton as HTMLButtonElement).disabled).toBe(false);
+    await user.click(coverButton);
+
+    expect(
+      await screen.findByRole('list', { name: 'Fotos del álbum para la portada' }),
+    ).toBeTruthy();
+
+    const checkboxes = screen.getAllByRole('checkbox', { name: /Seleccionar foto:/ });
+
+    expect(checkboxes).toHaveLength(galleryPhotos.length);
+
+    await user.click(screen.getByRole('checkbox', { name: /Seleccionar foto: Atardecer/ }));
+
+    expect(screen.getByRole('checkbox', { name: /Quitar selección: Atardecer/ })).toHaveProperty(
+      'checked',
+      true,
+    );
+
+    await user.click(within(dialog).getByRole('button', { name: 'Guardar cambios' }));
+
+    await waitFor(() => {
+      expect(body).not.toBeNull();
+    });
+    expect(body).toMatchObject({ coverPhotoId: 'pho_playa' });
+  });
+
+  it('«Quitar portada» deja el hueco vacío y envía null al guardar', async () => {
+    let body: unknown = null;
+
+    useCsrf();
+    server.use(
+      http.patch(ALBUM_URL, async ({ request }) => {
+        body = await request.json();
+        return HttpResponse.json({ ...albumWithPhotos, coverPhoto: null });
+      }),
+    );
+
+    renderForm({ mode: 'edit', album: albumWithPhotos, canEditCover: true });
+    const user = userEvent.setup();
+
+    const dialog = await screen.findByRole('dialog', { name: 'Editar álbum' });
+
+    await user.click(within(dialog).getByRole('button', { name: 'Quitar portada' }));
+
+    expect(within(dialog).getByText('Se quitará al guardar.')).toBeTruthy();
+    expect(document.querySelector('img[src="/api/photos/pho_album_cover/thumb"]')).toBeNull();
+
+    await user.click(within(dialog).getByRole('button', { name: 'Guardar cambios' }));
+
+    await waitFor(() => {
+      expect(body).not.toBeNull();
+    });
+    expect(body).toMatchObject({ coverPhotoId: null });
+  });
+
+  it('al editar solo el título invalida álbum, lista y círculo, sin tocar fotos ni la lista de círculos', async () => {
+    const updated = { ...albumWithPhotos, title: 'Verano 2026' };
+
+    useCsrf();
+    server.use(http.patch(ALBUM_URL, () => HttpResponse.json(updated)));
+
+    const { queryClient } = renderForm({ mode: 'edit', album: albumWithPhotos });
+    const user = userEvent.setup();
+
+    queryClient.setQueryData(albumKeys.detail(albumWithPhotos.id), albumWithPhotos);
+    queryClient.setQueryData(albumKeys.list(albumWithPhotos.circleId), {
+      pages: [{ items: [albumWithPhotos], nextCursor: null }],
+      pageParams: [null],
+    });
+    queryClient.setQueryData(circleKeys.detail(albumWithPhotos.circleId), {
+      id: albumWithPhotos.circleId,
+    });
+    queryClient.setQueryData(circleKeys.list, {
+      pages: [{ items: [], nextCursor: null }],
+      pageParams: [null],
+    });
+    queryClient.setQueryData(photoKeys.album(albumWithPhotos.id, null), {
+      pages: [{ items: galleryPhotos, nextCursor: null }],
+      pageParams: [null],
+    });
+
+    await screen.findByRole('dialog', { name: 'Editar álbum' });
+    await waitFor(() => {
+      expect(titleInput().value).toBe('Verano en Mallorca');
+    });
+    await user.clear(titleInput());
+    await user.type(titleInput(), 'Verano 2026');
+    await user.click(
+      within(screen.getByRole('dialog')).getByRole('button', {
+        name: 'Guardar cambios',
+      }),
+    );
+
+    await waitFor(() => {
+      expect(queryClient.getQueryState(albumKeys.detail(albumWithPhotos.id))?.isInvalidated).toBe(
+        false,
+      );
+      expect(queryClient.getQueryData(albumKeys.detail(albumWithPhotos.id))).toEqual(updated);
+    });
+
+    await waitFor(() => {
+      expect(
+        queryClient.getQueryState(albumKeys.list(albumWithPhotos.circleId))?.isInvalidated,
+      ).toBe(true);
+      expect(
+        queryClient.getQueryState(circleKeys.detail(albumWithPhotos.circleId))?.isInvalidated,
+      ).toBe(true);
+    });
+
+    expect(
+      queryClient.getQueryState(photoKeys.album(albumWithPhotos.id, null))?.isInvalidated,
+    ).toBe(false);
+    expect(queryClient.getQueryState(circleKeys.list)?.isInvalidated).toBe(false);
+  });
+
+  it('al cambiar la portada también invalida la lista de círculos', async () => {
+    useCsrf();
+    server.use(
+      http.get(ALBUM_PHOTOS_URL, () =>
+        HttpResponse.json({ items: galleryPhotos, nextCursor: null }),
+      ),
+      http.patch(ALBUM_URL, () => HttpResponse.json(albumWithPhotos)),
+    );
+
+    const { queryClient } = renderForm({
+      mode: 'edit',
+      album: { ...albumWithPhotos, coverPhoto: null },
+      canEditCover: true,
+    });
+    const user = userEvent.setup();
+
+    queryClient.setQueryData(circleKeys.list, {
+      pages: [{ items: [], nextCursor: null }],
+      pageParams: [null],
+    });
+
+    const dialog = await screen.findByRole('dialog', { name: 'Editar álbum' });
+
+    await user.click(within(dialog).getByRole('button', { name: 'Elegir portada' }));
+    await user.click(await screen.findByRole('checkbox', { name: /Seleccionar foto: Atardecer/ }));
+    await user.click(within(dialog).getByRole('button', { name: 'Guardar cambios' }));
+
+    await waitFor(() => {
+      expect(queryClient.getQueryState(circleKeys.list)?.isInvalidated).toBe(true);
+    });
+  });
+
+  it('en alta muestra la nota de 0 fotos y la acción deshabilitada', async () => {
     renderForm();
 
     const dialog = await screen.findByRole('dialog', { name: 'Nuevo álbum' });
     const coverButton = within(dialog).getByRole('button', { name: 'Elegir portada' });
 
     expect((coverButton as HTMLButtonElement).disabled).toBe(true);
-    expect(coverButton.getAttribute('aria-describedby')).toBeTruthy();
-    expect(within(dialog).getByText('Podrás elegirla cuando el álbum tenga fotos.')).toBeTruthy();
-    expect(document.querySelector('input[type="file"]')).toBeNull();
+    expect(within(dialog).getByText('Sube fotos para elegir una portada.')).toBeTruthy();
+    expect(
+      within(dialog).queryByText('Solo quien puede editar el álbum puede cambiar la portada.'),
+    ).toBeNull();
+  });
+
+  it('sin permiso de edición muestra la portada en solo lectura', async () => {
+    renderForm({ mode: 'edit', album: albumWithPhotos, canEditCover: false });
+
+    const dialog = await screen.findByRole('dialog', { name: 'Editar álbum' });
+
+    expect(within(dialog).queryByRole('button', { name: 'Elegir portada' })).toBeNull();
+    expect(within(dialog).queryByRole('button', { name: 'Quitar portada' })).toBeNull();
+    expect(
+      within(dialog).getByText('Solo quien puede editar el álbum puede cambiar la portada.'),
+    ).toBeTruthy();
+  });
+
+  it('sin `canEditCover` el valor por defecto es solo lectura', async () => {
+    renderForm({ mode: 'edit', album: albumWithPhotos });
+
+    const dialog = await screen.findByRole('dialog', { name: 'Editar álbum' });
+
+    expect(within(dialog).queryByRole('button', { name: 'Elegir portada' })).toBeNull();
+    expect(within(dialog).queryByRole('button', { name: 'Quitar portada' })).toBeNull();
+  });
+
+  it('un 404 al elegir una portada muestra el error en el bloque y conserva el formulario', async () => {
+    useCsrf();
+    server.use(
+      http.get(ALBUM_PHOTOS_URL, () =>
+        HttpResponse.json({ items: galleryPhotos, nextCursor: null }),
+      ),
+      http.patch(ALBUM_URL, () =>
+        HttpResponse.json(
+          { code: 'NOT_FOUND', message: 'No encontrado', details: null },
+          { status: 404 },
+        ),
+      ),
+    );
+
+    renderForm({
+      mode: 'edit',
+      album: { ...albumWithPhotos, coverPhoto: null },
+      canEditCover: true,
+    });
+    const user = userEvent.setup();
+
+    const dialog = await screen.findByRole('dialog', { name: 'Editar álbum' });
+
+    await user.click(within(dialog).getByRole('button', { name: 'Elegir portada' }));
+    await user.click(await screen.findByRole('checkbox', { name: /Seleccionar foto: Atardecer/ }));
+    await user.click(within(dialog).getByRole('button', { name: 'Guardar cambios' }));
+
+    expect(
+      await within(dialog).findByText(
+        'La foto elegida ya no está disponible. Elige otra y vuelve a guardar.',
+      ),
+    ).toBeTruthy();
+    expect(within(dialog).queryByText('El álbum ya no existe o ya no tienes acceso.')).toBeNull();
+    expect(titleInput().value).toBe('Verano en Mallorca');
+  });
+
+  it('un 404 al quitar la portada mantiene el error genérico de recurso inexistente', async () => {
+    useCsrf();
+    server.use(
+      http.patch(ALBUM_URL, () =>
+        HttpResponse.json(
+          { code: 'NOT_FOUND', message: 'No encontrado', details: null },
+          { status: 404 },
+        ),
+      ),
+    );
+
+    renderForm({ mode: 'edit', album: albumWithPhotos, canEditCover: true });
+    const user = userEvent.setup();
+
+    const dialog = await screen.findByRole('dialog', { name: 'Editar álbum' });
+
+    await user.click(within(dialog).getByRole('button', { name: 'Quitar portada' }));
+    await user.click(within(dialog).getByRole('button', { name: 'Guardar cambios' }));
+
+    expect(
+      await within(dialog).findByText('El álbum ya no existe o ya no tienes acceso.'),
+    ).toBeTruthy();
+    expect(
+      within(dialog).queryByText(
+        'La foto elegida ya no está disponible. Elige otra y vuelve a guardar.',
+      ),
+    ).toBeNull();
+  });
+
+  it('la rejilla de portada pasa axe', async () => {
+    useCsrf();
+    server.use(
+      http.get(ALBUM_PHOTOS_URL, () =>
+        HttpResponse.json({ items: galleryPhotos, nextCursor: null }),
+      ),
+    );
+
+    renderForm({ mode: 'edit', album: albumWithPhotos, canEditCover: true });
+    const user = userEvent.setup();
+
+    const dialog = await screen.findByRole('dialog', { name: 'Editar álbum' });
+
+    await user.click(within(dialog).getByRole('button', { name: 'Elegir portada' }));
+    await screen.findByRole('list', { name: 'Fotos del álbum para la portada' });
+
+    await expectNoAxeViolations(document.body);
   });
 
   it('enfoca el título al abrir y cierra con Esc cuando no está guardando', async () => {

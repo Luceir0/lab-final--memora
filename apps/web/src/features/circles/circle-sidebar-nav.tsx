@@ -25,7 +25,8 @@ export interface CircleSidebarNavProps {
  * - El nombre del círculo se resalta en todas sus secciones (`bg-primary-soft`
  *   y `text-primary-text`); la sección actual va en negrita, sin píldora.
  * - `aria-current="page"` es único: en el overview lo lleva el enlace del
- *   círculo y en Personas/Ajustes el enlace de esa sección.
+ *   círculo, dentro de un álbum lo lleva «Álbumes», y en Personas/Ajustes el
+ *   enlace de esa sección.
  */
 export function CircleSidebarNav({ currentPath }: CircleSidebarNavProps) {
   const router = useRouter();
@@ -113,7 +114,8 @@ function CircleSubnav({ circleId, currentPath, onNavigate }: CircleSubnavProps) 
   const overviewPath = circlePath(circleId);
   const peoplePath = circlePeoplePath(circleId);
   const settingsPath = circleSettingsPath(circleId);
-  const albumsActive = currentPath === overviewPath;
+  const albumsActive =
+    currentPath === overviewPath || currentPath.startsWith(`${overviewPath}/albums`);
   const peopleActive = currentPath === peoplePath;
   const settingsActive = currentPath === settingsPath;
 
@@ -121,12 +123,13 @@ function CircleSubnav({ circleId, currentPath, onNavigate }: CircleSubnavProps) 
     <ul className="mb-1 ml-7 mt-1 flex flex-col gap-0.5 pl-3">
       <li>
         {/*
-         * Este enlace mantiene la navegación SPA sin `aria-current`: en el
-         * overview ya lo lleva el enlace del círculo. Solo cambia la tipografía
-         * cuando es la sección actual.
+         * Este enlace mantiene la navegación SPA. En el overview no lleva
+         * `aria-current` porque ya lo lleva el enlace del círculo; dentro de un
+         * álbum sí, y es el único `aria-current="page"` del sidebar.
          */}
         <a
           href={overviewPath}
+          aria-current={albumsActive && currentPath !== overviewPath ? 'page' : undefined}
           onClick={(event) => {
             if (!isPlainLeftClick(event)) {
               return;

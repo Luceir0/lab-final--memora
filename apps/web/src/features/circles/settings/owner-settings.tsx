@@ -2,6 +2,7 @@ import {
   displayNameSchema,
   type CircleDetailDto,
   type CircleSettings,
+  type PhotoSummary,
   type UpdateCircleRequest,
 } from '@memora/shared';
 import {
@@ -17,9 +18,10 @@ import {
 } from '@memora/ui';
 import { useQueryClient } from '@tanstack/react-query';
 import { useRouter } from '@tanstack/react-router';
-import { Layers, Mail, Trash2, TriangleAlert, UsersRound } from 'lucide-react';
+import { Layers, Mail, Trash2, TriangleAlert, UsersRound, ImagePlus, X } from 'lucide-react';
 import { useEffect, useId, useRef, useState, type FormEvent } from 'react';
 
+import { CircleCoverPickerDialog } from '../../covers/circle-cover-picker-dialog';
 import { flattenInvitationPages, useInvitationsQuery } from '../../members/queries';
 import { CircleCover } from '../circle-cover';
 import { CIRCLE_DESCRIPTION_MAX_LENGTH } from '../create-circle-dialog';
@@ -50,13 +52,17 @@ interface SettingsDraft {
   readonly name: string;
   readonly description: string;
   readonly settings: CircleSettings;
+  readonly coverPhoto: PhotoSummary | null;
 }
 
-function draftFromCircle(circle: Pick<CircleDetailDto, 'name' | 'description' | 'settings'>) {
+function draftFromCircle(
+  circle: Pick<CircleDetailDto, 'name' | 'description' | 'settings' | 'coverPhoto'>,
+) {
   return {
     name: circle.name,
     description: circle.description ?? '',
     settings: { ...circle.settings },
+    coverPhoto: circle.coverPhoto,
   } satisfies SettingsDraft;
 }
 
@@ -104,6 +110,8 @@ export function OwnerSettings({ circle }: OwnerSettingsProps) {
   const [toast, setToast] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [deleteError, setDeleteError] = useState<CirclesErrorCopy | null>(null);
+  const [coverPickerOpen, setCoverPickerOpen] = useState(false);
+  const [coverError, setCoverError] = useState<string | null>(null);
 
   const updateMutation = useUpdateCircleMutation(circle.id);
   const deleteMutation = useDeleteCircleMutation(circle.id);
@@ -116,13 +124,19 @@ export function OwnerSettings({ circle }: OwnerSettingsProps) {
   const description = draft.description.trim();
   const nameChanged = name !== baseline.name.trim();
   const descriptionChanged = description !== baseline.description.trim();
+  const coverChanged = (draft.coverPhoto?.id ?? null) !== (baseline.coverPhoto?.id ?? null);
   const changedFlags = SETTINGS_FLAGS.filter(
     (flag) => draft.settings[flag.key] !== baseline.settings[flag.key],
   );
-  const changeCount = (nameChanged ? 1 : 0) + (descriptionChanged ? 1 : 0) + changedFlags.length;
+  const changeCount =
+    (nameChanged ? 1 : 0) +
+    (descriptionChanged ? 1 : 0) +
+    (coverChanged ? 1 : 0) +
+    changedFlags.length;
   const changeLabels = [
     ...(nameChanged ? ['nombre'] : []),
     ...(descriptionChanged ? ['descripción'] : []),
+    ...(coverChanged ? ['portada'] : []),
     ...changedFlags.map((flag) => flag.summary),
   ];
   const pending = updateMutation.isPending;
@@ -205,6 +219,7 @@ export function OwnerSettings({ circle }: OwnerSettingsProps) {
     setFieldErrors({});
     setSettingsError(null);
     setSaveError(null);
+    setCoverError(null);
   };
 
   const discard = () => {
@@ -261,6 +276,10 @@ export function OwnerSettings({ circle }: OwnerSettingsProps) {
       payload.description = nextDescription === '' ? null : nextDescription;
     }
 
+    if (coverChanged) {
+      payload.coverPhotoId = draft.coverPhoto?.id ?? null;
+    }
+
     if (changedFlags.length > 0) {
       payload.settings = { ...draft.settings };
     }
@@ -278,6 +297,18 @@ export function OwnerSettings({ circle }: OwnerSettingsProps) {
       }
 
       if (isNotFoundError(error)) {
+        /*
+         * Un 404 con `coverPhotoId` es ambiguo en la API: puede que el círculo
+         * ya no exista o que la foto no pertenezca al círculo. El servidor
+         * solo valida la foto cuando el id no es nulo; con `null` el 404 es de
+         * recurso y se mantiene la navegación. Con una foto elegida no se
+         * navega: se conserva el borrador y se pide elegir otra.
+         */
+        if (coverChanged && draft.coverPhoto !== null) {
+          setCoverError('La foto elegida ya no está disponible. Elige otra y vuelve a guardar.');
+          return;
+        }
+
         void router.navigate({ href: '/circles' });
         return;
       }
@@ -347,14 +378,52 @@ export function OwnerSettings({ circle }: OwnerSettingsProps) {
           <Card padding="md" className="flex flex-col gap-4 lg:gap-5 lg:p-6">
             <h2 className="sr-only text-h2 font-bold text-text lg:not-sr-only">General</h2>
 
-            <div className="flex items-center gap-3 md:block">
-              <p className="shrink-0 text-body-sm font-semibold text-text">Portada</p>
-              <CircleCover
-                name={circle.name}
-                photo={circle.coverPhoto}
-                className="min-w-0 aspect-[3/2] w-24 rounded-lg md:aspect-[12/5] md:max-h-56 md:w-full md:mt-2"
-                initialsClassName="text-body-sm md:text-h1"
-              />
+            <div className="flex flex-col gap-3">
+              <div className="flex items-center gap-3 md:block">
+                <p className="shrink-0 text-body-sm font-semibold text-text">Portada</p>
+                <CircleCover
+                  name={draft.name}
+                  photo={draft.coverPhoto}
+                  className="min-w-0 aspect-[3/2] w-24 rounded-lg md:aspect-[12/5] md:max-h-56 md:w-full md:mt-2"
+                  initialsClassName="text-body-sm md:text-h1"
+                />
+              </div>
+
+              <div className="flex flex-wrap gap-2">
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  icon={<ImagePlus />}
+                  disabled={pending}
+                  onClick={() => {
+                    setCoverPickerOpen(true);
+                  }}
+                >
+                  Elegir portada
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  icon={<X />}
+                  disabled={pending || draft.coverPhoto === null}
+                  onClick={() => {
+                    setDraft((current) => ({ ...current, coverPhoto: null }));
+                    setCoverError(null);
+                  }}
+                >
+                  Quitar portada
+                </Button>
+              </div>
+
+              {coverError === null ? null : (
+                <InlineAlert
+                  tone="danger"
+                  title="No hemos podido usar esa portada"
+                  description={coverError}
+                />
+              )}
+
+              <p className="text-caption text-muted">Se guarda con «Guardar cambios».</p>
             </div>
 
             <TextField
@@ -543,6 +612,20 @@ export function OwnerSettings({ circle }: OwnerSettingsProps) {
           </div>
         </>
       ) : null}
+
+      <CircleCoverPickerDialog
+        open={coverPickerOpen}
+        onClose={() => {
+          setCoverPickerOpen(false);
+        }}
+        circleId={circle.id}
+        selectedPhoto={draft.coverPhoto}
+        selectedPhotoLabel={coverChanged ? 'Portada elegida, sin guardar' : 'Portada actual'}
+        onSelect={(photo) => {
+          setDraft((current) => ({ ...current, coverPhoto: photo }));
+          setCoverError(null);
+        }}
+      />
 
       <ConfirmDialog
         open={confirmOpen}

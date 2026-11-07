@@ -146,6 +146,21 @@ describe('AlbumDetailPage · metadatos', () => {
     await expectNoAxeViolations(container);
   });
 
+  it('muestra las migas Mis círculos → círculo → Álbumes → álbum', async () => {
+    renderDetail();
+
+    const nav = await screen.findByRole('navigation', { name: 'Ruta del álbum' });
+    const labels = Array.from(nav.querySelectorAll('a, span[aria-current="page"]')).map(
+      (element) => element.textContent,
+    );
+
+    expect(labels).toEqual(['Mis círculos', 'Familia García', 'Álbumes', 'Verano en Mallorca']);
+    expect(within(nav).getByRole('link', { name: 'Álbumes' }).getAttribute('href')).toBe(
+      '/circles/cir_familia',
+    );
+    expect(within(nav).getByText('Verano en Mallorca').getAttribute('aria-current')).toBe('page');
+  });
+
   it('muestra «Sin fecha» cuando el álbum no tiene fecha', async () => {
     renderDetail({ album: albumEmpty });
 

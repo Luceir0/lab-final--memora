@@ -393,6 +393,20 @@ Fuera de F14: offline, push y subidas en segundo plano. Sin service worker
 | Verificación | Tests RTL/MSW/axe, typecheck, lint, build y formato | `test profile` → **27**; `test provisional` → **2**; suite web estabilizada con `--maxWorkers=2`; typecheck 9/9; lint 6/6; build 5/5; format OK | Cubierto (F34, `done`) |
 | Pendiente | Aceptada por el usuario el 2026-11-07; sin revisión independiente por nivel C; verificación visual y de lector de pantalla | [handoff de F34](../04-features/F34-profile/handoff.md) | Documentado |
 
+## Portadas de círculo y álbum (F44, review)
+
+| Tema | Evidencia | Estado |
+| --- | --- | --- |
+| Portada como foto existente | `PATCH /albums/:albumId` y `PATCH /circles/:circleId` con `coverPhotoId` o `null`; sin objeto de portada ni endpoint nuevo | Cubierto (F44) |
+| Selector reutilizable | `PhotoGrid` con selección única + `ResponsiveDialog`; rejilla inline en el formulario del álbum y diálogo en el círculo | Cubierto (F44) |
+| Fotos del círculo sin endpoint nuevo | Navegación por `GET /circles/:id/albums` → `GET /albums/:id/photos`, con paginación y foco entre pasos | Cubierto (F44) |
+| Permisos y solo lectura | `canEditCover` espejo de `canEditAlbum`; owner en círculo; member con portada de solo lectura en Ajustes | Cubierto (F44) |
+| Guardado por lote y caché | Portada en el borrador de Ajustes y en el formulario del álbum; invalidación de álbum, lista, círculo/héroe y lista de círculos solo al cambiar portada | Cubierto (F44) |
+| Estados y accesibilidad | Carga, vacío, error con reintento, guardando y éxito; teclado, foco y axe en los estados tocados | Cubierto (F44); lector de pantalla real → F38/F39 |
+| Verificación | `test covers` **28**, `test albums` **140**, `test circle-settings` **9**, `test circle-sidebar` **7**, `test circle-detail` **17**, regresión F28 **34**, suite web **105 archivos y 866 tests**, typecheck 9/9, lint 6/6, build 5/5, format, docs y agents OK | Cubierto (F44, `review`) |
+| Correcciones de aceptación | Migas del álbum con «Álbumes» entre el círculo y el título; sidebar con «Álbumes» en negrita y `aria-current` dentro de `/albums` | Cubierto (F44, aceptación) |
+| Pendiente | Aceptación visual a 375/1280 en claro/oscuro y merge de la PR #55; 404 de portada ambiguo documentado; foco tras paginar al encabezado | [handoff de F44](../04-features/F44-covers/handoff.md) |
+
 ## Evidencias de entrega
 
 - [ ] README con instalación y scripts.
