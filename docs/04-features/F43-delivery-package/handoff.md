@@ -104,3 +104,10 @@ navegador**: ambos dependen del usuario.
 
 Revisión del delta (nivel V) y ensayo del usuario. Después, commit y PR de `feat/F43-S5`.
 No abrir S6 sin permiso.
+
+## Cierre S6 (2026-11-08)
+
+S6 no reabre F43: añade el atajo local de demo (en el escritorio, fuera del repo) y el
+[dossier técnico](../../08-delivery/technical-dossier.md), y deja la trazabilidad en
+[handoff-S6.md](../../06-process/handoff-S6.md). El estado de F43 sigue en `review`: el ensayo,
+la grabación del vídeo y la aceptación del usuario continúan pendientes.

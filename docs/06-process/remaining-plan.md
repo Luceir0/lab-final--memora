@@ -41,7 +41,7 @@ El objetivo ya no es completar las 43 features, sino **cerrar un MVP defendible 
 | **S3** | 1 | F37 + F38 mínimo y F39 solo bloqueantes | Testeo (E2E, a11y) | **No ejecutada** (2026-11-08); fuera por tiempo |
 | **S4** | 1 | **F42 + F41** (F40 movido a S5) | Testeo / calidad y despliegue | **Hecha** (2026-11-08); F42 y F41 en `review` |
 | **S5** | 1 | **F43 + F40 mínimo** (Lighthouse con timebox) | Presentación y defensa | **Hecha** (2026-11-08); F43 y F40 en `review` |
-| **S6** | — | Reserva / correcciones finales | Mixto | No definida |
+| **S6** | 3,5–4,5 | **Atajo local de demo + dossier técnico** | Presentación y documentación | **Hecha** (2026-11-08); pendiente aceptación; nivel **C** |
 | **S7** | — | Ensayo de demo y defensa | Presentación | Se funde con S5 si no hay tiempo |
 
 **Orden acordado por el usuario (2026-11-08):**
@@ -50,7 +50,8 @@ El objetivo ya no es completar las 43 features, sino **cerrar un MVP defendible 
 2. **S3 se salta.** No se instala Playwright ni se hacen E2E ni F39.
 3. **S4 reducida:** F42 (entorno demo reproducible) y F41 (checklist de seguridad) en **1,5–2,5 h**.
 4. **S5:** F43 completo + F40 mínimo (Lighthouse timeboxed) en **3,5–5,5 h**, con el ensayo incluido.
-5. **S7** se funde con el ensayo de S5 si el tiempo aprieta.
+5. **S6:** atajo local de demo reproducible y dossier técnico en **3,5–4,5 h**, en ese orden.
+6. **S7** se funde con el ensayo de S5 si el tiempo aprieta.
 
 **Decisiones de recorte (2026-11-08):**
 
@@ -59,6 +60,14 @@ El objetivo ya no es completar las 43 features, sino **cerrar un MVP defendible 
 - **F41 y F42 en S4.** F42 va primero porque valida que la demo arranca desde cero; F41 después.
 - **Excepciones de dependencia autorizadas:** F38 → F40/F41 y F39 → F43. Se registran aquí y en el tablero.
 - **No se recortan:** autorización y permisos, persistencia, la batería de tests existente, seed/demo y documentación de cobertura.
+
+**Decisiones de S6 (2026-11-08):**
+
+- **Nivel C:** documentación y tooling de demo, sin código de producto. Gates automáticos y aceptación del usuario; no se abre auditoría de accesibilidad ni F37/F38/F39.
+- **Dossier solo en Markdown**, sin PDF ni capturas nuevas: los enlaces y la evidencia existente son la fuente.
+- **El atajo local de demo parte de `.env.example`**, sobrescribe con `.env` si existe y genera `SESSION_SECRET` en memoria si queda vacío. Nunca imprime valores.
+- **Dos ventanas por defecto** (API y web) para enseñar los `403` en directo; el modo `single` queda como alternativa de una sola ventana.
+- **La inestabilidad del prerender en CI no se toca** en S6: se documenta y se relanza el job si aparece.
 
 **Regla de secuencia:** una sesión termina, se entrega el handoff y **se para**. El usuario revisa y abre la siguiente. No se encadena la siguiente sesión desde dentro de la actual, aunque sobre presupuesto.
 
@@ -74,6 +83,7 @@ El objetivo ya no es completar las 43 features, sino **cerrar un MVP defendible 
 | S4 | 2026-11-08 | **F42 y F41 implementadas y en `review`.** F42: Compose con los tres servicios `healthy`, migración pendiente aplicada, seed determinista repetido, imágenes del seed en Silo, `pnpm dev` con las variables de `.env.example`, `/api/health` 200, login real y pipeline de subida → original → borrado. Corrección de arranque en `turbo.json` (`globalEnv` con S3/email/geocoding) porque Turbo no las reenviaba a la API. F41: `pnpm audit` (2 moderadas dev-only aceptadas), tests negativos reales de auth, CSRF, `Origin`, rate limit, acceso cruzado, descarga, subida y borrado, y `security-report.md` sin bloqueantes. Verificación: API **424 passed + 2 skipped**, web **110 archivos y 910 tests**, typecheck 9/9, lint 6/6, build 5/5, format/docs/agents OK. Sin commit ni push. Después del cierre se implementó el mantenimiento periódico (H-02), se probó el email con Mailpit y se limpiaron los datos de demo (H-04). Cierre operativo: PR #62 abierta, sin merge. |
 
 | S5 | 2026-11-08 | **F43 y F40 en `review`.** F43: checklist con evidencia ítem a ítem (6 abiertos justificados), demo de 8–10 min con dos usuarios y dos círculos, defensa de 15–20 min con 14 diapositivas Marp, guion del vídeo de 5–8 min y diez limitaciones explícitas. Demo verificada por API (login de los dos usuarios, 401/403/404, subida, descarga, borrado y logout) y datos restaurados al seed. Accesibilidad: **16 pasadas de axe sobre el build, 0 violaciones**. F40: Lighthouse 13.6.0 móvil con **Performance 93/91, A11y 100/100, BP 100/100**, **LCP 3,2/3,5 s (no cumple)** y LCP observado de 174/351 ms; JS inicial 191,3/206,8 KB gzip. La PR #62 se mergeó (`5ff213e`) tras relanzar un CI que falló por una carrera del prerender. Pendientes: ensayo en navegador, grabación del vídeo, revisión y aceptación. Cierre operativo: commits `76edee4` y `7a5a88e`; PR #63 mergeada en `main` (`ee0c5ad`). |
+| S6 | 2026-11-08 | **Dossier técnico en la rama `feat/S6-defense` (PR #65) y atajo local de demo en el escritorio, fuera del repo.** El script se probó desde el escritorio (completo y `fast`): Docker y tres servicios `healthy`, `prisma generate` (faltaba en un clon limpio), migraciones sin pendientes, seed e imágenes idempotentes, 3 paquetes compilados, **Demo lista**, `/api/health` **200**, `/login` **200**, Mailpit **200**, login de `lucia@memora.test` y `mateo@memora.test` **200** y `/api/me` con el usuario correcto. Guarda de puertos ocupados probada (segunda ejecución → aviso y salida 1). Hallazgos corregidos: `timeout` de Git Bash, Vite en IPv6 y falso positivo por API vieja. El `.bat` se retiró del repositorio en un commit de seguimiento; la documentación describe los pasos manuales y el atajo local no versionado. Dossier con dependencias verificadas contra los seis `package.json` (`pino` viene con Fastify, no es dependencia directa), arquitectura, ADR-0001…0014, **30 preguntas lógicas**, **15 trampa** y límites. Verificación: API **429 passed + 2 skipped**; web **110 archivos y 910 tests** con `NODE_ENV=test` y `--maxWorkers=2 --retry=1`; `shared` **154**, `ui` **283**, `api-client` **39**; build **5/5**, typecheck **9/9**, lint **6/6**, format OK, docs **203 archivos y 897 enlaces, 0 rotos**, agents **44/44**. Una primera pasada web falló por exportar `NODE_ENV=development`; se repitió con `NODE_ENV=test` y pasó. Sin cambios en `apps/**` ni `packages/**`. |
 ## Cómo retomar una sesión
 
 Cada sesión nueva arranca con un prompt autocontenido que debe incluir:

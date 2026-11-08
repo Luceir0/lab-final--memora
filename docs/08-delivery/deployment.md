@@ -29,6 +29,31 @@ Servicios:
 
 Web y API bajo el mismo origen en desarrollo mediante proxy `/api`.
 
+### Atajo local para Windows (no versionado)
+
+Para la demo de este equipo hay un script **`demo.bat` en el escritorio**, fuera del
+repositorio. No se versiona: localiza la raíz del proyecto con la ruta `MEMORA_REPO` del
+propio archivo (o con la variable `MEMORA_ROOT`) y, desde ahí, ejecuta los mismos pasos que la
+sección anterior. Si mueves el repo, edita esa línea.
+
+Hace, en orden: comprueba Docker y `docker compose up -d`, espera los tres healthchecks con
+reintentos reales, comprueba `node_modules`, carga `.env.example` y encima `.env` si existe,
+genera `SESSION_SECRET` si está vacío, crea el bucket privado si falta, ejecuta
+`prisma generate`, `migrate deploy`, el seed y las imágenes, compila los paquetes del
+workspace y abre **dos ventanas**: una con la API (para enseñar los `403` en directo) y otra
+con la web. Después espera a que `:3001/api/health` y `:3000/login` respondan, abre el
+navegador y Mailpit y muestra las credenciales. No imprime ningún valor de entorno.
+
+- `demo.bat fast`: se salta migraciones, seed e imágenes (útil si la base ya está lista).
+- `demo.bat single`: un solo proceso `pnpm dev` en vez de dos ventanas.
+- Para parar: cierra las ventanas «Memora API» y «Memora web» (o `Ctrl+C` en cada una); los
+  contenedores siguen arriba y se paran con `docker compose stop`.
+- Si falla, el script termina con un mensaje en español y deja abierta la ventana para leerlo.
+
+El script se probó el 2026-11-08 lanzándolo **desde el escritorio**: encontró el repo,
+arrancó la demo, respondió `/api/health` y `/login` y aceptó el login de los dos usuarios.
+
+
 ### Variables: nada carga el `.env` de la raíz
 
 Comprobado en el arranque: la API lee `process.env`, el CLI de Prisma busca `.env` en

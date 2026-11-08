@@ -2,6 +2,9 @@
 # en CRLF por core.autocrlf; Prettier usa endOfLine "auto" para aceptarlo.
 * text=auto eol=lf
 
+# Batch de Windows: cmd.exe necesita CRLF para las etiquetas y los saltos.
+*.bat text eol=crlf
+
 # Binarios: no normalizar
 *.png binary
 *.jpg binary

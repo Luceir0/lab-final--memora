@@ -28,6 +28,8 @@
 - [ ] `docker compose ps` → `postgres`, `minio` y `mailpit` en **healthy**.
 - [ ] `curl -s localhost:3000/api/health` → `200`.
 - [ ] `pnpm dev` arriba con las variables exportadas (ver [deployment.md](deployment.md)).
+      Alternativa en Windows: el atajo local `demo.bat` (en el escritorio, fuera del repo)
+      hace el pre-flight completo y abre las dos ventanas.
 - [ ] Navegador A (Chrome) con Lucía. Navegador B (Firefox o ventana de incógnito) con Mateo.
 - [ ] Zoom del navegador al 100 % y luego una pasada rápida al 200 %.
 - [ ] Tema claro en A y oscuro en B (o cambia en directo desde Perfil).

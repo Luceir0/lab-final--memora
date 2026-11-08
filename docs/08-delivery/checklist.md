@@ -89,6 +89,9 @@
 - [x] Limitaciones. _Sección explícita en [defense.md](defense.md) (AC-06)._
 - [x] Guía de demo y defensa. _[demo.md](demo.md), [defense.md](defense.md),
       [slides.md](slides.md) y [video-script.md](video-script.md)._
+- [x] Dossier técnico. _[technical-dossier.md](technical-dossier.md): inventario de
+      dependencias con su función, arquitectura, los 14 ADRs con alternativa y deuda,
+      30 preguntas lógicas, 15 trampa y límites enlazados a `defense.md`._
 
 ## Entrega
 
@@ -109,9 +112,15 @@
       _No verificada: no hay dispositivo físico. F14 midió instalabilidad en Chrome de
       escritorio; F42 la dejó pendiente._
 - [x] URL o demo local.
-      _Demo local reproducible: `docker compose up -d`, `pnpm db:migrate`, `pnpm db:seed`,
-      `pnpm --filter @memora/api db:seed:images`, `pnpm dev`. Sin URL pública por decisión de
-      alcance._
+      _Demo local reproducible con el atajo local **`demo.bat`** (en el escritorio, fuera del
+      repo): Docker + healthchecks reales, dependencias, variables desde `.env.example` (y
+      `.env` si existe), bucket, Prisma generate, migraciones, seed, imágenes, compilación de
+      paquetes, API y web en dos ventanas, espera de `/api/health` y `/login` y apertura del
+      navegador y Mailpit. Probado el 2026-11-08 lanzándolo desde el escritorio, con login
+      real de los dos usuarios. Sin URL pública por decisión de alcance. Los pasos manuales
+      siguen en [deployment.md](deployment.md)._
 - [ ] Commit final revisado.
       _Commits `76edee4` y `7a5a88e` y PR #63 **mergeados** en `main` (`ee0c5ad`), con CI en
-      verde; falta la revisión independiente y la aceptación del usuario._
+      verde; falta la revisión independiente y la aceptación del usuario. La rama
+      `feat/S6-defense` (PR #65) contiene el dossier; el atajo de demo es local y no se
+      versiona._
