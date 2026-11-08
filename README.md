@@ -62,7 +62,7 @@ El tablero de features está en [docs/04-features/README.md](docs/04-features/RE
 | Email | Mailpit local / Resend opcional |
 | Geocodificación | Nominatim (OpenStreetMap) |
 | Contenido editorial | **Content Island** (Ayuda, FAQ y Privacidad) |
-| Testing | Vitest, React Testing Library, MSW, Playwright, axe |
+| Testing | Vitest, React Testing Library, MSW, axe (sin Playwright: F37/F38 fuera) |
 | Calidad | ESLint, Prettier, `tsc --noEmit`, GitHub Actions |
 
 **Versiones fijadas (F04–F05):**
@@ -120,6 +120,7 @@ memora/
 │   └── config/
 ├── scripts/                   # check-docs, validate-agents
 ├── docker-compose.yml         # Postgres, Silo (S3) y Mailpit locales
+├── demo.bat                   # arranque de la demo local en Windows
 ├── content-island-snapshot.json # contenido editorial para SSG
 ├── package.json
 ├── pnpm-workspace.yaml
@@ -160,6 +161,9 @@ memora/
 | [docs/06-process/subagent-protocol.md](docs/06-process/subagent-protocol.md) | Cómo trabaja un subagente |
 | [docs/07-curriculum/coverage-map.md](docs/07-curriculum/coverage-map.md) | Cobertura del temario |
 | [docs/08-delivery/defense.md](docs/08-delivery/defense.md) | Guion de la defensa |
+| [docs/08-delivery/technical-dossier.md](docs/08-delivery/technical-dossier.md) | Dossier técnico: dependencias, arquitectura, decisiones, preguntas y límites |
+| [docs/08-delivery/deployment.md](docs/08-delivery/deployment.md) | Entorno local reproducible y guía de despliegue |
+| [demo.bat](demo.bat) | Atajo de Windows: Docker, migraciones, seed y arranque de API y web |
 | [docs/archive/spec-v1.md](docs/archive/spec-v1.md) | Especificación original (histórico) |
 
 ---

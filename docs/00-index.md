@@ -13,7 +13,7 @@ Memora se documenta en capas pequeñas para que un agente pueda cargar solo lo n
 7. [Calidad](05-quality/definition-of-done.md) — cuándo está terminado.
 8. [Proceso](06-process/workflow.md) — cómo se trabaja.
 9. [Temario](07-curriculum/coverage-map.md) — evidencias.
-10. [Entrega](08-delivery/defense.md) — demo y defensa.
+10. [Entrega](08-delivery/defense.md) — demo y defensa; [dossier técnico](08-delivery/technical-dossier.md) para la defensa técnica.
 
 ## Mapa
 
@@ -26,7 +26,7 @@ Memora se documenta en capas pequeñas para que un agente pueda cargar solo lo n
 | `05-quality` | estrategia, matriz de tests, checklists, rendimiento, DoD, auditorías |
 | `06-process` | workflow, subagentes, revisión, git, bitácora |
 | `07-curriculum` | cobertura del temario |
-| `08-delivery` | despliegue, demo, defensa, checklist |
+| `08-delivery` | despliegue, demo, defensa, checklist, dossier técnico |
 | `archive` | especificación v1 y material histórico |
 
 ## Convenciones

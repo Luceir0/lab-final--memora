@@ -105,6 +105,7 @@ Diapositivas en [slides.md](slides.md) (Marp, 14 diapositivas). Demo en [demo.md
 ## Material
 
 - [demo.md](demo.md) · [checklist.md](checklist.md) · [deployment.md](deployment.md)
+- [technical-dossier.md](technical-dossier.md)
 - [slides.md](slides.md) · [video-script.md](video-script.md)
 - [performance-report.md](../05-quality/performance-report.md)
 - [security-report.md](../05-quality/security-report.md)

@@ -29,6 +29,29 @@ Servicios:
 
 Web y API bajo el mismo origen en desarrollo mediante proxy `/api`.
 
+### Atajo para Windows: `demo.bat`
+
+El día de la demo, en Windows, basta con ejecutar desde la raíz:
+
+```bat
+demo.bat
+```
+
+Hace, en orden: comprueba Docker y `docker compose up -d`, espera los tres healthchecks con
+reintentos reales, comprueba `node_modules`, carga `.env.example` y encima `.env` si existe,
+genera `SESSION_SECRET` si está vacío, crea el bucket privado si falta, ejecuta
+`prisma generate`, `migrate deploy`, el seed y las imágenes, compila los paquetes del
+workspace y abre **dos ventanas**: una con la API (para enseñar los `403` en directo) y otra
+con la web. Después espera a que `:3001/api/health` y `:3000/login` respondan, abre el
+navegador y Mailpit y muestra las credenciales. No imprime ningún valor de entorno.
+
+- `demo.bat fast`: se salta migraciones, seed e imágenes (útil si la base ya está lista).
+- `demo.bat single`: un solo proceso `pnpm dev` en vez de dos ventanas.
+- Para parar: cierra las ventanas «Memora API» y «Memora web» (o `Ctrl+C` en cada una); los
+  contenedores siguen arriba y se paran con `docker compose stop`.
+- Si falla, el script termina con un mensaje en español y deja abierta la ventana para leerlo.
+
+
 ### Variables: nada carga el `.env` de la raíz
 
 Comprobado en el arranque: la API lee `process.env`, el CLI de Prisma busca `.env` en

@@ -457,6 +457,18 @@ Fuera de F14: offline, push y subidas en segundo plano. Sin service worker
 
 **Limitaciones:** sin E2E ni informe formal de accesibilidad; sin despliegue cloud ni servidor de producción para la web; el ensayo y la grabación dependen del usuario.
 
+## Documentación y demo (S6, 2026-11-08)
+
+| Tema | Evidencia | Estado |
+| --- | --- | --- |
+| Arranque reproducible en Windows | [`demo.bat`](../../demo.bat), [deployment.md](../08-delivery/deployment.md#atajo-para-windows-demobat) | Cubierto (S6): Docker y healthchecks con reintentos, variables sin imprimir secretos, Prisma generate, migraciones, seed, imágenes, compilación, dos ventanas y espera de `/api/health` y `/login`; probado con login real de `lucia@memora.test` y `mateo@memora.test` |
+| Dossier técnico de la entrega | [technical-dossier.md](../08-delivery/technical-dossier.md) | Cubierto (S6): dependencias por capa con qué/cómo/por qué, lo que no hay, arquitectura, ADR-0001…0014 con alternativa y deuda, 30 preguntas lógicas, 15 trampa y límites |
+| Inventario verificado de dependencias | `package.json` de la raíz y de los seis workspaces, `docker-compose.yml`, `turbo.json`, `ci.yml` | Cubierto (S6): cada versión citada existe en su manifiesto; se distingue lo que viene con Fastify (`pino`) de lo declarado |
+| Límites y deudas de la entrega | [defense.md](../08-delivery/defense.md), [checklist.md](../08-delivery/checklist.md) | Cubierto: sin E2E, sin informe formal de a11y, sin cloud, H-01, H-05, LCP, vídeo y dispositivo físico |
+
+**Limitaciones:** el dossier es Markdown, sin PDF ni capturas nuevas; `demo.bat` es solo
+Windows; la inestabilidad del prerender en CI no se tocó en S6.
+
 ## Evidencias de entrega
 
 - [x] README con instalación y scripts.
@@ -467,6 +479,8 @@ Fuera de F14: offline, push y subidas en segundo plano. Sin service worker
 - [ ] Capturas 375/768/1440.
 - [x] Bitácora.
 - [x] Defensa.
+- [x] Demo reproducible con `demo.bat`.
+- [x] Dossier técnico.
 
 ## Regla
 
