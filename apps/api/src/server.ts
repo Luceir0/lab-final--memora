@@ -1,5 +1,6 @@
 import { buildApp, type BuildAppOptions } from './app.ts';
 import { loadConfig, type AppConfig } from './config.ts';
+import { startCleanupScheduler } from './maintenance/cleanup.ts';
 import { createRuntimeServices } from './services/index.ts';
 import type { MemoraServer } from './types.ts';
 
@@ -55,7 +56,26 @@ export async function startServer(
     });
   }
 
+  // The scheduler must be started only by the listening process, never by
+  // `buildApp()`: tests would leak an interval per app.
+  let stopCleanup: (() => void) | null = null;
+
+  app.addHook('onClose', async () => {
+    stopCleanup?.();
+    stopCleanup = null;
+  });
+
   await app.listen({ port: config.apiPort, host: config.host });
+
+  const prisma = app.prisma;
+
+  if (prisma !== null) {
+    stopCleanup = startCleanupScheduler({
+      prisma,
+      storage: app.services.storage,
+      logger: app.log,
+    });
+  }
 
   return app;
 }

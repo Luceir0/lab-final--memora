@@ -3,7 +3,7 @@ id: F41
 title: "Revisión de seguridad"
 milestone: M5
 size: M
-status: draft
+status: review
 spec: complete
 depends_on:
   - "F38"
@@ -20,7 +20,7 @@ decisions:
 
 # F41 — Revisión de seguridad
 
-> **Milestone:** M5 · **Talla:** M · **Estado:** draft · **Spec:** completa
+> **Milestone:** M5 · **Talla:** M · **Estado:** review · **Spec:** completa
 > **Depende de:** F38 · **Bloquea:** F43
 
 ## Objetivo

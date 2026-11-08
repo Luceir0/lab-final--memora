@@ -4,25 +4,64 @@ La URL pública **no es obligatoria**. El objetivo es una demo local reproducibl
 
 ## Local
 
+Verificado el **2026-11-08** con Docker Desktop, Node 24.21.0 y pnpm 10.34.8.
+
 ```bash
-docker compose up -d        # Postgres, MinIO, Mailpit
+docker compose up -d            # Postgres, Silo (S3) y Mailpit
+docker compose ps               # los tres servicios deben estar «healthy»
 pnpm install
+# Exporta las variables de .env.example en esta shell (ver «Variables»)
 pnpm db:migrate
 pnpm db:seed
-pnpm dev
+pnpm db:seed:images             # primera vez o si faltan objetos en Silo
+pnpm dev                        # API en :3001 y web en :3000
 ```
 
 Servicios:
 
-| Servicio | Puerto | Uso |
-| --- | --- | --- |
-| Web | 3000 | TanStack Start |
-| API | 3001 | Fastify |
-| PostgreSQL | 5432 | Datos |
-| Silo (S3) | 9000/9001 | Fotos |
-| Mailpit | 8025 | Email capturado |
+| Servicio | Puerto | Uso | Healthcheck |
+| --- | --- | --- | --- |
+| Web | 3000 | TanStack Start | — (proceso de `pnpm dev`) |
+| API | 3001 | Fastify | `GET /api/health` |
+| PostgreSQL | 5432 | Datos | `pg_isready` |
+| Silo (S3) | 9000/9001 | Fotos (consola en 9001) | `/minio/health/live` |
+| Mailpit | 1025/8025 | Email capturado (UI en 8025) | `/mailpit readyz` |
 
 Web y API bajo el mismo origen en desarrollo mediante proxy `/api`.
+
+### Variables: nada carga el `.env` de la raíz
+
+Comprobado en el arranque: la API lee `process.env`, el CLI de Prisma busca `.env` en
+`apps/api` y Vite en `apps/web`; **ningún proceso carga el `.env` de la raíz**. Copiar
+`.env.example` a `.env` no basta. El flujo verificado es exportar el ejemplo en la shell
+actual, sin secretos reales:
+
+```bash
+# Git Bash — carga .env.example sin ejecutarlo como script (EMAIL_FROM lleva espacios y <>)
+while IFS= read -r line; do
+  case "$line" in ""|\#*) continue;; esac
+  key="${line%%=*}"; case "$key" in *[!A-Z0-9_]*) continue;; esac
+  export "$key=${line#*=}"
+done < .env.example
+export SESSION_SECRET="$(node -e "console.log(require('node:crypto').randomBytes(32).toString('base64url'))")"
+```
+
+```powershell
+# PowerShell
+Get-Content .env.example | Where-Object { $_ -match '^[A-Z0-9_]+=' } | ForEach-Object {
+  $name, $value = $_ -split '=', 2; Set-Item -Path "env:$name" -Value $value
+}
+$env:SESSION_SECRET = node -e "console.log(require('node:crypto').randomBytes(32).toString('base64url'))"
+```
+
+- `.env.example` deja `SESSION_SECRET` vacío a propósito. Sin él la API arranca y el login
+  funciona (clave HMAC aleatoria por proceso para CSRF), pero los tokens CSRF dejan de
+  valer al reiniciar. Genera uno para la demo.
+- Turbo 2 solo reenvía a las tareas las variables declaradas en `globalEnv` de
+  `turbo.json`. Ya están todas las de `.env.example`; **si añades una nueva, declárala** o
+  la API arrancará con storage o email «no configurados» y la subida fallará con `422`.
+  Esto se detectó en esta sesión: sin el cambio, `pnpm dev` arrancaba y el login funcionaba,
+  pero `POST /api/albums/:albumId/photos` devolvía `422 PROCESSING_FAILED`.
 
 ### Silo en local
 
@@ -30,9 +69,35 @@ MinIO dejó de publicar su edición comunitaria: la última release abierta es `
 
 La imagen está fijada por **tag y digest** (`RELEASE.2026-10-18T00-00-00Z@sha256:2636fc41…`) para que `docker compose up -d` sea reproducible y no dependa de un tag movido. Es **solo para local**: no se despliega en producción, donde el almacenamiento es R2/S3 gestionado. El contenedor arranca como root porque Docker crea el volumen como root; por eso Compose no fija `user`. Al actualizar la imagen, revisa las notas de release y vuelve a fijar el digest.
 
+**El bucket no se autogenera.** La API no lo crea y `pnpm db:seed:images` falla si no
+existe. Créalo una vez; el contenedor incluye `mc` y el bucket debe quedar privado:
+
+```bash
+docker compose exec -T minio mc alias set local http://127.0.0.1:9000 memora memora123
+docker compose exec -T minio mc mb --ignore-existing local/memora
+docker compose exec -T minio mc anonymous get local/memora   # -> private
+```
+
+### Migraciones y seed
+
+- `pnpm db:migrate` (`prisma migrate dev`) aplica las migraciones pendientes. En el arranque
+  verificado faltaba `20261105190000_f25_photo_membership_indexes` en la base `memora` y se
+  aplicó sin conflicto; `memora_test` ya estaba al día.
+- `pnpm db:seed` es **determinista e idempotente** (upserts con ids fijos, sin `deleteMany`):
+  2 usuarios, 2 círculos, 2 álbumes, 6 fotos, 2 etiquetas, 1 invitación y 4 actividades.
+  Repetirlo no duplica ni borra nada.
+- `pnpm db:seed:images` escribe en Silo los 18 objetos del seed (6 fotos × original, display
+  y thumb) y es idempotente: informa de las generadas y de las que ya tenían objeto.
+- **La base de desarrollo está limpia**: el 2026-11-08 se borraron los residuos de pruebas
+  manuales (el círculo «hola», dos usuarios de prueba, 12 fotos extra, 10 invitaciones, 3
+  etiquetas y 46 actividades) junto con sus objetos de Silo. Los conteos coinciden con el
+  seed: 2 usuarios, 2 círculos, 2 álbumes, 6 fotos, 2 etiquetas, 1 invitación y 4
+  actividades. Para repetir una limpieza, hazlo por ids concretos y nunca con un
+  `deleteMany` global en el seed.
+
 ## Variables
 
-`.env.example` es la **fuente de verdad**: copia el archivo a `.env`, rellena los secretos y no commitees nunca `.env`. Las variables son:
+`.env.example` es la **fuente de verdad** del listado y de los valores locales. No commitees nunca un `.env` real. La aplicación **no lee** el `.env` de la raíz: exporta estas variables en la shell antes de `pnpm dev`, `pnpm db:migrate` y `pnpm db:seed` (ver «Variables: nada carga el `.env` de la raíz»). Las variables son:
 
 ```text
 NODE_ENV=development
@@ -102,19 +167,76 @@ MAILPIT_UI_PORT=
 
 ## Salud y logs
 
-- `GET /api/health` sin datos sensibles.
-- Logs JSON con redacción de PII.
-- Sin stack traces en producción.
-- Healthchecks en Docker.
+- `GET /api/health` sin datos sensibles: `{"status":"ok","version":"0.0.0","timestamp":…}`.
+- Logs JSON con redacción de PII (cookies, `authorization`, `X-CSRF-Token`, `email`,
+  `password`, tokens y hashes; y el token de las rutas `/api/invitations/<token>`).
+- Sin stack traces en producción; en desarrollo `request.log.error` incluye el stack.
+- Healthchecks en Docker para los tres servicios.
+
+## Mantenimiento en proceso
+
+La API arranca un mantenimiento periódico (`apps/api/src/maintenance/cleanup.ts`) cuando
+corre con base de datos:
+
+- **Cada 15 minutos** (`CLEANUP_INTERVAL_MS`), con una pasada inmediata al arrancar.
+- Borra **sesiones caducadas**.
+- **Expira los jobs de descarga vencidos** y borra su ZIP (reutiliza `expireDueJobs`).
+- **Purga las filas `expired` con más de 24 h** (`EXPIRED_JOB_RETENTION_MS`); durante ese
+  margen, `GET /api/downloads/:id` sigue respondiendo `expired` en vez de `404`.
+- El temporizador es `unref()` y se cancela en el `onClose` de Fastify: no impide un cierre
+  limpio ni deja timers en los tests (`buildApp()` no lo arranca).
+- Solo registra contadores (`sessionsDeleted`, `jobsExpired`, `jobsDeleted`), nunca ids,
+  emails ni tokens.
+- Con **varias instancias**, cada una ejecuta su pasada: las operaciones son idempotentes,
+  pero hay trabajo duplicado. No es un problema para la demo de una instancia.
+
+### Verificación real (2026-11-08)
+
+| Comprobación | Resultado |
+| --- | --- |
+| `docker compose config -q` | OK |
+| `docker compose ps` | `postgres`, `minio` y `mailpit` **healthy** |
+| `curl -i localhost:3001/api/health` | **200**, con CSP, `Referrer-Policy`, `X-Content-Type-Options` y `X-Frame-Options` |
+| `curl localhost:3000/api/health` (proxy web) | **200** |
+| Login `lucia@memora.test` / `memora-demo` con `Origin: http://localhost:3000` | **200** y `GET /api/me` **200** |
+| Login sin `Origin` | **403** |
+| Login con contraseña incorrecta | **401 `UNAUTHENTICATED`** |
+| Círculo ajeno (`/api/circles/<id de otro usuario>`) | **404** |
+| Pipeline real: subida **201** → `original` con sesión **200** → `original` sin sesión **401** → borrado **204** → `original` **404** | OK; los objetos se borraron de Silo |
+| `pnpm db:migrate` | aplicó la migración pendiente en `memora` |
+| `pnpm db:seed` | idempotente; 2 usuarios, 2 círculos, 2 álbumes, 6 fotos, 2 etiquetas, 1 invitación, 4 actividades |
+| `pnpm db:seed:images` | `6 generadas, 12 ya tenían objeto` |
+| Mantenimiento al arrancar | log `Mantenimiento de datos completado` con los tres contadores |
+| Invitación con email | **201**, correo recibido en Mailpit con el enlace `/invite/<token>` del círculo y sin fotos; revocación **204** |
+| Limpieza de datos de prueba | BD en los conteos del seed y Silo con **18 objetos del seed** (más 4 ZIP de descargas aún vigentes que el mantenimiento borrará al expirar) |
+
+### Limitaciones conocidas de la demo
+
+- **`docker-compose.prod.yml` no se entrega**: queda fuera de la recutura de S4. La guía de
+  producción de abajo es orientativa y **no se ha desplegado ni probado** en VPS, Render,
+  Fly.io, Neon, R2, Resend ni Nominatim real.
+- `SESSION_SECRET` vacío en `.env.example`: CSRF con clave por proceso, invalidado al
+  reiniciar. El ejemplo es público y no puede traer un secreto.
+- El bucket de Silo y los objetos del seed **no se crean solos**; requieren los dos comandos
+  documentados arriba.
+- Rate limit en memoria: con varias instancias de la API habría que compartir el contador
+  (Redis o una tabla propia); es la única deuda de operación que sigue abierta.
+- Las cookies llevan `Secure` solo con `NODE_ENV=production`; en local viajan por HTTP.
 
 ## Checklist
 
-- [ ] Variables configuradas.
-- [ ] Migraciones aplicadas.
-- [ ] Bucket privado.
-- [ ] Email probado.
-- [ ] Cookies `Secure` y mismo dominio.
-- [ ] HTTPS.
-- [ ] Seed demo.
-- [ ] Flujo completo probado.
-- [ ] Vídeo de respaldo.
+Marcado lo verificado en local el 2026-11-08; lo de producción queda pendiente y así se
+declara.
+
+- [x] Variables configuradas (exportadas desde `.env.example`; `SESSION_SECRET` generado).
+- [x] Migraciones aplicadas (`memora` y `memora_test` al día).
+- [x] Bucket privado (`mc anonymous get` → `private`).
+- [x] Email probado de extremo a extremo (invitación **201** y correo recibido en Mailpit
+      con el enlace `/invite/<token>`; revocación **204**).
+- [ ] Cookies `Secure` (solo en producción) y mismo dominio (verificado `COOKIE_DOMAIN`
+      en `.env.example`, no en navegador).
+- [ ] HTTPS (fuera de la demo local).
+- [x] Seed demo (`pnpm db:seed` y `pnpm db:seed:images`).
+- [x] Flujo completo probado (login, `/me`, subida, descarga `original`, borrado y
+      negativos 401/403/404).
+- [ ] Vídeo de respaldo (F43).
