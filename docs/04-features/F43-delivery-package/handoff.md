@@ -5,6 +5,8 @@
 - **Fecha:** 2026-11-08
 - **Implementado por:** orquestador (sesión S5)
 - **Revisado por:** pendiente (nivel V)
+- **Cierre operativo:** commit `76edee4`, [PR #63](https://github.com/Luceir0/lab-final--memora/pull/63)
+  contra `main` (sin merge).
 
 ## Resultado
 
