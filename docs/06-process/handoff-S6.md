@@ -7,9 +7,9 @@
 - **Revisado por:** pendiente (nivel **C**: gates automáticos + aceptación del usuario)
 - **Nivel de auditoría:** C (documentación y tooling de demo; sin código de producto)
 - **Cierre operativo:** commits `ce1af7b` y `cc4f384` y un commit de seguimiento que retira el
-  `.bat` del repo; [PR #65](https://github.com/Luceir0/lab-final--memora/pull/65) con CI en
-  verde. El script vive en el escritorio y no se versiona. Sin cambios en `apps/**` ni
-  `packages/**`.
+  `.bat` del repo; [PR #65](https://github.com/Luceir0/lab-final--memora/pull/65) **mergeada**
+  en `main` (`10f1dc1`) con CI en verde. El script vive en el escritorio y no se versiona. Sin
+  cambios en `apps/**` ni `packages/**`.
 
 ## Resultado
 
@@ -102,8 +102,6 @@ No hay una spec Fxx para S6; se usan los objetivos del encargo.
 - **Aceptación del usuario** del delta de S6 y del dossier.
 - **Ensayo en navegador** con dos perfiles, móvil/escritorio y claro/oscuro (F43, AC-02/AC-07).
 - **Grabación del vídeo** (F43, AC-03) y **PDF de diapositivas** si se quiere.
-- **Merge de la PR #65:** los commits están subidos y el CI en verde; falta la autorización
-  explícita para mergear en `main`.
 - **Flake de prerender en CI:** no se toca en S6; si aparece, relanzar el job.
 - **Revisión independiente:** no exigida por el nivel C; si el usuario la quiere, revisar el
   script local y los enlaces del dossier.
@@ -156,6 +154,8 @@ poder lanzarlo sin depender de la ruta del proyecto:
   El resto de la entrega (dossier, docs, `.gitattributes`) no cambia.
 - La documentación deja de enlazar el archivo y describe el atajo local y los pasos manuales.
   `docs:check` sigue sin enlaces rotos.
+- **PR #65 mergeada en `main` (`10f1dc1`)** con CI en verde; rama y worktree de la sesión
+  retirados.
 
 ## Siguiente paso propuesto
 

@@ -121,6 +121,5 @@
       siguen en [deployment.md](deployment.md)._
 - [ ] Commit final revisado.
       _Commits `76edee4` y `7a5a88e` y PR #63 **mergeados** en `main` (`ee0c5ad`), con CI en
-      verde; falta la revisión independiente y la aceptación del usuario. La rama
-      `feat/S6-defense` (PR #65) contiene el dossier; el atajo de demo es local y no se
-      versiona._
+      verde; falta la revisión independiente y la aceptación del usuario. La PR #65 se mergeó
+      en `main` (`10f1dc1`) con CI en verde; el atajo de demo es local y no se versiona._

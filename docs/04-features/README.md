@@ -26,8 +26,8 @@ Tablero de las 44 features. Cada carpeta contiene `spec.md`, `tasks.md` y `hando
 > Prisma generate, migraciones, seed, imágenes, compilación, dos ventanas y espera de
 > `/api/health` y `/login`—, probado desde el escritorio con login real de los dos usuarios, y
 > el **[dossier técnico](../08-delivery/technical-dossier.md)**. Sin cambios en `apps/**` ni
-> `packages/**`. F43 y F40 siguen en `review`: el dossier y el atajo de demo no sustituyen el
-> ensayo ni la aceptación.
+> `packages/**`. **PR #65 mergeada en `main` (`10f1dc1`)** con CI en verde. F43 y F40 siguen en
+> `review`: el dossier y el atajo de demo no sustituyen el ensayo ni la aceptación.
 
 **Cierre del bloque de producto (2026-11-07):** F29, F30 y F31 pasan a `done` tras la aceptación del usuario y el merge de la PR #51 (`1e667c1`). **F33 y F36 pasan también a `done`** con la PR #52: F33 cierra la revisión A con M-01, M-04 y M-05 corregidos y M-02/M-03 documentados como limitaciones del MVP; F36 sustituye el placeholder de `/privacy` por el `legalPage` del snapshot y lo prerenderiza. Verificación final: API **409 passed + 2 skipped**, web **103 archivos y 818 tests**, typecheck 9/9, lint 6/6, build 5/5, docs y agents OK.
 
