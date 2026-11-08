@@ -35,7 +35,7 @@
 - [x] Cuota por círculo.
 - [x] Bucket privado.
 - [x] Claves generadas por servidor.
-- [ ] Objetos huérfanos limpiados (H-02: sin purga programada de ZIPs ni sesiones).
+- [x] Objetos huérfanos limpiados (mantenimiento en proceso cada 15 min, retención de 24 h).
 - [x] EXIF sin GPS persistido.
 
 ## API

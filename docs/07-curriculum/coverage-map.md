@@ -434,10 +434,12 @@ Fuera de F14: offline, push y subidas en segundo plano. Sin service worker
 | Rate limiting | `apps/api/src/modules/auth/routes.ts` (5/min IP+email, 20/min IP, 10/h registro) y `photos/routes.ts` (60/min) | Cubierto (F41): **401 ×5 → 429 ×2** en real; en memoria, sin almacén compartido |
 | Uploads seguros y privacidad EXIF | `apps/api/src/modules/photos/**` y tests de magic bytes, tamaño, píxeles, cuota y SVG/GIF | Cubierto (F41): 415/422/413 y EXIF con GPS solo en memoria |
 | Cabeceras y logs sin PII | `apps/api/src/plugins/helmet.ts`, `apps/api/src/logging.ts` y log real de la sesión | Cubierto (F41): CSP, `Referrer-Policy`, `nosniff`, `X-Frame-Options` y 0 apariciones de PII en 131 líneas |
+| Mantenimiento y retención de datos | `apps/api/src/maintenance/cleanup.ts`, `cleanup.test.ts` y `apps/api/src/server.ts` | Cubierto (F42): sesiones caducadas, expiración de jobs con borrado de ZIP y purga con retención de 24 h; 5 tests y pasada al arrancar |
+| Email de invitación real | `apps/api/src/modules/invitations/**` y Mailpit (`/api/v1/search`) | Cubierto (F41): **201**, enlace `/invite/<token>` correcto, sin fotos y revocación **204** |
 | Dependencias auditadas | `pnpm audit --audit-level=moderate` | Parcial (F41): 2 moderadas preexistentes de Swagger UI, dev-only y aceptadas (H-01) |
 | Informe de riesgos | [security-report.md](../05-quality/security-report.md) y [security-checklist.md](../05-quality/security-checklist.md) | Cubierto (F41); limitado a local, sin pentest ni infraestructura real |
 
-**Limitaciones:** `docker-compose.prod.yml` no se entrega en la recutura; no hay verificación en cloud, TLS, cookies `Secure` ni email de extremo a extremo; no hay purga programada de sesiones ni ZIP; la base de desarrollo conserva datos de pruebas manuales.
+**Limitaciones:** `docker-compose.prod.yml` no se entrega en la recutura; no hay verificación en cloud, TLS ni cookies `Secure`; el rate limit es en memoria; la base de desarrollo quedó limpia con los conteos del seed.
 
 ## Evidencias de entrega
 

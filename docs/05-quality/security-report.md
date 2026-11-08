@@ -11,9 +11,10 @@
 
 **No hay hallazgos bloqueantes ni mayores abiertos.** La autorización se comprueba en el
 servidor, los negativos principales responden con los códigos esperados, el logging redacta
-PII y no hay secretos versionados. Quedan **dos hallazgos menores** —dependencias moderadas
-de la cadena de Swagger UI y objetos huérfanos sin purga— y **tres notas informativas** de
-operación. Todo lo que no se ha podido comprobar se declara en «Limitaciones».
+PII y no hay secretos versionados. Queda **un hallazgo menor abierto** —las dependencias
+moderadas de la cadena de Swagger UI— y **una nota informativa** de operación (rate limit en
+memoria). Los objetos huérfanos (H-02) y los datos de prueba (H-04) se corrigieron en el
+cierre de la sesión. Todo lo que no se ha podido comprobar se declara en «Limitaciones».
 
 ## Evidencias ejecutadas
 
@@ -37,6 +38,8 @@ operación. Todo lo que no se ha podido comprobar se declara en «Limitaciones»
 | Logs sin PII | 131 líneas del log de desarrollo | **0** apariciones de emails, contraseña, cookies, CSRF o tokens de invitación |
 | Secretos | `rg` de claves privadas, `AKIA…`, `ghp_…`, `sk_live_…`, `xox…`; `git ls-files` de `.env` | sin coincidencias; solo `.env.example` versionado |
 | Dependencias | `pnpm audit --audit-level=moderate` | **2 moderadas** (ver H-01) |
+| Email de invitación | `POST /api/circles/:id/invitations` y API de Mailpit | **201**; correo recibido con el enlace `/invite/<token>`, el nombre del círculo y sin fotos; revocación **204** |
+| Mantenimiento periódico | Arranque de la API y 5 tests de `maintenance/cleanup` | Pasada al arrancar con contadores y borrado de sesiones, expiración de jobs con su ZIP y purga con retención de 24 h |
 
 ## Verificación por área
 
@@ -145,9 +148,9 @@ sería una instalación de dependencias que exige permiso y una reverificación 
 | ID | Severidad | Hallazgo | Estado |
 | --- | --- | --- | --- |
 | H-01 | Baja | 2 vulnerabilidades moderadas en `glob`/`minimatch` a través de Swagger UI, que no se sirve en producción | **Aceptado y documentado**; pendiente decidir actualización en una rama aparte |
-| H-02 | Baja | Objetos huérfanos: 4 ZIP de descargas antiguas en `downloads/` y sin purga programada de sesiones caducadas ni ZIPs | **Abierto**; sin impacto de acceso (bucket privado y descarga autenticada), sí de retención y almacenamiento |
+| H-02 | Baja | Objetos huérfanos: ZIP de descargas y sesiones caducadas sin purga programada | **Corregido**: mantenimiento en proceso cada 15 min (sesiones, expiración de jobs y purga de filas `expired` con 24 h de retención), con 5 tests |
 | H-03 | Informativa | Turbo no reenviaba `S3_*`/`EMAIL_*` a la API: la subida fallaba cerrada con «StorageService no está configurado» | **Corregido** en F42 (`turbo.json`, `globalEnv`) |
-| H-04 | Informativa | La base de desarrollo conserva usuarios y círculos de pruebas manuales | **Abierto**; higiene de demo, sin impacto en producción |
+| H-04 | Informativa | La base de desarrollo conservaba usuarios y círculos de pruebas manuales | **Corregido**: datos de prueba y sus objetos de Silo borrados; la BD coincide con el seed |
 | H-05 | Informativa | Rate limit en memoria, no compartido entre instancias | **Abierto**; suficiente para una instancia, a revisar si se escala |
 
 ## Riesgos aceptados
@@ -158,15 +161,14 @@ sería una instalación de dependencias que exige permiso y una reverificación 
   frontend es estática y de tests de componentes.
 - **Fuerza bruta distribuida**: el rate limit por IP+email y el agregado por IP frenan el
   password spraying desde una IP, no un ataque distribuido.
-- **Sin purge de sesiones**: las sesiones caducadas no se borran por job; solo se rechazan al
-  validarlas.
+- **Rate limit en memoria**: con varias instancias el contador no se comparte (H-05).
 
 ## Limitaciones de esta revisión
 
 - No se ha auditado el código de dependencias de terceros más allá de `pnpm audit`.
 - No se ha revisado el contenido de los objetos de Silo más allá de su existencia y de la
   respuesta autenticada.
-- No se ha probado el flujo de invitación con Mailpit de extremo a extremo en esta sesión.
+- El email se probó con Mailpit, no con Resend ni con un proveedor real.
 - Las integraciones de storage que requieren credenciales propias quedaron **skipped** (2),
   como en las sesiones anteriores; el pipeline sí se verificó contra Silo local.
 
@@ -174,7 +176,5 @@ sería una instalación de dependencias que exige permiso y una reverificación 
 
 1. Decidir en una rama aparte si se actualizan `@fastify/swagger-ui`/`@fastify/static` para
    cerrar H-01; si no, registrar la excepción en la entrega.
-2. Añadir una purga programada de sesiones caducadas y de ZIP antiguos (H-02), con test.
-3. Limpiar los datos de prueba de `memora` antes de la demo, con permiso explícito (H-04).
-4. Si la API se despliega con más de una instancia, mover el rate limit a un almacén
+2. Si la API se despliega con más de una instancia, mover el rate limit a un almacén
    compartido (H-05).

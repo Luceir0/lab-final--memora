@@ -21,7 +21,7 @@
 
 ## Criterios de aceptación
 
-- [ ] AC-01: Checklist completo (todo marcado salvo «objetos huérfanos limpiados»).
+- [x] AC-01: Checklist completo.
 - [x] AC-02: Tests negativos pasan.
 - [x] AC-03: Sin secretos en repo.
 - [x] AC-04: Logs redactados.

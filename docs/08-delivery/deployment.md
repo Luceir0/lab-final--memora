@@ -88,10 +88,12 @@ docker compose exec -T minio mc anonymous get local/memora   # -> private
   Repetirlo no duplica ni borra nada.
 - `pnpm db:seed:images` escribe en Silo los 18 objetos del seed (6 fotos × original, display
   y thumb) y es idempotente: informa de las generadas y de las que ya tenían objeto.
-- **La base de desarrollo conserva residuos de pruebas manuales**: el círculo «hola», los
-  usuarios `prueba.f16@memora.test` y `asdkjahsdkasd@correo.com`, y 12 fotos extra en
-  «Verano en la costa». El seed no los limpia. Para una demo limpia hay que borrarlos con
-  permiso explícito, no con un `deleteMany` del seed.
+- **La base de desarrollo está limpia**: el 2026-11-08 se borraron los residuos de pruebas
+  manuales (el círculo «hola», dos usuarios de prueba, 12 fotos extra, 10 invitaciones, 3
+  etiquetas y 46 actividades) junto con sus objetos de Silo. Los conteos coinciden con el
+  seed: 2 usuarios, 2 círculos, 2 álbumes, 6 fotos, 2 etiquetas, 1 invitación y 4
+  actividades. Para repetir una limpieza, hazlo por ids concretos y nunca con un
+  `deleteMany` global en el seed.
 
 ## Variables
 
@@ -171,6 +173,23 @@ MAILPIT_UI_PORT=
 - Sin stack traces en producción; en desarrollo `request.log.error` incluye el stack.
 - Healthchecks en Docker para los tres servicios.
 
+## Mantenimiento en proceso
+
+La API arranca un mantenimiento periódico (`apps/api/src/maintenance/cleanup.ts`) cuando
+corre con base de datos:
+
+- **Cada 15 minutos** (`CLEANUP_INTERVAL_MS`), con una pasada inmediata al arrancar.
+- Borra **sesiones caducadas**.
+- **Expira los jobs de descarga vencidos** y borra su ZIP (reutiliza `expireDueJobs`).
+- **Purga las filas `expired` con más de 24 h** (`EXPIRED_JOB_RETENTION_MS`); durante ese
+  margen, `GET /api/downloads/:id` sigue respondiendo `expired` en vez de `404`.
+- El temporizador es `unref()` y se cancela en el `onClose` de Fastify: no impide un cierre
+  limpio ni deja timers en los tests (`buildApp()` no lo arranca).
+- Solo registra contadores (`sessionsDeleted`, `jobsExpired`, `jobsDeleted`), nunca ids,
+  emails ni tokens.
+- Con **varias instancias**, cada una ejecuta su pasada: las operaciones son idempotentes,
+  pero hay trabajo duplicado. No es un problema para la demo de una instancia.
+
 ### Verificación real (2026-11-08)
 
 | Comprobación | Resultado |
@@ -187,6 +206,9 @@ MAILPIT_UI_PORT=
 | `pnpm db:migrate` | aplicó la migración pendiente en `memora` |
 | `pnpm db:seed` | idempotente; 2 usuarios, 2 círculos, 2 álbumes, 6 fotos, 2 etiquetas, 1 invitación, 4 actividades |
 | `pnpm db:seed:images` | `6 generadas, 12 ya tenían objeto` |
+| Mantenimiento al arrancar | log `Mantenimiento de datos completado` con los tres contadores |
+| Invitación con email | **201**, correo recibido en Mailpit con el enlace `/invite/<token>` del círculo y sin fotos; revocación **204** |
+| Limpieza de datos de prueba | BD en los conteos del seed y Silo con **18 objetos del seed** (más 4 ZIP de descargas aún vigentes que el mantenimiento borrará al expirar) |
 
 ### Limitaciones conocidas de la demo
 
@@ -197,10 +219,8 @@ MAILPIT_UI_PORT=
   reiniciar. El ejemplo es público y no puede traer un secreto.
 - El bucket de Silo y los objetos del seed **no se crean solos**; requieren los dos comandos
   documentados arriba.
-- La base `memora` conserva residuos de pruebas manuales (ver «Migraciones y seed»).
-- Rate limit en memoria: con varias instancias de la API habría que compartir el contador.
-- No hay purga programada de sesiones caducadas ni de ZIPs de descarga antiguos; los
-  objetos antiguos de `downloads/` se quedan en el bucket.
+- Rate limit en memoria: con varias instancias de la API habría que compartir el contador
+  (Redis o una tabla propia); es la única deuda de operación que sigue abierta.
 - Las cookies llevan `Secure` solo con `NODE_ENV=production`; en local viajan por HTTP.
 
 ## Checklist
@@ -211,8 +231,8 @@ declara.
 - [x] Variables configuradas (exportadas desde `.env.example`; `SESSION_SECRET` generado).
 - [x] Migraciones aplicadas (`memora` y `memora_test` al día).
 - [x] Bucket privado (`mc anonymous get` → `private`).
-- [ ] Email probado de extremo a extremo (Mailpit arriba; no se envió una invitación real
-      en esta sesión).
+- [x] Email probado de extremo a extremo (invitación **201** y correo recibido en Mailpit
+      con el enlace `/invite/<token>`; revocación **204**).
 - [ ] Cookies `Secure` (solo en producción) y mismo dominio (verificado `COOKIE_DOMAIN`
       en `.env.example`, no en navegador).
 - [ ] HTTPS (fuera de la demo local).

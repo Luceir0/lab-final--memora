@@ -9,25 +9,27 @@
 ## Resultado
 
 Revisión de seguridad mínima cerrada **sin hallazgos bloqueantes ni mayores**. La suite de
-API pasa completa contra PostgreSQL real (424 tests), los negativos de auth, CSRF, `Origin`,
+API pasa completa contra PostgreSQL real (429 tests), los negativos de auth, CSRF, `Origin`,
 rate limit, acceso cruzado, permisos de descarga, subida y borrado responden con los códigos
 esperados, las cabeceras de Helmet están activas, los logs redactan PII y no hay secretos en
-el repositorio. Quedan dos hallazgos menores (dependencias de Swagger UI y objetos huérfanos)
-documentados en `security-report.md`.
+el repositorio. Queda **un hallazgo menor abierto** (dependencias de Swagger UI) y una nota
+informativa (rate limit en memoria). La purga programada y la limpieza de datos de prueba
+cerraron H-02 y H-04 durante el cierre.
 
 ## Cambios
 
 - `docs/05-quality/security-report.md`: informe con alcance, método, evidencias reales,
   verificación por área, 5 hallazgos, riesgos aceptados, limitaciones y recomendaciones.
-- `docs/05-quality/security-checklist.md`: checklist marcado con evidencia; único ítem abierto
-  es «objetos huérfanos limpiados» (H-02).
+- `docs/05-quality/security-checklist.md`: checklist completo, con evidencia. H-02 se cerró con el
+  mantenimiento periódico de la API.
 - No se corrige código: no había bloqueantes. `pnpm audit` no se toca (H-01 exige permiso
   para actualizar dependencias).
 
 ## Verificación
 
-- `DATABASE_URL=…/memora_test pnpm --filter @memora/api test` → **26 archivos y 424 tests
-  passed**, 2 skipped (integraciones de storage sin credenciales).
+- `DATABASE_URL=…/memora_test pnpm --filter @memora/api test` → **27 archivos y 429 tests
+  passed**, 2 skipped (integraciones de storage sin credenciales), incluidos los 5 de
+  `maintenance/cleanup`.
 - `pnpm --filter @memora/web exec vitest run --maxWorkers=2 --retry=1` → **110 archivos y
   910 tests passed**.
 - `pnpm audit --audit-level=moderate` → **2 moderadas** (`glob`, `minimatch` vía
@@ -42,6 +44,8 @@ documentados en `security-report.md`.
   - `original` sin sesión **401**;
   - subida **201** → `original` **200** → borrado **204** → `original` **404**;
   - cabeceras: CSP, `Referrer-Policy`, `nosniff`, `X-Frame-Options`.
+- Email de invitación con Mailpit: **201**, correo con el enlace `/invite/<token>` y el nombre
+  del círculo, sin fotos; revocación **204**.
 - Logs: 131 líneas del log de desarrollo con **0** apariciones de email, contraseña, cookie,
   CSRF o token de invitación.
 - `rg` de claves privadas y tokens (`AKIA`, `ghp_`, `sk_live_`, `xox`, `BEGIN … PRIVATE KEY`)
@@ -51,8 +55,7 @@ documentados en `security-report.md`.
 
 ## Criterios de aceptación
 
-- **AC-01 (checklist completo):** **parcial**. Todos los ítems comprobables están marcados y
-  con evidencia; queda abierto «objetos huérfanos limpiados» (H-02).
+- **AC-01 (checklist completo):** **pasa**. Todos los ítems están marcados y con evidencia.
 - **AC-02 (tests negativos pasan):** **pasa**.
 - **AC-03 (sin secretos en repo):** **pasa**.
 - **AC-04 (logs redactados):** **pasa**.
@@ -64,10 +67,7 @@ documentados en `security-report.md`.
 
 - **H-01** `[Menor]`: 2 moderadas de `pnpm audit` en la cadena de Swagger UI. Aceptadas; si se
   decide corregir, va en rama aparte con permiso y reverificación.
-- **H-02** `[Menor]`: sin purga programada de sesiones caducadas ni ZIP antiguos; hay 4 ZIP
-  huérfanos en `downloads/`.
-- **H-04** `[Nit]`: datos de prueba residuales en la base de desarrollo.
-- **H-05** `[Nit]`: rate limit en memoria, no compartido entre instancias.
+- **H-05** `[Informativa]`: rate limit en memoria, no compartido entre instancias.
 - **Excepción de dependencia:** F41 depende de F38, que está en `draft` por la recutura del
   2026-11-08 (registrada en `remaining-plan.md`). Sin E2E, la evidencia de flujo real es manual.
 - Sin pentest externo ni infraestructura real.
@@ -76,7 +76,8 @@ documentados en `security-report.md`.
 
 - La revisión es de **una instancia local**, sin TLS ni servicios gestionados.
 - No se han auditado dependencias más allá de `pnpm audit` ni el contenido de los objetos.
-- La invitación con Mailpit no se probó de extremo a extremo en esta sesión.
+- `pnpm test` sin límite de workers agota los 5 s por test en esta máquina (110 workers); la
+  batería web se ejecuta con `--maxWorkers=2 --retry=1`, como fija el plan de sesión.
 - La evidencia de frontend es estática y de tests de componentes: no hay pruebas de navegador
   automatizadas (F37/F38 no se ejecutan).
 
