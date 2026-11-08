@@ -18,6 +18,8 @@ Tablero de las 44 features. Cada carpeta contiene `spec.md`, `tasks.md` y `hando
 > **Plan vigente desde 2026-11-08:** cierre por tiempo. **S3 no se ejecuta**: sin Playwright, sin E2E y sin F39. **S4 reducida** a F42 + F41; **S5** con F43 completo y **F40 mínimo** (Lighthouse con timebox de 45 min). F37, F38 y F39 quedan fuera y se documentan como limitaciones explícitas. **S4 ejecutada el 2026-11-08**: F42 y F41 pasan a `review` con el entorno demo verificado de extremo a extremo y el informe de seguridad sin bloqueantes; H-02 (purga) y H-04 (datos de demo) cerrados. Detalle y orden: [remaining-plan.md](../06-process/remaining-plan.md).
 >
 > F35 no se borra del repositorio: `agents:check` exige 44 specs. Se conserva la spec y se documenta como limitación en la entrega.
+>
+> **S5 ejecutada el 2026-11-08.** La PR #62 (F42 + F41) se mergeó en `main` con `5ff213e` tras reintentar un CI que falló por una carrera del prerender. **F43 y F40 pasan a `review`**: checklist con evidencia, guion de demo de 8–10 min con dos usuarios, defensa de 15–20 min con 14 diapositivas Marp, guion del vídeo (sin grabar) y limitaciones explícitas. Accesibilidad: **16 pasadas de axe sobre el build, 0 violaciones**. Rendimiento: **Performance 93/91, A11y 100/100, BP 100/100**; **LCP 3,2/3,5 s en simulación (no cumple) con LCP observado de 174/351 ms**. Pendiente el ensayo en navegador y la grabación del vídeo.
 
 **Cierre del bloque de producto (2026-11-07):** F29, F30 y F31 pasan a `done` tras la aceptación del usuario y el merge de la PR #51 (`1e667c1`). **F33 y F36 pasan también a `done`** con la PR #52: F33 cierra la revisión A con M-01, M-04 y M-05 corregidos y M-02/M-03 documentados como limitaciones del MVP; F36 sustituye el placeholder de `/privacy` por el `legalPage` del snapshot y lo prerenderiza. Verificación final: API **409 passed + 2 skipped**, web **103 archivos y 818 tests**, typecheck 9/9, lint 6/6, build 5/5, docs y agents OK.
 
@@ -74,10 +76,10 @@ Tablero de las 44 features. Cada carpeta contiene `spec.md`, `tasks.md` y `hando
 | F37 | [Infraestructura de tests](F37-test-infrastructure/spec.md) | M5 | M | `draft` | F06, F09 | C |
 | F38 | [E2E de flujos críticos](F38-e2e-critical/spec.md) | M5 | M | `draft` | F33, F37 | V |
 | F39 | [Auditoría de accesibilidad](F39-accessibility/spec.md) | M5 | M | `draft` | F38 | V |
-| F40 | [Rendimiento](F40-performance/spec.md) | M5 | S/M | `draft` | F38 | V |
+| F40 | [Rendimiento](F40-performance/spec.md) | M5 | S/M | `review` | F38 (excepción) | V |
 | F41 | [Revisión de seguridad](F41-security-review/spec.md) | M5 | M | `review` | F38 (excepción) | V |
 | F42 | [Despliegue y observabilidad](F42-deployment/spec.md) | M5 | M | `review` | F33, F36 | A |
-| F43 | [Paquete de entrega y defensa](F43-delivery-package/spec.md) | M5 | M | `draft` | F39, F40, F41, F42 | V |
+| F43 | [Paquete de entrega y defensa](F43-delivery-package/spec.md) | M5 | M | `review` | F39 (excepción), F40, F41, F42 | V |
 | F44 | [Portadas de círculo y álbum](F44-covers/spec.md) | M4 | S/M | `done` | F23, F24, F28, F29 | B |
 
 ## Niveles de auditoría

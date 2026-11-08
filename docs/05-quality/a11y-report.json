@@ -1,0 +1,150 @@
+{
+  "generatedAt": "2026-11-08T01:36:08.200Z",
+  "total": 0,
+  "results": [
+    {
+      "page": "/login",
+      "width": 375,
+      "theme": "#f6f6fa",
+      "violations": [],
+      "title": "Entrar · Memora",
+      "h1": 1,
+      "url": "/login"
+    },
+    {
+      "page": "/login",
+      "width": 375,
+      "theme": "#0b0f1e",
+      "violations": [],
+      "title": "Entrar · Memora",
+      "h1": 1,
+      "url": "/login"
+    },
+    {
+      "page": "/login",
+      "width": 1440,
+      "theme": "#f6f6fa",
+      "violations": [],
+      "title": "Entrar · Memora",
+      "h1": 1,
+      "url": "/login"
+    },
+    {
+      "page": "/login",
+      "width": 1440,
+      "theme": "#0b0f1e",
+      "violations": [],
+      "title": "Entrar · Memora",
+      "h1": 1,
+      "url": "/login"
+    },
+    {
+      "page": "/help",
+      "width": 375,
+      "theme": "#f6f6fa",
+      "violations": [],
+      "title": "Ayuda · Memora",
+      "h1": 1,
+      "url": "/help"
+    },
+    {
+      "page": "/help",
+      "width": 375,
+      "theme": "#0b0f1e",
+      "violations": [],
+      "title": "Ayuda · Memora",
+      "h1": 1,
+      "url": "/help"
+    },
+    {
+      "page": "/help",
+      "width": 1440,
+      "theme": "#f6f6fa",
+      "violations": [],
+      "title": "Ayuda · Memora",
+      "h1": 1,
+      "url": "/help"
+    },
+    {
+      "page": "/help",
+      "width": 1440,
+      "theme": "#0b0f1e",
+      "violations": [],
+      "title": "Ayuda · Memora",
+      "h1": 1,
+      "url": "/help"
+    },
+    {
+      "page": "/privacy",
+      "width": 375,
+      "theme": "#f6f6fa",
+      "violations": [],
+      "title": "Privacidad · Memora",
+      "h1": 1,
+      "url": "/privacy"
+    },
+    {
+      "page": "/privacy",
+      "width": 375,
+      "theme": "#0b0f1e",
+      "violations": [],
+      "title": "Privacidad · Memora",
+      "h1": 1,
+      "url": "/privacy"
+    },
+    {
+      "page": "/privacy",
+      "width": 1440,
+      "theme": "#f6f6fa",
+      "violations": [],
+      "title": "Privacidad · Memora",
+      "h1": 1,
+      "url": "/privacy"
+    },
+    {
+      "page": "/privacy",
+      "width": 1440,
+      "theme": "#0b0f1e",
+      "violations": [],
+      "title": "Privacidad · Memora",
+      "h1": 1,
+      "url": "/privacy"
+    },
+    {
+      "page": "/circles",
+      "width": 375,
+      "theme": "#f6f6fa",
+      "violations": [],
+      "title": "Mis círculos · Memora",
+      "h1": 1,
+      "url": "/circles"
+    },
+    {
+      "page": "/circles",
+      "width": 375,
+      "theme": "#0b0f1e",
+      "violations": [],
+      "title": "Mis círculos · Memora",
+      "h1": 1,
+      "url": "/circles"
+    },
+    {
+      "page": "/circles",
+      "width": 1440,
+      "theme": "#f6f6fa",
+      "violations": [],
+      "title": "Mis círculos · Memora",
+      "h1": 1,
+      "url": "/circles"
+    },
+    {
+      "page": "/circles",
+      "width": 1440,
+      "theme": "#0b0f1e",
+      "violations": [],
+      "title": "Mis círculos · Memora",
+      "h1": 1,
+      "url": "/circles"
+    }
+  ]
+}

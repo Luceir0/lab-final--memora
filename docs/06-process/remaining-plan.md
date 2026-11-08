@@ -40,7 +40,7 @@ El objetivo ya no es completar las 43 features, sino **cerrar un MVP defendible 
 | **S2** | 1,5 | F32 completa: API + UI + permisos + optimista + tests | Funcionalidad | **Hecha, aceptada y cerrada** (2026-11-08) |
 | **S3** | 1 | F37 + F38 mínimo y F39 solo bloqueantes | Testeo (E2E, a11y) | **No ejecutada** (2026-11-08); fuera por tiempo |
 | **S4** | 1 | **F42 + F41** (F40 movido a S5) | Testeo / calidad y despliegue | **Hecha** (2026-11-08); F42 y F41 en `review` |
-| **S5** | 1 | **F43 + F40 mínimo** (Lighthouse con timebox) | Presentación y defensa | Pendiente; prioridad |
+| **S5** | 1 | **F43 + F40 mínimo** (Lighthouse con timebox) | Presentación y defensa | **Hecha** (2026-11-08); F43 y F40 en `review` |
 | **S6** | — | Reserva / correcciones finales | Mixto | No definida |
 | **S7** | — | Ensayo de demo y defensa | Presentación | Se funde con S5 si no hay tiempo |
 
@@ -73,6 +73,7 @@ El objetivo ya no es completar las 43 features, sino **cerrar un MVP defendible 
 | S3 | 2026-11-08 | **No ejecutada** por decisión del usuario y límite de tiempo. F37/F38/F39 no se hacen: quedan en `draft` y se documentan como limitaciones. F40 se mueve a S5 con timebox de 45 min. |
 | S4 | 2026-11-08 | **F42 y F41 implementadas y en `review`.** F42: Compose con los tres servicios `healthy`, migración pendiente aplicada, seed determinista repetido, imágenes del seed en Silo, `pnpm dev` con las variables de `.env.example`, `/api/health` 200, login real y pipeline de subida → original → borrado. Corrección de arranque en `turbo.json` (`globalEnv` con S3/email/geocoding) porque Turbo no las reenviaba a la API. F41: `pnpm audit` (2 moderadas dev-only aceptadas), tests negativos reales de auth, CSRF, `Origin`, rate limit, acceso cruzado, descarga, subida y borrado, y `security-report.md` sin bloqueantes. Verificación: API **424 passed + 2 skipped**, web **110 archivos y 910 tests**, typecheck 9/9, lint 6/6, build 5/5, format/docs/agents OK. Sin commit ni push. Después del cierre se implementó el mantenimiento periódico (H-02), se probó el email con Mailpit y se limpiaron los datos de demo (H-04). Cierre operativo: PR #62 abierta, sin merge. |
 
+| S5 | 2026-11-08 | **F43 y F40 en `review`.** F43: checklist con evidencia ítem a ítem (6 abiertos justificados), demo de 8–10 min con dos usuarios y dos círculos, defensa de 15–20 min con 14 diapositivas Marp, guion del vídeo de 5–8 min y diez limitaciones explícitas. Demo verificada por API (login de los dos usuarios, 401/403/404, subida, descarga, borrado y logout) y datos restaurados al seed. Accesibilidad: **16 pasadas de axe sobre el build, 0 violaciones**. F40: Lighthouse 13.6.0 móvil con **Performance 93/91, A11y 100/100, BP 100/100**, **LCP 3,2/3,5 s (no cumple)** y LCP observado de 174/351 ms; JS inicial 191,3/206,8 KB gzip. La PR #62 se mergeó (`5ff213e`) tras relanzar un CI que falló por una carrera del prerender. Pendientes: ensayo en navegador, grabación del vídeo, revisión y aceptación. |
 ## Cómo retomar una sesión
 
 Cada sesión nueva arranca con un prompt autocontenido que debe incluir:

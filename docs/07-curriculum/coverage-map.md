@@ -441,16 +441,32 @@ Fuera de F14: offline, push y subidas en segundo plano. Sin service worker
 
 **Limitaciones:** `docker-compose.prod.yml` no se entrega en la recutura; no hay verificación en cloud, TLS ni cookies `Secure`; el rate limit es en memoria; la base de desarrollo quedó limpia con los conteos del seed.
 
+## Rendimiento y entrega (F40 + F43, review)
+
+| Tema | Evidencia | Estado |
+| --- | --- | --- |
+| Medición de rendimiento con presupuesto | [performance-report.md](../05-quality/performance-report.md) y `docs/05-quality/lighthouse/*.report.{json,html}` | Cubierto (F40): Lighthouse 13.6.0 móvil sobre el build, **93/91 Performance, 100/100 A11y y 100/100 BP**; **LCP 3,2/3,5 s no cumple** (observado 174/351 ms) |
+| Presupuesto de bundle | Suma de `transferSize` de la corrida y chunks de `dist/client` | Cubierto (F40): JS inicial **191,3 KB** y **206,8 KB gzip** (≤250 KB); visor ≈**201 KB** (≤400 KB) |
+| Imágenes dentro de presupuesto | Objetos del seed en Silo (`thumb`/`display` webp) | Cubierto (F40): `thumb` 1,4 KB y `display` 8,6–9,9 KB |
+| CLS y estabilidad de layout | `cumulative-layout-shift` de las dos corridas | Cubierto (F40): **0** y **0,004** con dimensiones explícitas en el collage |
+| INP | — | **Sin evidencia**: no es medible en laboratorio; TBT 20 ms como proxy, declarado |
+| Accesibilidad medida en navegador | [a11y-report.json](../05-quality/a11y-report.json), [a11y-checklist.md](../05-quality/a11y-checklist.md) | Cubierto (F43): axe-core 4.14 por CDP sobre el build, **16 pasadas y 0 violaciones** en login/help/privacy/circles × 375/1440 × claro/oscuro |
+| Paquete de demo y defensa | [demo.md](../08-delivery/demo.md), [defense.md](../08-delivery/defense.md), [slides.md](../08-delivery/slides.md), [video-script.md](../08-delivery/video-script.md) | Cubierto (F43) como documentación: guion de 8–10 min con dos usuarios y dos círculos, 14 diapositivas Marp, guion del vídeo; **sin grabación ni ensayo** |
+| Checklist de entrega con evidencia | [checklist.md](../08-delivery/checklist.md) | Cubierto (F43) como documento: cada ítem con evidencia y 6 abiertos justificados |
+| Limitaciones explícitas | [defense.md](../08-delivery/defense.md) (AC-06) | Cubierto (F43): diez limitaciones, incluidas F37/F38, F39, cloud, H-01, H-05 y LCP |
+
+**Limitaciones:** sin E2E ni informe formal de accesibilidad; sin despliegue cloud ni servidor de producción para la web; el ensayo y la grabación dependen del usuario.
+
 ## Evidencias de entrega
 
-- [ ] README con instalación y scripts.
-- [ ] ADRs.
-- [ ] OpenAPI.
-- [ ] Tests en CI.
-- [ ] Informe de accesibilidad.
+- [x] README con instalación y scripts.
+- [x] ADRs (14).
+- [x] OpenAPI (29 rutas).
+- [x] Tests en CI.
+- [x] Informe de accesibilidad (axe sobre el build; sin informe WCAG formal).
 - [ ] Capturas 375/768/1440.
-- [ ] Bitácora.
-- [ ] Defensa.
+- [x] Bitácora.
+- [x] Defensa.
 
 ## Regla
 
