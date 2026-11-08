@@ -3,7 +3,7 @@ id: F40
 title: "Rendimiento"
 milestone: M5
 size: S/M
-status: draft
+status: review
 spec: complete
 depends_on:
   - "F38"
@@ -17,7 +17,7 @@ decisions: []
 
 # F40 — Rendimiento
 
-> **Milestone:** M5 · **Talla:** S/M · **Estado:** draft · **Spec:** completa
+> **Milestone:** M5 · **Talla:** S/M · **Estado:** review · **Spec:** completa
 > **Depende de:** F38 · **Bloquea:** F43
 
 ## Objetivo

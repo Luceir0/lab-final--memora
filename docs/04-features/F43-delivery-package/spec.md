@@ -3,7 +3,7 @@ id: F43
 title: "Paquete de entrega y defensa"
 milestone: M5
 size: M
-status: draft
+status: review
 spec: complete
 depends_on:
   - "F39"
@@ -21,7 +21,7 @@ decisions: []
 
 # F43 — Paquete de entrega y defensa
 
-> **Milestone:** M5 · **Talla:** M · **Estado:** draft · **Spec:** completa
+> **Milestone:** M5 · **Talla:** M · **Estado:** review · **Spec:** completa
 > **Depende de:** F39, F40, F41, F42 · **Bloquea:** —
 
 ## Objetivo
