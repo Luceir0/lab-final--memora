@@ -19,6 +19,7 @@
     "agents:check": "node scripts/validate-agents.mjs",
     "db:migrate": "pnpm --filter @memora/api db:migrate",
     "db:seed": "pnpm --filter @memora/api db:seed",
+    "db:seed:images": "pnpm --filter @memora/api db:seed:images",
     "format": "prettier --write \"**/*.{ts,tsx,mts,cts,mjs,cjs,json,jsonc,yml,yaml,css}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,mts,cts,mjs,cjs,json,jsonc,yml,yaml,css}\""
   },
