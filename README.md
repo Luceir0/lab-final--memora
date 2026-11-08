@@ -120,7 +120,6 @@ memora/
 │   └── config/
 ├── scripts/                   # check-docs, validate-agents
 ├── docker-compose.yml         # Postgres, Silo (S3) y Mailpit locales
-├── demo.bat                   # arranque de la demo local en Windows
 ├── content-island-snapshot.json # contenido editorial para SSG
 ├── package.json
 ├── pnpm-workspace.yaml
@@ -162,8 +161,7 @@ memora/
 | [docs/07-curriculum/coverage-map.md](docs/07-curriculum/coverage-map.md) | Cobertura del temario |
 | [docs/08-delivery/defense.md](docs/08-delivery/defense.md) | Guion de la defensa |
 | [docs/08-delivery/technical-dossier.md](docs/08-delivery/technical-dossier.md) | Dossier técnico: dependencias, arquitectura, decisiones, preguntas y límites |
-| [docs/08-delivery/deployment.md](docs/08-delivery/deployment.md) | Entorno local reproducible y guía de despliegue |
-| [demo.bat](demo.bat) | Atajo de Windows: Docker, migraciones, seed y arranque de API y web |
+| [docs/08-delivery/deployment.md](docs/08-delivery/deployment.md) | Entorno local reproducible y guía de despliegue; el atajo de Windows es local y no se versiona |
 | [docs/archive/spec-v1.md](docs/archive/spec-v1.md) | Especificación original (histórico) |
 
 ---

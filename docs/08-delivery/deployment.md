@@ -29,13 +29,12 @@ Servicios:
 
 Web y API bajo el mismo origen en desarrollo mediante proxy `/api`.
 
-### Atajo para Windows: `demo.bat`
+### Atajo local para Windows (no versionado)
 
-El día de la demo, en Windows, basta con ejecutar desde la raíz:
-
-```bat
-demo.bat
-```
+Para la demo de este equipo hay un script **`demo.bat` en el escritorio**, fuera del
+repositorio. No se versiona: localiza la raíz del proyecto con la ruta `MEMORA_REPO` del
+propio archivo (o con la variable `MEMORA_ROOT`) y, desde ahí, ejecuta los mismos pasos que la
+sección anterior. Si mueves el repo, edita esa línea.
 
 Hace, en orden: comprueba Docker y `docker compose up -d`, espera los tres healthchecks con
 reintentos reales, comprueba `node_modules`, carga `.env.example` y encima `.env` si existe,
@@ -50,6 +49,9 @@ navegador y Mailpit y muestra las credenciales. No imprime ningún valor de ento
 - Para parar: cierra las ventanas «Memora API» y «Memora web» (o `Ctrl+C` en cada una); los
   contenedores siguen arriba y se paran con `docker compose stop`.
 - Si falla, el script termina con un mensaje en español y deja abierta la ventana para leerlo.
+
+El script se probó el 2026-11-08 lanzándolo **desde el escritorio**: encontró el repo,
+arrancó la demo, respondió `/api/health` y `/login` y aceptó el login de los dos usuarios.
 
 
 ### Variables: nada carga el `.env` de la raíz

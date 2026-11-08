@@ -33,14 +33,15 @@ El inventario se ha contrastado, no copiado, contra:
   [`.github/workflows/ci.yml`](../../.github/workflows/ci.yml).
 
 Las versiones de esta tabla son las declaradas en el repositorio en la fecha de la entrega.
-No se ha instalado nada nuevo para esta sesión: `demo.bat` y el dossier usan lo que ya había.
+No se ha instalado nada nuevo para esta sesión: el atajo local de demo y el dossier usan lo
+que ya había.
 
 ### 1.2 Runtime y monorepo
 
 | Herramienta | Versión | Qué es | Cómo se usa | Por qué está |
 | --- | --- | --- | --- | --- |
 | **Node.js** | 24.21.0 (`engines >=24`) | Runtime de JavaScript | Ejecuta la API, el servidor de la web, los scripts y Vitest | Node 24 es el runtime LTS del curso; permite type stripping nativo y `fetch`/`AbortSignal` sin polyfills |
-| **pnpm** | 10.34.8 (`packageManager`) | Gestor de paquetes y workspaces | `pnpm install`, `pnpm --filter`, scripts de la raíz | Workspaces eficientes, lockfile estricto y `--frozen-lockfile` en CI y en `demo.bat` |
+| **pnpm** | 10.34.8 (`packageManager`) | Gestor de paquetes y workspaces | `pnpm install`, `pnpm --filter`, scripts de la raíz | Workspaces eficientes, lockfile estricto y `--frozen-lockfile` en CI y en el atajo local de demo |
 | **Turborepo** | 2.11.10 | Orquestador de tareas del monorepo | `turbo dev`, `build`, `lint`, `typecheck`, `test`; caché local en `.turbo` | Encadena `^build` antes de `dev`/`test` y evita repetir tareas; `globalEnv` reenvía las variables de la API |
 | **TypeScript** | 6.0.3 | Comprobador de tipos | `tsc --noEmit` en cada workspace; `tsc -p tsconfig.build.json` para `dist` | Tipado estricto compartido; sin `any` por convención |
 
@@ -376,11 +377,11 @@ tiene base de datos:
 
 **Local (verificado).** `docker compose up -d` → tres servicios `healthy`; `pnpm install`;
 variables exportadas; `pnpm db:migrate`; `pnpm db:seed`; `pnpm db:seed:images`; `pnpm dev`.
-El atajo `demo.bat` hace todo eso, espera healthchecks reales, comprueba `/api/health` y
-`/login` y abre el navegador y Mailpit. Pasos manuales y variables:
-[deployment.md](deployment.md). El `.env` de la raíz **no se carga solo**; `demo.bat` lo lee
-en su propio proceso (`.env.example` como base, `.env` encima si existe) y genera
-`SESSION_SECRET` si falta. Nunca imprime valores.
+El atajo local `demo.bat` (en el escritorio, fuera del repo) hace todo eso, espera healthchecks
+reales, comprueba `/api/health` y `/login` y abre el navegador y Mailpit. Pasos manuales y
+variables: [deployment.md](deployment.md). El `.env` de la raíz **no se carga solo**; el
+script lo lee en su propio proceso (`.env.example` como base, `.env` encima si existe) y
+genera `SESSION_SECRET` si falta. Nunca imprime valores.
 
 **Producción (documentada, no ejecutada).** Dos opciones: VPS único con Compose + Caddy, o
 servicios gestionados (Render/Fly.io, Neon, R2, Resend). Web y API deben compartir origen o
@@ -785,11 +786,13 @@ acceso cruzado y descargas. **No hay E2E** (F37/F38 canceladas) ni informe forma
 [checklist.md](checklist.md) y [defense.md](defense.md#limitaciones-que-decir-con-claridad-ac-06).
 
 **24. ¿Cómo se reproduce el entorno?**
-`demo.bat` en Windows: Docker + healthchecks reales, dependencias, variables, bucket, Prisma
-generate, migraciones, seed e imágenes, compilación de paquetes y arranque de API y web;
-después espera `:3001/api/health` y `:3000/login`. Sin `.bat`, los pasos manuales están en
-[deployment.md](deployment.md). `demo.bat fast` se salta migraciones y seed.
-**Evidencia:** [`demo.bat`](../../demo.bat) y [deployment.md](deployment.md#local).
+Con el atajo local `demo.bat` en Windows (vive en el escritorio, fuera del repo): Docker +
+healthchecks reales, dependencias, variables, bucket, Prisma generate, migraciones, seed e
+imágenes, compilación de paquetes y arranque de API y web; después espera `:3001/api/health`
+y `:3000/login`. Sin el script, los pasos manuales están en [deployment.md](deployment.md).
+`demo.bat fast` se salta migraciones y seed.
+**Evidencia:** [deployment.md](deployment.md#atajo-local-para-windows-no-versionado) y
+[handoff-S6.md](../06-process/handoff-S6.md).
 
 **25. ¿Cómo se desplegaría en producción?**
 Web y API en el mismo origen tras Caddy con TLS; PostgreSQL gestionado; R2/S3 para fotos;
@@ -880,7 +883,7 @@ resume y añade lo propio de S6.
 | **Servidor de producción de la web** | Ausente | No hay script `start`; el build deja `dist/client` y `dist/server/server.js` |
 | **Actividad (F35) sin pantalla** | Fuera de la entrega | Tabla, API y seed existen; no hay UI |
 | **Dossier solo Markdown** | Decisión S6 | Sin PDF ni capturas nuevas; se exporta cuando haga falta |
-| **`demo.bat` solo Windows** | Decisión S6 | En macOS/Linux se usan los pasos manuales de `deployment.md` |
+| **Atajo local de demo solo Windows** | Decisión S6 | No se versiona; en macOS/Linux se usan los pasos manuales de `deployment.md` |
 | **Flake de prerender en CI** | Conocida, no tocada | `fetch failed`/`ETIMEDOUT` intermitente en `/help` y `/privacy`; se relanza el job |
 | **Rate limit de descargas e imágenes** | Parcial | El límite de 10/min es de F33; el endpoint de imagen comparte el contrato cuando aplique |
 
@@ -919,7 +922,7 @@ cambian. Ninguna cifra de esta tabla se ha inventado: todas salen de
 | Rendimiento | [performance-report.md](../05-quality/performance-report.md) | `docs/05-quality/lighthouse/**` |
 | Accesibilidad | [a11y-checklist.md](../05-quality/a11y-checklist.md) | `a11y-report.json`, tests de `@memora/ui` |
 | Tests | [test-matrix.md](../05-quality/test-matrix.md) | `vitest` de cada workspace |
-| Demo | [demo.md](demo.md), [`demo.bat`](../../demo.bat) | ejecución real de S6 |
+| Demo | [demo.md](demo.md), [deployment.md](deployment.md) | pasos manuales y atajo local probado en S6 |
 | Despliegue | [deployment.md](deployment.md) | `docker-compose.yml`, `ci.yml` |
 | Defensa | [defense.md](defense.md), [slides.md](slides.md) | — |
 | IA y proceso | [ai-log.md](../06-process/ai-log.md) | [remaining-plan.md](../06-process/remaining-plan.md) |

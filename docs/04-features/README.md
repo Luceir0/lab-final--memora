@@ -21,12 +21,13 @@ Tablero de las 44 features. Cada carpeta contiene `spec.md`, `tasks.md` y `hando
 >
 > **S5 ejecutada el 2026-11-08.** La PR #62 (F42 + F41) se mergeó en `main` con `5ff213e` tras reintentar un CI que falló por una carrera del prerender. **F43 y F40 pasan a `review`**: checklist con evidencia, guion de demo de 8–10 min con dos usuarios, defensa de 15–20 min con 14 diapositivas Marp, guion del vídeo (sin grabar) y limitaciones explícitas. Accesibilidad: **16 pasadas de axe sobre el build, 0 violaciones**. Rendimiento: **Performance 93/91, A11y 100/100, BP 100/100**; **LCP 3,2/3,5 s en simulación (no cumple) con LCP observado de 174/351 ms**. Pendiente el ensayo en navegador y la grabación del vídeo. Cierre operativo: PR #63 mergeada en `main` (`ee0c5ad`) el 2026-11-08.
 >
-> **S6 ejecutada el 2026-11-08 (nivel C).** Se añade **`demo.bat`** en la raíz —Docker y
-> healthchecks reales, variables sin imprimir secretos, Prisma generate, migraciones, seed,
-> imágenes, compilación, dos ventanas y espera de `/api/health` y `/login`—, probado con
-> login real de los dos usuarios, y el **[dossier técnico](../08-delivery/technical-dossier.md)**.
-> Sin cambios en `apps/**` ni `packages/**`. F43 y F40 siguen en `review`: el dossier y el
-> atajo de demo no sustituyen el ensayo ni la aceptación.
+> **S6 ejecutada el 2026-11-08 (nivel C).** Se añade un **atajo local de demo** (en el
+> escritorio, fuera del repo) —Docker y healthchecks reales, variables sin imprimir secretos,
+> Prisma generate, migraciones, seed, imágenes, compilación, dos ventanas y espera de
+> `/api/health` y `/login`—, probado desde el escritorio con login real de los dos usuarios, y
+> el **[dossier técnico](../08-delivery/technical-dossier.md)**. Sin cambios en `apps/**` ni
+> `packages/**`. F43 y F40 siguen en `review`: el dossier y el atajo de demo no sustituyen el
+> ensayo ni la aceptación.
 
 **Cierre del bloque de producto (2026-11-07):** F29, F30 y F31 pasan a `done` tras la aceptación del usuario y el merge de la PR #51 (`1e667c1`). **F33 y F36 pasan también a `done`** con la PR #52: F33 cierra la revisión A con M-01, M-04 y M-05 corregidos y M-02/M-03 documentados como limitaciones del MVP; F36 sustituye el placeholder de `/privacy` por el `legalPage` del snapshot y lo prerenderiza. Verificación final: API **409 passed + 2 skipped**, web **103 archivos y 818 tests**, typecheck 9/9, lint 6/6, build 5/5, docs y agents OK.
 
