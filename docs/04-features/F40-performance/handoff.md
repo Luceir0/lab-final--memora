@@ -5,6 +5,9 @@
 - **Fecha:** 2026-11-08
 - **Implementado por:** orquestador (sesión S5, timebox de 45 min)
 - **Revisado por:** pendiente (nivel V; en la recutura, revisión del delta + aceptación)
+- **Cierre operativo:** commits `76edee4` y `7a5a88e`,
+  [PR #63](https://github.com/Luceir0/lab-final--memora/pull/63) **mergeada** en `main`
+  (merge `ee0c5ad`).
 
 ## Resultado
 
