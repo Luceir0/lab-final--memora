@@ -1,14 +1,21 @@
 /**
  * Genera y sube los binarios de las fotos del seed.
  *
- * El seed crea filas `Photo` con claves de storage, pero no escribe objetos:
- * en local eso deja la galería y el visor con el bloque de reserva. Este script
- * recorre las fotos cuya `thumbKey` no existe en storage, genera un JPEG
- * determinista con `sharp`, aplica el mismo pipeline que la subida real
- * (original + display + thumb) y actualiza la fila.
+ * El seed crea filas `Photo` con claves de storage, pero no escribe objetos.
+ * Este script recorre las fotos, usa la imagen local `assets/demo/seed/<id>.*`
+ * si existe y, si no, genera un JPEG determinista con `sharp`. Después aplica
+ * el mismo pipeline que la subida real (original + display + thumb) y actualiza
+ * la fila con las dimensiones y el tamaño reales.
  *
- * Es idempotente: si el objeto ya existe, no toca nada. No borra datos.
+ * Las imágenes locales se vuelven a subir en cada ejecución para que un cambio
+ * de archivo se refleje sin borrar objetos. Las generadas son idempotentes: si
+ * el objeto ya existe, se saltan. No borra datos.
  */
+import { existsSync } from 'node:fs';
+import { readFile } from 'node:fs/promises';
+import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
 import { loadConfig } from '../src/config.ts';
 import { createPrismaClient } from '../src/db.ts';
 import { processImage, processOriginal } from '../src/services/images.ts';
@@ -16,6 +23,26 @@ import { createS3StorageService } from '../src/services/storage-s3.ts';
 
 const WIDTH = 1600;
 const HEIGHT = 1067;
+
+/**
+ * Local, unversioned source images. They are ignored by git and keep the
+ * repository free of third-party photos; when the folder is absent the script
+ * falls back to the deterministic gradient used before.
+ */
+const SEED_IMAGES_DIR = fileURLToPath(new URL('../../../assets/demo/seed/', import.meta.url));
+const SEED_IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'webp'] as const;
+
+async function loadSeedImage(id: string): Promise<Buffer | null> {
+  for (const extension of SEED_IMAGE_EXTENSIONS) {
+    const path = join(SEED_IMAGES_DIR, `${id}.${extension}`);
+
+    if (existsSync(path)) {
+      return readFile(path);
+    }
+  }
+
+  return null;
+}
 
 /** Color estable por foto para que dos ejecuciones den el mismo binario. */
 function colorFromId(id: string): { r: number; g: number; b: number } {
@@ -93,18 +120,24 @@ async function main(): Promise<void> {
 
   let created = 0;
   let skipped = 0;
+  let fromFiles = 0;
 
   for (const photo of photos) {
     const existing = await storage.get(photo.thumbKey);
+    const source = await loadSeedImage(photo.id);
 
-    if (existing !== null) {
+    if (source === null && existing !== null) {
       skipped += 1;
       continue;
     }
 
-    const jpeg = await buildJpeg(photo.id);
-    const original = await processOriginal(jpeg, 'image/jpeg');
-    const variants = await processImage(jpeg);
+    if (source !== null) {
+      fromFiles += 1;
+    }
+
+    const input = source ?? (await buildJpeg(photo.id));
+    const original = await processOriginal(input, 'image/jpeg');
+    const variants = await processImage(input);
 
     await storage.put(photo.originalKey, original.buffer, original.mimeType);
     await storage.put(photo.displayKey, variants.display.buffer, 'image/webp');
@@ -125,7 +158,9 @@ async function main(): Promise<void> {
 
   await prisma.$disconnect();
   // eslint-disable-next-line no-console -- script de línea de comandos
-  console.log(`seed-images: ${created} generadas, ${skipped} ya tenian objeto.`);
+  console.log(
+    `seed-images: ${created} subidas (${fromFiles} desde assets/demo/seed), ${skipped} ya tenian objeto.`,
+  );
 }
 
 await main();

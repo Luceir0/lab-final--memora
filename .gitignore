@@ -33,5 +33,11 @@ Thumbs.db
 *.sqlite
 *.sqlite3
 
+# Imágenes locales del seed (no versionadas)
+assets/demo/seed/
+
+# PDFs generados de la documentación de entrega
+docs/08-delivery/*.pdf
+
 # Cliente Prisma generado
 apps/api/src/generated/

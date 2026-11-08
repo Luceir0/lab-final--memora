@@ -448,7 +448,7 @@ describe.skipIf(!hasDatabase)('database model integration', () => {
 
     const familyCircle = firstSnapshot.circles.find((circle) => circle.id === 'seed_circle_family');
     expect(familyCircle?.name).toBe('Familia Ferrer');
-    expect(familyCircle?.coverPhotoId).toBe('seed_photo_coast_01');
+    expect(familyCircle?.coverPhotoId).toBe('seed_photo_lisbon_01');
 
     // Circles are groups of people, not trips: «Danza» is the friends circle
     // and keeps the read-only settings so the permissions case survives.
