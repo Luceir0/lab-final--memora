@@ -2,47 +2,63 @@
 
 > **Todos vuestros recuerdos, por fin, en el mismo lugar.**
 
-Memora es un archivo **privado y colaborativo** de recuerdos fotográficos. Un grupo de personas de confianza (un **círculo**) reúne sus fotos en álbumes compartidos, etiqueta quién aparece en cada una y descarga lo que quiera. No es una red social: no hay perfiles públicos, seguidores, likes ni contenido público.
+[![CI](https://github.com/Luceir0/lab-final--memora/actions/workflows/ci.yml/badge.svg)](https://github.com/Luceir0/lab-final--memora/actions/workflows/ci.yml)
 
-Aplicación web real, con la misma calidad en **móvil** y **escritorio**, instalable en la pantalla de inicio, tema claro/oscuro/sistema, API REST propia y datos persistentes.
+Memora es una aplicación web **privada y colaborativa** para reunir los recuerdos fotográficos de un grupo de confianza. Cada **círculo** comparte álbumes, etiqueta a quién aparece en cada foto y descarga lo que necesite. No hay perfiles públicos, seguidores, likes ni contenido abierto: no es una red social.
+
+Este repositorio contiene la **entrega del trabajo final del curso de Frontend con IA**: la primera iteración del producto, funcionando de extremo a extremo, junto con su documentación, sus decisiones de arquitectura y la evidencia de su verificación.
+
+Misma calidad en **móvil y escritorio**, tema **claro, oscuro y sistema**, PWA instalable, **API REST propia**, PostgreSQL y almacenamiento de objetos privado.
 
 ---
 
-## Estado del proyecto
+## Estado de la entrega
 
-**Fase actual: producto en construcción. F01–F25 están `done`.** F06 se cerró el 2026-10-31 y F07 el 2026-11-01, ambas tras PR, merge y CI en verde; F07 validó PostgreSQL 17.11 en el runner. F08 (API core) está `done` desde el 2026-11-01 con la PR #4, el merge `ed1f316` y CI en verde (run `41261491641`). F09 (web core) está `done` desde el 2026-11-01 con la PR #5, el merge `9fd987e` y CI en verde. F10 (sistema visual y tema) está `done` desde el 2026-11-02 con la PR #7, el merge `f3b26a5` y CI en verde. F11 (UI kit I) está `done` desde el 2026-11-02 con la PR #11, el merge `6d160ce` y CI en verde. F12 (UI kit II) está `done` desde el 2026-11-02 con la PR #13, el merge `62d98b9` y 270 tests en `@memora/ui`. F13 (app shell) está `done` desde el 2026-11-03 con la PR #16, el merge `2c2a587` y CI en verde (run `41610250888`). F14 (PWA e instalación) está `done` desde el 2026-11-03 con la PR #18, el merge `160fb00` y CI en verde. F15 (auth API) está `done` desde el 2026-11-03 con la PR #20, el merge `af7d865` y CI en verde. F16 (auth web) está `done` desde el 2026-11-03 con la PR #22, el merge `dd9d48e` y CI en verde (run `41683883983`). F17 (circles API) está `done` desde el 2026-11-03 con la PR #24, el merge `03d7250` y CI en verde. **F18 (circles web) está `done` desde el 2026-11-04**: aceptada por el usuario ese día tras la revisión visual y de teclado, y cerrada con los commits `f9b9ea2` y `8bb73de`, la [PR #26](https://github.com/Luceir0/lab-final--memora/pull/26), el merge `155da94` en `main` y CI en verde en la PR (run `41814318422`) y en `main` (run `41814512961`); la rama `feat/F18-circles-web` sigue existiendo, ya mergeada. **F19 (invitations API) está `done` desde el 2026-11-04**: cinco endpoints con token hasheado, email real y preview pública, 30 tests de invitaciones y **200** de API en 11 archivos contra `memora_test`, y revisión independiente de nivel A en dos rondas (primera **no apto** por B-01, token en claro en los logs); cerrada con los commits `1250e29` (feature) y `2d3cfc5` (documentación), la [PR #28](https://github.com/Luceir0/lab-final--memora/pull/28), el merge `d0c4465` en `main` y CI en verde en la PR (run `41826103313`) y en `main` (run `41826486383`, `completed/success`). **F20 (invitación SSR + compartir) está `done` desde el 2026-11-04**: página `/invite/:token` con SSR, Open Graph del círculo e imagen genérica 1200×630, preview sin fotos ni miembros, estados inválida/caducada/revocada/ya miembro, aceptación con CSRF y CTA «Entrar para aceptar» con `redirect`; **35 tests** en 5 archivos de invitación y **311 tests** en 48 archivos de `apps/web`, con revisión de nivel A, auditorías de accesibilidad y diseño y aceptación del usuario en escritorio y móvil; cerrada con los commits `ab5159c` y `74e30ec`, la [PR #30](https://github.com/Luceir0/lab-final--memora/pull/30), el merge `19a8485` en `main` y CI en verde en la PR (run #67, head `74e30ec`) y en `main` (run #68), ambos `completed/success`. **F21 (members API) está `done` desde el 2026-11-04**: listado paginado de miembros con `photosCount` derivado por círculo, expulsión solo para el propietario, salida del miembro, fotos de una persona acotadas al círculo (AC-07) y borrado de etiquetas limitado a ese círculo; **sin email** de miembros por minimización de datos. **18 tests** de miembros y **218** de API en 12 archivos contra `memora_test`, **145** de `shared`, typecheck 9/9, lint 6/6 y una prueba HTTP real de **41/41** comprobaciones; revisión independiente de nivel A en **apto con correcciones**, sin bloqueantes ni mayores (6 Menores y 5 Nits en `Pendiente`). El usuario la aceptó el 2026-11-04; cierre operativo con los commits `b69cbb6` y `39e33f6`, la [PR #32](https://github.com/Luceir0/lab-final--memora/pull/32), CI en verde en la PR (run `41879532946`, head `39e33f6`), el merge `1b3215d` en `main` y CI en verde sobre el merge (run `41881097031`). **F22 (People web) quedó `done` el 2026-11-05** tras la aceptación del usuario y el cierre operativo con la PR #34 y el merge `7ee702f`. **F23 (Albums API) quedó `done` el 2026-11-05**: CRUD de álbumes con membresía como gate, portada validada, keyset `(createdAt, id)`, alta transaccional con `album.created` y borrado con bloqueo pesimista; revisión de nivel **B** en dos rondas (primera **no apto** por B-01 y segunda **apto**), **24 tests de álbumes**, **243 de API en 13 archivos** y **1086 tests** en el monorepo. El usuario aceptó la feature ese día y el cierre operativo se completó con la PR #36, el merge `dca7a60` y CI en verde.
-
-El producto ya tiene lógica real: F04 deja listos el monorepo, el tooling, Docker y CI; F05 valida las piezas de riesgo (render modes, Tailwind 4, Fastify + Zod, Prisma 7, sharp y el snapshot de Content Island); F06 fija en `packages/shared` los contratos Zod, los errores, la paginación y los permisos puros; F07 añade el esquema Prisma, la migración inicial, el seed determinista y los tests contra PostgreSQL real; F08 monta el esqueleto de la API; F09 convierte `packages/api-client` en un cliente HTTP tipado y monta la base web; F10 fija el sistema visual y el tema; F11 y F12 construyen el UI kit; F13 monta el shell adaptativo; F14 hace la app instalable; F15 y F16 implementan autenticación real (API y web); F17 implementa el CRUD de círculos con membresía, stats y paginación keyset; **F18 añade Mis círculos, el alta y el detalle contra la API real, con guard de sesión y sidebar**; y **F19 añade la API de invitaciones con token hasheado, email real y preview pública**, cerrada con la PR #28, el merge `d0c4465` y CI en verde; y **F20 añade la página de invitación con SSR, Open Graph, estados y aceptación real**, cerrada con la PR #30, el merge `19a8485` y CI en verde. **F23 añade la API de álbumes con membresía, portada validada, keyset, alta transaccional y borrado con bloqueo pesimista**, cerrada en `done` el 2026-11-05 con la PR #36 y el merge `dca7a60`. y **F25 añade el pipeline real de subida con validación por magic bytes, `sharp`, EXIF transitorio, storage S3 y geocodificación con deadline**, cerrada en `done` el 2026-11-05 con la PR #40 y el merge `44ac7a9`. Este repositorio contiene la especificación viva, el sistema de diseño, los ADRs, las 43 features y la configuración de agentes que se usa para construirlo paso a paso.
-
-| Elemento | Estado |
+| | |
 | --- | --- |
-| Producto y alcance | Definido |
-| Diseño canónico | Segunda iteración, normalizada |
-| Arquitectura y ADRs | Definidos |
-| Features | 43 specs con criterios de aceptación |
-| Agentes, comandos y skills | Configurados |
-| Monorepo y app | F04 `done`, CI en verde |
-| Spike técnico | F05 `done`, CI en verde en `main` |
-| Contratos compartidos | F06 `done`, PR #2, merge `b556168` y CI en verde; `@memora/shared` con Zod 4.6.7 y 138 tests |
-| Modelo de datos | F07 `done`, PR #3, merge `bd2769c` y CI en verde; 10 modelos, migración `20261031224916_init`, seed determinista y 36 tests con PostgreSQL real |
-| API core | F08 `done`; Fastify 5, siete plugins, Swagger UI dev-only, error handler canónico y harness `inject`; 77 + 13 skipped sin base y 90 con `memora_test` |
-| Web core | F09 `done`; base de TanStack Start, `@memora/api-client` real, provider de datos con `QueryClient` por petición en servidor, error boundary y 404; PR #5, merge `9fd987e` y CI en verde (runs `41306238454` y `41306484717`); AC-06 verificado por el usuario en Firefox real, sin errores de hidratación |
-| Sistema visual y tema | F10 `done`; tokens y Tailwind 4 CSS-first, tema claro/oscuro/sistema con cookie y script previo al pintado, `theme-color`, fuente self-hosted, foco y movimiento reducido; 44 tests en `@memora/ui` y 88 en `apps/web`; aceptada por el usuario en Firefox real el 2026-11-02; PR #7, merge `f3b26a5` y CI en verde (runs `41473542981` y `41473996157`) |
-| UI kit I: controles y datos | F11 `done`; 18 componentes presentacionales en `@memora/ui` (acción, formulario, selección, datos y feedback) con estados y accesibilidad; 173 tests en `@memora/ui` (95 de componentes con RTL + axe y 78 de estilos) y 88 en `apps/web`; catálogo `/ui` solo de desarrollo, ausente del bundle (chunk stub de 103 B) y árbol de rutas estable; revisión independiente en dos rondas, axe en navegador real sin violaciones ni `incomplete` y auditoría de diseño en apto; aceptada por el usuario el 2026-11-02; PR #11, merge `6d160ce` y CI en verde (runs `41498545493` y `41499457291`) |
-| UI kit II: overlays y feedback | F12 `done`; `Dialog`, `ConfirmDialog`, `BottomSheet`, `ResponsiveDialog`, `Menu`, `Tabs`, `Accordion`, `Toast`, `InlineAlert`, `EmptyState`, `Breadcrumb` y `Tooltip`; 270 tests en `@memora/ui`; axe en navegador real con 0 violaciones en 32 pasadas y auditoría de diseño en tres pasadas; aceptada el 2026-11-02; PR #13, merge `62d98b9` y CI en verde |
-| App shell y navegación | F13 `done`; barra inferior de tres destinos, sidebar desde `lg`, cabecera, skip link, landmarks, `aria-current` y safe areas; 114 tests de web y medición en Chrome a 320–1440; aceptada el 2026-11-03; PR #16, merge `2c2a587` y CI en verde (run `41610250888`) |
-| PWA e instalación | F14 `done`; manifiesto, iconos `any`/`maskable`, `apple-touch-icon`, `InstallAppRow`, contenedor de 80rem y navegación SPA del logotipo; instalabilidad verificada en Chrome sin service worker (ADR-0013); aceptada el 2026-11-03; PR #18, merge `160fb00` y CI en verde |
-| Auth API | F15 `done`; registro, login, logout, sesión en BD con `tokenHash`, Argon2id, cookies `HttpOnly`/`SameSite`, CSRF por HMAC, `Origin`/`Referer` y rate limit; revisión de nivel A con 1 Mayor y 8 Menores resueltos; 29 tests de auth y 127 de API; aceptada el 2026-11-03; PR #20, merge `af7d865` y CI en verde |
-| Auth web | F16 `done`; login y registro SSR con RHF y schemas compartidos, mapeo de errores, `redirect` saneado, teclado móvil y collage real; tres rondas de auditoría; 207 tests de web; aceptada el 2026-11-03; PR #22, merge `dd9d48e` y CI en verde (run `41683883983`) |
-| Circles API | F17 `done`; `GET/POST /api/circles` y `GET/PATCH/DELETE /api/circles/:circleId` con membership `owner`, settings, stats, paginación keyset y `404` para no miembros; revisión de nivel A en una ronda con 1 Mayor, 6 Menores y 5 Nits resueltos; aceptada el 2026-11-03; PR #24, merge `03d7250` y CI en verde |
-| Circles web | F18 `done`; Mis círculos con destacado, alta en `/circles/new` con `ResponsiveDialog`, detalle con pestañas y estados, guard de sesión y sidebar; `settings` opcional al crear; 64 tests de circles web en 10 archivos y 31 de API; verificación completa: web **276**, API **158**, shared **143**, ui **270** y api-client **39**; revisión nivel B y auditoría de diseño aptas; aceptada por el usuario el 2026-11-04; commits `f9b9ea2` y `8bb73de`, PR #26, merge `155da94` y CI en verde (runs `41814318422` y `41814512961`) |
-| Invitations API | F19 `done`; cinco endpoints con token de 32 bytes base64url y SHA-256, caducidad de 7 días, revocación y aceptación idempotentes, email real con `nodemailer`/Mailpit o Resend, rate limit de 10/hora por usuario y preview mínima; 30 tests de invitaciones y **200** de API en 11 archivos contra `memora_test`, con prueba real de extremo a extremo y 0 apariciones del token en los logs; revisión de nivel A en dos rondas (primera **no apto** por B-01, token en claro en los logs) y aceptación del usuario el 2026-11-04; cerrada con la PR #28, el merge `d0c4465` y CI en verde |
-| Invitación SSR + compartir | F20 `done`; `/invite/:token` con SSR, Open Graph del círculo e imagen genérica 1200×630, preview sin fotos ni miembros, estados inválida/caducada/revocada/ya miembro, CTA «Entrar para aceptar» con `redirect`, aceptación con CSRF y `Cache-Control: private, no-store` con `Vary: Cookie`; **35 tests** en 5 archivos de invitación y **311 tests** en 48 archivos de `apps/web`, con revisión de nivel A, auditorías de accesibilidad y diseño y aceptación del usuario el 2026-11-04; cerrada con los commits `ab5159c` y `74e30ec`, la PR #30, el merge `19a8485` y CI en verde (runs #67 y #68) |
-| People web | F22 `done`; Personas sobre la API de F21 con el chrome del detalle en `CircleDetailLayout`, `TabLinks` con URL real y `aria-current`, lista y tabla de miembros, pendientes, invitación por modal y quitar con confirmación; revisión de nivel A en dos rondas (primera **no apto** por B-01 y M-01), tres de accesibilidad y auditoría de diseño con visión; **G4 del 2026-11-05** con siete correcciones de producto y 16 pasadas de axe sin violaciones; **378 tests** de web y **1062** en total; aceptada por el usuario el 2026-11-05 y cerrada el mismo día con los commits `56fca50`, `3e719ed`, `8219d1f` y `97b45be`, la PR #34, el merge `7ee702f` y CI en verde (runs `42004835096` y `42006326244`) |
-| Albums API | F23 `done`; seis endpoints de álbumes con membresía como gate, permisos por `membersCanCreateAlbums`, portada solo con fotos del mismo álbum, keyset `(createdAt, id)`, alta transaccional con `album.created` y vaciado transaccional con `{ deletedCount }`; borrado con `SELECT … FOR UPDATE` para no perder fotos recién insertadas bajo `READ COMMITTED`; revisión de nivel **B** en dos rondas (primera **no apto** por B-01, segunda **apto**), **24 tests de álbumes**, **243 de API en 13 archivos** y **1086 tests** en 8/8 tareas; aceptada por el usuario el 2026-11-05; objetos de storage e índices diferidos a F25; cerrada con la PR #36, el merge `dca7a60` y CI en verde (runs `42018373439` y `42018611662`) |
-| Upload pipeline API | F25 `done`; `POST /api/albums/:albumId/photos` multipart de un archivo con sesión, `Origin`, CSRF, membresía (`404`), `photo.upload` (`403`) y rate limit de 60/min por usuario; magic bytes con `file-type` (JPEG/PNG/WebP; SVG/GIF/HEIC/HEIF/AVIF → `415`; >25 MB → `413 FILE_TOO_LARGE`; >50 MP → `422`; cuota de 2 GB → `413 QUOTA_EXCEEDED`); `sharp` con original a calidad 95, `display` de 1600 px y `thumb` de 400×400 desde el archivo crudo; EXIF con GPS solo en memoria y `placeName` truncado a 200; idempotencia con cross-álbum `200`, cross-círculo `409` y `P2002` cubierto; `Activity` en la misma transacción; vaciado de álbum que borra objetos y migración con `Photo(circleId, createdAt, id)` y `Membership(circleId, joinedAt)`; **38 passed y 1 skipped** en `photos` y **322 passed y 2 skipped** en la API, `typecheck` OK, `lint` 6/6, `format:check` OK y las integraciones de Silo y S3 en verde; revisión de nivel **A** en **cambios requeridos sin bloqueantes** (1 Mayor corregido); aceptada por el usuario el 2026-11-05 y cerrada con los commits `1833dca` y `ebc57d3`, la PR #40, el merge `44ac7a9` y CI en verde (runs `42109962179` y `42110522832`) |
+| Versión | **0.1** — primera iteración |
+| Entrega | Trabajo final del curso · noviembre de 2026 |
+| Producto | MVP completo y verificado de extremo a extremo en local |
+| Especificaciones | **36 cerradas**, 4 en revisión final y 4 trasladadas a la siguiente iteración |
+| Verificación | **1.815 tests**, CI en verde, axe sin violaciones e informe de seguridad |
+| Despliegue | Entorno local reproducible; guía de despliegue escrita, sin cloud |
 
-El tablero de features está en [docs/04-features/README.md](docs/04-features/README.md). **F01–F24 están `done`**: F09 cerró el 2026-11-01 con la PR #5, el merge `9fd987e` y CI en verde, y deja como deuda la prueba automatizada de hidratación (AC-06) en F37/F38; F10 cerró el 2026-11-02 con la PR #7 y el merge `f3b26a5`; F11 cerró el 2026-11-02 con la PR #11 y el merge `6d160ce`; F12 cerró el 2026-11-02 con la PR #13 y el merge `62d98b9`; F13 cerró el 2026-11-03 con la PR #16 y el merge `2c2a587`; F14 cerró el 2026-11-03 con la PR #18 y el merge `160fb00`; F15 cerró el 2026-11-03 con la PR #20 y el merge `af7d865`; F16 cerró el 2026-11-03 con la PR #22 y el merge `dd9d48e`; F17 cerró el 2026-11-03 con la PR #24 y el merge `03d7250`; **F18 cerró el 2026-11-04** con la PR #26, el merge `155da94` y CI en verde; **F19 cerró el 2026-11-04** con la PR #28, el merge `d0c4465` y CI en verde (runs `41826103313` en la PR y `41826486383` en `main`); **F20 cerró el 2026-11-04** con la PR #30, el merge `19a8485` y CI en verde (runs #67 en la PR y #68 en `main`); **F21 cerró el 2026-11-04** con 18 tests de miembros y 218 de API en 12 archivos, aceptada por el usuario y cerrada con la [PR #32](https://github.com/Luceir0/lab-final--memora/pull/32), el merge `1b3215d` y CI en verde; **F22 quedó `done` el 2026-11-05** tras la aceptación del usuario y el cierre operativo con la PR #34, el merge `7ee702f`, los commits `56fca50`, `3e719ed`, `8219d1f` y `97b45be` y CI en verde en la PR (run `42004835096`) y en `main` (run `42006326244`); **F23 quedó `done` el 2026-11-05**: CRUD de álbumes con membresía como gate, portada validada, keyset `(createdAt, id)`, alta transaccional y borrado con bloqueo pesimista; revisión de nivel B en dos rondas (primera **no apto** por B-01, segunda **apto**), **24 tests de álbumes**, **243 de API** y **1086 tests** en total; aceptada por el usuario el 2026-11-05 y cerrada el mismo día con los commits `34c71cd` y `6ad8226`, la PR #36, el merge `dca7a60` y CI en verde (runs `42018373439` y `42018611662`). **F24 quedó `done`** el 2026-11-05 tras la aceptación del usuario: albums web con formulario, rejilla de altura uniforme, detalle y permisos de creador; el usuario pidió cinco cambios ya aplicados, la revisión de nivel B fue aprobada y se cerró tras reiniciar la API limpia y borrar los álbumes de prueba. Queda pendiente el cierre operativo. **F25 quedó `done` el 2026-11-05** con la PR #40, el merge `44ac7a9` y CI en verde en la PR (run `42109962179`) y en `main` (run `42110522832`); **F26–F43 siguen en `draft`**. Los resultados del spike están en [docs/03-architecture/spike-results.md](docs/03-architecture/spike-results.md) y los handoffs en [F06](docs/04-features/F06-contratos-compartidos/handoff.md), [F07](docs/04-features/F07-modelo-datos/handoff.md), [F08](docs/04-features/F08-api-core/handoff.md), [F09](docs/04-features/F09-web-core/handoff.md), [F10](docs/04-features/F10-sistema-visual/handoff.md), [F11](docs/04-features/F11-ui-kit-i/handoff.md), [F12](docs/04-features/F12-ui-kit-ii/handoff.md), [F13](docs/04-features/F13-app-shell/handoff.md), [F14](docs/04-features/F14-pwa/handoff.md), [F15](docs/04-features/F15-auth-api/handoff.md), [F16](docs/04-features/F16-auth-web/handoff.md), [F17](docs/04-features/F17-circles-api/handoff.md), [F18](docs/04-features/F18-circles-web/handoff.md), [F19](docs/04-features/F19-invitations-api/handoff.md), [F20](docs/04-features/F20-invitation-ssr/handoff.md), [F21](docs/04-features/F21-members-api/handoff.md), [F22](docs/04-features/F22-people-web/handoff.md), [F23](docs/04-features/F23-albums-api/handoff.md), [F24](docs/04-features/F24-albums-web/handoff.md) y [F25](docs/04-features/F25-upload-pipeline-api/handoff.md).
+El MVP está cerrado y probado. Las cuatro especificaciones en revisión final son las de calidad y entrega —rendimiento (F40), seguridad (F41), despliegue (F42) y paquete de entrega y defensa (F43)—: su trabajo y su evidencia están hechos y solo les queda la aceptación. Las cuatro que pasan a la siguiente iteración son **actividad del círculo** (F35), **infraestructura de tests** (F37), **E2E de flujos críticos** (F38) y **auditoría formal de accesibilidad** (F39).
+
+El estado real, feature a feature, con su nivel de auditoría y su evidencia, está en el **[tablero de features](docs/04-features/README.md)**.
+
+---
+
+## Qué hace hoy
+
+- **Cuenta y acceso.** Registro, inicio y cierre de sesión, sesión persistente en base de datos, cookies `HttpOnly`, protección CSRF y límite de intentos.
+- **Círculos.** Creación, listado con destacado, detalle, ajustes y permisos por rol; salir del círculo y eliminarlo con confirmación.
+- **Invitaciones.** Enlace con token hasheado y caducidad de 7 días, envío de email opcional y página pública de invitación con Open Graph y aceptación real.
+- **Personas.** Miembros del círculo, invitaciones pendientes, expulsión, salida y «Fotos de esta persona».
+- **Álbumes.** Alta, edición, vaciado y borrado, con portada elegida entre las fotos del álbum y permisos por círculo.
+- **Subidas.** Cola global con arrastrar y soltar, cámara y galería, progreso, reintento, cancelación y hasta tres subidas simultáneas. El servidor valida por *magic bytes*, procesa con `sharp`, extrae el lugar y aplica cuotas.
+- **Galería y visor.** Scroll infinito, selección múltiple, filtro por persona, visor a pantalla completa en móvil y en modal en escritorio, con navegación por teclado y gestos.
+- **Metadatos y etiquetas.** Edición de descripción, fecha y lugar; etiquetado de personas con búsqueda y actualización optimista.
+- **Descargas.** Foto individual, selección y álbum completo en ZIP, con trabajo asíncrono, progreso, límites y expiración.
+- **Perfil, tema y PWA.** Nombre editable, email de solo lectura, avatar con iniciales, tema claro/oscuro/sistema e instalación en la pantalla de inicio.
+- **Contenido.** Ayuda, preguntas frecuentes y política de privacidad generadas en el build desde Content Island.
+
+Todo se apoya en una **API REST propia** con autorización en servidor, paginación por cursor, subida multipart y entrega privada de imágenes.
+
+---
+
+## Los seis módulos del curso
+
+El proyecto cubre los seis bloques del temario. Esta tabla resume dónde se aplica cada uno; el detalle tema a tema, con su evidencia y su estado, está en el **[mapa de cobertura](docs/07-curriculum/coverage-map.md)**.
+
+| Módulo | Dónde se aplica en Memora | Evidencia |
+| --- | --- | --- |
+| **1. Maquetación**<br>HTML semántico, CSS moderno, Flexbox y Grid, responsive, Tailwind | HTML semántico con landmarks, `nav`, `main` y encabezados únicos; variables CSS, `100dvh`, `:has()`, `focus-visible`, `prefers-reduced-motion` y safe areas; Flexbox y Grid en el shell, círculos, álbumes y galería; responsive de 320 a 1440 px; tokens de diseño y Tailwind 4 CSS-first, sin colores fuera de escala. *Las container queries no se usan: el responsive se resuelve con breakpoints.* | [Tokens](docs/02-design/tokens.md) · [Componentes](docs/02-design/components.md) · [Pantallas](docs/02-design/screens.md) |
+| **2. Lenguaje**<br>TypeScript, union types, genéricos, inmutabilidad, funciones puras | TypeScript estricto sin `any` (`noUncheckedIndexedAccess`, `exactOptionalPropertyTypes`); uniones discriminadas en roles, errores, tema y estados de la cola de subida; genéricos en `Page<T>`, `ApiResult<T>` y `request<T>`; tipos inferidos de Zod; permisos y paginación como funciones puras e inmutables. | [`tsconfig` base](packages/config/tsconfig/base.json) · [`permissions.ts`](packages/shared/src/permissions.ts) · [`pagination.ts`](packages/shared/src/pagination.ts) |
+| **3. Bundlers**<br>Vite, SPA, SSR, SSG, monorepos, paquetes compartidos | Vite 8 con TanStack Start; SPA en las rutas privadas, SSR en acceso, registro e invitación y SSG en ayuda y privacidad; code-splitting por ruta, proxy `/api` y variables por entorno; monorepo con pnpm y Turborepo y paquetes compartidos. *MPA no se fuerza: la decisión está razonada en el ADR-0002.* | [ADR-0002](docs/03-architecture/adr/ADR-0002-render-modes.md) · [`vite.config.ts`](apps/web/vite.config.ts) · [`turbo.json`](turbo.json) |
+| **4. Frameworks**<br>React, hooks, formularios, APIs, metaframeworks | React 19 con componentes presentacionales en `@memora/ui`; TanStack Start, Router y Query; hooks propios para tema, cola de subida, medios y foco; formularios con React Hook Form y los mismos esquemas Zod que valida la API. *Next.js se valoró y se descartó en el ADR-0001.* | [ADR-0001](docs/03-architecture/adr/ADR-0001-metaframework.md) · [`packages/ui`](packages/ui) · [`apps/web/src/features`](apps/web/src/features) |
+| **5. Testing**<br>Componentes, Testing Library, mocking, hooks, revisión con IA | Vitest en los cinco paquetes; Testing Library por rol y nombre accesible; MSW 3 para `fetch` y XHR; tests de hooks montados en su provider; integración real contra PostgreSQL y contra Silo; axe en jsdom y en navegador sobre el build. | [Estrategia de tests](docs/05-quality/strategy.md) · [Matriz de tests](docs/05-quality/test-matrix.md) · [Informe de accesibilidad](docs/05-quality/a11y-report.json) |
+| **6. API REST**<br>API REST I y II, consumo de APIs, servicios externos | Fastify 5 con contratos Zod y OpenAPI de 29 rutas; sesiones en base de datos, CSRF con HMAC, comprobación de `Origin` y rate limit; autorización por recurso en cada endpoint; paginación keyset; subida multipart con S3, email con Mailpit o Resend y geocodificación con Nominatim. La web consume todo con un cliente HTTP tipado. | [Contrato REST](docs/03-architecture/api-contract.md) · [`apps/api/src/modules`](apps/api/src/modules) · [`packages/api-client`](packages/api-client) |
 
 ---
 
@@ -50,53 +66,49 @@ El tablero de features está en [docs/04-features/README.md](docs/04-features/RE
 
 | Capa | Elección |
 | --- | --- |
-| Monorepo | pnpm workspaces + Turborepo |
-| Web | React 19 + TypeScript + **TanStack Start 1.169** sobre Vite 8 |
-| Estilos | **Tailwind CSS 4** (CSS-first, `@theme`) + tokens en variables CSS |
-| Datos remotos | TanStack Query |
-| Formularios | React Hook Form + Zod 4 |
-| Contratos compartidos | `@memora/shared`: Zod 4, errores, paginación y permisos puros |
-| API | Node.js 24 + **Fastify 5** |
-| Base de datos | PostgreSQL + **Prisma 7.10.1** |
-| Archivos | S3-compatible (Silo, fork de MinIO, en local; R2/S3 en producción) + `sharp` |
+| Monorepo | pnpm 10.34.8 + Turborepo 2.11.10 |
+| Web | React 19.3.1 + **TanStack Start 1.169.4** sobre Vite 8.3.5 |
+| Estilos | **Tailwind CSS 4.3.3** (CSS-first, `@theme`) + tokens en variables CSS |
+| Datos remotos | TanStack Query 5.105.1 |
+| Formularios | React Hook Form 7.91 + Zod 4.6.7 |
+| Contratos compartidos | `@memora/shared`: Zod, errores, paginación y permisos puros |
+| API | Node.js 24 + **Fastify 5.12.7** |
+| Base de datos | PostgreSQL 17 + **Prisma 7.10.1** |
+| Archivos | S3-compatible (Silo en local; R2 o AWS en producción) + `sharp` 0.35.5 |
 | Email | Mailpit local / Resend opcional |
 | Geocodificación | Nominatim (OpenStreetMap) |
 | Contenido editorial | **Content Island** (Ayuda, FAQ y Privacidad) |
-| Testing | Vitest, React Testing Library, MSW, axe (sin Playwright: F37/F38 fuera) |
-| Calidad | ESLint, Prettier, `tsc --noEmit`, GitHub Actions |
+| Testing | Vitest 5, React Testing Library, MSW 3 y axe 4.14 |
+| Calidad | TypeScript 6.0.3 estricto, ESLint, Prettier y GitHub Actions |
 
-**Versiones fijadas (F04–F05):**
+Las versiones están fijadas y verificadas contra los manifiestos; el inventario completo, con qué aporta cada dependencia y por qué está, está en el **[dossier técnico](docs/08-delivery/technical-dossier.md)**.
 
-| Herramienta | Versión |
-| --- | --- |
-| Node.js | 24.21.0 (`engines >=24`) |
-| pnpm | 10.34.8 (corepack) |
-| TypeScript | 6.0.3 |
-| Turborepo | 2.11.10 |
-| Vitest | 5.0.5 |
-| ESLint | 9.39.5 |
-| typescript-eslint | 8.72.0 |
-| Prettier | 3.9.10 |
-| React / React DOM | 19.3.1 |
-| TanStack Start | 1.169.4 |
-| TanStack Router | 1.170.46 |
-| Vite | 8.3.5 |
-| `@vitejs/plugin-react` | 6.1.2 |
-| `@types/react` / `@types/react-dom` | 19.3.0 |
-| Tailwind CSS / `@tailwindcss/vite` | 4.3.3 |
-| Fastify | 5.12.7 |
-| Zod | 4.6.7 |
-| `fastify-type-provider-zod` | 7.0.0 |
-| `@fastify/swagger` / `@fastify/swagger-ui` | 9.9.2 / 6.1.2 (Swagger UI solo en desarrollo) |
-| Prisma CLI / Client / `@prisma/adapter-pg` | 7.10.1 |
-| `pg` | 8.23.1 |
-| `sharp` | 0.35.5 |
-| `@content-island/api-client` | 0.26.0 |
-| `@types/node` | 24.19.2 |
+---
 
-Imágenes locales: `postgres:17.11-alpine`, `pgsty/silo` por tag y digest (solo local) y `axllent/mailpit:v1.32.0`. Prisma 8 sigue en RC y no se usa. F05 fijó Prisma 7.10.1 con una migración de spike y el modelo temporal `SpikeNote`; F07 los eliminó y dejó la migración inicial `20261031224916_init` con el modelo definitivo.
+## Arquitectura
 
-**Snapshot de Content Island:** `content-island-snapshot.json` en la raíz, exportado el 2026-10-26 (`schemaVersion: 1`; 6 artículos de ayuda, 8 FAQs y 1 página legal en `es`). El build lo lee sin token; si falta, falla con un mensaje que incluye la ruta esperada. Regenerarlo requiere un token que no se versiona.
+Dos procesos desplegables, una sola fuente de verdad para los contratos y autorización siempre en el servidor:
+
+```text
+Navegador
+  │  HTTPS · cookie HttpOnly
+  ▼
+apps/web (TanStack Start + Node) ─── Content Island (snapshot en el build)
+  │  /api (proxy en desarrollo, mismo dominio en producción)
+  ▼
+apps/api (Fastify)
+  ├── PostgreSQL (Prisma)
+  ├── S3-compatible (Silo / R2 / S3)
+  ├── Email (Mailpit / Resend)
+  └── Geocodificación (Nominatim)
+```
+
+- La web **no** habla con la base de datos ni con el bucket: todo pasa por la API.
+- `packages/shared` define una vez los esquemas, los DTO, los errores y los permisos; web y API comparten ese contrato.
+- La autorización se decide en cada recurso, no en la interfaz. La UI refleja permisos; la API los impone.
+- Privacidad por defecto: bucket privado, sin coordenadas GPS persistidas y sin PII en los logs.
+
+Detalle y límites de cada capa en [arquitectura](docs/03-architecture/overview.md) y en los **14 ADR** de [docs/03-architecture/adr](docs/03-architecture/adr).
 
 ---
 
@@ -104,42 +116,139 @@ Imágenes locales: `postgres:17.11-alpine`, `pgsty/silo` por tag y digest (solo 
 
 ```text
 memora/
-├── AGENTS.md                  # constitución para agentes
-├── opencode.jsonc             # configuración de OpenCode V2
-├── CLAUDE.md                  # puente para Claude Code
-├── .opencode/                 # agentes, comandos y skills
-├── .github/
-│   └── workflows/             # CI: install, docs, agents, lint, typecheck, test y build
+├── AGENTS.md                    # constitución del proyecto para agentes
+├── opencode.jsonc               # configuración de OpenCode V2
+├── CLAUDE.md                    # puente para Claude Code
+├── .opencode/                   # agentes, comandos y skills
+├── .github/workflows/           # CI: docs, agents, lint, typecheck, test y build
 ├── apps/
-│   ├── web/                   # TanStack Start sobre Vite
-│   └── api/                   # Fastify
+│   ├── web/                     # TanStack Start sobre Vite
+│   └── api/                     # Fastify, Prisma y pipeline de subidas
 ├── packages/
-│   ├── shared/
-│   ├── api-client/
-│   ├── ui/
-│   └── config/
-├── scripts/                   # check-docs, validate-agents
-├── docker-compose.yml         # Postgres, Silo (S3) y Mailpit locales
-├── content-island-snapshot.json # contenido editorial para SSG
-├── package.json
-├── pnpm-workspace.yaml
-├── turbo.json
+│   ├── shared/                  # Zod, DTO, errores, paginación y permisos
+│   ├── api-client/              # cliente HTTP tipado
+│   ├── ui/                      # sistema de diseño y componentes
+│   └── config/                  # tsconfig, ESLint y Prettier compartidos
+├── scripts/                     # check-docs, validate-agents e iconos
+├── docker-compose.yml           # PostgreSQL, Silo (S3) y Mailpit locales
+├── content-island-snapshot.json # contenido editorial para el build
 ├── assets/
-│   ├── design/                # diseños canónicos normalizados
-│   ├── archive/design-v1/     # primera iteración (histórico)
-│   └── demo/                  # fotos de demostración con licencia
+│   ├── design/                  # diseños canónicos normalizados
+│   ├── archive/design-v1/       # primera iteración (histórico)
+│   └── demo/                    # fotos de demostración con licencia
 └── docs/
-    ├── 00-index.md
-    ├── 01-product/
-    ├── 02-design/
-    ├── 03-architecture/
-    ├── 04-features/
-    ├── 05-quality/
-    ├── 06-process/
-    ├── 07-curriculum/
-    ├── 08-delivery/
-    └── archive/
+    ├── 01-product/              # visión, alcance, personas y glosario
+    ├── 02-design/               # tokens, componentes y pantallas
+    ├── 03-architecture/         # overview, contratos, ADR y subidas
+    ├── 04-features/             # 44 specs con criterios de aceptación
+    ├── 05-quality/              # DoD, estrategia, informes y auditorías
+    ├── 06-process/              # workflow, protocolo de agentes y bitácora
+    ├── 07-curriculum/           # cobertura del temario
+    └── 08-delivery/             # demo, despliegue, defensa y dossier
 ```
+
+---
+
+## Puesta en marcha
+
+Requisitos: **Node 24**, **pnpm 10.34.8** (vía corepack) y **Docker Desktop**.
+
+```bash
+docker compose up -d        # PostgreSQL, Silo (S3) y Mailpit
+pnpm install
+
+# Exporta en esta shell las variables de .env.example
+# (ningún proceso carga el .env de la raíz; hay snippets para
+# Git Bash y PowerShell en la guía de despliegue)
+pnpm db:migrate
+pnpm db:seed                # datos deterministas e idempotentes
+pnpm db:seed:images         # escribe las imágenes del seed en Silo
+pnpm dev                    # API en :3001 y web en :3000
+```
+
+La primera vez hay que crear el bucket privado:
+
+```bash
+docker compose exec -T minio mc alias set local http://127.0.0.1:9000 memora memora123
+docker compose exec -T minio mc mb --ignore-existing local/memora
+```
+
+Usuarios de demostración que crea el seed:
+
+| Usuario | Email | Contraseña | Rol |
+| --- | --- | --- | --- |
+| Lucía Ferrer | `lucia@memora.test` | `memora-demo` | `owner` de los dos círculos |
+| Mateo Ríos | `mateo@memora.test` | `memora-demo` | `member` de los dos círculos |
+
+Mailpit queda en `http://localhost:8025` para ver los emails de invitación y la consola de Silo en `http://localhost:9001`.
+
+La guía completa —variables, healthchecks, migraciones, seed, solución de problemas y despliegue— está en **[deployment.md](docs/08-delivery/deployment.md)**.
+
+### Scripts
+
+| Comando | Qué hace |
+| --- | --- |
+| `pnpm dev` | API y web en modo desarrollo |
+| `pnpm build` | Build de producción de todos los paquetes |
+| `pnpm lint` | ESLint en raíz y workspaces |
+| `pnpm typecheck` | `tsc --noEmit` en los nueve proyectos |
+| `pnpm test` | Vitest en todos los paquetes |
+| `pnpm format:check` | Comprueba el formato de código |
+| `pnpm docs:check` | Valida enlaces y estructura documental |
+| `pnpm agents:check` | Valida agentes, comandos, skills y las 44 specs |
+| `pnpm db:migrate` / `pnpm db:seed` / `pnpm db:seed:images` | Base de datos y datos de demo |
+
+---
+
+## Verificación y calidad
+
+- **1.815 tests** en verde: API **429** (+2 de integración omitidos por diseño sin base), web **910** en 110 archivos, `shared` **154**, `ui` **283** y `api-client` **39**.
+- **Integración real** con PostgreSQL 17 y con Silo para las suites que lo necesitan, sin mocks de base de datos.
+- **CI en GitHub Actions** con instalación, validación documental y de agentes, lint, typecheck, tests y build.
+- **Accesibilidad:** 16 pasadas de axe sobre el build de producción, en móvil y escritorio, claro y oscuro, con **0 violaciones**; además, axe en jsdom dentro de los tests de componentes.
+- **Rendimiento:** Lighthouse móvil con Performance 93/91, Accesibilidad 100/100 y Buenas prácticas 100/100; CLS 0 y 0,004. El LCP en simulación queda por encima del presupuesto y se declara en las limitaciones.
+- **Seguridad:** revisión con casos negativos reales de autenticación, CSRF, `Origin`, rate limit, acceso cruzado, descarga, subida y borrado. Sin bloqueantes abiertos.
+- **Privacidad EXIF:** el GPS se usa solo en memoria para resolver el lugar y nunca se persiste ni se registra; los metadatos se eliminan de los archivos servidos.
+
+Informes: [seguridad](docs/05-quality/security-report.md) · [rendimiento](docs/05-quality/performance-report.md) · [accesibilidad](docs/05-quality/a11y-report.json) · [checklist de entrega](docs/08-delivery/checklist.md).
+
+---
+
+## Alcance
+
+### Incluido en esta iteración
+
+El MVP descrito en [scope.md](docs/01-product/scope.md): cuentas y sesiones, círculos privados, invitaciones, personas, álbumes, subidas, galería, visor, metadatos, etiquetas, descargas, perfil, tema, PWA, contenido editorial, API REST, persistencia real, tests, accesibilidad y seguridad.
+
+### Fuera de esta iteración
+
+- **Actividad** por círculo y global (F35): el modelo y los eventos ya existen en la API; falta la pantalla.
+- **E2E automatizado** (F37 y F38): la evidencia actual es Vitest, Testing Library, MSW y axe.
+- **Auditoría formal de accesibilidad** (F39) con lector de pantalla certificado.
+- **Despliegue cloud**: hay guía y entorno local reproducible, pero no se ha probado en un servidor real ni con R2/Resend.
+- Producto fuera del MVP: offline y subidas en segundo plano, pagos, búsqueda avanzada, recuperación de fotos, backups, notificaciones push, internacionalización, apps nativas, verificación de email y recuperación de contraseña.
+
+### Siguiente iteración
+
+1. Cerrar la aceptación de F40–F43 y el ensayo de la demo.
+2. Implementar **Actividad** (F35) sobre los eventos que ya escribe la API.
+3. Añadir **Playwright y E2E** de los flujos críticos (F37 y F38).
+4. Hacer la **auditoría de accesibilidad** con lector de pantalla (F39).
+5. Llevar el rate limit a un almacén compartido, completar el despliegue y añadir avatar de perfil.
+6. Recuperar la deuda menor anotada en cada handoff.
+
+---
+
+## Limitaciones conocidas
+
+- Sin E2E automatizado ni auditoría WCAG completa con lector de pantalla.
+- Sin despliegue cloud ni verificación en dispositivo físico: las safe areas se midieron con insets emulados.
+- El rate limit vive en memoria y no se comparte entre instancias.
+- El LCP en simulación móvil (3,2–3,5 s) supera el presupuesto de 2,5 s, aunque el LCP observado es de 174–351 ms.
+- Sin service worker (ADR-0013): la app instalada no funciona sin conexión y no se promete.
+- Dos avisos moderados de `pnpm audit` en la cadena de Swagger UI, de desarrollo y aceptados.
+
+El detalle y el plan de cada una están en [defense.md](docs/08-delivery/defense.md) y en el [dossier técnico](docs/08-delivery/technical-dossier.md).
 
 ---
 
@@ -148,123 +257,46 @@ memora/
 | Documento | Para qué |
 | --- | --- |
 | [docs/00-index.md](docs/00-index.md) | Índice general y orden de lectura |
-| [docs/01-product/scope.md](docs/01-product/scope.md) | Qué entra y qué no |
-| [docs/02-design/screens.md](docs/02-design/screens.md) | Inventario de las 54 vistas y enlaces |
-| [docs/03-architecture/overview.md](docs/03-architecture/overview.md) | Arquitectura, render modes y límites |
-| [docs/03-architecture/spike-results.md](docs/03-architecture/spike-results.md) | Resultados y deudas del spike F05 |
-| [docs/03-architecture/api-contract.md](docs/03-architecture/api-contract.md) | Contrato REST |
-| [docs/04-features/README.md](docs/04-features/README.md) | Tablero de las 43 features |
-| [docs/05-quality/definition-of-done.md](docs/05-quality/definition-of-done.md) | Cuándo se considera terminada una feature |
-| [docs/05-quality/audits/2026-10-25-audit.md](docs/05-quality/audits/2026-10-25-audit.md) | Auditoría del proyecto y plan de corrección |
-| [docs/06-process/workflow.md](docs/06-process/workflow.md) | Ciclo de trabajo y gates |
-| [docs/06-process/subagent-protocol.md](docs/06-process/subagent-protocol.md) | Cómo trabaja un subagente |
-| [docs/07-curriculum/coverage-map.md](docs/07-curriculum/coverage-map.md) | Cobertura del temario |
-| [docs/08-delivery/defense.md](docs/08-delivery/defense.md) | Guion de la defensa |
-| [docs/08-delivery/technical-dossier.md](docs/08-delivery/technical-dossier.md) | Dossier técnico: dependencias, arquitectura, decisiones, preguntas y límites |
-| [docs/08-delivery/deployment.md](docs/08-delivery/deployment.md) | Entorno local reproducible y guía de despliegue; el atajo de Windows es local y no se versiona |
-| [docs/archive/spec-v1.md](docs/archive/spec-v1.md) | Especificación original (histórico) |
-
----
-
-## Alcance
-
-### MVP
-
-- Registro, inicio y cierre de sesión; rutas protegidas.
-- Círculos privados con invitación por enlace (vista previa Open Graph) y email opcional.
-- Álbumes colaborativos.
-- Subida desde galería, cámara y arrastrar y soltar, con progreso, reintento y cancelación.
-- Galería, visor de foto, metadatos y geocodificación.
-- Etiquetado de miembros y filtro «Fotos de esta persona».
-- Descarga individual, de selección y de álbum completo (ZIP).
-- Perfil, tema claro/oscuro/sistema, permisos por círculo.
-- PWA instalable.
-- Ayuda, FAQ y Privacidad desde Content Island, generadas en build.
-- API REST propia, PostgreSQL y almacenamiento de objetos reales.
-- Tests, accesibilidad, rendimiento y seguridad.
-
-### Extras acordados
-
-- **Subidas globales** (`/uploads`) con cola compartida.
-- **Actividad** por círculo y global.
-- **Privacidad** también gestionada en Content Island.
-
-### Fuera del MVP (documentado)
-
-Offline y subidas en segundo plano; pagos reales; búsqueda avanzada; recuperación de fotos borradas, exportación integral y backups; notificaciones push; internacionalización; apps nativas; verificación de email; recuperación de contraseña.
-
-Detalle y justificación en [docs/01-product/scope.md](docs/01-product/scope.md).
-
----
-
-## Cómo se trabaja
-
-Cada feature tiene una spec autocontenida en `docs/04-features/Fxx-.../spec.md` con:
-
-- objetivo, contexto y dependencias;
-- alcance incluido y excluido;
-- contrato de API y modelo de datos;
-- estados de UI y criterios de aceptación numerados;
-- plan de pruebas, archivos previstos y comandos de verificación;
-- handoff y preguntas abiertas.
-
-Flujo:
-
-```text
-draft → ready → in-progress → review → accepted → done
-```
-
-Reglas principales:
-
-1. El agente **propone antes de escribir** y espera confirmación.
-2. Un subagente = una feature = una rama = un `handoff.md`.
-3. El implementador no se autoaprueba; cuando el nivel de la feature exige revisión independiente, el `reviewer` revisa sin editar.
-4. Si falta una decisión, se para y pregunta.
-5. Nada de secretos, dependencias, migraciones, commits o `push` sin permiso.
-
-Todo está en [AGENTS.md](AGENTS.md) y [docs/06-process/workflow.md](docs/06-process/workflow.md).
+| [Visión](docs/01-product/vision.md) y [alcance](docs/01-product/scope.md) | Qué es Memora y qué entra en el producto |
+| [Pantallas](docs/02-design/screens.md) | Inventario de las 54 vistas y enlaces |
+| [Arquitectura](docs/03-architecture/overview.md) | Capas, render modes, límites y ADR |
+| [Contrato REST](docs/03-architecture/api-contract.md) | Endpoints, códigos, paginación y subidas |
+| [Tablero de features](docs/04-features/README.md) | Las 44 especificaciones y su estado |
+| [Definition of Done](docs/05-quality/definition-of-done.md) | Cuándo se considera terminada una feature |
+| [Cobertura del temario](docs/07-curriculum/coverage-map.md) | Los seis módulos, tema a tema |
+| [Demo](docs/08-delivery/demo.md) y [defensa](docs/08-delivery/defense.md) | Guion de la demo y de la presentación |
+| [Despliegue](docs/08-delivery/deployment.md) | Entorno local reproducible y guía de despliegue |
+| [Dossier técnico](docs/08-delivery/technical-dossier.md) | Dependencias, decisiones, preguntas y límites |
+| [Bitácora de IA](docs/06-process/ai-log.md) | Prompt, propuesta, corrección y decisión por feature |
+| [Workflow](docs/06-process/workflow.md) | Ciclo de una feature, gates y revisión |
+| [AGENTS.md](AGENTS.md) | Reglas que gobiernan el trabajo en el repositorio |
 
 ---
 
 ## Diseño
 
-- Fuente canónica: [assets/design/screens/](assets/design/screens/) (segunda iteración, 54 vistas).
-- Índice visual: [assets/design/indice-de-pantallas.png](assets/design/indice-de-pantallas.png).
-- Sistema de diseño v0.1: [assets/design/design-system-v0.1.png](assets/design/design-system-v0.1.png).
-- Tokens y componentes: [docs/02-design/tokens.md](docs/02-design/tokens.md) y [docs/02-design/components.md](docs/02-design/components.md).
+- Fuente canónica: [assets/design/screens/](assets/design/screens/) — segunda iteración, 54 vistas en móvil y escritorio, claro y oscuro, con estados de carga, vacío, error y guardado. Son los mockups de referencia, no capturas del producto.
+- Sistema de diseño: [design-system-v0.1.png](assets/design/design-system-v0.1.png) y [tokens.md](docs/02-design/tokens.md).
 - Primera iteración: [assets/archive/design-v1/](assets/archive/design-v1/) (solo histórico).
 
-Los nombres de archivo están normalizados a ASCII kebab-case. El manifest original está en [assets/design/manifest.json](assets/design/manifest.json).
+![Índice de las pantallas de la aplicación](assets/design/indice-de-pantallas.png)
+
+Los nombres de archivo están normalizados a ASCII kebab-case y el manifest original está en [assets/design/manifest.json](assets/design/manifest.json). Los datos de los mockups son ficticios y no representan el modelo de producto.
 
 ---
 
-## Uso de IA
+## Cómo se ha construido
 
-La IA forma parte del proyecto y deja rastro en [docs/06-process/ai-log.md](docs/06-process/ai-log.md): prompt representativo, propuesta, corrección y decisión. Cada feature actualiza también el [mapa de cobertura del temario](docs/07-curriculum/coverage-map.md).
+Cada feature tiene una **spec autocontenida** con objetivo, contrato, estados de UI y criterios de aceptación numerados; se implementa en una rama, se verifica con comandos reales y se revisa antes de aceptarse. El ciclo es `draft → ready → in-progress → review → accepted → done` y no se cierra una feature sin tests, estados de carga, vacío y error, permisos en servidor y revisión en móvil y escritorio.
 
-Herramientas:
+La IA forma parte del proceso y deja rastro: agentes especializados, comandos y skills en `.opencode/`, con revisión humana de todo cambio. La bitácora registra prompt representativo, propuesta, corrección y decisión de cada feature, y el [mapa de cobertura](docs/07-curriculum/coverage-map.md) enlaza cada tema del temario con su evidencia.
 
-- OpenCode V2 con agentes especializados.
-- Content Island MCP y skills para el contenido editorial.
-- Revisión humana de todo cambio.
-
----
-
-## Próximos pasos
-
-1. **Cierre operativo de F19 — Invitations API (completado el 2026-11-04).** F19 quedó `done` con la evidencia de su handoff: cinco endpoints, token hasheado, email real, **200** tests de API en 11 archivos y prueba de extremo a extremo con Mailpit; revisión de nivel A en dos rondas (primera **no apto** por B-01). Cierre con los commits `1250e29` y `2d3cfc5`, la [PR #28](https://github.com/Luceir0/lab-final--memora/pull/28), el merge `d0c4465` y CI en verde (runs `41826103313` y `41826486383`). Deudas trasladadas: N-03 (email síncrono), N-09 (`@types/nodemailer` major 8), redacción de los access logs del proxy en F42 y la confirmación en F20 de que revocar una invitación aceptada es no-op. Detalle en [F19](docs/04-features/F19-invitations-api/handoff.md).
-2. **F22 — People web** — **cerrada el 2026-11-05** en **`done`**: nivel A, dos rondas de revisión (primera **no apto** por B-01 y M-01), tres de accesibilidad y auditoría de diseño con visión; la ronda G4 añadió siete correcciones de producto (pendientes con 0, `member` a ancho completo, alineación de columnas, acciones del héroe abajo, sidebar con un único `aria-current`, migas con sección y «Tus círculos» con el destacado) y las 16 pasadas de axe dieron 0 violaciones. Cierre operativo con los commits `56fca50`, `3e719ed`, `8219d1f` y `97b45be`, la [PR #34](https://github.com/Luceir0/lab-final--memora/pull/34), el merge `7ee702f` en `main` y CI en verde en la PR (run `42004835096`) y en `main` (run `42006326244`). Pendientes trasladados: lector de pantalla real (F39), zoom de texto al 200 % en la nav sticky, nits D-06 y D-07 y la duplicidad intencional del círculo destacado. Detalle en el [handoff de F22](docs/04-features/F22-people-web/handoff.md).
-3. **F23 — Albums API — cerrada el 2026-11-05** en **`done`**: seis endpoints con membresía como gate, permisos por `membersCanCreateAlbums`, portada solo con fotos del mismo álbum, keyset `(createdAt, id)`, alta transaccional con `album.created` y vaciado transaccional con `{ deletedCount }`; el borrado usa `SELECT … FOR UPDATE` para que una foto confirmada entre la comprobación y el borrado no caiga por la cascada bajo `READ COMMITTED`. Revisión de nivel **B** en dos rondas (primera **no apto** por B-01, segunda **apto**), 24 tests de álbumes, 243 de API en 13 archivos y 1086 tests en el monorepo; aceptada por el usuario el 2026-11-05. Cierre operativo con los commits `34c71cd` (`feat(api): add albums API with pagination, cover and safe delete (F23)`) y `6ad8226` (`docs: record F23 implementation, review and acceptance`), la [PR #36](https://github.com/Luceir0/lab-final--memora/pull/36), el merge `dca7a60bf386bd898c55d6ae8cf82b70166b68dd` en `main` y CI en verde en la PR (run `42018373439`) y en `main` (run `42018611662`). Deudas trasladadas a F25: objetos de storage al vaciar, índices `(circleId, createdAt, id)` y `(circleId, joinedAt)`, y el orden de locks. Detalle en el [handoff de F23](docs/04-features/F23-albums-api/handoff.md).
-4. **F24 — Albums web — cerrada el 2026-11-05** en **`done`**: milestone M3, nivel **B**, depende de F18 y F23. Creación, detalle y cabecera de álbum con formulario RHF/Zod, rejilla de altura uniforme, estados, vaciar y eliminar con confirmación; **113 tests** de álbumes en 7 archivos y **491** de web, **27** de álbumes en la API y **150** en `shared`. Revisión de nivel B aprobada y auditorías de diseño y accesibilidad del delta aptas. El usuario aceptó la feature tras cinco cambios ya aplicados: altura uniforme de cards, vaciar/eliminar para **owner o creador** sin depender de `membersCanCreateAlbums` (eliminar sigue exigiendo álbum vacío), «Vaciar álbum» solo con fotos, mes actual precargado en el alta y portada como foto del álbum en F26/F29. Se reinició la API limpia (`health=200`, `login=200`) y se borraron cuatro álbumes de prueba con autorización del usuario. Cierre operativo con la [PR #38](https://github.com/Luceir0/lab-final--memora/pull/38), la [PR de documentación #39](https://github.com/Luceir0/lab-final--memora/pull/39), el merge `8c04be8d5a60ec6d93e8fc3a816f37b60c67acda` y CI en verde en la PR (`42072093665`) y en `main` (`42072660244`). Detalle en el [handoff de F24](docs/04-features/F24-albums-web/handoff.md).
-5. **F25 — Upload pipeline API — cerrada el 2026-11-05 en `done`.** Pipeline completo de subida con multipart, magic bytes, cuota, `sharp` con orientación y variantes, EXIF con GPS transitorio, Nominatim con deadline total, idempotencia y `Activity` en la misma transacción, más las tres deudas de F23 (objetos al vaciar, índices y orden de locks). Verificación real: **38 passed y 1 skipped** en `test photos`, **322 passed y 2 skipped** en la API, `pnpm test` **8/8 tareas**, `pnpm build` **5/5** con 5 rutas prerenderizadas, `typecheck` OK, `lint` 6/6, `format:check` OK, migraciones al día y las dos integraciones guardadas (Silo y S3) en verde sin residuos. Revisión independiente de nivel **A** en **cambios requeridos sin bloqueantes**: 1 Mayor (deadline total de geocodificación) y los Menores/Nits aplicables corregidos. Aceptada por el usuario el 2026-11-05. Cierre operativo con los commits `1833dca` (`feat(api): add upload pipeline with S3, sharp and idempotency (F25)`) y `ebc57d3` (`docs: record F25 implementation, review and acceptance`), la [PR #40](https://github.com/Luceir0/lab-final--memora/pull/40), el merge `44ac7a9ac8ee473d0239804b422fd1ae5bde45a3` en `main` y CI en verde en la PR (run `42109962179`) y en `main` (run `42110522832`). Pendiente preexistente: `pnpm audit` con 2 moderadas en la cadena de Swagger UI. Siguiente: **F26 — Upload queue web**, que consume este contrato, y después F27–F35 (subidas globales, ajustes, galería, visor, metadatos, etiquetas, descargas, perfil y actividad). Detalle en el [handoff de F25](docs/04-features/F25-upload-pipeline-api/handoff.md).
-6. **F36–F43** — Content Island, tests, accesibilidad, rendimiento, seguridad, despliegue y defensa.
-
-F05 queda `done` tras el merge `8dfae5f` y el CI en verde ([run 40371999132](https://github.com/Luceir0/lab-final--memora/actions/runs/40371999132)). F06 se cerró el 2026-10-31 con la PR #2, el merge `b556168` y el CI en verde (run `41246708428`, `completed/success`). F07 se cerró el 2026-11-01 con la PR #3, el merge `bd2769c` y el CI en verde (run `41254603622`, `completed/success`); el run ejecutó PostgreSQL 17.11 y los tests de integración contra `memora_test`, sin skips. F08 se cerró el 2026-11-01 con la PR #4, el merge `ed1f316` y el CI en verde (run `41261491641`, `completed/success`). F09 se cerró el 2026-11-01 con la PR #5, los commits `a81dc9a`, `1363e71` y `8c4a963`, el merge `9fd987e` en `main` y CI en verde en la PR (run `41306238454`, `completed/success`) y en `main` (run `41306484717`, `completed/success`); el usuario la aceptó ese mismo día en Firefox real, sin errores de hidratación, y AC-06 queda solo pendiente de automatización en F37/F38. F10 se cerró el 2026-11-02 con la rama `feat/F10-sistema-visual`, los commits `517b6eb`, `3c79110` y `d4826df`, la [PR #7](https://github.com/Luceir0/lab-final--memora/pull/7), el merge `f3b26a5` en `main` y CI en verde en la PR (run `41473542981`, `completed/success`) y en `main` (run `41473996157`, `completed/success`); AC-05, AC-06 y AC-07 quedan verificados por el usuario, con su automatización en F37/F38. F11 se cerró el 2026-11-02 con la rama `feat/F11-ui-kit-i`, los commits `0e815e2`, `a1648ce`, `bf22fd4` y `94620ee`, la [PR #11](https://github.com/Luceir0/lab-final--memora/pull/11), el merge `6d160ce` en `main` y CI en verde en la PR (run `41498545493`, `completed/success`, head `94620ee`) y en `main` (run `41499457291`, `completed/success`); queda como deuda abierta la axe en navegador real y la medición automática de 44 px (F37), la CSP con nonce/hash (F42) y el traslado de `ThemeToggle` y de los chips con cuerpo y quitar (F13/F14/F34). F12 se cerró el 2026-11-02 con la [PR #13](https://github.com/Luceir0/lab-final--memora/pull/13) y el merge `62d98b9`. F13 se cerró el 2026-11-03 con la [PR #16](https://github.com/Luceir0/lab-final--memora/pull/16), el merge `2c2a587` y CI en verde (run `41610250888`). F14 se cerró el 2026-11-03 con la [PR #18](https://github.com/Luceir0/lab-final--memora/pull/18) y el merge `160fb00`. F15 se cerró el 2026-11-03 con la [PR #20](https://github.com/Luceir0/lab-final--memora/pull/20) y el merge `af7d865`. F16 se cerró el 2026-11-03 con la [PR #22](https://github.com/Luceir0/lab-final--memora/pull/22), el merge `dd9d48e` y CI en verde (run `41683883983`). F17 se cerró el 2026-11-03 con la [PR #24](https://github.com/Luceir0/lab-final--memora/pull/24) y el merge `03d7250`. F18 se cerró el 2026-11-04 con la [PR #26](https://github.com/Luceir0/lab-final--memora/pull/26), el merge `155da94` y CI en verde en la PR (run `41814318422`, job `126521136747`, head `8bb73de`) y en `main` (run `41814512961`, job `126521774021`, commit `155da94`); la rama `feat/F18-circles-web` sigue existiendo, ya mergeada.
+Reglas completas en [AGENTS.md](AGENTS.md), [workflow](docs/06-process/workflow.md) y [protocolo de subagentes](docs/06-process/subagent-protocol.md).
 
 ---
 
 ## Licencia y datos
 
 - Código: licencia pendiente de decidir.
-- Fotografías de demostración: Unsplash/Pexels, con créditos en [assets/demo/README.md](assets/demo/README.md). Nunca fotos privadas reales sin consentimiento.
-- Los datos de la demo son ficticios.
+- Fotografías de demostración: Unsplash y Pexels, con créditos en [assets/demo/README.md](assets/demo/README.md). Nunca se usan fotos privadas reales sin consentimiento.
+- Los datos de la demo son ficticios y el seed es determinista.
