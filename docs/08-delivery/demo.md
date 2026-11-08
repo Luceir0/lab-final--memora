@@ -18,6 +18,9 @@
 - 1 invitación pendiente y 4 actividades en el seed.
 - Bucket privado `memora` con los 18 objetos del seed.
 - Seed determinista: `pnpm db:seed` y `pnpm --filter @memora/api db:seed:images`.
+- Las seis fotos del seed pueden sustituirse localmente con `seed_photo_*.jpg` en
+  `assets/demo/seed/` (carpeta ignorada por git). Si no están, `db:seed:images`
+  genera los degradados de ejemplo.
 
 > **Danza está vacía a propósito**: es el círculo de solo lectura para enseñar los `403`.
 > Si quieres enseñar una subida como owner **dentro de Danza**, súbela antes de la demo
