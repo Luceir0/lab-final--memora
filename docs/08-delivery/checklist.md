@@ -113,4 +113,5 @@
       `pnpm --filter @memora/api db:seed:images`, `pnpm dev`. Sin URL pública por decisión de
       alcance._
 - [ ] Commit final revisado.
-      _Pendiente: el commit y la PR de F43 se proponen al usuario y no se ejecutan sin permiso._
+      _Commits `76edee4` y `7a5a88e` y PR #63 **mergeados** en `main` (`ee0c5ad`), con CI en
+      verde; falta la revisión independiente y la aceptación del usuario._
