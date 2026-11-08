@@ -103,7 +103,9 @@ interface SeedPhotoInput {
 }
 
 function photoKeys(circleId: string, photoId: string, extension: string) {
-  const base = `circles/${circleId}/photos/${photoId}`;
+  // Versioned base: the v1 objects stay in storage so reverting this seed
+  // restores the previous demo images without touching the bucket.
+  const base = `circles/${circleId}/photos/${photoId}/v2`;
 
   return {
     originalKey: `${base}/original.${extension}`,
@@ -418,7 +420,7 @@ export async function seedDatabase(prisma: PrismaClient): Promise<SeedSummary> {
 
   await prisma.circle.update({
     where: { id: CIRCLE_FAMILY_ID },
-    data: { coverPhotoId: 'seed_photo_coast_01', updatedAt: SEED_TIMESTAMP },
+    data: { coverPhotoId: 'seed_photo_lisbon_01', updatedAt: SEED_TIMESTAMP },
   });
 
   await prisma.album.update({
