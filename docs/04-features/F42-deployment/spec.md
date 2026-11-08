@@ -3,7 +3,7 @@ id: F42
 title: "Despliegue y observabilidad"
 milestone: M5
 size: M
-status: draft
+status: review
 spec: complete
 depends_on:
   - "F33"
@@ -18,7 +18,7 @@ decisions: []
 
 # F42 — Despliegue y observabilidad
 
-> **Milestone:** M5 · **Talla:** M · **Estado:** draft · **Spec:** completa
+> **Milestone:** M5 · **Talla:** M · **Estado:** review · **Spec:** completa
 > **Depende de:** F33, F36 · **Bloquea:** F43
 
 ## Objetivo

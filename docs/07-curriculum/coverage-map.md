@@ -423,6 +423,22 @@ Fuera de F14: offline, push y subidas en segundo plano. Sin service worker
 | Cierre operativo | Commit `d7efe2d`, PR #59, merge `4b5e54b`; CI en verde en la PR y sobre `main`; `main` local y remoto sincronizados | [handoff de F32](../04-features/F32-tagging/handoff.md) | Cerrado (2026-11-08) |
 | Limitaciones | El diálogo busca en los primeros 480 miembros (20 páginas); la rama `CONFLICT` de relectura nula tras `P2002` no tiene test propio; jsdom no mide contraste/layout | [handoff de F32](../04-features/F32-tagging/handoff.md) | Documentado en `Pendiente` |
 
+## Entorno demo y seguridad (F42 + F41, review)
+
+| Tema | Evidencia | Estado |
+| --- | --- | --- |
+| Compose local reproducible y healthchecks | `docker-compose.yml` (Postgres 17.11, Silo por tag+digest y Mailpit con healthcheck), `docker compose ps` y [deployment.md](../08-delivery/deployment.md) | Cubierto (F42): los tres servicios **healthy**, `/api/health` **200** y proxy web **200** |
+| Variables por entorno en un monorepo con Turbo | `.env.example`, `turbo.json` (`globalEnv` con S3, email, geocoding, cookies y web) y `docs/08-delivery/deployment.md` | Cubierto (F42): Turbo no reenviaba `S3_*` y la subida fallaba con 422; corregido y verificado. Ningún proceso carga el `.env` de la raíz: documentado con ejemplos de shell |
+| Migraciones y seed determinista | `apps/api/prisma/migrations/**`, `apps/api/prisma/seed.ts`, `apps/api/scripts/seed-images.ts` | Cubierto (F42): migración pendiente aplicada en `memora`, seed idempotente repetido y 6 imágenes generadas en Silo |
+| Autorización por recurso y acceso cruzado | Tests de `circles`, `members`, `albums`, `photos`, `downloads`, `invitations` y `tags`; pruebas HTTP reales | Cubierto (F41): **401** sin sesión, **403** sin permiso o sin CSRF/Origin, **404** para otro círculo |
+| Rate limiting | `apps/api/src/modules/auth/routes.ts` (5/min IP+email, 20/min IP, 10/h registro) y `photos/routes.ts` (60/min) | Cubierto (F41): **401 ×5 → 429 ×2** en real; en memoria, sin almacén compartido |
+| Uploads seguros y privacidad EXIF | `apps/api/src/modules/photos/**` y tests de magic bytes, tamaño, píxeles, cuota y SVG/GIF | Cubierto (F41): 415/422/413 y EXIF con GPS solo en memoria |
+| Cabeceras y logs sin PII | `apps/api/src/plugins/helmet.ts`, `apps/api/src/logging.ts` y log real de la sesión | Cubierto (F41): CSP, `Referrer-Policy`, `nosniff`, `X-Frame-Options` y 0 apariciones de PII en 131 líneas |
+| Dependencias auditadas | `pnpm audit --audit-level=moderate` | Parcial (F41): 2 moderadas preexistentes de Swagger UI, dev-only y aceptadas (H-01) |
+| Informe de riesgos | [security-report.md](../05-quality/security-report.md) y [security-checklist.md](../05-quality/security-checklist.md) | Cubierto (F41); limitado a local, sin pentest ni infraestructura real |
+
+**Limitaciones:** `docker-compose.prod.yml` no se entrega en la recutura; no hay verificación en cloud, TLS, cookies `Secure` ni email de extremo a extremo; no hay purga programada de sesiones ni ZIP; la base de desarrollo conserva datos de pruebas manuales.
+
 ## Evidencias de entrega
 
 - [ ] README con instalación y scripts.
